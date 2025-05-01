@@ -1,0 +1,33 @@
+# Ignore root dependencies (if any)
+node_modules
+
+# Ignore package-specific dependencies and build outputs
+packages/*/node_modules
+packages/*/dist
+apps/*/node_modules
+apps/*/dist
+apps/*/.astro
+apps/*/out
+
+# Ignore build artifacts, logs, env files etc.
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.env
+.env.*
+!.env.example
+
+# Docker files themselves if needed (can be commented out)
+# Dockerfile*
+# docker-compose.yml
+
+# Git files
+.git
+.gitignore
+
+# OS specific files
+.DS_Store
+Thumbs.db 
