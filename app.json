@@ -1,0 +1,26 @@
+{
+  "name": "entrepeques-api",
+  "description": "API Backend para Entrepeques",
+  "repository": "https://github.com/tuusuario/entrepeques",
+  "keywords": ["node", "express", "typescript", "entrepeques"],
+  "addons": ["heroku-postgresql:hobby-dev"],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Entorno de ejecución",
+      "value": "production"
+    },
+    "JWT_SECRET": {
+      "description": "Clave secreta para firmar JWT",
+      "generator": "secret"
+    },
+    "JWT_EXPIRES_IN": {
+      "description": "Tiempo de expiración para JWT",
+      "value": "24h"
+    }
+  }
+} 

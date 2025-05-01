@@ -1,12 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-// Obtener la clave secreta del .env o usar una predeterminada (solo para desarrollo)
-const JWT_SECRET = process.env.JWT_SECRET || 'entrepeques_development_secret';
-// Tiempo de expiración: 24 horas por defecto
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
+import config from '../config';
 
 export interface JwtPayload {
   userId: number;
@@ -20,7 +13,7 @@ export interface JwtPayload {
 export function generateToken(payload: JwtPayload): string {
   try {
     // @ts-ignore: Ignoramos los errores de tipo aquí
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
   } catch (error) {
     console.error('Error generando JWT:', error);
     throw new Error('No se pudo generar el token de autenticación');
@@ -33,7 +26,7 @@ export function generateToken(payload: JwtPayload): string {
 export function verifyToken(token: string): JwtPayload | null {
   try {
     // @ts-ignore: Ignoramos los errores de tipo aquí
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwtSecret);
     return decoded as JwtPayload;
   } catch (error) {
     console.error('Error verificando token JWT:', error);
