@@ -293,6 +293,33 @@ docker logs entrepeques-api-dev
   - Admin y manager pueden crear/modificar categorías y productos
   - Solo admin puede eliminar categorías y productos
 
+### 16. Configuración de Linters y Formateadores
+
+**Acción realizada:** Configurar ESLint y Prettier para garantizar la calidad del código.
+**Procedimiento:**
+- Instalamos las dependencias necesarias:
+  ```bash
+  pnpm add -D eslint prettier eslint-config-prettier eslint-plugin-prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
+  ```
+- Creamos archivo `.eslintrc.js` con configuración para TypeScript
+- Creamos archivo `.prettierrc` con preferencias de formato
+
+### 17. Preparación para Despliegue en Heroku
+
+**Acción realizada:** Configurar el proyecto para despliegue en Heroku.
+**Procedimiento:**
+- Creamos `Procfile` con el comando para iniciar la aplicación en producción
+- Actualizamos `package.json` con:
+  - Scripts para compilación y ejecución en producción
+  - Postinstall hook para compilación automática
+  - Especificación de motores compatibles
+- Creamos archivo `app.json` con configuración para Heroku
+- Implementamos configuración centralizada:
+  - Creamos `src/config.ts` para gestionar variables de entorno
+  - Actualizamos archivos principales para usar la configuración centralizada
+  - Agregamos soporte para SSl en producción
+- Creamos documentación con guía detallada de despliegue (`HEROKU_DEPLOYMENT.md`)
+
 ## Estado Actual (02/05/2025)
 
 - ✅ Monorepo configurado con pnpm workspaces
@@ -303,17 +330,18 @@ docker logs entrepeques-api-dev
 - ✅ Modelos y servicios CRUD implementados
 - ✅ Sistema de autenticación JWT implementado
 - ✅ Controladores y rutas para autenticación, categorías y productos
+- ✅ Linters y formateadores (ESLint, Prettier) configurados
+- ✅ Configuración para despliegue en Heroku
 
 ## Próximos Pasos
 
-1. **Tareas pendientes (Fase 1):**
-   - Configurar linters y formateadores (ESLint, Prettier)
-   - Configurar despliegue en Heroku
+La **Fase 1** ha sido completada exitosamente. Podemos proceder a la **Fase 2: Aplicación Valuador**.
 
-2. **Pendientes Fase 2:**
-   - Iniciar desarrollo del frontend para el valuador
-   - Ampliar esquema de BD con tablas para valuaciones
-   - Implementar lógica de valuación en el backend
+1. **Próximas tareas (Fase 2):**
+   - Inicializar proyecto Frontend para Valuador (Astro + React, TypeScript)
+   - Diseñar UI/UX del proceso de valuación
+   - Ampliar esquema BD con tablas para valuaciones
+   - Desarrollar lógica de negocio para cálculo de valuaciones
 
 ## Recursos y Referencias
 

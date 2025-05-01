@@ -1,13 +1,12 @@
 import { Pool, PoolClient } from 'pg';
 import * as fs from 'fs';
 import * as path from 'path';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import config from './config';
 
 // Configurar Pool de Conexiones
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: config.databaseUrl,
+  ssl: config.nodeEnv === 'production' ? { rejectUnauthorized: false } : undefined,
 });
 
 // Función para inicializar la base de datos y ejecutar migraciones
@@ -29,44 +28,50 @@ export async function initializeDatabase(): Promise<void> {
     
     // Leer y ejecutar scripts de migración
     const migrationsDir = path.join(__dirname, 'migrations');
-    const migrationFiles = fs.readdirSync(migrationsDir)
-      .filter(file => file.endsWith('.sql'))
-      .sort(); // Ordenar para ejecutar en secuencia
     
-    for (const migrationFile of migrationFiles) {
-      // Verificar si la migración ya se ejecutó
-      const { rows } = await client.query(
-        'SELECT id FROM migrations WHERE name = $1',
-        [migrationFile]
-      );
+    // Verificar si el directorio existe (especialmente importante en producción)
+    if (fs.existsSync(migrationsDir)) {
+      const migrationFiles = fs.readdirSync(migrationsDir)
+        .filter(file => file.endsWith('.sql'))
+        .sort(); // Ordenar para ejecutar en secuencia
       
-      if (rows.length === 0) {
-        console.log(`Ejecutando migración: ${migrationFile}`);
+      for (const migrationFile of migrationFiles) {
+        // Verificar si la migración ya se ejecutó
+        const { rows } = await client.query(
+          'SELECT id FROM migrations WHERE name = $1',
+          [migrationFile]
+        );
         
-        // Leer contenido del script SQL
-        const filePath = path.join(migrationsDir, migrationFile);
-        const sqlScript = fs.readFileSync(filePath, 'utf8');
-        
-        // Ejecutar script en una transacción
-        await client.query('BEGIN');
-        try {
-          await client.query(sqlScript);
+        if (rows.length === 0) {
+          console.log(`Ejecutando migración: ${migrationFile}`);
           
-          // Registrar que se ejecutó la migración
-          await client.query(
-            'INSERT INTO migrations (name) VALUES ($1)',
-            [migrationFile]
-          );
+          // Leer contenido del script SQL
+          const filePath = path.join(migrationsDir, migrationFile);
+          const sqlScript = fs.readFileSync(filePath, 'utf8');
           
-          await client.query('COMMIT');
-          console.log(`Migración ${migrationFile} ejecutada exitosamente`);
-        } catch (error) {
-          await client.query('ROLLBACK');
-          throw error;
+          // Ejecutar script en una transacción
+          await client.query('BEGIN');
+          try {
+            await client.query(sqlScript);
+            
+            // Registrar que se ejecutó la migración
+            await client.query(
+              'INSERT INTO migrations (name) VALUES ($1)',
+              [migrationFile]
+            );
+            
+            await client.query('COMMIT');
+            console.log(`Migración ${migrationFile} ejecutada exitosamente`);
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          }
+        } else {
+          console.log(`Migración ${migrationFile} ya fue ejecutada previamente`);
         }
-      } else {
-        console.log(`Migración ${migrationFile} ya fue ejecutada previamente`);
       }
+    } else {
+      console.warn(`Directorio de migraciones no encontrado: ${migrationsDir}`);
     }
     
     console.log('Inicialización de base de datos completada');

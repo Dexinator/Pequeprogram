@@ -1,13 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
 import { pool, initializeDatabase, testConnection } from './db';
 import apiRoutes from './routes';
-
-// Cargar variables de entorno
-dotenv.config();
+import config from './config';
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = config.port;
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -51,7 +48,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({
     success: false,
     message: 'Error interno del servidor',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    error: config.nodeEnv === 'development' ? err.message : undefined
   });
 });
 
@@ -70,6 +67,7 @@ async function startServer() {
     
     // Iniciar servidor Express
     app.listen(port, () => {
+      console.log(`Entorno: ${config.nodeEnv}`);
       console.log(`Servidor API escuchando en http://localhost:${port}`);
       console.log(`Rutas de autenticación disponibles en http://localhost:${port}/api/auth`);
     });
