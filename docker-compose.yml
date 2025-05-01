@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine # Usar una imagen oficial de PostgreSQL
+    container_name: entrepeques-db-dev
+    restart: always
+    ports:
+      - "5432:5432" # Mapear puerto del host al contenedor
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
+      POSTGRES_DB: ${DATABASE_NAME:-entrepeques_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persistir datos de la BD
+    networks:
+      - entrepeques-net
+
+  api:
+    container_name: entrepeques-api-dev
+    build:
+      context: ./packages/api # Asume que el Dockerfile estará en packages/api
+      dockerfile: Dockerfile.dev # Usaremos un Dockerfile específico para desarrollo
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-5000}:5000" # Puerto para la API (default 5000)
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${DATABASE_USER:-user}:${DATABASE_PASSWORD:-password}@db:5432/${DATABASE_NAME:-entrepeques_dev}
+      # Añadir otras variables de entorno necesarias para la API aquí
+      PORT: 5000
+    volumes:
+      - ./packages/api:/app # Mapear código fuente para live reload
+      - /app/node_modules # Evitar sobreescribir node_modules del contenedor
+    depends_on:
+      - db # Asegurar que la BD inicie antes que la API
+    networks:
+      - entrepeques-net
+
+networks:
+  entrepeques-net:
+    driver: bridge
+
+volumes:
+  postgres_data: # Volumen nombrado para la persistencia de datos 
