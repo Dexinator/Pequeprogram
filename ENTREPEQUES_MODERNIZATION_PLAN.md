@@ -5,7 +5,7 @@
 **Objetivo:** Reemplazar los sistemas actuales (Valuador en VB, My Business POS, WooCommerce) por una plataforma web unificada y moderna para gestionar la valuación, inventario, tienda en línea y punto de venta físico de Entrepeques.
 
 **Tecnologías Principales:**
-*   **Frontend:** Astro (con TypeScript)
+*   **Frontend:** Astro (con React y TypeScript)
 *   **Backend:** Node.js con Express (con TypeScript)
 *   **Base de Datos:** PostgreSQL
 *   **Hosting:** Vercel (Frontend), Heroku (Backend + DB)
@@ -36,7 +36,7 @@
 
 ### Fase 2: Aplicación Valuador
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para Valuador (Astro, TypeScript).
+    *   Inicializar proyecto Frontend para Valuador (Astro + React, TypeScript).
     *   Diseñar UI/UX del proceso de valuación.
     *   Ampliar esquema BD: Tabla `Valuations` (vinculada a `Products`, `Users`), campos detallados (estado, demanda, marca, etc.), tabla `ValuationRules` (para almacenar lógica/tablas de valuación).
     *   Desarrollar lógica de negocio en el Backend para calcular valuaciones basadas en reglas y atributos del producto.
@@ -48,7 +48,7 @@
 
 ### Fase 3: Gestión de Inventario y Panel de Administración
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para Admin (Astro, TypeScript).
+    *   Inicializar proyecto Frontend para Admin (Astro + React, TypeScript).
     *   Ampliar esquema BD: Tabla `InventoryItems` (vinculada a `Valuations` o `Products`, con campos como `sku`, `purchase_price`, `selling_price`, `status` [en stock, vendido, etc.], `location`).
     *   Desarrollar lógica de Backend para gestionar el ciclo de vida del inventario (desde valuación aceptada hasta venta).
     *   Implementar endpoints API para CRUD de `InventoryItems`, gestión de usuarios, categorías, reglas de valuación.
@@ -64,7 +64,7 @@
 
 ### Fase 4: Tienda en Línea (Frontend Público)
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para Tienda (Astro, TypeScript).
+    *   Inicializar proyecto Frontend para Tienda (Astro + React, TypeScript).
     *   Diseñar UI/UX pública (listado de productos, detalle, carrito).
     *   Implementar endpoints API públicos (lectura) para obtener productos en stock, categorías, detalles de producto.
     *   Desarrollar componentes Astro para:
@@ -79,7 +79,7 @@
 
 ### Fase 5: Punto de Venta (POS) Físico
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para POS (Astro, TypeScript, enfocado en simplicidad y rapidez).
+    *   Inicializar proyecto Frontend para POS (Astro + React, TypeScript, enfocado en simplicidad y rapidez).
     *   Diseñar UI/UX del POS: Búsqueda/escaneo rápido, añadir a venta, seleccionar cliente (opcional), totalizar, registrar pago.
     *   Integrar lector de códigos de barras (como entrada de teclado HID).
     *   Ampliar esquema BD: Tabla `Orders` (con `OrderItems`), `Customers` (opcional), `Payments`.
