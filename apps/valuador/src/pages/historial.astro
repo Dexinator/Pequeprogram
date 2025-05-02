@@ -5,179 +5,293 @@ import StatusBadge from '../components/StatusBadge.astro';
 // Datos de ejemplo para el historial de valuaciones
 const valuaciones = [
   {
-    id: 'VP-1456',
-    fecha: '2025-05-08',
-    categoria: 'Juguetes',
-    marca: 'Fisher-Price',
-    modelo: 'Piano de Actividades',
-    estado: 'Muy bueno',
-    precioSugerido: '$550.00',
-    status: 'aprobada' // aprobada, pendiente, rechazada
+    id: "5432",
+    fecha: "15/05/2025",
+    cliente: {
+      nombre: "María Rodríguez",
+      telefono: "5512345678",
+      email: "maria@ejemplo.com"
+    },
+    productos: 3,
+    totalCompra: 1250.50,
+    totalVenta: 2340.75,
+    estado: "finalizada"
   },
   {
-    id: 'VP-1455',
-    fecha: '2025-05-07',
-    categoria: 'Ropa (0-6 meses)',
-    marca: 'Carter\'s',
-    modelo: 'Set de 5 bodys',
-    estado: 'Como nuevo',
-    precioSugerido: '$320.00',
-    status: 'pendiente'
+    id: "5431",
+    fecha: "14/05/2025",
+    cliente: {
+      nombre: "Juan Pérez",
+      telefono: "5587654321",
+      email: "juan@ejemplo.com"
+    },
+    productos: 1,
+    totalCompra: 450.00,
+    totalVenta: 899.99,
+    estado: "finalizada"
   },
   {
-    id: 'VP-1452',
-    fecha: '2025-05-05',
-    categoria: 'Sillas de Coche',
-    marca: 'Chicco',
-    modelo: 'KeyFit 30',
-    estado: 'Bueno',
-    precioSugerido: '$1,200.00',
-    status: 'aprobada'
+    id: "5430",
+    fecha: "13/05/2025",
+    cliente: {
+      nombre: "Ana López",
+      telefono: "5523456789"
+    },
+    productos: 5,
+    totalCompra: 3200.75,
+    totalVenta: 5780.50,
+    estado: "pendiente"
   },
   {
-    id: 'VP-1448',
-    fecha: '2025-05-02',
-    categoria: 'Cochecitos',
-    marca: 'Graco',
-    modelo: 'FastAction Fold',
-    estado: 'Regular',
-    precioSugerido: '$850.00',
-    status: 'rechazada'
+    id: "5429",
+    fecha: "12/05/2025",
+    cliente: {
+      nombre: "Roberto Sánchez",
+      telefono: "5534567890",
+      email: "roberto@ejemplo.com"
+    },
+    productos: 2,
+    totalCompra: 980.25,
+    totalVenta: 1750.00,
+    estado: "cancelada"
   },
   {
-    id: 'VP-1442',
-    fecha: '2025-04-28',
-    categoria: 'Cunas y Muebles',
-    marca: 'IKEA',
-    modelo: 'Cuna convertible',
-    estado: 'Bueno',
-    precioSugerido: '$1,800.00',
-    status: 'aprobada'
+    id: "5428",
+    fecha: "11/05/2025",
+    cliente: {
+      nombre: "Carmen Ramírez",
+      telefono: "5545678901"
+    },
+    productos: 4,
+    totalCompra: 1890.30,
+    totalVenta: 3450.75,
+    estado: "finalizada"
   }
 ];
 
-// Función para obtener la clase de estado
-function getStatusClass(status: string): string {
-  switch(status) {
-    case 'aprobada': return 'bg-verde-lima/10 text-verde-lima';
-    case 'pendiente': return 'bg-amarillo/10 text-amarillo';
-    case 'rechazada': return 'bg-rosa/10 text-rosa';
-    default: return 'bg-gray-100 text-gray-500';
-  }
-}
-
-// Función para obtener el texto de estado en español
-function getStatusText(status: string): string {
-  switch(status) {
-    case 'aprobada': return 'Aprobada';
-    case 'pendiente': return 'Pendiente';
-    case 'rechazada': return 'Rechazada';
-    default: return 'Desconocido';
-  }
-}
+// Estadísticas
+const estadisticas = {
+  totalValuaciones: valuaciones.length,
+  valuacionesFinalizadas: valuaciones.filter(v => v.estado === "finalizada").length,
+  valuacionesPendientes: valuaciones.filter(v => v.estado === "pendiente").length,
+  totalProductos: valuaciones.reduce((sum, v) => sum + v.productos, 0),
+  totalVenta: valuaciones
+    .filter(v => v.estado === "finalizada")
+    .reduce((sum, v) => sum + v.totalVenta, 0)
+};
 ---
 
 <MainLayout title="Historial de Valuaciones">
-  <div class="space-y-6">
+  <div class="space-y-6 pb-10">
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-heading font-bold text-azul-profundo">Historial de Valuaciones</h1>
+      <a 
+        href="/nueva-valuacion" 
+        class="px-5 py-2 bg-verde-lima text-white rounded-md hover:bg-verde-oscuro transition-colors flex items-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Nueva Valuación
+      </a>
+    </div>
+    
+    <!-- Resumen de estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-text-muted text-sm">Total Valuaciones</p>
+            <p class="text-2xl font-bold text-text">{estadisticas.totalValuaciones}</p>
+          </div>
+          <div class="p-2 bg-azul-claro/10 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-azul-claro" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+      </div>
       
-      <div class="flex gap-3">
-        <a href="/nueva-valuacion" class="inline-flex items-center px-4 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors">
-          <span class="mr-1">+</span> Nueva Valuación
-        </a>
+      <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-text-muted text-sm">Valuaciones Finalizadas</p>
+            <p class="text-2xl font-bold text-verde-oscuro">{estadisticas.valuacionesFinalizadas}</p>
+          </div>
+          <div class="p-2 bg-verde-lima/10 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-verde-lima" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-text-muted text-sm">Total Productos</p>
+            <p class="text-2xl font-bold text-text">{estadisticas.totalProductos}</p>
+          </div>
+          <div class="p-2 bg-rosa/10 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-rosa" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-text-muted text-sm">Valor Total (Venta)</p>
+            <p class="text-2xl font-bold text-amarillo">${estadisticas.totalVenta.toFixed(2)}</p>
+          </div>
+          <div class="p-2 bg-amarillo/10 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Filtros de búsqueda -->
+    <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+      <div class="flex flex-col md:flex-row md:items-end gap-4">
+        <div class="flex-1 space-y-1">
+          <label class="block text-sm font-medium" for="busqueda">
+            Buscar
+          </label>
+          <input 
+            type="text" 
+            id="busqueda" 
+            placeholder="ID, cliente o teléfono" 
+            class="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+          />
+        </div>
         
-        <button type="button" class="inline-flex items-center px-4 py-2 bg-background border border-border rounded-md hover:bg-background-alt transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-          </svg>
+        <div class="w-full md:w-48 space-y-1">
+          <label class="block text-sm font-medium" for="estado">
+            Estado
+          </label>
+          <select 
+            id="estado" 
+            class="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+          >
+            <option value="">Todos</option>
+            <option value="finalizada">Finalizadas</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="cancelada">Canceladas</option>
+          </select>
+        </div>
+        
+        <div class="w-full md:w-48 space-y-1">
+          <label class="block text-sm font-medium" for="fecha-desde">
+            Desde
+          </label>
+          <input 
+            type="date" 
+            id="fecha-desde" 
+            class="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+          />
+        </div>
+        
+        <div class="w-full md:w-48 space-y-1">
+          <label class="block text-sm font-medium" for="fecha-hasta">
+            Hasta
+          </label>
+          <input 
+            type="date" 
+            id="fecha-hasta" 
+            class="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+          />
+        </div>
+        
+        <button 
+          type="button" 
+          id="filtrar-btn"
+          class="w-full md:w-auto px-4 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors"
+        >
           Filtrar
         </button>
       </div>
     </div>
     
-    <!-- Tarjetas de estadísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="bg-background-alt p-4 rounded-lg border border-border">
-        <h3 class="text-sm text-text-muted font-medium mb-1">Total Valuaciones</h3>
-        <p class="text-2xl font-bold text-azul-profundo">125</p>
-        <div class="text-xs text-verde-lima mt-2 flex items-center">
-          <span class="mr-1">↑</span> 12% este mes
-        </div>
-      </div>
-      
-      <div class="bg-background-alt p-4 rounded-lg border border-border">
-        <h3 class="text-sm text-text-muted font-medium mb-1">Pendientes</h3>
-        <p class="text-2xl font-bold text-amarillo">15</p>
-        <div class="text-xs text-text-muted mt-2">
-          Tiempo promedio: 1.5 días
-        </div>
-      </div>
-      
-      <div class="bg-background-alt p-4 rounded-lg border border-border">
-        <h3 class="text-sm text-text-muted font-medium mb-1">Aprobadas</h3>
-        <p class="text-2xl font-bold text-verde-lima">98</p>
-        <div class="text-xs text-verde-lima mt-2 flex items-center">
-          <span class="mr-1">↑</span> 5% más que el mes pasado
-        </div>
-      </div>
-      
-      <div class="bg-background-alt p-4 rounded-lg border border-border">
-        <h3 class="text-sm text-text-muted font-medium mb-1">Rechazadas</h3>
-        <p class="text-2xl font-bold text-rosa">12</p>
-        <div class="text-xs text-rosa mt-2 flex items-center">
-          <span class="mr-1">↓</span> 3% menos que el mes pasado
-        </div>
-      </div>
-    </div>
-    
-    <!-- Tabla de Valuaciones -->
-    <div class="bg-background rounded-lg border border-border overflow-hidden">
+    <!-- Tabla de valuaciones -->
+    <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full">
+        <table class="min-w-full divide-y divide-border">
           <thead>
-            <tr class="bg-background-alt border-b border-border">
+            <tr>
               <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">ID</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Fecha</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Categoría</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Marca / Modelo</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Precio Sug.</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Acciones</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Cliente</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Productos</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Compra</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Venta</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-text-muted uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-text-muted uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody>
-            {valuaciones.map((item, index) => (
-              <tr class={`${index % 2 === 0 ? 'bg-background' : 'bg-background-alt'} hover:bg-background-alt transition-colors`}>
-                <td class="px-4 py-3 text-sm font-medium text-azul-profundo">{item.id}</td>
-                <td class="px-4 py-3 text-sm text-text-base">{new Date(item.fecha).toLocaleDateString('es-MX')}</td>
-                <td class="px-4 py-3 text-sm text-text-base">{item.categoria}</td>
-                <td class="px-4 py-3 text-sm text-text-base">
-                  <div>{item.marca}</div>
-                  <div class="text-text-muted text-xs">{item.modelo}</div>
+          <tbody class="bg-background divide-y divide-border">
+            {valuaciones.map(valuacion => (
+              <tr class="hover:bg-background-alt transition-colors">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="text-sm font-medium">VP-{valuacion.id}</span>
                 </td>
-                <td class="px-4 py-3 text-sm text-text-base">{item.estado}</td>
-                <td class="px-4 py-3 text-sm font-medium">{item.precioSugerido}</td>
-                <td class="px-4 py-3">
-                  <StatusBadge status={item.status} />
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="text-sm">{valuacion.fecha}</span>
                 </td>
-                <td class="px-4 py-3 text-sm text-right">
-                  <div class="flex justify-end space-x-2">
-                    <button class="text-text-muted hover:text-azul-claro p-1" title="Ver detalles">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div>
+                    <div class="text-sm font-medium">{valuacion.cliente.nombre}</div>
+                    <div class="text-xs text-text-muted">{valuacion.cliente.telefono}</div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                  {valuacion.productos}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-right">
+                  ${valuacion.totalCompra.toFixed(2)}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-right">
+                  ${valuacion.totalVenta.toFixed(2)}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-center">
+                  <StatusBadge status={valuacion.estado} />
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-center">
+                  <div class="flex justify-center space-x-2">
+                    <a 
+                      href={`/detalle-valuacion/${valuacion.id}`} 
+                      class="text-azul-claro hover:text-azul-profundo p-1"
+                      title="Ver detalle"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                    </button>
-                    <button class="text-text-muted hover:text-verde-lima p-1" title="Editar">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button class="text-text-muted hover:text-rosa p-1" title="Eliminar">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </a>
+                    
+                    {valuacion.estado === "pendiente" && (
+                      <button 
+                        type="button" 
+                        class="text-verde-lima hover:text-verde-oscuro p-1"
+                        title="Editar"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    )}
+                    
+                    <button 
+                      type="button" 
+                      class="text-rosa hover:text-rosa/80 p-1"
+                      title="Imprimir"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
                       </svg>
                     </button>
                   </div>
@@ -189,36 +303,88 @@ function getStatusText(status: string): string {
       </div>
       
       <!-- Paginación -->
-      <div class="border-t border-border px-4 py-3 flex items-center justify-between">
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div class="flex items-center justify-between border-t border-border px-4 py-3 sm:px-6">
+        <div class="flex flex-1 justify-between sm:hidden">
+          <button class="relative inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-text-muted hover:bg-background-alt">
+            Anterior
+          </button>
+          <button class="relative ml-3 inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-text-muted hover:bg-background-alt">
+            Siguiente
+          </button>
+        </div>
+        
+        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
             <p class="text-sm text-text-muted">
-              Mostrando <span class="font-medium">1</span> a <span class="font-medium">5</span> de <span class="font-medium">125</span> resultados
+              Mostrando <span class="font-medium">1</span> a <span class="font-medium">5</span> de <span class="font-medium">12</span> resultados
             </p>
           </div>
           <div>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-background text-sm font-medium text-text-muted hover:bg-background-alt">
+            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+              <button class="relative inline-flex items-center rounded-l-md border border-border bg-background px-2 py-2 text-sm font-medium text-text-muted hover:bg-background-alt">
                 <span class="sr-only">Anterior</span>
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
                 </svg>
-              </a>
-              <a href="#" aria-current="page" class="relative inline-flex items-center px-4 py-2 border border-azul-claro bg-azul-claro/10 text-sm font-medium text-azul-claro">1</a>
-              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-base hover:bg-background-alt">2</a>
-              <a href="#" class="relative hidden md:inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-base hover:bg-background-alt">3</a>
-              <span class="relative inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-muted">...</span>
-              <a href="#" class="relative hidden md:inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-base hover:bg-background-alt">25</a>
-              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-background text-sm font-medium text-text-muted hover:bg-background-alt">
+              </button>
+              <button class="relative inline-flex items-center border border-border bg-azul-claro px-4 py-2 text-sm font-medium text-white">
+                1
+              </button>
+              <button class="relative inline-flex items-center border border-border bg-background px-4 py-2 text-sm font-medium text-text-muted hover:bg-background-alt">
+                2
+              </button>
+              <button class="relative hidden items-center border border-border bg-background px-4 py-2 text-sm font-medium text-text-muted hover:bg-background-alt md:inline-flex">
+                3
+              </button>
+              <button class="relative inline-flex items-center rounded-r-md border border-border bg-background px-2 py-2 text-sm font-medium text-text-muted hover:bg-background-alt">
                 <span class="sr-only">Siguiente</span>
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.414l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
                 </svg>
-              </a>
+              </button>
             </nav>
           </div>
         </div>
       </div>
     </div>
   </div>
-</MainLayout> 
+</MainLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const busquedaInput = document.getElementById('busqueda');
+    const estadoSelect = document.getElementById('estado');
+    const fechaDesdeInput = document.getElementById('fecha-desde');
+    const fechaHastaInput = document.getElementById('fecha-hasta');
+    const filtrarBtn = document.getElementById('filtrar-btn');
+    
+    // Simulación de filtrado
+    filtrarBtn?.addEventListener('click', () => {
+      const busqueda = (busquedaInput as HTMLInputElement)?.value.toLowerCase() || '';
+      const estado = (estadoSelect as HTMLSelectElement)?.value || '';
+      const fechaDesde = (fechaDesdeInput as HTMLInputElement)?.value || '';
+      const fechaHasta = (fechaHastaInput as HTMLInputElement)?.value || '';
+      
+      alert(`Filtros aplicados:
+        Búsqueda: ${busqueda}
+        Estado: ${estado}
+        Desde: ${fechaDesde}
+        Hasta: ${fechaHasta}
+        
+        En una implementación real, estos filtros se enviarían al servidor para obtener resultados filtrados.`);
+    });
+    
+    // Implementar impresión de valuación individual
+    const imprimirBtns = document.querySelectorAll('[title="Imprimir"]');
+    imprimirBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const fila = this.closest('tr');
+        const id = fila?.querySelector('td:first-child')?.textContent?.trim();
+        
+        if (id) {
+          alert(`Se imprimirá la valuación ${id}. En una implementación real, se generaría un PDF o se abriría la vista de impresión.`);
+        }
+      });
+    });
+  });
+</script> 

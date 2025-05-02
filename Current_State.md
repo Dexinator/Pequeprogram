@@ -320,54 +320,9 @@ docker logs entrepeques-api-dev
   - Agregamos soporte para SSl en producción
 - Creamos documentación con guía detallada de despliegue (`HEROKU_DEPLOYMENT.md`)
 
-## Estado Actual (02/05/2025)
-
-- ✅ Monorepo configurado con pnpm workspaces
-- ✅ Docker y Docker Compose configurados y funcionando
-- ✅ API básica implementada con Express/TypeScript
-- ✅ Conexión a PostgreSQL establecida y verificada
-- ✅ Esquema de base de datos implementado con sistema de migraciones
-- ✅ Modelos y servicios CRUD implementados
-- ✅ Sistema de autenticación JWT implementado
-- ✅ Controladores y rutas para autenticación, categorías y productos
-- ✅ Linters y formateadores (ESLint, Prettier) configurados
-- ✅ Configuración para despliegue en Heroku
-
-## Próximos Pasos
-
-La **Fase 1** ha sido completada exitosamente. Podemos proceder a la **Fase 2: Aplicación Valuador**.
-
-1. **Próximas tareas (Fase 2):**
-   - Inicializar proyecto Frontend para Valuador (Astro + React, TypeScript)
-   - Diseñar UI/UX del proceso de valuación
-   - Ampliar esquema BD con tablas para valuaciones
-   - Desarrollar lógica de negocio para cálculo de valuaciones
-
-## Recursos y Referencias
-
-- **Estructura de archivos actual:**
-  - `/ENTREPEQUES_MODERNIZATION_PLAN.md` - Plan maestro
-  - `/pnpm-workspace.yaml` - Configuración del monorepo
-  - `/docker-compose.yml` - Configuración de Docker
-  - `/packages/api/*` - Backend API
-  - `/packages/api/src/index.ts` - Punto de entrada de la API
-  - `/packages/api/src/models/*` - Modelos de datos
-  - `/packages/api/src/services/*` - Servicios CRUD y autenticación
-  - `/packages/api/src/routes/*` - Definición de rutas
-  - `/packages/api/src/controllers/*` - Controladores de la API
-  - `/packages/api/src/utils/*` - Utilidades (JWT, middlewares)
-  - `/packages/api/src/migrations/*` - Scripts de migración de BD
-  - `/Current State.md` - Esta bitácora
-
-- **Comandos útiles:**
-  - `docker-compose up -d` - Levantar contenedores en segundo plano
-  - `docker-compose down` - Detener contenedores
-  - `docker logs entrepeques-api-dev` - Ver logs de la API
-  - `docker-compose build --no-cache api` - Reconstruir la imagen de la API
-
 ## Sesión: 5 de Mayo, 2025
 
-### 14. Actualización del Plan de Frontend
+### 18. Actualización del Plan de Frontend
 
 **Acción realizada:** Actualización del plan de modernización con detalles específicos sobre el frontend.
 **Procedimiento:**
@@ -387,14 +342,9 @@ La **Fase 1** ha sido completada exitosamente. Podemos proceder a la **Fase 2: A
   - Documentación preliminar de temas en Tailwind
   - Fuentes corporativas (Poppins, Muli, Fredoka One)
 
-**Próximos pasos:**
-- Inicializar el proyecto frontend con Astro
-- Configurar Tailwind CSS 4.1 
-- Implementar el sistema de temas basado en la identidad visual 
-
 ## Sesión: 8 de Mayo, 2025
 
-### 15. Implementación de Tailwind CSS 4.1 en Astro
+### 19. Implementación de Tailwind CSS 4.1 en Astro
 
 **Acción realizada:** Configurar Tailwind CSS 4.1 en la aplicación de Valuador.
 **Procedimiento:**
@@ -432,20 +382,9 @@ La **Fase 1** ha sido completada exitosamente. Podemos proceder a la **Fase 2: A
 - Mapeamos los colores de la identidad corporativa a variables CSS para usar con Tailwind
 - Configuramos transiciones suaves entre los modos claro y oscuro
 
-**Resultado:**
-- Frontend con interfaz moderna y responsiva
-- Soporte completo para modo oscuro
-- Sistema de temas basado en la identidad visual de Entrepeques
-- Estructura flexible para componentes reutilizables
-
-**Próximos pasos:**
-- Desarrollar las páginas adicionales para el valuador (nueva valuación, historial)
-- Implementar componentes reutilizables para el formulario de valuación
-- Conectar el frontend con la API backend 
-
 ## Sesión: 10 de Mayo, 2025
 
-### 16. Desarrollo de Páginas Principales del Valuador
+### 20. Desarrollo de Páginas Principales del Valuador
 
 **Acción realizada:** Creación de páginas principales y componentes reutilizables para la aplicación Valuador.
 **Procedimiento:**
@@ -463,19 +402,192 @@ La **Fase 1** ha sido completada exitosamente. Podemos proceder a la **Fase 2: A
 - Diseño responsivo para todas las pantallas usando Tailwind CSS
 - Uso de tipado TypeScript en todos los componentes para mayor seguridad
 
-**Características implementadas:**
-- Formulario de valuación con secciones para:
-  - Datos básicos del artículo
-  - Estado y condición
-  - Carga de fotografías
-  - Visualización de precio sugerido
-- Vista de historial con:
-  - Tarjetas de estadísticas resumidas
-  - Tabla de valuaciones con filtros
-  - Sistema de paginación
-  - Acciones rápidas (ver, editar, eliminar)
+## Sesión: 15 de Mayo, 2025
 
-**Próximos pasos:**
-- Implementar la funcionalidad de calculadora de precio
-- Conectar los formularios con la API backend
-- Añadir autenticación para proteger las rutas privadas 
+### 21. Desarrollo de Componentes para Formulario de Valuación
+
+**Acción realizada:** Creación de componentes específicos para la captura de datos en el proceso de valuación.
+**Procedimiento:**
+- Desarrollamos el componente `ClienteForm.astro` para capturar la información del cliente:
+  - Campos para nombre, teléfono, email e identificación
+  - Soporte para clientes nuevos y existentes
+  - Funcionalidad de búsqueda de clientes (simulada)
+- Desarrollamos el componente `ProductoForm.astro` para la información de productos:
+  - Selección de categoría y subcategoría
+  - Datos de marca, estado y características
+  - Cálculo de valoración basado en fórmulas predefinidas
+  - Carga de imágenes del producto
+  - Visualización del resultado de la valuación
+- Integramos la lógica de negocio para el cálculo de precios:
+  - Implementación de la fórmula de cálculo basada en calificaciones
+  - Soporte para diferentes modalidades (compra directa, consignación)
+  - Visualización del precio de compra y venta
+
+**Decisiones técnicas:**
+- Uso de componentes interactivos con JavaScript cliente para mejorar la usabilidad
+- Implementación de lógica de cálculo de precios en el cliente para retroalimentación inmediata
+- Diseño modular que permitirá conectar fácilmente con APIs en el futuro
+- Uso de valores predefinidos para simulación (categorías, subcategorías, etc.)
+- Implementación de validaciones en tiempo real
+
+## Sesión: 20 de Mayo, 2025
+
+### 22. Implementación de Flujo Completo de Valuación
+
+**Acción realizada:** Creación del flujo completo de valuación desde la captura de datos hasta el resumen final.
+**Procedimiento:**
+- Rediseñamos la página `nueva-valuacion.astro` para integrar los componentes:
+  - Sección de datos del cliente usando ClienteForm
+  - Soporte para múltiples productos usando ProductoForm
+  - Funcionalidad para agregar o eliminar productos
+  - Generación de resumen de valuación
+- Creamos el componente `ValuacionResumen.astro` para mostrar el resumen de la valuación:
+  - Visualización de datos del cliente
+  - Tabla con productos valuados y sus precios
+  - Totales de compra y venta
+  - Preparación para impresión
+- Desarrollamos la página `detalle-valuacion/[id].astro` para ver valuaciones completas:
+  - Visualización de todos los detalles
+  - Historial de cambios
+  - Acciones como imprimir, editar, etc.
+- Mejoramos la página `historial.astro` para listar valuaciones anteriores:
+  - Tabla con datos principales
+  - Filtros de búsqueda por cliente, fecha y estado
+  - Estadísticas resumidas
+  - Acciones para cada valuación
+
+**Decisiones técnicas:**
+- Implementación de rutas dinámicas en Astro para detalles de valuación
+- Uso de TypeScript para las interfaces de datos y validación
+- Diseño de UI coherente con la identidad visual de la empresa
+- Optimización para dispositivos móviles y tablets
+- Configuración especial de estilos para impresión de valuaciones
+- Simulación de datos hasta que se implemente la conexión con el backend
+
+## Esquema de Base de Datos Actual
+
+### Tablas principales
+```
+roles
+  id SERIAL PRIMARY KEY
+  name VARCHAR(50) NOT NULL UNIQUE
+  description TEXT
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+users
+  id SERIAL PRIMARY KEY
+  role_id INTEGER REFERENCES roles(id)
+  username VARCHAR(50) NOT NULL UNIQUE
+  email VARCHAR(100) NOT NULL UNIQUE
+  password_hash VARCHAR(100) NOT NULL
+  first_name VARCHAR(50)
+  last_name VARCHAR(50)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+categories
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  description TEXT
+  parent_id INTEGER REFERENCES categories(id)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+products
+  id SERIAL PRIMARY KEY
+  category_id INTEGER REFERENCES categories(id)
+  name VARCHAR(100) NOT NULL
+  description TEXT
+  brand VARCHAR(100)
+  model VARCHAR(100)
+  age_range VARCHAR(50)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+```
+
+### Tablas para el Sistema de Valuación (Planificadas)
+
+```
+clients
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  phone VARCHAR(20) NOT NULL
+  email VARCHAR(100)
+  identification VARCHAR(100)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+valuations
+  id SERIAL PRIMARY KEY
+  client_id INTEGER REFERENCES clients(id)
+  user_id INTEGER REFERENCES users(id)
+  valuation_date TIMESTAMP DEFAULT NOW()
+  status VARCHAR(20) DEFAULT 'pending'
+  notes TEXT
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+valuation_items
+  id SERIAL PRIMARY KEY
+  valuation_id INTEGER REFERENCES valuations(id)
+  product_id INTEGER REFERENCES products(id)
+  category_id INTEGER REFERENCES categories(id)
+  status VARCHAR(50) NOT NULL
+  brand VARCHAR(100)
+  renown VARCHAR(50)
+  modality VARCHAR(50) NOT NULL
+  condition_state VARCHAR(50) NOT NULL
+  demand VARCHAR(50) NOT NULL
+  cleanliness VARCHAR(50) NOT NULL
+  features JSONB
+  new_price DECIMAL(10,2)
+  purchase_price DECIMAL(10,2)
+  sale_price DECIMAL(10,2)
+  consignment_price DECIMAL(10,2)
+  notes TEXT
+  images JSONB
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+```
+
+## Estado Actual (Mayo 20, 2025)
+
+### Completado
+- ✅ Monorepo configurado con pnpm workspaces
+- ✅ Docker y Docker Compose configurados y funcionando
+- ✅ API básica implementada con Express/TypeScript
+- ✅ Conexión a PostgreSQL establecida y verificada
+- ✅ Esquema de base de datos implementado con sistema de migraciones
+- ✅ Modelos y servicios CRUD implementados
+- ✅ Sistema de autenticación JWT implementado
+- ✅ Controladores y rutas para autenticación, categorías y productos
+- ✅ Configuración de Tailwind CSS 4.1 con tema personalizado
+- ✅ Aplicación Valuador con diseño responsivo y modo oscuro
+- ✅ Componentes reutilizables para formularios de valuación
+- ✅ Implementación del proceso completo de valuación (frontend)
+- ✅ Páginas de historial y detalle de valuaciones
+
+### En Progreso
+- 🔄 Conexión del frontend con las APIs del backend
+- 🔄 Sistema de gestión de imágenes para productos
+- 🔄 Implementación del sistema de impresión de recibos
+- 🔄 Configuración de autenticación en el frontend
+
+### Próximos Pasos
+La **Fase 2** está casi completada. El frontend del valuador está implementado con datos simulados.
+Los próximos pasos incluyen:
+
+1. **Completar la conexión del frontend con el backend:**
+   - Implementar servicios en el frontend para comunicarse con la API
+   - Reemplazar datos de prueba con datos reales del backend
+   - Configurar manejo de autenticación y tokens
+
+2. **Comenzar con la Fase 3: Gestión de Inventario**
+   - Diseñar el esquema de base de datos para inventario
+   - Implementar APIs para gestión de inventario
+   - Desarrollar el panel de administración para inventario 
