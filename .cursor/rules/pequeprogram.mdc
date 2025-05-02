@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ # IMPORTANT:
+
+# Always read ENTREPEQUES_MODERNIZATION_PLAN.md before writing any code.
+
+# Always read Current_State.md before writing any code.
+
+# After adding a major feature or completing a milestone, update Current_State.md.
+
+# Document the entire database schema in Current_State.md.
+
+
+
+
+# For new migrations, make sure to add them to the same file. 
