@@ -6,6 +6,8 @@
 
 **Tecnologías Principales:**
 *   **Frontend:** Astro (con React y TypeScript)
+    *   **Estilos:** Tailwind CSS 4.1
+    *   **Tema:** Sistema de variables CSS y modo oscuro
 *   **Backend:** Node.js con Express (con TypeScript)
 *   **Base de Datos:** PostgreSQL
 *   **Hosting:** Vercel (Frontend), Heroku (Backend + DB)
@@ -119,4 +121,40 @@
 *   **Informes/Analíticas:** Planificar qué informes serán necesarios y cómo se generarán (vistas en BD, endpoints API específicos).
 *   **Marketing:** Funcionalidades como cupones, descuentos, reseñas de productos.
 *   **Escalabilidad:** Monitorizar rendimiento y planificar escalado de BD y Backend si es necesario.
-*   **Mantenimiento:** Plan de actualizaciones de dependencias y backups. 
+*   **Mantenimiento:** Plan de actualizaciones de dependencias y backups.
+
+## 4. Detalles de Implementación Frontend
+
+### Tailwind CSS 4.1
+La plataforma utilizará Tailwind CSS 4.1 para todos los estilos, siguiendo la guía de instalación oficial para Astro. Aprovechará las nuevas características de Tailwind 4.1, incluyendo:
+
+* Plugin de Vite para integración más eficiente
+* Sistema de importación CSS simplificado
+* Uso de la nueva sintaxis `@import "tailwindcss"`
+
+### Sistema de Temas y Modo Oscuro
+Se implementará un sistema de temas completo utilizando:
+
+* Variables CSS nativas a través de la función `@theme` de Tailwind
+* Configuración de color-scheme para modo claro/oscuro
+* Personalización basada en la identidad visual de Entrepeques
+* Transiciones suaves entre temas
+* Detección de preferencias del sistema y persistencia de preferencias del usuario
+
+Las variables del tema incluirán:
+* Paleta de colores de marca (rosa, amarillo, azul claro, verde lima, verde oscuro, azul profundo)
+* Tipografías (Poppins, Muli/Inter, Fredoka One)
+* Espaciados consistentes
+* Radios de borde
+* Sombras
+
+### Optimización de Imágenes
+Se aprovecharán las capacidades nativas de Astro para la optimización de imágenes:
+
+* Uso del componente `<Image />` de Astro para imágenes optimizadas
+* Generación automática de formatos modernos (WebP, AVIF)
+* Carga perezosa (lazy loading) para todas las imágenes
+* Manejo de imágenes responsive
+* Implementación de estrategias de placeholder para mejorar la percepción de carga
+
+Todas las imágenes de productos se procesarán mediante esta canalización para garantizar tiempos de carga óptimos y buena experiencia de usuario en todos los dispositivos. 

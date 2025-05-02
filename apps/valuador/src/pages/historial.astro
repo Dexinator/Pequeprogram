@@ -1,0 +1,224 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+
+// Datos de ejemplo para el historial de valuaciones
+const valuaciones = [
+  {
+    id: 'VP-1456',
+    fecha: '2025-05-08',
+    categoria: 'Juguetes',
+    marca: 'Fisher-Price',
+    modelo: 'Piano de Actividades',
+    estado: 'Muy bueno',
+    precioSugerido: '$550.00',
+    status: 'aprobada' // aprobada, pendiente, rechazada
+  },
+  {
+    id: 'VP-1455',
+    fecha: '2025-05-07',
+    categoria: 'Ropa (0-6 meses)',
+    marca: 'Carter\'s',
+    modelo: 'Set de 5 bodys',
+    estado: 'Como nuevo',
+    precioSugerido: '$320.00',
+    status: 'pendiente'
+  },
+  {
+    id: 'VP-1452',
+    fecha: '2025-05-05',
+    categoria: 'Sillas de Coche',
+    marca: 'Chicco',
+    modelo: 'KeyFit 30',
+    estado: 'Bueno',
+    precioSugerido: '$1,200.00',
+    status: 'aprobada'
+  },
+  {
+    id: 'VP-1448',
+    fecha: '2025-05-02',
+    categoria: 'Cochecitos',
+    marca: 'Graco',
+    modelo: 'FastAction Fold',
+    estado: 'Regular',
+    precioSugerido: '$850.00',
+    status: 'rechazada'
+  },
+  {
+    id: 'VP-1442',
+    fecha: '2025-04-28',
+    categoria: 'Cunas y Muebles',
+    marca: 'IKEA',
+    modelo: 'Cuna convertible',
+    estado: 'Bueno',
+    precioSugerido: '$1,800.00',
+    status: 'aprobada'
+  }
+];
+
+// Función para obtener la clase de estado
+function getStatusClass(status: string): string {
+  switch(status) {
+    case 'aprobada': return 'bg-verde-lima/10 text-verde-lima';
+    case 'pendiente': return 'bg-amarillo/10 text-amarillo';
+    case 'rechazada': return 'bg-rosa/10 text-rosa';
+    default: return 'bg-gray-100 text-gray-500';
+  }
+}
+
+// Función para obtener el texto de estado en español
+function getStatusText(status: string): string {
+  switch(status) {
+    case 'aprobada': return 'Aprobada';
+    case 'pendiente': return 'Pendiente';
+    case 'rechazada': return 'Rechazada';
+    default: return 'Desconocido';
+  }
+}
+---
+
+<MainLayout title="Historial de Valuaciones">
+  <div class="space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-heading font-bold text-azul-profundo">Historial de Valuaciones</h1>
+      
+      <div class="flex gap-3">
+        <a href="/nueva-valuacion" class="inline-flex items-center px-4 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors">
+          <span class="mr-1">+</span> Nueva Valuación
+        </a>
+        
+        <button type="button" class="inline-flex items-center px-4 py-2 bg-background border border-border rounded-md hover:bg-background-alt transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+          </svg>
+          Filtrar
+        </button>
+      </div>
+    </div>
+    
+    <!-- Tarjetas de estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-background-alt p-4 rounded-lg border border-border">
+        <h3 class="text-sm text-text-muted font-medium mb-1">Total Valuaciones</h3>
+        <p class="text-2xl font-bold text-azul-profundo">125</p>
+        <div class="text-xs text-verde-lima mt-2 flex items-center">
+          <span class="mr-1">↑</span> 12% este mes
+        </div>
+      </div>
+      
+      <div class="bg-background-alt p-4 rounded-lg border border-border">
+        <h3 class="text-sm text-text-muted font-medium mb-1">Pendientes</h3>
+        <p class="text-2xl font-bold text-amarillo">15</p>
+        <div class="text-xs text-text-muted mt-2">
+          Tiempo promedio: 1.5 días
+        </div>
+      </div>
+      
+      <div class="bg-background-alt p-4 rounded-lg border border-border">
+        <h3 class="text-sm text-text-muted font-medium mb-1">Aprobadas</h3>
+        <p class="text-2xl font-bold text-verde-lima">98</p>
+        <div class="text-xs text-verde-lima mt-2 flex items-center">
+          <span class="mr-1">↑</span> 5% más que el mes pasado
+        </div>
+      </div>
+      
+      <div class="bg-background-alt p-4 rounded-lg border border-border">
+        <h3 class="text-sm text-text-muted font-medium mb-1">Rechazadas</h3>
+        <p class="text-2xl font-bold text-rosa">12</p>
+        <div class="text-xs text-rosa mt-2 flex items-center">
+          <span class="mr-1">↓</span> 3% menos que el mes pasado
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tabla de Valuaciones -->
+    <div class="bg-background rounded-lg border border-border overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-background-alt border-b border-border">
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">ID</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Fecha</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Categoría</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Marca / Modelo</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Precio Sug.</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {valuaciones.map((item, index) => (
+              <tr class={`${index % 2 === 0 ? 'bg-background' : 'bg-background-alt'} hover:bg-background-alt transition-colors`}>
+                <td class="px-4 py-3 text-sm font-medium text-azul-profundo">{item.id}</td>
+                <td class="px-4 py-3 text-sm text-text-base">{new Date(item.fecha).toLocaleDateString('es-MX')}</td>
+                <td class="px-4 py-3 text-sm text-text-base">{item.categoria}</td>
+                <td class="px-4 py-3 text-sm text-text-base">
+                  <div>{item.marca}</div>
+                  <div class="text-text-muted text-xs">{item.modelo}</div>
+                </td>
+                <td class="px-4 py-3 text-sm text-text-base">{item.estado}</td>
+                <td class="px-4 py-3 text-sm font-medium">{item.precioSugerido}</td>
+                <td class="px-4 py-3">
+                  <StatusBadge status={item.status} />
+                </td>
+                <td class="px-4 py-3 text-sm text-right">
+                  <div class="flex justify-end space-x-2">
+                    <button class="text-text-muted hover:text-azul-claro p-1" title="Ver detalles">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+                    <button class="text-text-muted hover:text-verde-lima p-1" title="Editar">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button class="text-text-muted hover:text-rosa p-1" title="Eliminar">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Paginación -->
+      <div class="border-t border-border px-4 py-3 flex items-center justify-between">
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-text-muted">
+              Mostrando <span class="font-medium">1</span> a <span class="font-medium">5</span> de <span class="font-medium">125</span> resultados
+            </p>
+          </div>
+          <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-background text-sm font-medium text-text-muted hover:bg-background-alt">
+                <span class="sr-only">Anterior</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+              <a href="#" aria-current="page" class="relative inline-flex items-center px-4 py-2 border border-azul-claro bg-azul-claro/10 text-sm font-medium text-azul-claro">1</a>
+              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-base hover:bg-background-alt">2</a>
+              <a href="#" class="relative hidden md:inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-base hover:bg-background-alt">3</a>
+              <span class="relative inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-muted">...</span>
+              <a href="#" class="relative hidden md:inline-flex items-center px-4 py-2 border border-border bg-background text-sm font-medium text-text-base hover:bg-background-alt">25</a>
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-background text-sm font-medium text-text-muted hover:bg-background-alt">
+                <span class="sr-only">Siguiente</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout> 

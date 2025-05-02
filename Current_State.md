@@ -363,4 +363,119 @@ La **Fase 1** ha sido completada exitosamente. Podemos proceder a la **Fase 2: A
   - `docker-compose up -d` - Levantar contenedores en segundo plano
   - `docker-compose down` - Detener contenedores
   - `docker logs entrepeques-api-dev` - Ver logs de la API
-  - `docker-compose build --no-cache api` - Reconstruir la imagen de la API 
+  - `docker-compose build --no-cache api` - Reconstruir la imagen de la API
+
+## Sesión: 5 de Mayo, 2025
+
+### 14. Actualización del Plan de Frontend
+
+**Acción realizada:** Actualización del plan de modernización con detalles específicos sobre el frontend.
+**Procedimiento:**
+- Añadimos detalles de implementación de Tailwind CSS 4.1 al plan de modernización
+- Documentamos el enfoque de sistema de temas y modo oscuro
+- Definimos la estrategia para optimización de imágenes con Astro
+
+**Decisiones técnicas:**
+- Uso de Tailwind CSS 4.1 con su nuevo plugin de Vite y sintaxis `@import "tailwindcss"`
+- Implementación de variables de tema usando `@theme` de Tailwind
+- Diseño del modo oscuro nativo mediante `color-scheme` y selectores `.dark` 
+- Optimización de imágenes utilizando el componente `<Image />` de Astro
+
+**Recursos identificados:**
+- Documentación disponible en la carpeta `identidad/` con:
+  - Guía completa de identidad visual (colores, tipografías, logo)
+  - Documentación preliminar de temas en Tailwind
+  - Fuentes corporativas (Poppins, Muli, Fredoka One)
+
+**Próximos pasos:**
+- Inicializar el proyecto frontend con Astro
+- Configurar Tailwind CSS 4.1 
+- Implementar el sistema de temas basado en la identidad visual 
+
+## Sesión: 8 de Mayo, 2025
+
+### 15. Implementación de Tailwind CSS 4.1 en Astro
+
+**Acción realizada:** Configurar Tailwind CSS 4.1 en la aplicación de Valuador.
+**Procedimiento:**
+- Verificamos la existencia de un proyecto Astro base en `apps/valuador`
+- Instalamos y configuramos Tailwind CSS 4.1 usando el plugin de Vite:
+  ```bash
+  cd apps/valuador
+  npm install @tailwindcss/vite
+  ```
+- Configuramos el plugin de Tailwind en `astro.config.mjs`:
+  ```javascript
+  import tailwindcss from '@tailwindcss/vite';
+  
+  // En la configuración de Vite
+  vite: {
+    plugins: [tailwindcss()]
+  }
+  ```
+- Creamos archivo de estilos globales `src/styles/global.css` con:
+  - Importación de Tailwind usando la nueva sintaxis `@import "tailwindcss"`
+  - Definición de variables de tema usando `@theme` con colores de identidad
+  - Configuración de modo oscuro con `@custom-variant dark`
+  - Estilos base para tipografía y elementos principales
+- Creamos `tailwind.config.mjs` para extender el tema con nuestras variables personalizadas
+- Actualizamos `MainLayout.astro` para:
+  - Usar clases de Tailwind
+  - Implementar soporte para modo oscuro
+  - Incluir botón para alternar entre temas
+  - Añadir script para persistir preferencia de tema
+- Rediseñamos la página principal `index.astro` con estilos de Tailwind
+
+**Decisiones técnicas:**
+- Usamos un enfoque de "Design System" con variables CSS nativas para aprovechar las capacidades de Tailwind 4.1
+- Implementamos un toggle de tema manual junto con detección automática de preferencias del sistema
+- Mapeamos los colores de la identidad corporativa a variables CSS para usar con Tailwind
+- Configuramos transiciones suaves entre los modos claro y oscuro
+
+**Resultado:**
+- Frontend con interfaz moderna y responsiva
+- Soporte completo para modo oscuro
+- Sistema de temas basado en la identidad visual de Entrepeques
+- Estructura flexible para componentes reutilizables
+
+**Próximos pasos:**
+- Desarrollar las páginas adicionales para el valuador (nueva valuación, historial)
+- Implementar componentes reutilizables para el formulario de valuación
+- Conectar el frontend con la API backend 
+
+## Sesión: 10 de Mayo, 2025
+
+### 16. Desarrollo de Páginas Principales del Valuador
+
+**Acción realizada:** Creación de páginas principales y componentes reutilizables para la aplicación Valuador.
+**Procedimiento:**
+- Desarrollamos las siguientes páginas:
+  - `/nueva-valuacion`: Formulario completo para ingresar datos de artículos a valorar
+  - `/historial`: Vista de lista con historial de valuaciones previas
+- Implementamos los siguientes componentes reutilizables:
+  - `ImageUploader.astro`: Componente para carga y previsualización de imágenes
+  - `StatusBadge.astro`: Componente para mostrar el estado de las valuaciones con códigos de color
+
+**Decisiones técnicas:**
+- Uso de datos de ejemplo para simular información de valuaciones previas
+- Creación de componentes reutilizables para mejorar la mantenibilidad
+- Implementación de validación de formularios tanto en el lado del cliente como del servidor
+- Diseño responsivo para todas las pantallas usando Tailwind CSS
+- Uso de tipado TypeScript en todos los componentes para mayor seguridad
+
+**Características implementadas:**
+- Formulario de valuación con secciones para:
+  - Datos básicos del artículo
+  - Estado y condición
+  - Carga de fotografías
+  - Visualización de precio sugerido
+- Vista de historial con:
+  - Tarjetas de estadísticas resumidas
+  - Tabla de valuaciones con filtros
+  - Sistema de paginación
+  - Acciones rápidas (ver, editar, eliminar)
+
+**Próximos pasos:**
+- Implementar la funcionalidad de calculadora de precio
+- Conectar los formularios con la API backend
+- Añadir autenticación para proteger las rutas privadas 

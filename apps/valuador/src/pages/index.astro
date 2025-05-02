@@ -1,0 +1,85 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Inicio">
+  <div class="space-y-8">
+    <section class="bg-background-alt rounded-lg p-8 shadow-md">
+      <h1 class="text-3xl font-heading font-bold text-azul-profundo mb-4">
+        Bienvenido al Valuador de Entrepeques
+      </h1>
+      <p class="text-text-base mb-6">
+        Esta aplicación te permite realizar valuaciones de artículos infantiles
+        de manera rápida y precisa, siguiendo los estándares de calidad de Entrepeques.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a 
+          href="/nueva-valuacion" 
+          class="inline-flex items-center px-5 py-3 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors font-medium"
+        >
+          <span class="mr-2">✨</span> Nueva Valuación
+        </a>
+        <a 
+          href="/historial" 
+          class="inline-flex items-center px-5 py-3 bg-background border border-border rounded-md hover:bg-background-alt transition-colors font-medium"
+        >
+          <span class="mr-2">📋</span> Ver Historial
+        </a>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-6 my-8">
+      <div class="bg-background shadow-sm rounded-lg p-6 border border-border hover:shadow-md transition-shadow">
+        <div class="bg-rosa/10 text-rosa p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 text-2xl">
+          🔍
+        </div>
+        <h2 class="text-xl font-heading font-bold mb-2">Evalúa</h2>
+        <p class="text-text-muted">
+          Analiza el estado, la demanda y el valor de mercado de los artículos infantiles.
+        </p>
+      </div>
+      
+      <div class="bg-background shadow-sm rounded-lg p-6 border border-border hover:shadow-md transition-shadow">
+        <div class="bg-verde-lima/10 text-verde-lima p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 text-2xl">
+          💰
+        </div>
+        <h2 class="text-xl font-heading font-bold mb-2">Valora</h2>
+        <p class="text-text-muted">
+          Genera precios justos tanto para el vendedor como para futuros compradores.
+        </p>
+      </div>
+      
+      <div class="bg-background shadow-sm rounded-lg p-6 border border-border hover:shadow-md transition-shadow">
+        <div class="bg-amarillo/10 text-amarillo p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 text-2xl">
+          📊
+        </div>
+        <h2 class="text-xl font-heading font-bold mb-2">Gestiona</h2>
+        <p class="text-text-muted">
+          Maneja el inventario y da seguimiento al historial de valuaciones.
+        </p>
+      </div>
+    </section>
+    
+    <section class="bg-azul-profundo text-white rounded-lg p-8">
+      <h2 class="text-2xl font-heading font-bold mb-4">Datos Rápidos</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="text-center">
+          <p class="text-3xl font-bold">120+</p>
+          <p class="text-sm opacity-80">Valuaciones Hoy</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold">15,240</p>
+          <p class="text-sm opacity-80">Artículos en Stock</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold">98%</p>
+          <p class="text-sm opacity-80">Precisión en Valuación</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold">25min</p>
+          <p class="text-sm opacity-80">Tiempo Promedio</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</MainLayout> 

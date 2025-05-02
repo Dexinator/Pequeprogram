@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* Variables de tema con los colores de identidad */
+@theme {
+  /* Colores de marca según identidad corporativa */
+  --color-rosa: #E3238F;     /* Rosa brillante (Pantone 225 C) */
+  --color-amarillo: #E1D51E; /* Amarillo vibrante (Pantone 115 C) */
+  --color-azul-claro: #00A0DD; /* Azul claro (Pantone 299 C) */
+  --color-verde-lima: #3FAE49; /* Verde lima (Pantone 361 C) */
+  --color-verde-oscuro: #007940; /* Verde oscuro (Pantone 356 C) */
+  --color-azul-profundo: #0070B9; /* Azul profundo (Pantone 285 C) */
+
+  /* Variables para el modo claro (por defecto) */
+  --color-background: theme(colors.white);
+  --color-background-alt: theme(colors.gray.50);
+  --color-text-base: theme(colors.gray.800);
+  --color-text-muted: theme(colors.gray.500);
+  --color-border: theme(colors.gray.200);
+
+  /* Tipografías */
+  --font-sans: 'Muli', 'Inter', system-ui, sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+  --font-playful: 'Fredoka One', cursive;
+  
+  /* Pesos de fuente */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Radios de borde */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Configuración del modo oscuro */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:where(.dark, .dark *) {
+  /* Colores base oscuros */
+  --color-background: theme(colors.gray.950);
+  --color-background-alt: theme(colors.gray.900);
+  --color-text-base: theme(colors.gray.200);
+  --color-text-muted: theme(colors.gray.400);
+  --color-border: theme(colors.gray.700);
+}
+
+/* Configuración de color-scheme */
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+/* Estilos base */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    @apply bg-background text-text-base transition-colors duration-300 ease-in-out;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+    @apply text-text-base;
+  }
+} 
