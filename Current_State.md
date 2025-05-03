@@ -1005,3 +1005,180 @@ El sistema de valuación ahora funciona de manera completa, permitiendo:
 4. Añadir capacidad de impresión de recibos de valuación
 
 La implementación actual representa un hito importante en el proyecto, ya que tenemos el primer módulo completamente funcional con integración frontend-backend.
+
+## Sesión: 1 de Junio, 2025
+
+### 31. Corrección de Integración de Tailwind CSS en Docker
+
+**Acción realizada:** Corrección de la integración de Tailwind CSS en el contenedor Docker del frontend.
+**Procedimiento:**
+1. Identificamos un error al ejecutar el contenedor Docker del frontend:
+   ```
+   Can't resolve 'tailwindcss' in '/app/src/styles'
+   Error when evaluating SSR module /src/layouts/MainLayout.astro: failed to import "/src/styles/global.css"
+   ```
+
+2. Analizamos el problema y determinamos que faltaba la dependencia base de Tailwind CSS:
+   - El proyecto utilizaba `@tailwindcss/vite` como plugin para Vite
+   - Pero faltaba el paquete base `tailwindcss` versión 4.1.0
+
+3. Implementamos la solución:
+   - Añadimos `tailwindcss` versión 4.1.0 al archivo `package.json`
+   - Modificamos `Dockerfile.dev` para asegurar una instalación explícita:
+     ```dockerfile
+     RUN pnpm install
+     RUN pnpm add tailwindcss@4.1.0
+     ```
+   - Eliminamos el volumen `pequeprogram_frontend_node_modules` para forzar una instalación limpia
+   - Reconstruimos el contenedor sin caché: `docker-compose build --no-cache frontend`
+   - Iniciamos el contenedor reconstruido: `docker-compose up -d frontend`
+
+4. Verificamos que el problema se había resuelto:
+   - El servidor Astro inició correctamente en el puerto 4321
+   - No aparecieron errores relacionados con Tailwind CSS
+   - La aplicación es accesible tanto desde localhost como desde la red (172.18.0.5:4321)
+
+**Decisiones técnicas:**
+- Instalación explícita de dependencias en Dockerfile para mayor control
+- Asegurar compatibilidad con Tailwind CSS 4.1 que utiliza la nueva sintaxis `@import "tailwindcss"`
+- Mantener sincronizado el archivo `package.json` con las dependencias reales requeridas
+
+## Estado Actual (Junio 1, 2025)
+
+### Completado
+- ✅ Monorepo configurado con pnpm workspaces
+- ✅ Docker y Docker Compose configurados y funcionando
+- ✅ API básica implementada con Express/TypeScript
+- ✅ Conexión a PostgreSQL establecida y verificada
+- ✅ Esquema de base de datos implementado con sistema de migraciones
+- ✅ Modelos y servicios CRUD implementados
+- ✅ Sistema de autenticación JWT implementado
+- ✅ Controladores y rutas para autenticación, categorías y productos
+- ✅ Configuración de Tailwind CSS 4.1 con tema personalizado
+- ✅ Aplicación Valuador con diseño responsivo y modo oscuro
+- ✅ Componentes reutilizables para formularios de valuación
+- ✅ Implementación del proceso completo de valuación (frontend)
+- ✅ Páginas de historial y detalle de valuaciones
+- ✅ Conversión de componentes clave a React para mejorar interactividad
+- ✅ Documentación detallada de la lógica de negocio para valuaciones
+- ✅ Refinamiento del esquema de base de datos para valuaciones
+- ✅ Implementación de endpoints API para el sistema de valuación
+- ✅ Ampliación del esquema de base de datos para soportar valuaciones
+- ✅ Conexión del frontend con las APIs del backend
+- ✅ Configuración Docker completa y funcional para desarrollo
+
+### En Progreso
+- 🔄 Sistema de gestión de imágenes para productos
+- 🔄 Implementación del sistema de impresión de recibos
+- 🔄 Mejora del diseño responsive para dispositivos móviles
+
+### Próximos Pasos
+Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:
+
+1. **Implementar sistema de gestión de imágenes:**
+   - Crear endpoint para subida de imágenes
+   - Configurar almacenamiento de archivos (local o servicio en la nube)
+   - Integrar con el componente `ImageUploader.jsx`
+
+2. **Desarrollar sistema de impresión de recibos:**
+   - Crear plantilla de recibo en HTML/CSS
+   - Implementar funcionalidad de impresión en navegador
+   - Considerar integración con impresoras térmicas si es necesario
+
+3. **Mejorar soporte para dispositivos móviles:**
+   - Revisar y ajustar diseño responsive
+   - Optimizar la experiencia táctil
+   - Probar en diferentes tamaños de pantalla
+
+Una vez completados estos pasos, tendremos un sistema completamente funcional para el proceso de valuación, cumpliendo así con los objetivos de la **Fase 2**. Luego podremos avanzar a la **Fase 3** (Gestión de Inventario).
+
+## Esquema de Base de Datos Actual
+
+### Tablas principales
+```
+roles
+  id SERIAL PRIMARY KEY
+  name VARCHAR(50) NOT NULL UNIQUE
+  description TEXT
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+users
+  id SERIAL PRIMARY KEY
+  role_id INTEGER REFERENCES roles(id)
+  username VARCHAR(50) NOT NULL UNIQUE
+  email VARCHAR(100) NOT NULL UNIQUE
+  password_hash VARCHAR(100) NOT NULL
+  first_name VARCHAR(50)
+  last_name VARCHAR(50)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+categories
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  description TEXT
+  parent_id INTEGER REFERENCES categories(id)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+products
+  id SERIAL PRIMARY KEY
+  category_id INTEGER REFERENCES categories(id)
+  name VARCHAR(100) NOT NULL
+  description TEXT
+  brand VARCHAR(100)
+  model VARCHAR(100)
+  age_range VARCHAR(50)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+```
+
+### Tablas para el Sistema de Valuación (Planificadas)
+
+```
+clients
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  phone VARCHAR(20) NOT NULL
+  email VARCHAR(100)
+  identification VARCHAR(100)
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+valuations
+  id SERIAL PRIMARY KEY
+  client_id INTEGER REFERENCES clients(id)
+  user_id INTEGER REFERENCES users(id)
+  valuation_date TIMESTAMP DEFAULT NOW()
+  status VARCHAR(20) DEFAULT 'pending'
+  notes TEXT
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+valuation_items
+  id SERIAL PRIMARY KEY
+  valuation_id INTEGER REFERENCES valuations(id)
+  product_id INTEGER REFERENCES products(id)
+  category_id INTEGER REFERENCES categories(id)
+  status VARCHAR(50) NOT NULL
+  brand VARCHAR(100)
+  renown VARCHAR(50)
+  modality VARCHAR(50) NOT NULL
+  condition_state VARCHAR(50) NOT NULL
+  demand VARCHAR(50) NOT NULL
+  cleanliness VARCHAR(50) NOT NULL
+  features JSONB
+  new_price DECIMAL(10,2)
+  purchase_price DECIMAL(10,2)
+  sale_price DECIMAL(10,2)
+  consignment_price DECIMAL(10,2)
+  notes TEXT
+  images JSONB
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+```

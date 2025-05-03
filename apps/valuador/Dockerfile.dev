@@ -7,9 +7,11 @@ WORKDIR /app
 # Instalar pnpm globalmente
 RUN npm install -g pnpm
 
-# Instalar dependencias
+# Copiar package.json para instalar dependencias
 COPY package*.json ./
+# Instalar dependencias explícitamente
 RUN pnpm install
+RUN pnpm add tailwindcss@4.1.0
 
 # Copiar archivos de configuración
 COPY astro.config.mjs ./
@@ -23,4 +25,4 @@ COPY src/ ./src/
 EXPOSE 4321
 
 # Comando para ejecutar en modo desarrollo
-CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"] 
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0", "--port", "4321"] 

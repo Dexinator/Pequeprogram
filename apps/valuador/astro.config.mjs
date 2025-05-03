@@ -11,7 +11,7 @@ export default defineConfig({
   base: '/',
   // Configuración de desarrollo
   server: {
-    port: 3000,
+    port: 4321,
     host: true
   },
   // Configuración de Vite con Tailwind CSS
