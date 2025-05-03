@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authRoutes from './auth.routes';
 import categoryRoutes from './category.routes';
 import productRoutes from './product.routes';
+import valuationRoutes from './valuation.routes';
 
 const router = Router();
 
@@ -13,6 +14,9 @@ router.use('/categories', categoryRoutes);
 
 // Rutas de productos
 router.use('/products', productRoutes);
+
+// Rutas de valuaciones
+router.use('/valuations', valuationRoutes);
 
 // Aquí se pueden agregar otras rutas de la API
 // router.use('/users', userRoutes);
