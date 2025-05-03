@@ -1,19 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ValuationService } from '../services';
 
 export function ClienteForm({ 
   id = "cliente-form", 
   className = "",
-  initialData = { nombre: '', telefono: '', email: '', identificacion: '' },
+  initialData = { name: '', phone: '', email: '', identification: '' },
   onChange = () => {}
 }) {
   const [tipoCliente, setTipoCliente] = useState('nuevo');
   const [formData, setFormData] = useState(initialData);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   
+  const valuationService = new ValuationService();
+  
+  // Manejar cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     const newFormData = { ...formData, [name]: value };
     setFormData(newFormData);
     onChange(newFormData);
+  };
+  
+  // Buscar clientes
+  const searchClients = async () => {
+    if (!searchTerm.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const results = await valuationService.searchClients(searchTerm);
+      setSearchResults(results);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Error al buscar clientes:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+  
+  // Seleccionar un cliente de los resultados
+  const selectClient = (client) => {
+    setFormData({
+      name: client.name,
+      phone: client.phone,
+      email: client.email || '',
+      identification: client.identification || ''
+    });
+    onChange({
+      name: client.name,
+      phone: client.phone,
+      email: client.email || '',
+      identification: client.identification || '',
+      id: client.id
+    });
+    setShowResults(false);
+  };
+  
+  // Buscar cuando se presiona Enter en el campo de búsqueda
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchClients();
+    }
   };
   
   return (
@@ -57,35 +108,71 @@ export function ClienteForm({
               <label className="block font-medium" htmlFor="cliente-buscar">
                 Buscar Cliente
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 relative">
                 <input 
                   type="text" 
                   id="cliente-buscar" 
                   name="cliente-buscar" 
                   className="flex-1 p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
-                  placeholder="Buscar por nombre o teléfono" 
+                  placeholder="Buscar por nombre o teléfono"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                 />
                 <button 
                   type="button" 
                   className="px-4 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors"
+                  onClick={searchClients}
+                  disabled={isSearching}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  {isSearching ? (
+                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  )}
                 </button>
+                
+                {/* Resultados de búsqueda */}
+                {showResults && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                    <ul>
+                      {searchResults.map(client => (
+                        <li 
+                          key={client.id}
+                          className="p-2 hover:bg-background-alt cursor-pointer border-b border-border last:border-b-0"
+                          onClick={() => selectClient(client)}
+                        >
+                          <div className="font-medium">{client.name}</div>
+                          <div className="text-sm text-text-muted">{client.phone}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {showResults && searchResults.length === 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-md shadow-lg z-10 p-2">
+                    <p className="text-text-muted">No se encontraron resultados</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
           
           <div className="space-y-2">
-            <label className="block font-medium" htmlFor="nombre">
+            <label className="block font-medium" htmlFor="name">
               Nombre <span className="text-rosa">*</span>
             </label>
             <input 
               type="text" 
-              id="nombre" 
-              name="nombre" 
-              value={formData.nombre}
+              id="name" 
+              name="name" 
+              value={formData.name}
               onChange={handleChange}
               className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
               placeholder="Nombre completo" 
@@ -94,14 +181,14 @@ export function ClienteForm({
           </div>
           
           <div className="space-y-2">
-            <label className="block font-medium" htmlFor="telefono">
+            <label className="block font-medium" htmlFor="phone">
               Teléfono <span className="text-rosa">*</span>
             </label>
             <input 
               type="tel" 
-              id="telefono" 
-              name="telefono" 
-              value={formData.telefono}
+              id="phone" 
+              name="phone" 
+              value={formData.phone}
               onChange={handleChange}
               className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
               placeholder="10 dígitos" 
@@ -126,14 +213,14 @@ export function ClienteForm({
           </div>
           
           <div className="space-y-2">
-            <label className="block font-medium" htmlFor="identificacion">
+            <label className="block font-medium" htmlFor="identification">
               Identificación Oficial
             </label>
             <input 
               type="text" 
-              id="identificacion" 
-              name="identificacion" 
-              value={formData.identificacion}
+              id="identification" 
+              name="identification" 
+              value={formData.identification}
               onChange={handleChange}
               className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
               placeholder="INE, pasaporte, etc." 

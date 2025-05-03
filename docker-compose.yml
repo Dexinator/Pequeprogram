@@ -11,6 +11,11 @@ services:
       POSTGRES_DB: ${DATABASE_NAME:-entrepeques_dev}
     volumes:
       - postgres_data:/var/lib/postgresql/data # Persistir datos de la BD
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-user} -d ${DATABASE_NAME:-entrepeques_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - entrepeques-net
 
@@ -21,17 +26,40 @@ services:
       dockerfile: Dockerfile.dev # El Dockerfile.dev ahora está dentro de packages/api
     restart: unless-stopped
     ports:
-      - "${API_PORT:-5000}:5000" # Puerto para la API (default 5000)
+      - "${API_PORT:-3001}:3001" # Puerto para la API (default 3001)
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://${DATABASE_USER:-user}:${DATABASE_PASSWORD:-password}@db:5432/${DATABASE_NAME:-entrepeques_dev}
       # Añadir otras variables de entorno necesarias para la API aquí
-      PORT: 5000
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET:-your-development-secret-key}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4321}
     volumes:
       - ./packages/api:/app # Mapear código fuente para live reload
-      - /app/node_modules # Evitar sobreescribir node_modules del contenedor
+      - api_node_modules:/app/node_modules # Evitar sobreescribir node_modules del contenedor
     depends_on:
-      - db # Asegurar que la BD inicie antes que la API
+      db:
+        condition: service_healthy
+    networks:
+      - entrepeques-net
+
+  frontend:
+    container_name: entrepeques-frontend-dev
+    build:
+      context: ./apps/valuador
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "4321:4321"
+    environment:
+      NODE_ENV: development
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3001/api}
+    volumes:
+      - ./apps/valuador:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - api
     networks:
       - entrepeques-net
 
@@ -54,4 +82,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data: # Volumen nombrado para la persistencia de datos 
+  postgres_data: # Volumen nombrado para la persistencia de datos
+  api_node_modules:
+  frontend_node_modules: 
