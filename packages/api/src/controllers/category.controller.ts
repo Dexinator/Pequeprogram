@@ -64,7 +64,7 @@ export class CategoryController {
    */
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { name, description, parent_id } = req.body;
+      const { name, description } = req.body;
       
       if (!name) {
         res.status(400).json({
@@ -77,7 +77,6 @@ export class CategoryController {
       const newCategory = await categoryService.create({
         name,
         description,
-        parent_id: parent_id || null,
         is_active: true
       });
       
@@ -101,7 +100,7 @@ export class CategoryController {
   update = async (req: Request, res: Response): Promise<void> => {
     try {
       const categoryId = parseInt(req.params.id);
-      const { name, description, parent_id, is_active } = req.body;
+      const { name, description, is_active } = req.body;
       
       if (isNaN(categoryId)) {
         res.status(400).json({
@@ -126,7 +125,6 @@ export class CategoryController {
       const updatedCategory = await categoryService.update(categoryId, {
         name,
         description,
-        parent_id,
         is_active
       });
       

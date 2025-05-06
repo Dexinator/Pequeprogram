@@ -566,7 +566,6 @@ categories
   id SERIAL PRIMARY KEY
   name VARCHAR(100) NOT NULL
   description TEXT
-  parent_id INTEGER REFERENCES categories(id)
   is_active BOOLEAN DEFAULT TRUE
   created_at TIMESTAMP DEFAULT NOW()
   updated_at TIMESTAMP DEFAULT NOW()
@@ -1119,7 +1118,6 @@ categories
   id SERIAL PRIMARY KEY
   name VARCHAR(100) NOT NULL
   description TEXT
-  parent_id INTEGER REFERENCES categories(id)
   is_active BOOLEAN DEFAULT TRUE
   created_at TIMESTAMP DEFAULT NOW()
   updated_at TIMESTAMP DEFAULT NOW()

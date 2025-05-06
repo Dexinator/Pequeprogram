@@ -20,40 +20,6 @@ export class CategoryService extends BaseService<Category> {
     
     return result.rows[0] as Category;
   }
-  
-  /**
-   * Obtiene categorías de nivel superior (sin padre)
-   */
-  async findRootCategories(): Promise<Category[]> {
-    const query = 'SELECT * FROM categories WHERE parent_id IS NULL AND is_active = true';
-    const result = await pool.query(query);
-    return result.rows as Category[];
-  }
-  
-  /**
-   * Obtiene subcategorías de una categoría
-   */
-  async findSubcategories(parentId: number): Promise<Category[]> {
-    const query = 'SELECT * FROM categories WHERE parent_id = $1 AND is_active = true';
-    const result = await pool.query(query, [parentId]);
-    return result.rows as Category[];
-  }
-  
-  /**
-   * Obtiene una categoría con sus subcategorías
-   */
-  async findByIdWithSubcategories(id: number): Promise<Category | null> {
-    // Obtener la categoría
-    const category = await this.findById(id);
-    if (!category) {
-      return null;
-    }
-    
-    // Obtener subcategorías
-    category.subcategories = await this.findSubcategories(id);
-    
-    return category;
-  }
 }
 
 // Exportar una instancia para uso singleton

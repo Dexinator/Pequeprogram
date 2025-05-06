@@ -27,10 +27,7 @@ export interface User extends BaseModel {
 export interface Category extends BaseModel {
   name: string;
   description?: string;
-  parent_id?: number;
   is_active: boolean;
-  parent?: Category; // Relación con Category padre (opcional)
-  subcategories?: Category[]; // Subcategorías (opcional)
 }
 
 // Interfaz para modelo de Product

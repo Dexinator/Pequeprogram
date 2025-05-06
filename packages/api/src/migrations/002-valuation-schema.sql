@@ -6,11 +6,11 @@ CREATE TABLE IF NOT EXISTS subcategories (
   id SERIAL PRIMARY KEY,
   category_id INTEGER NOT NULL REFERENCES categories(id),
   name VARCHAR(100) NOT NULL,
-  description TEXT,
-  gap_new DECIMAL(5,2) NOT NULL, -- GAP para productos nuevos
-  gap_used DECIMAL(5,2) NOT NULL, -- GAP para productos usados
-  margin_new DECIMAL(5,2) NOT NULL, -- Margen para productos nuevos
-  margin_used DECIMAL(5,2) NOT NULL, -- Margen para productos usados
+  SKU TEXT NOT NULL, -- SKU de la subcategoría, así comienzan los productos de esta subcategoría
+  gap_new DECIMAL(5,2) NOT NULL, -- GAP para productos nuevos. Se usa para calcular el precio de venta
+  gap_used DECIMAL(5,2) NOT NULL, -- GAP para productos usados. Se usa para calcular el precio de venta
+  margin_new DECIMAL(5,2) NOT NULL, -- Margen para productos nuevos. Se usa para calcular el precio de compra
+  margin_used DECIMAL(5,2) NOT NULL, -- Margen para productos usados. Se usa para calcular el precio de compra
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
