@@ -117,9 +117,7 @@ export function ProductoForm({
     const fetchFeatureDefinitions = async () => {
       setIsLoadingFeatures(true);
       try {
-        console.log('Obteniendo características para subcategoría:', formData.subcategory_id);
         const data = await valuationService.getFeatureDefinitions(Number(formData.subcategory_id));
-        console.log('Características recibidas:', data);
         setFeatureDefinitions(Array.isArray(data) ? data : []);
         
         // Inicializar valores de características
@@ -129,8 +127,6 @@ export function ProductoForm({
             initialFeatures[feature.name] = '';
           });
         }
-        
-        console.log('Características inicializadas:', initialFeatures);
         
         // Actualizar formData con las características inicializadas
         setFormData(prev => ({
@@ -268,15 +264,6 @@ export function ProductoForm({
       return;
     }
     
-    // Validar campos obligatorios de características específicas
-    const mandatoryFeatures = featureDefinitions.filter(feature => feature.mandatory);
-    for (const feature of mandatoryFeatures) {
-      if (!formData.features[feature.name]) {
-        alert(`Por favor complete la característica obligatoria: ${feature.display_name}`);
-        return;
-      }
-    }
-    
     setIsCalculating(true);
     try {
       const calculationData = {
@@ -285,11 +272,9 @@ export function ProductoForm({
         condition_state: formData.condition_state || 'bueno',
         demand: formData.demand || 'media',
         cleanliness: formData.cleanliness || 'buena',
-        new_price: Number(formData.new_price),
-        features: formData.features // Incluir características específicas en la solicitud
+        new_price: Number(formData.new_price)
       };
       
-      console.log('Datos para cálculo de valuación:', calculationData);
       const result = await valuationService.calculateValuation(calculationData);
       setCalculationResult(result);
     } catch (error) {
@@ -307,21 +292,17 @@ export function ProductoForm({
     }
     
     if (featureDefinitions.length === 0) {
-      return formData.subcategory_id ? (
-        <div className="col-span-3 py-2 text-center text-gray-500">
-          No hay características específicas para esta subcategoría
-        </div>
-      ) : null;
+      return null;
     }
     
     return (
       <div className="col-span-3 mt-4 border-t border-border pt-4">
-        <h3 className="text-lg font-medium mb-3 text-azul-profundo">Características Específicas de {subcategories.find(s => s.id === Number(formData.subcategory_id))?.name || 'la subcategoría'}</h3>
+        <h3 className="text-lg font-medium mb-3 text-azul-profundo">Características Específicas</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {featureDefinitions.map((feature) => (
-            <div key={feature.id} className="space-y-2 bg-background-alt p-3 rounded-md shadow-sm">
+            <div key={feature.id} className="space-y-2">
               <label className="block font-medium" htmlFor={`${feature.name}-feature-${productoId}`}>
-                {feature.display_name} {feature.mandatory && <span className="text-rosa">*</span>}
+                {feature.display_name}
               </label>
               {feature.type === 'texto' && (
                 <input
@@ -331,8 +312,6 @@ export function ProductoForm({
                   className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   value={formData.features[feature.name] || ''}
                   onChange={handleFeatureChange}
-                  required={feature.mandatory}
-                  placeholder={`Ingrese ${feature.display_name.toLowerCase()}`}
                 />
               )}
               {feature.type === 'numero' && (
@@ -343,8 +322,6 @@ export function ProductoForm({
                   className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   value={formData.features[feature.name] || ''}
                   onChange={handleFeatureChange}
-                  required={feature.mandatory}
-                  placeholder={`Ingrese ${feature.display_name.toLowerCase()}`}
                 />
               )}
               {feature.type === 'seleccion' && feature.options && (
@@ -354,9 +331,8 @@ export function ProductoForm({
                   className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   value={formData.features[feature.name] || ''}
                   onChange={handleFeatureChange}
-                  required={feature.mandatory}
                 >
-                  <option value="">Seleccionar {feature.display_name.toLowerCase()}</option>
+                  <option value="">Seleccionar opción</option>
                   {feature.options.map((option, idx) => (
                     <option key={idx} value={option}>{option}</option>
                   ))}
