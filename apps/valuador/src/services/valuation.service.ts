@@ -110,8 +110,9 @@ export class ValuationService {
   async getBrands(subcategoryId?: number): Promise<Brand[]> {
     try {
       const params = subcategoryId ? { subcategory_id: subcategoryId } : {};
-      const response = await this.http.get<Brand[]>('/brands', params);
-      return response || [];
+      const response = await this.http.get<{success: boolean, data: Brand[]}>('/brands', params);
+      console.log('Respuesta de marcas:', response);
+      return response.data || [];
     } catch (error) {
       console.error('Error al obtener marcas:', error);
       return [];

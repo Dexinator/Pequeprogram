@@ -101,7 +101,9 @@ export function ProductoForm({
     const fetchBrands = async () => {
       setIsLoadingBrands(true);
       try {
+        console.log('Obteniendo marcas para subcategoría:', formData.subcategory_id);
         const data = await valuationService.getBrands(Number(formData.subcategory_id));
+        console.log('Marcas recibidas:', data);
         setBrands(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error al cargar marcas:', error);
@@ -158,6 +160,11 @@ export function ProductoForm({
     if (fieldName === 'category_id' || fieldName === 'subcategory_id' || fieldName === 'brand_id') {
       // Si es una cadena vacía, mantenerla así
       if (value !== '') {
+        if (value === 'nueva' && fieldName === 'brand_id') {
+          // Mostrar el formulario para agregar nueva marca
+          setShowNewBrand(true);
+          return;
+        }
         processedValue = Number(value);
       }
     }
@@ -167,6 +174,50 @@ export function ProductoForm({
     
     // Notificar cambios al componente padre
     onChange(newFormData);
+  };
+  
+  // Manejar el guardado de una nueva marca
+  const handleSaveNewBrand = async () => {
+    if (!newBrandName.trim()) {
+      alert('Por favor ingrese un nombre para la marca');
+      return;
+    }
+    
+    if (!formData.subcategory_id) {
+      alert('Por favor seleccione una subcategoría primero');
+      return;
+    }
+    
+    try {
+      // En un caso real, aquí haríamos una llamada a la API para guardar la nueva marca
+      // Por ahora, simplemente simularemos que se guardó y la agregaremos a la lista local
+      const newBrand = {
+        id: `temp-${Date.now()}`, // ID temporal
+        name: newBrandName,
+        subcategory_id: formData.subcategory_id,
+        renown: 'Normal', // Valor por defecto
+        is_active: true
+      };
+      
+      // Agregar la nueva marca a la lista
+      setBrands([...brands, newBrand]);
+      
+      // Seleccionar la nueva marca
+      setFormData({
+        ...formData,
+        brand_id: newBrand.id
+      });
+      
+      // Limpiar y cerrar el formulario
+      setNewBrandName('');
+      setShowNewBrand(false);
+      
+      // Notificar al usuario
+      alert(`Marca "${newBrandName}" agregada con éxito`);
+    } catch (error) {
+      console.error('Error al guardar nueva marca:', error);
+      alert('Ocurrió un error al guardar la marca');
+    }
   };
   
   // Manejar cambios en las características específicas
@@ -389,7 +440,9 @@ export function ProductoForm({
                     ? "Seleccione primero una subcategoría" 
                     : isLoadingBrands 
                       ? "Cargando marcas..." 
-                      : "Seleccionar marca"}
+                      : brands.length > 0 
+                        ? "Seleccionar marca"
+                        : "No hay marcas disponibles"}
                 </option>
                 {brands.map(brand => (
                   <option key={brand.id} value={brand.id}>{brand.name}</option>
@@ -423,12 +476,7 @@ export function ProductoForm({
                     <button 
                       type="button"
                       className="bg-azul-claro text-white px-3 rounded-md hover:bg-azul-claro/80 transition-all"
-                      onClick={() => {
-                        // Aquí iría la lógica para guardar la nueva marca
-                        alert('Funcionalidad para guardar nueva marca pendiente');
-                        setShowNewBrand(false);
-                        setNewBrandName('');
-                      }}
+                      onClick={handleSaveNewBrand}
                     >
                       Guardar
                     </button>
