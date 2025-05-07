@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { categoryService } from '../services/category.service';
+import { pool } from '../db';
+import { Category } from '../models';
 
 export class CategoryController {
   /**
@@ -187,6 +189,105 @@ export class CategoryController {
       res.status(500).json({
         success: false,
         message: 'Error al eliminar la categoría'
+      });
+    }
+  }
+
+  // Obtener subcategorías por categoría
+  getSubcategoriesByCategory = async (req: Request, res: Response) => {
+    try {
+      const { categoryId } = req.params;
+      const client = await pool.connect();
+      try {
+        const result = await client.query(`
+          SELECT * FROM subcategories 
+          WHERE category_id = $1 AND is_active = true
+          ORDER BY name
+        `, [categoryId]);
+        
+        res.json(result.rows);
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('Error al obtener subcategorías:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
+  }
+
+  // Obtener todas las subcategorías
+  getAllSubcategories = async (req: Request, res: Response) => {
+    try {
+      const client = await pool.connect();
+      try {
+        const result = await client.query(`
+          SELECT s.*, c.name as category_name
+          FROM subcategories s
+          JOIN categories c ON s.category_id = c.id
+          WHERE s.is_active = true
+          ORDER BY c.name, s.name
+        `);
+        
+        res.json(result.rows);
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('Error al obtener subcategorías:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
+  }
+
+  // Obtener definiciones de características por subcategoría
+  getFeatureDefinitionsBySubcategory = async (req: Request, res: Response) => {
+    try {
+      const { subcategoryId } = req.params;
+      const client = await pool.connect();
+      
+      try {
+        // Verificar que la subcategoría existe
+        const subcategoryCheck = await client.query(
+          'SELECT id FROM subcategories WHERE id = $1',
+          [subcategoryId]
+        );
+        
+        if (subcategoryCheck.rows.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Subcategoría no encontrada'
+          });
+        }
+        
+        // Obtener las definiciones de características
+        const result = await client.query(`
+          SELECT * FROM feature_definitions
+          WHERE subcategory_id = $1
+          ORDER BY order_index
+        `, [subcategoryId]);
+        
+        // Procesar las opciones de selección (convertir de JSONB a array)
+        const features = result.rows.map(feature => {
+          if (feature.type === 'seleccion' && feature.options) {
+            return {
+              ...feature,
+              options: Array.isArray(feature.options) ? feature.options : Object.values(feature.options)
+            };
+          }
+          return feature;
+        });
+        
+        res.status(200).json({
+          success: true,
+          data: features
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('Error al obtener definiciones de características:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al obtener definiciones de características'
       });
     }
   }

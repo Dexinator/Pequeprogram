@@ -12,7 +12,8 @@ import type {
   ValuationQueryParams,
   Category,
   Subcategory,
-  Brand
+  Brand,
+  FeatureDefinition
 } from '../types/valuation.types';
 
 // Servicio para operaciones de valuación
@@ -77,24 +78,56 @@ export class ValuationService {
   
   // Obtener todas las categorías
   async getCategories(): Promise<Category[]> {
-    return this.http.get<Category[]>('/categories');
+    const response = await this.http.get<{success: boolean, data: Category[]}>('/categories');
+    return response.data || [];
   }
   
   // Obtener subcategorías por categoría
   async getSubcategories(categoryId: number): Promise<Subcategory[]> {
-    return this.http.get<Subcategory[]>(`/categories/${categoryId}/subcategories`);
+    try {
+      const response = await this.http.get<Subcategory[]>(`/categories/${categoryId}/subcategories`);
+      return response || [];
+    } catch (error) {
+      console.error('Error al obtener subcategorías:', error);
+      return [];
+    }
   }
   
   // Obtener todas las subcategorías
   async getAllSubcategories(): Promise<Subcategory[]> {
-    return this.http.get<Subcategory[]>('/categories/subcategories');
+    try {
+      const response = await this.http.get<Subcategory[]>('/categories/subcategories');
+      return response || [];
+    } catch (error) {
+      console.error('Error al obtener todas las subcategorías:', error);
+      return [];
+    }
   }
   
   // ---------------- Operaciones de marcas ----------------
   
   // Obtener marcas por subcategoría
   async getBrands(subcategoryId?: number): Promise<Brand[]> {
-    const params = subcategoryId ? { subcategory_id: subcategoryId } : {};
-    return this.http.get<Brand[]>('/brands', params);
+    try {
+      const params = subcategoryId ? { subcategory_id: subcategoryId } : {};
+      const response = await this.http.get<Brand[]>('/brands', params);
+      return response || [];
+    } catch (error) {
+      console.error('Error al obtener marcas:', error);
+      return [];
+    }
+  }
+
+  // ---------------- Operaciones de características ----------------
+  
+  // Obtener definiciones de características por subcategoría
+  async getFeatureDefinitions(subcategoryId: number): Promise<FeatureDefinition[]> {
+    try {
+      const response = await this.http.get<{success: boolean, data: FeatureDefinition[]}>(`/categories/subcategories/${subcategoryId}/features`);
+      return response.data || [];
+    } catch (error) {
+      console.error('Error al obtener definiciones de características:', error);
+      return [];
+    }
   }
 } 

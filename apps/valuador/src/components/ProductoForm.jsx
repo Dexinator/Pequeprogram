@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ImageUploader } from './ImageUploader';
 import { ValuationService } from '../services';
 
@@ -9,7 +9,9 @@ export function ProductoForm({
   onRemove,
   onChange = () => {} 
 }) {
-  const productoId = `${id}-${index}`;
+  // Crear un ID estable que no dependa del tiempo ni cambie entre servidor y cliente
+  const productoId = `producto-${index}`;
+  
   const [formData, setFormData] = useState({
     category_id: "",
     subcategory_id: "",
@@ -33,6 +35,10 @@ export function ProductoForm({
   const [isLoadingSubcategories, setIsLoadingSubcategories] = useState(false);
   const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   
+  // Estado para características específicas
+  const [featureDefinitions, setFeatureDefinitions] = useState([]);
+  const [isLoadingFeatures, setIsLoadingFeatures] = useState(false);
+  
   // Estados para funcionalidades adicionales
   const [showNewBrand, setShowNewBrand] = useState(false);
   const [newBrandName, setNewBrandName] = useState("");
@@ -49,9 +55,10 @@ export function ProductoForm({
     const fetchCategories = async () => {
       try {
         const data = await valuationService.getCategories();
-        setCategories(data);
+        setCategories(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error al cargar categorías:', error);
+        setCategories([]);
       } finally {
         setIsLoadingCategories(false);
       }
@@ -71,7 +78,7 @@ export function ProductoForm({
       setIsLoadingSubcategories(true);
       try {
         const data = await valuationService.getSubcategories(Number(formData.category_id));
-        setSubcategories(data);
+        setSubcategories(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error al cargar subcategorías:', error);
         setSubcategories([]);
@@ -87,6 +94,7 @@ export function ProductoForm({
   useEffect(() => {
     if (!formData.subcategory_id) {
       setBrands([]);
+      setFeatureDefinitions([]);
       return;
     }
     
@@ -94,7 +102,7 @@ export function ProductoForm({
       setIsLoadingBrands(true);
       try {
         const data = await valuationService.getBrands(Number(formData.subcategory_id));
-        setBrands(data);
+        setBrands(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error al cargar marcas:', error);
         setBrands([]);
@@ -103,7 +111,35 @@ export function ProductoForm({
       }
     };
     
+    const fetchFeatureDefinitions = async () => {
+      setIsLoadingFeatures(true);
+      try {
+        const data = await valuationService.getFeatureDefinitions(Number(formData.subcategory_id));
+        setFeatureDefinitions(Array.isArray(data) ? data : []);
+        
+        // Inicializar valores de características
+        const initialFeatures = {};
+        if (Array.isArray(data)) {
+          data.forEach(feature => {
+            initialFeatures[feature.name] = '';
+          });
+        }
+        
+        // Actualizar formData con las características inicializadas
+        setFormData(prev => ({
+          ...prev,
+          features: initialFeatures
+        }));
+      } catch (error) {
+        console.error('Error al cargar definiciones de características:', error);
+        setFeatureDefinitions([]);
+      } finally {
+        setIsLoadingFeatures(false);
+      }
+    };
+    
     fetchBrands();
+    fetchFeatureDefinitions();
   }, [formData.subcategory_id]);
   
   // Manejar cambios en los campos del formulario
@@ -111,9 +147,42 @@ export function ProductoForm({
     const { name, value } = e.target;
     
     // Extraer el nombre real del campo sin el ID del producto
-    const fieldName = name.replace(`-${productoId}`, '');
+    // El formato del nombre es "campo-productoId"
+    const fieldNameParts = name.split('-');
+    const fieldName = fieldNameParts[0]; // Tomamos solo la primera parte (el nombre del campo)
     
-    const newFormData = { ...formData, [fieldName]: value };
+    console.log(`Campo cambiado: ${fieldName}, Valor: ${value}`);
+    
+    // Para categorías, subcategorías y marcas, asegurarse de que el valor sea numérico
+    let processedValue = value;
+    if (fieldName === 'category_id' || fieldName === 'subcategory_id' || fieldName === 'brand_id') {
+      // Si es una cadena vacía, mantenerla así
+      if (value !== '') {
+        processedValue = Number(value);
+      }
+    }
+    
+    const newFormData = { ...formData, [fieldName]: processedValue };
+    setFormData(newFormData);
+    
+    // Notificar cambios al componente padre
+    onChange(newFormData);
+  };
+  
+  // Manejar cambios en las características específicas
+  const handleFeatureChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Extraer el nombre real de la característica sin el ID del producto
+    // El formato del nombre es "característica-feature-productoId"
+    const featureNameParts = name.split('-feature-');
+    const featureName = featureNameParts[0]; // Tomamos solo la primera parte (el nombre de la característica)
+    
+    console.log(`Característica cambiada: ${featureName}, Valor: ${value}`);
+    
+    const newFeatures = { ...formData.features, [featureName]: value };
+    const newFormData = { ...formData, features: newFeatures };
+    
     setFormData(newFormData);
     
     // Notificar cambios al componente padre
@@ -147,6 +216,66 @@ export function ProductoForm({
     } finally {
       setIsCalculating(false);
     }
+  };
+  
+  // Renderizar campos de características específicas
+  const renderFeatureFields = () => {
+    if (isLoadingFeatures) {
+      return <div className="col-span-3 py-2 text-center">Cargando características...</div>;
+    }
+    
+    if (featureDefinitions.length === 0) {
+      return null;
+    }
+    
+    return (
+      <div className="col-span-3 mt-4 border-t border-border pt-4">
+        <h3 className="text-lg font-medium mb-3 text-azul-profundo">Características Específicas</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {featureDefinitions.map((feature) => (
+            <div key={feature.id} className="space-y-2">
+              <label className="block font-medium" htmlFor={`${feature.name}-feature-${productoId}`}>
+                {feature.display_name}
+              </label>
+              {feature.type === 'texto' && (
+                <input
+                  type="text"
+                  id={`${feature.name}-feature-${productoId}`}
+                  name={`${feature.name}-feature-${productoId}`}
+                  className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                  value={formData.features[feature.name] || ''}
+                  onChange={handleFeatureChange}
+                />
+              )}
+              {feature.type === 'numero' && (
+                <input
+                  type="number"
+                  id={`${feature.name}-feature-${productoId}`}
+                  name={`${feature.name}-feature-${productoId}`}
+                  className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                  value={formData.features[feature.name] || ''}
+                  onChange={handleFeatureChange}
+                />
+              )}
+              {feature.type === 'seleccion' && feature.options && (
+                <select
+                  id={`${feature.name}-feature-${productoId}`}
+                  name={`${feature.name}-feature-${productoId}`}
+                  className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                  value={formData.features[feature.name] || ''}
+                  onChange={handleFeatureChange}
+                >
+                  <option value="">Seleccionar opción</option>
+                  {feature.options.map((option, idx) => (
+                    <option key={idx} value={option}>{option}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
   
   return (
@@ -249,8 +378,8 @@ export function ProductoForm({
             <div className="flex gap-2">
               <select 
                 id={`brand_id-${productoId}`} 
-                name={`brand_id-${productoId}`}
-                className="flex-1 p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                name={`brand_id-${productoId}`} 
+                className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                 value={formData.brand_id}
                 onChange={handleChange}
                 disabled={!formData.subcategory_id || isLoadingBrands}
@@ -265,27 +394,56 @@ export function ProductoForm({
                 {brands.map(brand => (
                   <option key={brand.id} value={brand.id}>{brand.name}</option>
                 ))}
-                <option value="new">Otra marca...</option>
+                <option value="nueva">+ Agregar nueva marca</option>
               </select>
               <button 
                 type="button"
-                className="px-3 py-2 bg-background border border-border rounded-md hover:bg-background-alt transition-colors"
-                onClick={() => setShowNewBrand(!showNewBrand)}
+                className="bg-azul-claro text-white px-3 rounded-md hover:bg-azul-claro/80 transition-all"
+                onClick={() => setShowNewBrand(true)}
+                disabled={!formData.subcategory_id}
               >
                 +
               </button>
             </div>
             
             {showNewBrand && (
-              <div className="mt-2">
-                <input 
-                  type="text" 
-                  id={`new-brand-${productoId}`} 
-                  value={newBrandName}
-                  onChange={(e) => setNewBrandName(e.target.value)}
-                  className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
-                  placeholder="Nombre de la marca" 
-                />
+              <div className="mt-2 p-3 border border-border rounded-md bg-background">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium" htmlFor={`new-brand-${productoId}`}>
+                    Nombre de la nueva marca
+                  </label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      id={`new-brand-${productoId}`}
+                      className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                      value={newBrandName}
+                      onChange={(e) => setNewBrandName(e.target.value)}
+                    />
+                    <button 
+                      type="button"
+                      className="bg-azul-claro text-white px-3 rounded-md hover:bg-azul-claro/80 transition-all"
+                      onClick={() => {
+                        // Aquí iría la lógica para guardar la nueva marca
+                        alert('Funcionalidad para guardar nueva marca pendiente');
+                        setShowNewBrand(false);
+                        setNewBrandName('');
+                      }}
+                    >
+                      Guardar
+                    </button>
+                    <button 
+                      type="button"
+                      className="bg-rosa text-white px-3 rounded-md hover:bg-rosa/80 transition-all"
+                      onClick={() => {
+                        setShowNewBrand(false);
+                        setNewBrandName('');
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -329,7 +487,7 @@ export function ProductoForm({
           </div>
         </div>
         
-        {/* Sección 3: Factores de Valuación */}
+        {/* Sección 3: Estado, Demanda y Limpieza */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="space-y-2">
             <label className="block font-medium" htmlFor={`condition_state-${productoId}`}>
@@ -385,82 +543,89 @@ export function ProductoForm({
           </div>
         </div>
         
-        {/* Sección 4: Precio nuevo */}
-        <div className="mb-6">
+        {/* Sección 4: Precio y Notas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="space-y-2">
             <label className="block font-medium" htmlFor={`new_price-${productoId}`}>
-              Precio Nuevo de Referencia <span className="text-rosa">*</span>
+              Precio Nuevo <span className="text-rosa">*</span>
             </label>
-            <div className="flex items-center">
-              <span className="bg-background-alt px-3 py-2 border border-border border-r-0 rounded-l-md">$</span>
+            <div className="relative">
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">$</span>
               <input 
                 type="number" 
-                min="0"
-                step="0.01"
                 id={`new_price-${productoId}`} 
                 name={`new_price-${productoId}`} 
-                className="flex-1 p-2 border border-border rounded-r-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
-                placeholder="0.00" 
+                className="w-full p-2 pl-6 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                 required
+                min="0"
+                step="0.01"
                 value={formData.new_price}
                 onChange={handleChange}
               />
             </div>
           </div>
+          
+          <div className="space-y-2 md:col-span-2">
+            <label className="block font-medium" htmlFor={`notes-${productoId}`}>
+              Notas
+            </label>
+            <textarea 
+              id={`notes-${productoId}`} 
+              name={`notes-${productoId}`} 
+              className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+              rows="2"
+              value={formData.notes}
+              onChange={handleChange}
+            ></textarea>
+          </div>
         </div>
         
-        {/* Botón de Valorar */}
-        <div className="flex justify-end">
-          <button
+        {/* Sección 5: Características específicas */}
+        {renderFeatureFields()}
+        
+        {/* Sección 6: Imágenes */}
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-3 text-azul-profundo">Imágenes del Producto</h3>
+          <ImageUploader 
+            id={`images-${productoId}`}
+            onImagesChange={(images) => {
+              const newFormData = { ...formData, images };
+              setFormData(newFormData);
+              onChange(newFormData);
+            }}
+          />
+        </div>
+        
+        {/* Sección 7: Cálculo y Resultados */}
+        <div className="flex flex-col gap-4">
+          <button 
             type="button"
+            className="bg-azul-claro text-white py-2 px-4 rounded-md hover:bg-azul-claro/80 transition-all w-full md:w-auto"
             onClick={calculateValuation}
-            className="px-5 py-2 bg-verde-lima text-white rounded-md hover:bg-verde-oscuro transition-colors"
             disabled={isCalculating}
           >
-            {isCalculating ? (
-              <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Calculando...
-              </span>
-            ) : (
-              'Valorar Producto'
-            )}
+            {isCalculating ? 'Calculando...' : 'Calcular Valuación'}
           </button>
-        </div>
-        
-        {/* Resultado de valoración */}
-        {calculationResult && (
-          <div id={`resultado-${productoId}`} className="mt-4 p-4 bg-verde-lima/10 border border-verde-lima rounded-md">
-            <h3 className="text-lg font-bold text-verde-oscuro mb-2">Resultado de Valoración</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-text-muted">Precio sugerido de compra:</p>
-                <p className="text-xl font-bold text-azul-profundo">
-                  ${calculationResult.suggested_purchase_price.toFixed(2)}
-                </p>
-                <p className="text-xs text-text-muted">Puntaje: {calculationResult.purchase_score}</p>
-              </div>
-              <div>
-                <p className="text-sm text-text-muted">Precio sugerido de venta:</p>
-                <p className="text-xl font-bold text-verde-oscuro">
-                  ${calculationResult.suggested_sale_price.toFixed(2)}
-                </p>
-                <p className="text-xs text-text-muted">Puntaje: {calculationResult.sale_score}</p>
-              </div>
-              {calculationResult.consignment_price && formData.modality === "consignación" && (
+          
+          {calculationResult && (
+            <div className="bg-amarillo/10 p-4 rounded-md border border-amarillo">
+              <h3 className="text-lg font-medium mb-2 text-azul-profundo">Resultado de la Valuación</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-text-muted">Precio en consignación:</p>
-                  <p className="text-xl font-bold text-amarillo">
-                    ${calculationResult.consignment_price.toFixed(2)}
-                  </p>
+                  <p className="text-sm text-gray-600">Puntaje de Compra: <span className="font-medium">{calculationResult.purchase_score}</span></p>
+                  <p className="text-sm text-gray-600">Puntaje de Venta: <span className="font-medium">{calculationResult.sale_score}</span></p>
                 </div>
-              )}
+                <div>
+                  <p className="text-base">Precio de Compra: <span className="font-medium text-azul-profundo">${calculationResult.suggested_purchase_price.toFixed(2)}</span></p>
+                  <p className="text-base">Precio de Venta: <span className="font-medium text-azul-profundo">${calculationResult.suggested_sale_price.toFixed(2)}</span></p>
+                  {calculationResult.consignment_price && (
+                    <p className="text-base">Precio Consignación: <span className="font-medium text-azul-profundo">${calculationResult.consignment_price.toFixed(2)}</span></p>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

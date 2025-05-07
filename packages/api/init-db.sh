@@ -8,10 +8,6 @@ done
 
 echo "PostgreSQL está listo. Ejecutando migraciones..."
 
-# Ejecutar las migraciones
-npm run migrate
-
-echo "Migraciones completadas."
 
 # Iniciar la aplicación
 exec "$@" 

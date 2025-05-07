@@ -158,18 +158,24 @@ export default function NuevaValuacion() {
             subcategory_id: Number(product.data.subcategory_id),
             brand_id: product.data.brand_id ? Number(product.data.brand_id) : null,
             status: product.data.status,
-            brand_renown: product.data.brand_renown,
-            modality: product.data.modality,
-            condition_state: product.data.condition_state,
+            brand_renown: product.data.brand_renown || 'Normal',
+            modality: product.data.modality || 'compra directa',
+            condition_state: product.data.condition_state || 'bueno',
             demand: product.data.demand || 'media',
             cleanliness: product.data.cleanliness || 'buena',
             new_price: Number(product.data.new_price),
             features: product.data.features || {},
-            notes: product.data.notes || ''
+            notes: product.data.notes || '',
+            images: product.data.images || []
           };
           
           const result = await valuationService.addValuationItem(valuationId, itemData);
-          productResults.push(result);
+          productResults.push({
+            ...result,
+            categoryName: product.data.categoryName,
+            subcategoryName: product.data.subcategoryName,
+            brandName: product.data.brandName
+          });
         } catch (error) {
           console.error('Error al agregar producto:', error);
         }
@@ -237,6 +243,103 @@ export default function NuevaValuacion() {
     }
   };
   
+  // Renderizar el resumen de valuación
+  const renderSummary = () => {
+    if (!showSummary) return null;
+    
+    return (
+      <div className="bg-background-alt p-6 rounded-lg shadow-md border border-border mt-8">
+        <h2 className="text-2xl font-heading font-bold text-azul-profundo mb-4">Resumen de Valuación</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-background rounded-md">
+          <div className="text-center p-3 border border-border rounded-md bg-azul-claro/5">
+            <p className="text-sm text-gray-600">Total de Productos</p>
+            <p className="text-2xl font-bold text-azul-profundo">{summary.totalProducts}</p>
+          </div>
+          
+          <div className="text-center p-3 border border-border rounded-md bg-verde-lima/5">
+            <p className="text-sm text-gray-600">Valor Total de Compra</p>
+            <p className="text-2xl font-bold text-verde-oscuro">${summary.totalPurchaseValue.toFixed(2)}</p>
+          </div>
+          
+          <div className="text-center p-3 border border-border rounded-md bg-amarillo/5">
+            <p className="text-sm text-gray-600">Valor Total de Venta</p>
+            <p className="text-2xl font-bold text-azul-profundo">${summary.totalSaleValue.toFixed(2)}</p>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-background-alt border-b border-border">
+                <th className="p-2 text-left">Producto</th>
+                <th className="p-2 text-right">Precio Compra</th>
+                <th className="p-2 text-right">Precio Venta</th>
+                <th className="p-2 text-right">Consignación</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.productDetails.map((product, index) => (
+                <tr key={product.id} className={index % 2 === 0 ? 'bg-background' : 'bg-background-alt'}>
+                  <td className="p-2 border-b border-border">
+                    <div className="font-medium">{product.subcategoryName || `Producto #${index + 1}`}</div>
+                    <div className="text-sm text-gray-600">
+                      {product.status} • {product.condition_state} • {product.demand}
+                    </div>
+                  </td>
+                  <td className="p-2 text-right border-b border-border font-medium">
+                    ${product.suggested_purchase_price?.toFixed(2)}
+                  </td>
+                  <td className="p-2 text-right border-b border-border font-medium">
+                    ${product.suggested_sale_price?.toFixed(2)}
+                  </td>
+                  <td className="p-2 text-right border-b border-border font-medium">
+                    {product.consignment_price 
+                      ? `$${product.consignment_price.toFixed(2)}`
+                      : '-'
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-azul-claro/10 font-bold">
+                <td className="p-2">TOTAL</td>
+                <td className="p-2 text-right">${summary.totalPurchaseValue.toFixed(2)}</td>
+                <td className="p-2 text-right">${summary.totalSaleValue.toFixed(2)}</td>
+                <td className="p-2 text-right">
+                  {summary.totalConsignmentValue > 0 
+                    ? `$${summary.totalConsignmentValue.toFixed(2)}`
+                    : '-'
+                  }
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        
+        <div className="mt-6 flex flex-col md:flex-row justify-end gap-4">
+          <button
+            type="button"
+            className="px-4 py-2 bg-background border border-border rounded-md hover:bg-background-alt transition-colors"
+            onClick={() => setShowSummary(false)}
+          >
+            Volver a Editar
+          </button>
+          
+          <button
+            type="button"
+            className="px-4 py-2 bg-verde-lima text-white rounded-md hover:bg-verde-oscuro transition-colors"
+            onClick={finalizeValuation}
+            disabled={isFinalizingValuation}
+          >
+            {isFinalizingValuation ? 'Finalizando...' : 'Finalizar Valuación'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+  
   return (
     <div className="space-y-6 pb-10">
       <div className="flex justify-between items-center">
@@ -249,197 +352,53 @@ export default function NuevaValuacion() {
         </div>
       </div>
       
-      <p className="text-text-muted">
-        Complete los datos del cliente y los artículos para obtener una valuación precisa. Los campos marcados con 
-        <span className="text-rosa">*</span> son obligatorios.
-      </p>
-
       {error && (
-        <div className="bg-rosa/10 border border-rosa rounded-md p-3 text-rosa">
+        <div className="bg-rosa/10 border border-rosa p-4 rounded-md text-rosa">
           {error}
         </div>
       )}
-
-      <form id="valuacion-form" className="mt-6 space-y-8" onSubmit={finalizeValuation}>
-        {/* Sección de Cliente */}
-        <ClienteForm 
-          id="cliente-principal" 
-          className="mb-8" 
-          initialData={client}
-          onChange={handleClientChange}
-        />
-        
-        {/* Sección de Productos */}
-        <div className="mb-4">
-          <h2 className="text-2xl font-heading font-bold text-azul-profundo mb-2">Productos</h2>
-          <p className="text-text-muted">Agregue todos los productos que desea valuar.</p>
-        </div>
-        
-        {/* Contenedor de productos */}
-        <div id="productos-container">
+      
+      {!showSummary ? (
+        <>
+          {/* Sección de Cliente */}
+          <div className="bg-background-alt p-6 rounded-lg shadow-sm border border-border">
+            <h2 className="text-xl font-heading font-bold text-azul-claro mb-4">Datos del Cliente</h2>
+            <ClienteForm onChange={handleClientChange} />
+          </div>
+          
+          {/* Sección de Productos */}
           {products.map((product, index) => (
-            <ProductoForm 
+            <ProductoForm
               key={product.id}
-              id="producto"
+              id={`producto-${product.id}`}
               index={index}
               onRemove={() => removeProduct(product.id)}
               onChange={(data) => updateProductData(product.id, data)}
             />
           ))}
-        </div>
-        
-        <div className="flex justify-center">
-          <button 
-            type="button" 
-            onClick={addProduct}
-            className="px-5 py-2 border border-azul-claro text-azul-claro bg-azul-claro/10 rounded-md hover:bg-azul-claro/20 transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Agregar otro producto
-            </span>
-          </button>
-        </div>
-        
-        {/* Resumen de la valuación */}
-        {showSummary && valuation && (
-          <div id="resumen-container" className="bg-background-alt p-6 rounded-lg shadow-sm border border-border">
-            <h2 className="text-2xl font-heading font-bold text-verde-oscuro mb-4">Resumen de Valuación</h2>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-lg font-bold mb-2">Datos del Cliente</h3>
-                <div className="text-sm space-y-1">
-                  <p><span className="font-medium">Nombre:</span> {client.name}</p>
-                  <p><span className="font-medium">Teléfono:</span> {client.phone}</p>
-                  {client.email && <p><span className="font-medium">Email:</span> {client.email}</p>}
-                  {client.identification && <p><span className="font-medium">Identificación:</span> {client.identification}</p>}
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-bold mb-2">Totales</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span>Total productos:</span>
-                    <span className="font-bold">{summary.totalProducts}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Valor total de compra:</span>
-                    <span className="font-bold text-azul-profundo">${summary.totalPurchaseValue.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Valor total de venta:</span>
-                    <span className="font-bold text-verde-oscuro">${summary.totalSaleValue.toFixed(2)}</span>
-                  </div>
-                  {summary.totalConsignmentValue > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span>Valor total en consignación:</span>
-                      <span className="font-bold text-amarillo">${summary.totalConsignmentValue.toFixed(2)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-bold mb-3">Detalle de Productos</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-border">
-                  <thead>
-                    <tr>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-text-muted tracking-wider">#</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-text-muted tracking-wider">Estado</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-text-muted tracking-wider">Modalidad</th>
-                      <th className="px-3 py-2 text-right text-sm font-medium text-text-muted tracking-wider">Precio Compra</th>
-                      <th className="px-3 py-2 text-right text-sm font-medium text-text-muted tracking-wider">Precio Venta</th>
-                      {summary.totalConsignmentValue > 0 && (
-                        <th className="px-3 py-2 text-right text-sm font-medium text-text-muted tracking-wider">Precio Consignación</th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {valuation.items?.map((item, index) => (
-                      <tr key={item.id}>
-                        <td className="px-3 py-2 whitespace-nowrap">{index + 1}</td>
-                        <td className="px-3 py-2 whitespace-nowrap">{item.status}</td>
-                        <td className="px-3 py-2 whitespace-nowrap">{item.modality}</td>
-                        <td className="px-3 py-2 text-right whitespace-nowrap">${item.suggested_purchase_price.toFixed(2)}</td>
-                        <td className="px-3 py-2 text-right whitespace-nowrap">${item.suggested_sale_price.toFixed(2)}</td>
-                        {summary.totalConsignmentValue > 0 && (
-                          <td className="px-3 py-2 text-right whitespace-nowrap">
-                            {item.modality === 'consignación' && item.consignment_price
-                              ? `$${item.consignment_price.toFixed(2)}`
-                              : '-'}
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Botones de acción */}
-        <div className="flex justify-between pt-4 border-t border-border">
-          <button 
-            type="button" 
-            onClick={() => {
-              if (confirm('¿Está seguro que desea cancelar esta valuación? Se perderán todos los datos.')) {
-                window.location.href = '/';
-              }
-            }}
-            className="px-5 py-2 border border-border bg-background rounded-md hover:bg-background-alt transition-colors"
-          >
-            Cancelar
-          </button>
           
-          <div className="space-x-3">
-            <button 
-              type="button" 
-              onClick={generateSummary}
-              className="px-5 py-2 bg-verde-lima text-white rounded-md hover:bg-verde-oscuro transition-colors"
-              disabled={isCreatingValuation}
+          {/* Botones de acción */}
+          <div className="flex flex-wrap gap-4 justify-between">
+            <button
+              type="button"
+              className="px-5 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-claro/80 transition-colors"
+              onClick={addProduct}
             >
-              {isCreatingValuation ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Procesando...
-                </span>
-              ) : (
-                'Generar Resumen'
-              )}
+              + Agregar Producto
             </button>
             
-            {showSummary && (
-              <button 
-                type="submit"
-                className="px-5 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors"
-                disabled={isFinalizingValuation}
-              >
-                {isFinalizingValuation ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Finalizando...
-                  </span>
-                ) : (
-                  'Finalizar Valuación'
-                )}
-              </button>
-            )}
+            <button
+              type="button"
+              className="px-5 py-2 bg-verde-lima text-white rounded-md hover:bg-verde-oscuro transition-colors"
+              onClick={generateSummary}
+            >
+              Generar Resumen
+            </button>
           </div>
-        </div>
-      </form>
+        </>
+      ) : (
+        renderSummary()
+      )}
     </div>
   );
 } 

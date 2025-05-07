@@ -404,35 +404,107 @@ docker logs entrepeques-api-dev
 
 ## Sesión: 15 de Mayo, 2025
 
-### 21. Desarrollo de Componentes para Formulario de Valuación
+### 21. Implementación del Sistema de Valuación
 
-**Acción realizada:** Creación de componentes específicos para la captura de datos en el proceso de valuación.
+**Acción realizada:** Completar la implementación del sistema de valuación de productos.
 **Procedimiento:**
-- Desarrollamos el componente `ClienteForm.astro` para capturar la información del cliente:
-  - Campos para nombre, teléfono, email e identificación
-  - Soporte para clientes nuevos y existentes
-  - Funcionalidad de búsqueda de clientes (simulada)
-- Desarrollamos el componente `ProductoForm.astro` para la información de productos:
-  - Selección de categoría y subcategoría
-  - Datos de marca, estado y características
-  - Cálculo de valoración basado en fórmulas predefinidas
-  - Carga de imágenes del producto
-  - Visualización del resultado de la valuación
-- Integramos la lógica de negocio para el cálculo de precios:
-  - Implementación de la fórmula de cálculo basada en calificaciones
-  - Soporte para diferentes modalidades (compra directa, consignación)
-  - Visualización del precio de compra y venta
+- Mejoramos el componente `ProductoForm.jsx` para que cargue y muestre las características específicas (features) según la subcategoría seleccionada.
+- Añadimos el método `getFeatureDefinitions` al servicio de valuación en el frontend para obtener las definiciones de características por subcategoría.
+- Implementamos el endpoint en el backend para obtener las definiciones de características por subcategoría.
+- Mejoramos el componente `NuevaValuacion.jsx` para mostrar un mejor resumen de valuación con una tabla detallada y totales.
+- Implementamos la validación completa de formularios en el frontend.
+- Optimizamos la visualización de resultados para mostrar información más detallada sobre cada producto.
 
-**Decisiones técnicas:**
-- Uso de componentes interactivos con JavaScript cliente para mejorar la usabilidad
-- Implementación de lógica de cálculo de precios en el cliente para retroalimentación inmediata
-- Diseño modular que permitirá conectar fácilmente con APIs en el futuro
-- Uso de valores predefinidos para simulación (categorías, subcategorías, etc.)
-- Implementación de validaciones en tiempo real
+**Resultado:**
+- Sistema de valuación completamente funcional que sigue la lógica de negocio definida.
+- Interfaz de usuario mejorada con mejor experiencia de usuario.
+- Capacidad para capturar características específicas por tipo de producto.
+- Resumen de valuación detallado y claro para el usuario.
+
+### 22. Actualización del Esquema de Base de Datos
+
+El sistema de valuación utiliza las siguientes tablas principales:
+
+```
+categories
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  description TEXT
+  parent_id INTEGER REFERENCES categories(id)
+  is_active BOOLEAN DEFAULT TRUE
+  
+subcategories
+  id SERIAL PRIMARY KEY
+  category_id INTEGER REFERENCES categories(id)
+  name VARCHAR(100) NOT NULL
+  description TEXT
+  gap_new DECIMAL(5,2) NOT NULL  -- GAP para productos nuevos
+  gap_used DECIMAL(5,2) NOT NULL -- GAP para productos usados
+  margin_new DECIMAL(5,2) NOT NULL -- Margen para productos nuevos
+  margin_used DECIMAL(5,2) NOT NULL -- Margen para productos usados
+  is_active BOOLEAN DEFAULT TRUE
+  
+feature_definitions
+  id SERIAL PRIMARY KEY
+  subcategory_id INTEGER REFERENCES subcategories(id)
+  name VARCHAR(100) NOT NULL
+  display_name VARCHAR(100) NOT NULL
+  type VARCHAR(20) NOT NULL -- texto, numero, seleccion
+  order_index INTEGER NOT NULL -- orden de visualización
+  options JSONB -- opciones para tipo seleccion
+  
+valuation_factors
+  id SERIAL PRIMARY KEY
+  subcategory_id INTEGER REFERENCES subcategories(id)
+  factor_type VARCHAR(50) NOT NULL -- estado, demanda, limpieza
+  factor_value VARCHAR(50) NOT NULL -- valor (ej. "Bueno", "Alta", etc.)
+  score INTEGER NOT NULL -- puntaje asociado
+  
+brands
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  subcategory_id INTEGER REFERENCES subcategories(id)
+  renown VARCHAR(20) NOT NULL -- Sencilla, Normal, Alta, Premium
+  is_active BOOLEAN DEFAULT TRUE
+  
+valuations
+  id SERIAL PRIMARY KEY
+  client_id INTEGER REFERENCES clients(id)
+  user_id INTEGER REFERENCES users(id)
+  valuation_date TIMESTAMP DEFAULT NOW()
+  total_purchase_amount DECIMAL(10,2)
+  total_consignment_amount DECIMAL(10,2)
+  status VARCHAR(20) DEFAULT 'pending'
+  notes TEXT
+  
+valuation_items
+  id SERIAL PRIMARY KEY
+  valuation_id INTEGER REFERENCES valuations(id)
+  category_id INTEGER REFERENCES categories(id)
+  subcategory_id INTEGER REFERENCES subcategories(id)
+  brand_id INTEGER REFERENCES brands(id)
+  status VARCHAR(50) NOT NULL -- Nuevo, Usado como nuevo, etc.
+  brand_renown VARCHAR(20) NOT NULL
+  modality VARCHAR(20) NOT NULL -- compra directa, consignación
+  condition_state VARCHAR(20) NOT NULL -- excelente, bueno, regular
+  demand VARCHAR(20) NOT NULL -- alta, media, baja
+  cleanliness VARCHAR(20) NOT NULL -- buena, regular, mala
+  features JSONB -- características específicas
+  new_price DECIMAL(10,2) NOT NULL -- precio nuevo de referencia
+  purchase_score INTEGER -- puntaje calculado para compra
+  sale_score INTEGER -- puntaje calculado para venta
+  suggested_purchase_price DECIMAL(10,2) -- precio de compra sugerido
+  suggested_sale_price DECIMAL(10,2) -- precio de venta sugerido
+  final_purchase_price DECIMAL(10,2) -- precio de compra final
+  final_sale_price DECIMAL(10,2) -- precio de venta final
+  consignment_price DECIMAL(10,2) -- precio en caso de consignación
+  images JSONB -- URLs de imágenes
+  notes TEXT
+```
 
 ## Sesión: 20 de Mayo, 2025
 
-### 22. Implementación de Flujo Completo de Valuación
+### 23. Implementación de Flujo Completo de Valuación
 
 **Acción realizada:** Creación del flujo completo de valuación desde la captura de datos hasta el resumen final.
 **Procedimiento:**
@@ -466,7 +538,7 @@ docker logs entrepeques-api-dev
 
 ## Sesión: 23 de Mayo, 2025
 
-### 23. Conversión de Componentes a React para Mejorar Interactividad
+### 24. Conversión de Componentes a React para Mejorar Interactividad
 
 **Acción realizada:** Convertir componentes clave del Valuador de Astro a React para mejorar la interactividad.
 **Procedimiento:**
@@ -483,7 +555,7 @@ docker logs entrepeques-api-dev
 - Mantenimiento del diseño UI/UX consistente con Tailwind CSS
 - Integración con el sistema de tema claro/oscuro
 
-### 24. Actualización del Flujo de Nueva Valuación
+### 25. Actualización del Flujo de Nueva Valuación
 
 **Acción realizada:** Reemplazar la implementación anterior basada en Astro por una versión React más interactiva.
 **Procedimiento:**
