@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS categories (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   description TEXT,
-  parent_id INTEGER REFERENCES categories(id),
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -72,12 +71,3 @@ VALUES (
   'Admin',
   'User'
 ) ON CONFLICT (username) DO NOTHING;
-
--- Insertar algunas categorías de ejemplo
-INSERT INTO categories (name, description)
-VALUES 
-  ('Ropa', 'Ropa para bebés y niños'),
-  ('Juguetes', 'Juguetes para todas las edades'),
-  ('Accesorios', 'Accesorios como carriolas, porta-bebés, etc.'),
-  ('Muebles', 'Muebles para habitación infantil')
-ON CONFLICT DO NOTHING; 
