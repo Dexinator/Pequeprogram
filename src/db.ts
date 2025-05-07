@@ -10,6 +10,7 @@ const pool = new Pool({
 });
 
 // Función para inicializar la base de datos y ejecutar migraciones
+/*
 export async function initializeDatabase(): Promise<void> {
   let client: PoolClient | undefined;
   
@@ -84,6 +85,7 @@ export async function initializeDatabase(): Promise<void> {
     }
   }
 }
+*/
 
 // Exportar pool para ser usado en otros módulos
 export { pool };

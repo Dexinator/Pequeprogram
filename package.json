@@ -11,7 +11,6 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "postinstall": "npm run build",
-    "migrate": "ts-node src/migrate.ts",
     "docker:dev": "nodemon --transpile-only src/index.ts"
   },
   "keywords": [],

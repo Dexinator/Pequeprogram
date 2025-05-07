@@ -1,10 +1,18 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { pool, initializeDatabase, testConnection } from './db';
+import cors from 'cors';
+import { pool, testConnection } from './db';
 import apiRoutes from './routes';
 import config from './config';
 
 const app = express();
 const port = config.port;
+
+// Configuración de CORS
+app.use(cors({
+  origin: '*', // En producción, cambiar por los dominios permitidos
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -62,8 +70,10 @@ async function startServer() {
       process.exit(1);
     }
     
+    /*
     // Inicializar base de datos y ejecutar migraciones
     await initializeDatabase();
+    */
     
     // Iniciar servidor Express
     app.listen(port, () => {
