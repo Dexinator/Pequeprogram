@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS subcategories (
   id SERIAL PRIMARY KEY,
   category_id INTEGER NOT NULL REFERENCES categories(id),
   name VARCHAR(100) NOT NULL,
-  SKU TEXT NOT NULL, -- SKU de la subcategoría, así comienzan los productos de esta subcategoría
+  sku VARCHAR(20) NOT NULL, -- Prefijo SKU utilizado para generar códigos de producto
   gap_new DECIMAL(5,2) NOT NULL, -- GAP para productos nuevos. Se usa para calcular el precio de venta
   gap_used DECIMAL(5,2) NOT NULL, -- GAP para productos usados. Se usa para calcular el precio de venta
   margin_new DECIMAL(5,2) NOT NULL, -- Margen para productos nuevos. Se usa para calcular el precio de compra
@@ -56,7 +56,7 @@ ON valuation_factors(subcategory_id, factor_type, factor_value);
 CREATE TABLE IF NOT EXISTS brands (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  category_id INTEGER REFERENCES categories(id),
+  subcategory_id INTEGER REFERENCES subcategories(id),
   renown VARCHAR(20) NOT NULL, -- Sencilla, Normal, Alta, Premium
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -146,20 +146,20 @@ CREATE INDEX IF NOT EXISTS idx_valuation_items_subcategory
 ON valuation_items(subcategory_id);
 
 -- Datos de ejemplo para subcategorías
-INSERT INTO subcategories (category_id, name, description, gap_new, gap_used, margin_new, margin_used)
+INSERT INTO subcategories (category_id, name, sku, gap_new, gap_used, margin_new, margin_used)
 VALUES 
-  (1, 'Ropa (0-6 meses)', 'Ropa para bebés de 0 a 6 meses', 0.15, 0.40, 0.35, 0.50),
-  (1, 'Ropa (6-12 meses)', 'Ropa para bebés de 6 a 12 meses', 0.15, 0.40, 0.35, 0.50),
-  (1, 'Ropa (1-3 años)', 'Ropa para niños de 1 a 3 años', 0.15, 0.45, 0.35, 0.55),
-  (1, 'Ropa (3+ años)', 'Ropa para niños mayores de 3 años', 0.15, 0.45, 0.35, 0.55),
-  (2, 'Juguetes didácticos', 'Juguetes educativos y de desarrollo', 0.20, 0.50, 0.40, 0.60),
-  (2, 'Muñecas y figuras', 'Muñecas, figuras de acción y similares', 0.20, 0.55, 0.40, 0.65),
-  (2, 'Juegos de mesa', 'Juegos de mesa y puzzles', 0.25, 0.60, 0.45, 0.70),
-  (2, 'Vehículos y pistas', 'Coches, pistas y similares', 0.25, 0.55, 0.45, 0.65),
-  (3, 'Cunas', 'Cunas y minicunas', 0.30, 0.50, 0.45, 0.60),
-  (3, 'Moisés', 'Moisés y capazos', 0.25, 0.45, 0.40, 0.55),
-  (3, 'Cómodas', 'Cómodas y cambiadores', 0.30, 0.50, 0.45, 0.60),
-  (3, 'Parques', 'Parques y corralitos', 0.25, 0.45, 0.40, 0.55);
+  (1, 'Ropa (0-6 meses)', 'RB06', 0.15, 0.40, 0.35, 0.50),
+  (1, 'Ropa (6-12 meses)', 'RB12', 0.15, 0.40, 0.35, 0.50),
+  (1, 'Ropa (1-3 años)', 'RN13', 0.15, 0.45, 0.35, 0.55),
+  (1, 'Ropa (3+ años)', 'RN3P', 0.15, 0.45, 0.35, 0.55),
+  (2, 'Juguetes didácticos', 'JDI', 0.20, 0.50, 0.40, 0.60),
+  (2, 'Muñecas y figuras', 'JMF', 0.20, 0.55, 0.40, 0.65),
+  (2, 'Juegos de mesa', 'JME', 0.25, 0.60, 0.45, 0.70),
+  (2, 'Vehículos y pistas', 'JVP', 0.25, 0.55, 0.45, 0.65),
+  (3, 'Cunas', 'MCU', 0.30, 0.50, 0.45, 0.60),
+  (3, 'Moisés', 'MMO', 0.25, 0.45, 0.40, 0.55),
+  (3, 'Cómodas', 'MCO', 0.30, 0.50, 0.45, 0.60),
+  (3, 'Parques', 'MPA', 0.25, 0.45, 0.40, 0.55);
 
 -- Datos de ejemplo para factores de valuación (para una subcategoría)
 INSERT INTO valuation_factors (subcategory_id, factor_type, factor_value, score)

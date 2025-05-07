@@ -83,9 +83,9 @@ export function ProductoForm({
     fetchSubcategories();
   }, [formData.category_id]);
   
-  // Cargar marcas cuando cambia la categoría
+  // Cargar marcas cuando cambia la subcategoría
   useEffect(() => {
-    if (!formData.category_id) {
+    if (!formData.subcategory_id) {
       setBrands([]);
       return;
     }
@@ -93,7 +93,7 @@ export function ProductoForm({
     const fetchBrands = async () => {
       setIsLoadingBrands(true);
       try {
-        const data = await valuationService.getBrands(Number(formData.category_id));
+        const data = await valuationService.getBrands(Number(formData.subcategory_id));
         setBrands(data);
       } catch (error) {
         console.error('Error al cargar marcas:', error);
@@ -104,7 +104,7 @@ export function ProductoForm({
     };
     
     fetchBrands();
-  }, [formData.category_id]);
+  }, [formData.subcategory_id]);
   
   // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
@@ -253,11 +253,11 @@ export function ProductoForm({
                 className="flex-1 p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                 value={formData.brand_id}
                 onChange={handleChange}
-                disabled={!formData.category_id || isLoadingBrands}
+                disabled={!formData.subcategory_id || isLoadingBrands}
               >
                 <option value="">
-                  {!formData.category_id 
-                    ? "Seleccione primero una categoría" 
+                  {!formData.subcategory_id 
+                    ? "Seleccione primero una subcategoría" 
                     : isLoadingBrands 
                       ? "Cargando marcas..." 
                       : "Seleccionar marca"}

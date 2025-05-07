@@ -583,7 +583,7 @@ products
   updated_at TIMESTAMP DEFAULT NOW()
 ```
 
-### Tablas para el Sistema de Valuación (Planificadas)
+### Tablas para el Sistema de Valuación
 
 ```
 clients
@@ -596,11 +596,56 @@ clients
   created_at TIMESTAMP DEFAULT NOW()
   updated_at TIMESTAMP DEFAULT NOW()
 
+subcategories
+  id SERIAL PRIMARY KEY
+  category_id INTEGER NOT NULL REFERENCES categories(id)
+  name VARCHAR(100) NOT NULL
+  sku VARCHAR(20) NOT NULL
+  gap_new DECIMAL(5,2) NOT NULL
+  gap_used DECIMAL(5,2) NOT NULL
+  margin_new DECIMAL(5,2) NOT NULL
+  margin_used DECIMAL(5,2) NOT NULL
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+feature_definitions
+  id SERIAL PRIMARY KEY
+  subcategory_id INTEGER NOT NULL REFERENCES subcategories(id)
+  name VARCHAR(100) NOT NULL
+  display_name VARCHAR(100) NOT NULL
+  type VARCHAR(20) NOT NULL -- texto, numero, seleccion
+  order_index INTEGER NOT NULL
+  options JSONB -- opciones para tipo seleccion
+  mandatory BOOLEAN DEFAULT FALSE -- indica si el campo es obligatorio
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+valuation_factors
+  id SERIAL PRIMARY KEY
+  subcategory_id INTEGER NOT NULL REFERENCES subcategories(id)
+  factor_type VARCHAR(50) NOT NULL -- estado, demanda, limpieza
+  factor_value VARCHAR(50) NOT NULL -- valor (ej. "Bueno", "Alta", etc.)
+  score INTEGER NOT NULL -- puntaje asociado
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
+brands
+  id SERIAL PRIMARY KEY
+  name VARCHAR(100) NOT NULL
+  subcategory_id INTEGER REFERENCES subcategories(id)
+  renown VARCHAR(20) NOT NULL -- Sencilla, Normal, Alta, Premium
+  is_active BOOLEAN DEFAULT TRUE
+  created_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW()
+
 valuations
   id SERIAL PRIMARY KEY
   client_id INTEGER REFERENCES clients(id)
   user_id INTEGER REFERENCES users(id)
   valuation_date TIMESTAMP DEFAULT NOW()
+  total_purchase_amount DECIMAL(10,2)
+  total_consignment_amount DECIMAL(10,2)
   status VARCHAR(20) DEFAULT 'pending'
   notes TEXT
   created_at TIMESTAMP DEFAULT NOW()
@@ -608,23 +653,28 @@ valuations
 
 valuation_items
   id SERIAL PRIMARY KEY
-  valuation_id INTEGER REFERENCES valuations(id)
-  product_id INTEGER REFERENCES products(id)
-  category_id INTEGER REFERENCES categories(id)
-  status VARCHAR(50) NOT NULL
-  brand VARCHAR(100)
-  renown VARCHAR(50)
-  modality VARCHAR(50) NOT NULL
-  condition_state VARCHAR(50) NOT NULL
-  demand VARCHAR(50) NOT NULL
-  cleanliness VARCHAR(50) NOT NULL
-  features JSONB
-  new_price DECIMAL(10,2)
-  purchase_price DECIMAL(10,2)
-  sale_price DECIMAL(10,2)
-  consignment_price DECIMAL(10,2)
+  valuation_id INTEGER NOT NULL REFERENCES valuations(id)
+  category_id INTEGER NOT NULL REFERENCES categories(id)
+  subcategory_id INTEGER NOT NULL REFERENCES subcategories(id)
+  brand_id INTEGER REFERENCES brands(id)
+  status VARCHAR(50) NOT NULL -- Nuevo, Usado como nuevo, etc.
+  brand_renown VARCHAR(20) NOT NULL -- Sencilla, Normal, Alta, Premium
+  modality VARCHAR(20) NOT NULL -- compra directa, consignación
+  condition_state VARCHAR(20) NOT NULL -- excelente, bueno, regular
+  demand VARCHAR(20) NOT NULL -- alta, media, baja
+  cleanliness VARCHAR(20) NOT NULL -- buena, regular, mala
+  features JSONB -- características específicas
+  new_price DECIMAL(10,2) NOT NULL -- precio nuevo de referencia
+  purchase_score INTEGER -- puntaje calculado para compra
+  sale_score INTEGER -- puntaje calculado para venta
+  suggested_purchase_price DECIMAL(10,2) -- precio de compra sugerido
+  suggested_sale_price DECIMAL(10,2) -- precio de venta sugerido
+  final_purchase_price DECIMAL(10,2) -- precio de compra final
+  final_sale_price DECIMAL(10,2) -- precio de venta final
+  consignment_price DECIMAL(10,2) -- precio en caso de consignación
+  images JSONB -- URLs de imágenes
+  online_store_ready BOOLEAN DEFAULT FALSE -- indica si ya está listo para la tienda en línea
   notes TEXT
-  images JSONB
   created_at TIMESTAMP DEFAULT NOW()
   updated_at TIMESTAMP DEFAULT NOW()
 ```
@@ -718,7 +768,7 @@ Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:
    - Reemplazar datos simulados con datos reales
    - Implementar flujo completo de valuación con datos persistentes
 
-Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario y Panel de Administración). 
+Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario). 
 
 ## Sesión: 26 de Mayo, 2025
 
@@ -781,7 +831,7 @@ Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:
    - Reemplazar datos simulados con datos reales
    - Implementar flujo completo de valuación con datos persistentes
 
-Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario y Panel de Administración). 
+Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario). 
 
 ## Sesión: 27 de Mayo, 2025
 
@@ -884,7 +934,7 @@ Continuamos en la **Fase 2** del plan (Aplicación Valuador). Los siguientes pas
 
 2. **Refactorizar componentes React para usar datos reales:**
    - Conectar el formulario de cliente con API de clientes
-   - Modificar el componente `ProductoForm` para obtener categorías, subcategorías y factores del backend
+   - Modificar el componente `ProductoForm` para obtener categorías, subcategorías y marcas desde la API
    - Usar el endpoint de cálculo de valuación para obtener precios reales
 
 3. **Implementar sistema de gestión de imágenes:**
@@ -1091,92 +1141,42 @@ Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:
 
 Una vez completados estos pasos, tendremos un sistema completamente funcional para el proceso de valuación, cumpliendo así con los objetivos de la **Fase 2**. Luego podremos avanzar a la **Fase 3** (Gestión de Inventario).
 
-## Esquema de Base de Datos Actual
+## Esquema de Base de Datos Consolidado
 
-### Tablas principales
-```
-roles
-  id SERIAL PRIMARY KEY
-  name VARCHAR(50) NOT NULL UNIQUE
-  description TEXT
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
+### Descripción General
+Se ha creado un archivo consolidado con todo el esquema de base de datos en `packages/api/src/migrations/consolidated-schema.sql`. Este archivo unifica todas las migraciones previas (001-004) en un solo script limpio y estructurado.
 
-users
-  id SERIAL PRIMARY KEY
-  role_id INTEGER REFERENCES roles(id)
-  username VARCHAR(50) NOT NULL UNIQUE
-  email VARCHAR(100) NOT NULL UNIQUE
-  password_hash VARCHAR(100) NOT NULL
-  first_name VARCHAR(50)
-  last_name VARCHAR(50)
-  is_active BOOLEAN DEFAULT TRUE
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
+### Entidades Principales
 
-categories
-  id SERIAL PRIMARY KEY
-  name VARCHAR(100) NOT NULL
-  description TEXT
-  is_active BOOLEAN DEFAULT TRUE
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
+#### Usuarios y Roles
+- **roles**: Almacena los roles de usuario (admin, manager, valuator, sales)
+- **users**: Información de usuarios del sistema con referencia a roles
 
-products
-  id SERIAL PRIMARY KEY
-  category_id INTEGER REFERENCES categories(id)
-  name VARCHAR(100) NOT NULL
-  description TEXT
-  brand VARCHAR(100)
-  model VARCHAR(100)
-  age_range VARCHAR(50)
-  is_active BOOLEAN DEFAULT TRUE
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
-```
+#### Productos y Categorías
+- **categories**: Categorías principales de productos (sin jerarquía interna)
+- **subcategories**: Subcategorías con información específica para la valuación (márgenes, GAPs)
+- **products**: Productos base con información general
 
-### Tablas para el Sistema de Valuación (Planificadas)
+#### Sistema de Valuación
+- **feature_definitions**: Define características personalizadas por subcategoría
+- **valuation_factors**: Factores que afectan la valuación (estado, demanda, limpieza)
+- **brands**: Marcas con su nivel de renombre
+- **clients**: Clientes que traen artículos para valuación
+- **valuations**: Cabecera de valuación con información general
+- **valuation_items**: Detalle de ítems valorados con precios y características
 
-```
-clients
-  id SERIAL PRIMARY KEY
-  name VARCHAR(100) NOT NULL
-  phone VARCHAR(20) NOT NULL
-  email VARCHAR(100)
-  identification VARCHAR(100)
-  is_active BOOLEAN DEFAULT TRUE
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
+### Relaciones Principales
+1. Cada usuario tiene un rol asignado
+2. Las subcategorías pertenecen a categorías
+3. Los productos base pertenecen a categorías
+4. Las definiciones de características y factores de valuación están asociados a subcategorías
+5. Las marcas pueden estar asociadas a categorías específicas
+6. Cada valuación pertenece a un cliente y es realizada por un usuario
+7. Los ítems de valuación pertenecen a una valuación y tienen referencias a categoría, subcategoría y marca
 
-valuations
-  id SERIAL PRIMARY KEY
-  client_id INTEGER REFERENCES clients(id)
-  user_id INTEGER REFERENCES users(id)
-  valuation_date TIMESTAMP DEFAULT NOW()
-  status VARCHAR(20) DEFAULT 'pending'
-  notes TEXT
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
-
-valuation_items
-  id SERIAL PRIMARY KEY
-  valuation_id INTEGER REFERENCES valuations(id)
-  product_id INTEGER REFERENCES products(id)
-  category_id INTEGER REFERENCES categories(id)
-  status VARCHAR(50) NOT NULL
-  brand VARCHAR(100)
-  renown VARCHAR(50)
-  modality VARCHAR(50) NOT NULL
-  condition_state VARCHAR(50) NOT NULL
-  demand VARCHAR(50) NOT NULL
-  cleanliness VARCHAR(50) NOT NULL
-  features JSONB
-  new_price DECIMAL(10,2)
-  purchase_price DECIMAL(10,2)
-  sale_price DECIMAL(10,2)
-  consignment_price DECIMAL(10,2)
-  notes TEXT
-  images JSONB
-  created_at TIMESTAMP DEFAULT NOW()
-  updated_at TIMESTAMP DEFAULT NOW()
-```
+### Características Importantes
+- Se ha eliminado la relación jerárquica interna en categories (parent_id)
+- Se ha agregado soporte para características obligatorias/opcionales en feature_definitions
+- Se ha agregado seguimiento de preparación para tienda en línea en valuation_items
+- El esquema incluye información de precios, márgenes y reglas de valuación
+- Se mantienen datos iniciales para roles, usuario admin y ejemplos para subcategorías, factores y características

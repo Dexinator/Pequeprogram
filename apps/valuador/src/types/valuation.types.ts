@@ -16,7 +16,7 @@ export interface Category {
 export interface Subcategory extends BaseModel {
   category_id: number;
   name: string;
-  description?: string;
+  sku: string;
   gap_new: number;
   gap_used: number;
   margin_new: number;
@@ -35,7 +35,7 @@ export interface FeatureDefinition extends BaseModel {
 
 export interface Brand extends BaseModel {
   name: string;
-  category_id?: number;
+  subcategory_id?: number;
   renown: 'Sencilla' | 'Normal' | 'Alta' | 'Premium';
   is_active: boolean;
 }

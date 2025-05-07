@@ -1,7 +1,7 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import { ClienteForm } from '../components/ClienteForm';
-import NuevaValuacion from '../components/NuevaValuacion.jsx';
+import NuevaValuacionComponent from '../components/NuevaValuacion.jsx';
 
 // Generar ID único para la valuación
 const valuacionId = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
@@ -13,5 +13,5 @@ const fecha = new Date().toLocaleDateString('es-MX', {
 ---
 
 <MainLayout title="Nueva Valuación">
-  <NuevaValuacion client:load />
+  <NuevaValuacionComponent client:load />
 </MainLayout> 

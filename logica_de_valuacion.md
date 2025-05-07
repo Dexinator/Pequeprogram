@@ -173,7 +173,7 @@ valuation_factors
 brands
   id SERIAL PRIMARY KEY
   name VARCHAR(100) NOT NULL
-  category_id INTEGER REFERENCES categories(id)
+  subcategory_id INTEGER REFERENCES subcategories(id)
   renown VARCHAR(20) NOT NULL -- Sencilla, Normal, Alta, Premium
   
 valuations

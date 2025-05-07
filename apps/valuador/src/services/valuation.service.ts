@@ -92,9 +92,9 @@ export class ValuationService {
   
   // ---------------- Operaciones de marcas ----------------
   
-  // Obtener marcas por categoría
-  async getBrands(categoryId?: number): Promise<Brand[]> {
-    const params = categoryId ? { category_id: categoryId } : {};
+  // Obtener marcas por subcategoría
+  async getBrands(subcategoryId?: number): Promise<Brand[]> {
+    const params = subcategoryId ? { subcategory_id: subcategoryId } : {};
     return this.http.get<Brand[]>('/brands', params);
   }
 } 
