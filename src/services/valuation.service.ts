@@ -171,7 +171,7 @@ export class ValuationService extends BaseService<Valuation> {
     let dbClient: PoolClient | undefined;
     try {
       dbClient = await pool.connect();
-      
+      console.log('Calculando valuación para:', data);
       // 1. Obtener los puntajes de los factores
       const factorsQuery = `
         SELECT factor_type, score 
@@ -190,6 +190,7 @@ export class ValuationService extends BaseService<Valuation> {
         data.demand,
         data.cleanliness
       ]);
+      console.log('Factores obtenidos:', factorsResult.rows);
       
       // 2. Calcular puntajes de compra y venta
       let purchaseScore = 0;

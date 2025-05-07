@@ -26,6 +26,6 @@ router.put('/:id/finalize', authMiddleware, valuationController.finalizeValuatio
 
 // Ruta para cálculo de valoración (puede ser usada sin crear una valoración completa)
 // @ts-expect-error - Express y TypeScript tienen problemas de tipos con middleware
-router.post('/calculate', authMiddleware, valuationController.calculateValuation);
+router.post('/calculate', valuationController.calculateValuation);
 
 export default router; 
