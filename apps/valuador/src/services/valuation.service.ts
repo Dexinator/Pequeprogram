@@ -131,4 +131,16 @@ export class ValuationService {
       return [];
     }
   }
+
+  // Crear una nueva marca
+  async createBrand(brandData: { name: string, subcategory_id: number, renown: string }): Promise<Brand> {
+    try {
+      const response = await this.http.post<{success: boolean, data: Brand}>('/brands', brandData);
+      console.log('Respuesta de creación de marca:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Error al crear marca:', error);
+      throw error;
+    }
+  }
 } 

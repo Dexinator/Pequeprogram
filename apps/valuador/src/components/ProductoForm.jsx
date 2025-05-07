@@ -42,6 +42,7 @@ export function ProductoForm({
   // Estados para funcionalidades adicionales
   const [showNewBrand, setShowNewBrand] = useState(false);
   const [newBrandName, setNewBrandName] = useState("");
+  const [newBrandRenown, setNewBrandRenown] = useState("Normal"); // Valor por defecto
   
   // Estado para resultado de valuación
   const [calculationResult, setCalculationResult] = useState(null);
@@ -116,7 +117,9 @@ export function ProductoForm({
     const fetchFeatureDefinitions = async () => {
       setIsLoadingFeatures(true);
       try {
+        console.log('Obteniendo características para subcategoría:', formData.subcategory_id);
         const data = await valuationService.getFeatureDefinitions(Number(formData.subcategory_id));
+        console.log('Características recibidas:', data);
         setFeatureDefinitions(Array.isArray(data) ? data : []);
         
         // Inicializar valores de características
@@ -126,6 +129,8 @@ export function ProductoForm({
             initialFeatures[feature.name] = '';
           });
         }
+        
+        console.log('Características inicializadas:', initialFeatures);
         
         // Actualizar formData con las características inicializadas
         setFormData(prev => ({
@@ -157,6 +162,8 @@ export function ProductoForm({
     
     // Para categorías, subcategorías y marcas, asegurarse de que el valor sea numérico
     let processedValue = value;
+    let newFormData = { ...formData };
+    
     if (fieldName === 'category_id' || fieldName === 'subcategory_id' || fieldName === 'brand_id') {
       // Si es una cadena vacía, mantenerla así
       if (value !== '') {
@@ -166,10 +173,20 @@ export function ProductoForm({
           return;
         }
         processedValue = Number(value);
+        
+        // Si es una marca, establecer automáticamente el renombre
+        if (fieldName === 'brand_id') {
+          const selectedBrand = brands.find(brand => brand.id === processedValue);
+          if (selectedBrand) {
+            // Actualizar el renombre de marca automáticamente
+            newFormData.brand_renown = selectedBrand.renown;
+            console.log(`Renombre establecido automáticamente a: ${selectedBrand.renown}`);
+          }
+        }
       }
     }
     
-    const newFormData = { ...formData, [fieldName]: processedValue };
+    newFormData[fieldName] = processedValue;
     setFormData(newFormData);
     
     // Notificar cambios al componente padre
@@ -189,31 +206,34 @@ export function ProductoForm({
     }
     
     try {
-      // En un caso real, aquí haríamos una llamada a la API para guardar la nueva marca
-      // Por ahora, simplemente simularemos que se guardó y la agregaremos a la lista local
-      const newBrand = {
-        id: `temp-${Date.now()}`, // ID temporal
+      // Crear objeto con los datos de la nueva marca
+      const brandData = {
         name: newBrandName,
-        subcategory_id: formData.subcategory_id,
-        renown: 'Normal', // Valor por defecto
-        is_active: true
+        subcategory_id: Number(formData.subcategory_id),
+        renown: newBrandRenown
       };
+      
+      // Guardar la marca en la base de datos
+      const newBrand = await valuationService.createBrand(brandData);
+      console.log('Nueva marca guardada:', newBrand);
       
       // Agregar la nueva marca a la lista
       setBrands([...brands, newBrand]);
       
-      // Seleccionar la nueva marca
+      // Seleccionar la nueva marca y establecer su renombre
       setFormData({
         ...formData,
-        brand_id: newBrand.id
+        brand_id: newBrand.id,
+        brand_renown: newBrand.renown
       });
       
       // Limpiar y cerrar el formulario
       setNewBrandName('');
+      setNewBrandRenown('Normal');
       setShowNewBrand(false);
       
       // Notificar al usuario
-      alert(`Marca "${newBrandName}" agregada con éxito`);
+      alert(`Marca "${newBrand.name}" creada exitosamente`);
     } catch (error) {
       console.error('Error al guardar nueva marca:', error);
       alert('Ocurrió un error al guardar la marca');
@@ -248,6 +268,15 @@ export function ProductoForm({
       return;
     }
     
+    // Validar campos obligatorios de características específicas
+    const mandatoryFeatures = featureDefinitions.filter(feature => feature.mandatory);
+    for (const feature of mandatoryFeatures) {
+      if (!formData.features[feature.name]) {
+        alert(`Por favor complete la característica obligatoria: ${feature.display_name}`);
+        return;
+      }
+    }
+    
     setIsCalculating(true);
     try {
       const calculationData = {
@@ -256,9 +285,11 @@ export function ProductoForm({
         condition_state: formData.condition_state || 'bueno',
         demand: formData.demand || 'media',
         cleanliness: formData.cleanliness || 'buena',
-        new_price: Number(formData.new_price)
+        new_price: Number(formData.new_price),
+        features: formData.features // Incluir características específicas en la solicitud
       };
       
+      console.log('Datos para cálculo de valuación:', calculationData);
       const result = await valuationService.calculateValuation(calculationData);
       setCalculationResult(result);
     } catch (error) {
@@ -276,17 +307,21 @@ export function ProductoForm({
     }
     
     if (featureDefinitions.length === 0) {
-      return null;
+      return formData.subcategory_id ? (
+        <div className="col-span-3 py-2 text-center text-gray-500">
+          No hay características específicas para esta subcategoría
+        </div>
+      ) : null;
     }
     
     return (
       <div className="col-span-3 mt-4 border-t border-border pt-4">
-        <h3 className="text-lg font-medium mb-3 text-azul-profundo">Características Específicas</h3>
+        <h3 className="text-lg font-medium mb-3 text-azul-profundo">Características Específicas de {subcategories.find(s => s.id === Number(formData.subcategory_id))?.name || 'la subcategoría'}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {featureDefinitions.map((feature) => (
-            <div key={feature.id} className="space-y-2">
+            <div key={feature.id} className="space-y-2 bg-background-alt p-3 rounded-md shadow-sm">
               <label className="block font-medium" htmlFor={`${feature.name}-feature-${productoId}`}>
-                {feature.display_name}
+                {feature.display_name} {feature.mandatory && <span className="text-rosa">*</span>}
               </label>
               {feature.type === 'texto' && (
                 <input
@@ -296,6 +331,8 @@ export function ProductoForm({
                   className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   value={formData.features[feature.name] || ''}
                   onChange={handleFeatureChange}
+                  required={feature.mandatory}
+                  placeholder={`Ingrese ${feature.display_name.toLowerCase()}`}
                 />
               )}
               {feature.type === 'numero' && (
@@ -306,6 +343,8 @@ export function ProductoForm({
                   className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   value={formData.features[feature.name] || ''}
                   onChange={handleFeatureChange}
+                  required={feature.mandatory}
+                  placeholder={`Ingrese ${feature.display_name.toLowerCase()}`}
                 />
               )}
               {feature.type === 'seleccion' && feature.options && (
@@ -315,8 +354,9 @@ export function ProductoForm({
                   className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   value={formData.features[feature.name] || ''}
                   onChange={handleFeatureChange}
+                  required={feature.mandatory}
                 >
-                  <option value="">Seleccionar opción</option>
+                  <option value="">Seleccionar {feature.display_name.toLowerCase()}</option>
                   {feature.options.map((option, idx) => (
                     <option key={idx} value={option}>{option}</option>
                   ))}
@@ -465,27 +505,44 @@ export function ProductoForm({
                   <label className="text-sm font-medium" htmlFor={`new-brand-${productoId}`}>
                     Nombre de la nueva marca
                   </label>
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      id={`new-brand-${productoId}`}
-                      className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
-                      value={newBrandName}
-                      onChange={(e) => setNewBrandName(e.target.value)}
-                    />
+                  <input 
+                    type="text" 
+                    id={`new-brand-${productoId}`}
+                    className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                    value={newBrandName}
+                    onChange={(e) => setNewBrandName(e.target.value)}
+                  />
+                  
+                  <label className="text-sm font-medium mt-2" htmlFor={`new-brand-renown-${productoId}`}>
+                    Renombre de la marca
+                  </label>
+                  <select
+                    id={`new-brand-renown-${productoId}`}
+                    className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+                    value={newBrandRenown}
+                    onChange={(e) => setNewBrandRenown(e.target.value)}
+                  >
+                    <option value="Sencilla">Sencilla</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Premium">Premium</option>
+                  </select>
+                  
+                  <div className="flex gap-2 mt-2">
                     <button 
                       type="button"
-                      className="bg-azul-claro text-white px-3 rounded-md hover:bg-azul-claro/80 transition-all"
+                      className="bg-azul-claro text-white px-3 py-2 rounded-md hover:bg-azul-claro/80 transition-all"
                       onClick={handleSaveNewBrand}
                     >
                       Guardar
                     </button>
                     <button 
                       type="button"
-                      className="bg-rosa text-white px-3 rounded-md hover:bg-rosa/80 transition-all"
+                      className="bg-rosa text-white px-3 py-2 rounded-md hover:bg-rosa/80 transition-all"
                       onClick={() => {
                         setShowNewBrand(false);
                         setNewBrandName('');
+                        setNewBrandRenown('Normal');
                       }}
                     >
                       Cancelar
