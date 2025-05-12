@@ -15,21 +15,21 @@ router.get('/:id', asyncHandler(productController.getById));
 router.post('/', 
   authMiddleware, 
   roleMiddleware(['admin', 'manager']), 
-  // @ts-expect-error: Ignorando error de tipado en Express
+  // @ts-ignore: Ignorando error de tipado en Express
   asyncHandler(productController.create)
 );
 
 router.put('/:id', 
   authMiddleware, 
   roleMiddleware(['admin', 'manager']), 
-  // @ts-expect-error: Ignorando error de tipado en Express
+  // @ts-ignore: Ignorando error de tipado en Express
   asyncHandler(productController.update)
 );
 
 router.delete('/:id', 
   authMiddleware, 
   roleMiddleware(['admin']), // Solo admin puede eliminar
-  // @ts-expect-error: Ignorando error de tipado en Express
+  // @ts-ignore: Ignorando error de tipado en Express
   asyncHandler(productController.delete)
 );
 
