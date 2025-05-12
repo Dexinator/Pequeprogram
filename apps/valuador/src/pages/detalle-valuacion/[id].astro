@@ -4,19 +4,21 @@ import ValuacionResumen from '../../components/ValuacionResumen.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 
 // Función requerida para rutas dinámicas en modo estático
-export function getStaticPaths() {
-  // En un caso real, estos IDs vendrían de la base de datos
-  return [
-    { params: { id: "5432" } },
-    { params: { id: "5431" } },
-    { params: { id: "5430" } },
-    { params: { id: "5429" } },
-    { params: { id: "5428" } }
-  ];
+export async function getStaticPaths() {
+  // En una implementación real, estos datos vendrían de una API o base de datos
+  const valuacionIds = ["5432", "5431", "5430", "5429", "5428"];
+  
+  return valuacionIds.map(id => {
+    return {
+      params: { id },
+      props: { id } // Pasar el ID como prop para asegurar que esté disponible
+    };
+  });
 }
 
-// Obtener el ID de la valuación de los parámetros de ruta
+// Obtener el ID y props de la valuación
 const { id } = Astro.params;
+const { id: valuacionId } = Astro.props;
 
 // Datos de ejemplo para una valuación específica
 // En una implementación real, estos datos vendrían de la base de datos
@@ -70,7 +72,7 @@ const totalVenta = productosData.reduce((sum, p) => sum + p.precioVenta, 0);
 
 // Información de la valuación
 const valuacionInfo = {
-  id,
+  id: valuacionId || id || '',
   fecha: "15/05/2025",
   estado: "finalizada",
   usuario: "Carlos Mendoza",
@@ -172,7 +174,7 @@ const valuacionInfo = {
       productos={productosData}
       totalCompra={totalCompra}
       totalVenta={totalVenta}
-      valuacionId={id || ''}
+      valuacionId={valuacionId || id || ''}
       fecha={valuacionInfo.fecha}
     />
     

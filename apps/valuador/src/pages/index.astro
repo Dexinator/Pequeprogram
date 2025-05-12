@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import ApiTest from '../components/ApiTest';
 ---
 
 <MainLayout title="Inicio">
@@ -25,6 +26,10 @@ import MainLayout from '../layouts/MainLayout.astro';
         >
           <span class="mr-2">📋</span> Ver Historial
         </a>
+      </div>
+      
+      <div class="mt-6">
+        <ApiTest client:load />
       </div>
     </section>
 
