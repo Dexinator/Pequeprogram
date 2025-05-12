@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../lib/api';
+const api = "https://entrepeques-api-19a57de16883.herokuapp.com";
 
 export default function ApiTest() {
   const [apiStatus, setApiStatus] = useState('loading');
