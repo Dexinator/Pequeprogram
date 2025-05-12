@@ -11,7 +11,7 @@ export default function ApiTest() {
       try {
         setApiStatus('loading');
         // Intenta conectar con la ruta raíz de la API
-        const response = await api.get('');
+        const response = await api.get('https://entrepeques-api-19a57de16883.herokuapp.com');
         setApiStatus('connected');
         setApiMessage(response?.message || 'Conexión exitosa');
       } catch (err) {
