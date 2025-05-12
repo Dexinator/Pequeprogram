@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+// @ts-ignore
 import cors from 'cors';
 import { pool, testConnection } from './db';
 import apiRoutes from './routes';

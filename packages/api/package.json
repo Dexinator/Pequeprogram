@@ -5,13 +5,14 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "dev": "nodemon --exec ts-node --transpile-only src/index.ts",
+    "build": "tsc -p tsconfig.json --skipLibCheck --noEmitOnError false",
     "start": "node dist/index.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "postinstall": "npm run build",
-    "docker:dev": "nodemon --transpile-only src/index.ts"
+    "docker:dev": "nodemon --transpile-only src/index.ts",
+    "migrate": "ts-node src/migrate.ts"
   },
   "keywords": [],
   "author": "",
