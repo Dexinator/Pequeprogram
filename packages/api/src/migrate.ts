@@ -14,5 +14,6 @@ async function runMigrations() {
   }
 }
 
-// Ejecutar función
-runMigrations(); */
+// Ejecutar migraciones
+runMigrations();
+*/
