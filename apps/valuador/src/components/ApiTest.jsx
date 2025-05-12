@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-const api = "https://entrepeques-api-19a57de16883.herokuapp.com";
+import { api } from '../lib/api';
 
 export default function ApiTest() {
   const [apiStatus, setApiStatus] = useState('loading');
@@ -23,8 +23,9 @@ export default function ApiTest() {
 
     checkApiConnection();
   }, []);
-
+  console.log(apiStatus);
   return (
+    
     <div className="p-4 border rounded-md">
       <h2 className="text-lg font-bold mb-2">Estado de la API</h2>
       
@@ -37,7 +38,7 @@ export default function ApiTest() {
           <p className="text-green-600">✅ API conectada correctamente</p>
           {apiMessage && <p className="mt-2 text-sm">{apiMessage}</p>}
           <p className="mt-2 text-xs text-slate-500">
-            URL de la API: {"https://entrepeques-api-19a57de16883.herokuapp.com" || 'No configurada'}
+            URL de la API: {import.meta.env.PUBLIC_API_URL || 'No configurada'}
           </p>
         </div>
       )}
