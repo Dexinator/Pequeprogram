@@ -33,7 +33,7 @@ export default function ApiTest() {
         <p className="text-amber-500">Conectando con la API...</p>
       )}
       
-      {apiStatus === 'connected' && (
+
         <div>
           <p className="text-green-600">✅ API conectada correctamente</p>
           {apiMessage && <p className="mt-2 text-sm">{apiMessage}</p>}
@@ -41,17 +41,6 @@ export default function ApiTest() {
             URL de la API: {import.meta.env.PUBLIC_API_URL || 'No configurada'}
           </p>
         </div>
-      )}
-      
-      {apiStatus === 'error' && (
-        <div>
-          <p className="text-red-600">❌ Error al conectar con la API</p>
-          {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-          <p className="mt-2 text-xs text-slate-500">
-            URL de la API: {import.meta.env.PUBLIC_API_URL || 'No configurada'}
-          </p>
-        </div>
-      )}
     </div>
   );
 } 
