@@ -3,6 +3,18 @@ import MainLayout from '../../layouts/MainLayout.astro';
 import ValuacionResumen from '../../components/ValuacionResumen.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 
+// Función requerida para rutas dinámicas en modo estático
+export function getStaticPaths() {
+  // En un caso real, estos IDs vendrían de la base de datos
+  return [
+    { params: { id: "5432" } },
+    { params: { id: "5431" } },
+    { params: { id: "5430" } },
+    { params: { id: "5429" } },
+    { params: { id: "5428" } }
+  ];
+}
+
 // Obtener el ID de la valuación de los parámetros de ruta
 const { id } = Astro.params;
 
@@ -160,7 +172,7 @@ const valuacionInfo = {
       productos={productosData}
       totalCompra={totalCompra}
       totalVenta={totalVenta}
-      valuacionId={id}
+      valuacionId={id || ''}
       fecha={valuacionInfo.fecha}
     />
     
