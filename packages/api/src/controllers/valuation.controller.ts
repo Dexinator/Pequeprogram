@@ -125,7 +125,7 @@ export const valuationController = {
   calculateValuation: async (req: Request, res: Response) => {
     try {
       const calculationData: CalculateValuationDto = req.body;
-      
+      console.log('calculationData', calculationData);
       // Validar datos requeridos
       const requiredFields = ['subcategory_id', 'status', 'condition_state', 'demand', 'cleanliness', 'new_price'];
       for (const field of requiredFields) {

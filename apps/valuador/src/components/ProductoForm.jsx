@@ -269,9 +269,9 @@ export function ProductoForm({
       const calculationData = {
         subcategory_id: Number(formData.subcategory_id),
         status: formData.status,
-        condition_state: formData.condition_state || 'bueno',
-        demand: formData.demand || 'media',
-        cleanliness: formData.cleanliness || 'buena',
+        condition_state: formData.condition_state,
+        demand: formData.demand,
+        cleanliness: formData.cleanliness,
         new_price: Number(formData.new_price)
       };
       
@@ -583,9 +583,9 @@ export function ProductoForm({
               onChange={handleChange}
             >
               <option value="">Seleccionar condición</option>
-              <option value="excelente">Excelente</option>
-              <option value="bueno">Bueno</option>
-              <option value="regular">Regular</option>
+              <option value="Excelente">Excelente</option>
+              <option value="Bueno">Bueno</option>
+              <option value="Regular">Regular</option>
             </select>
           </div>
           
@@ -600,9 +600,9 @@ export function ProductoForm({
               value={formData.demand}
               onChange={handleChange}
             >
-              <option value="alta">Alta</option>
-              <option value="media">Media</option>
-              <option value="baja">Baja</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
             </select>
           </div>
           
@@ -617,9 +617,9 @@ export function ProductoForm({
               value={formData.cleanliness}
               onChange={handleChange}
             >
-              <option value="buena">Buena</option>
-              <option value="regular">Regular</option>
-              <option value="mala">Mala</option>
+              <option value="Buena">Buena</option>
+              <option value="Regular">Regular</option>
+              <option value="Mala">Mala</option>
             </select>
           </div>
         </div>

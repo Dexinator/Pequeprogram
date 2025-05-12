@@ -117,9 +117,9 @@ export interface AddValuationItemDto {
 export interface CalculateValuationDto {
   subcategory_id: number;
   status: string; // Nuevo, Usado como nuevo, etc.
-  condition_state: 'excelente' | 'bueno' | 'regular';
-  demand: 'alta' | 'media' | 'baja';
-  cleanliness: 'buena' | 'regular' | 'mala';
+  condition_state: string;
+  demand: string;
+  cleanliness: string;
   new_price: number;
 }
 

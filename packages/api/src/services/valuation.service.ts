@@ -224,10 +224,12 @@ export class ValuationService extends BaseService<Valuation> {
       const subcategory = subcategoryResult.rows[0];
       
       // Determinar si es nuevo o usado
-      const isNew = data.status.toLowerCase().includes('nuevo');
-      
+      const isNew = data.status.toLowerCase() === 'nuevo';
+      console.log('isNew', isNew);
       const gap = isNew ? subcategory.gap_new : subcategory.gap_used;
       const margin = isNew ? subcategory.margin_new : subcategory.margin_used;
+      console.log('gap', gap);
+      console.log('margin', margin);
       
       // 4. Aplicar fórmulas de cálculo
       // Precio Venta = Precio_Nuevo × (1 - GAP + Calificación_Venta/100)
