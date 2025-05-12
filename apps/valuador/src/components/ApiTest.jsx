@@ -37,7 +37,7 @@ export default function ApiTest() {
           <p className="text-green-600">✅ API conectada correctamente</p>
           {apiMessage && <p className="mt-2 text-sm">{apiMessage}</p>}
           <p className="mt-2 text-xs text-slate-500">
-            URL de la API: {import.meta.env.PUBLIC_API_URL || 'No configurada'}
+            URL de la API: {"https://entrepeques-api-19a57de16883.herokuapp.com" || 'No configurada'}
           </p>
         </div>
       )}
