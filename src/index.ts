@@ -10,7 +10,7 @@ const port = config.port;
 
 // Configuración de CORS
 app.use(cors({
-  origin: '*', // En producción, cambiar por los dominios permitidos
+  origin: config.corsOrigin || ['https://pequeprogram-valuador-c7m7.vercel.app', 'http://localhost:4321'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
