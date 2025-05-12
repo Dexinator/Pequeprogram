@@ -1,3 +1,4 @@
+/*
 import { initializeDatabase } from './db';
 
 // Función principal para ejecutar migraciones
@@ -14,4 +15,4 @@ async function runMigrations() {
 }
 
 // Ejecutar función
-runMigrations(); 
+runMigrations(); */
