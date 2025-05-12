@@ -1,0 +1,42 @@
+---
+// Componente para mostrar el estado de una valuación con un distintivo visual
+// Propiedades:
+// - status: estado de la valuación (pendiente, finalizada, cancelada)
+
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+
+// Configuración de colores y textos basados en el estado
+const config = {
+  pendiente: {
+    bg: 'bg-amarillo/20',
+    text: 'text-amarillo',
+    label: 'Pendiente'
+  },
+  finalizada: {
+    bg: 'bg-verde-lima/20',
+    text: 'text-verde-lima',
+    label: 'Finalizada'
+  },
+  cancelada: {
+    bg: 'bg-rosa/20',
+    text: 'text-rosa',
+    label: 'Cancelada'
+  }
+};
+
+// Obtener la configuración según el estado o usar la configuración por defecto
+const statusKey = status as keyof typeof config;
+const { bg, text, label } = config[statusKey] || config.pendiente;
+---
+
+<span class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${bg} ${text}`}>
+  <span class="relative flex w-2 h-2 mr-1.5">
+    <span class={`animate-ping absolute inline-flex h-full w-full rounded-full ${text} opacity-75`}></span>
+    <span class={`relative inline-flex rounded-full h-2 w-2 ${text}`}></span>
+  </span>
+  {label}
+</span> 

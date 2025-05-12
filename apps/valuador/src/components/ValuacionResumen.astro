@@ -1,0 +1,197 @@
+---
+// Componente para mostrar el resumen de una valuación
+// Propiedades:
+// - cliente: información del cliente
+// - productos: lista de productos valuados
+// - totalCompra: total de compra
+// - totalVenta: total de venta
+// - valuacionId: ID de la valuación
+// - fecha: fecha de la valuación
+
+interface Cliente {
+  nombre: string;
+  telefono: string;
+  email?: string;
+  identificacion?: string;
+}
+
+interface Producto {
+  id: string;
+  index: number;
+  categoria: string;
+  subcategoria: string;
+  marca: string;
+  estado: string;
+  modalidad: string;
+  precioCompra: number;
+  precioVenta: number;
+  precioConsignacion?: number;
+}
+
+interface Props {
+  cliente: Cliente;
+  productos: Producto[];
+  totalCompra: number;
+  totalVenta: number;
+  valuacionId: string;
+  fecha: string;
+}
+
+const { cliente, productos, totalCompra, totalVenta, valuacionId, fecha } = Astro.props;
+
+// Calcular ganancia total
+const gananciaTotal = totalVenta - totalCompra;
+const porcentajeGanancia = (gananciaTotal / totalCompra) * 100;
+---
+
+<div class="space-y-6">
+  <!-- Información del cliente -->
+  <div class="bg-background-alt p-6 rounded-lg shadow-sm border border-border">
+    <h2 class="text-xl font-heading font-bold mb-4 text-azul-profundo">Información del Cliente</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-sm text-text-muted">Nombre:</p>
+        <p class="font-medium">{cliente.nombre}</p>
+      </div>
+      
+      <div>
+        <p class="text-sm text-text-muted">Teléfono:</p>
+        <p class="font-medium">{cliente.telefono}</p>
+      </div>
+      
+      {cliente.email && (
+        <div>
+          <p class="text-sm text-text-muted">Email:</p>
+          <p class="font-medium">{cliente.email}</p>
+        </div>
+      )}
+      
+      {cliente.identificacion && (
+        <div>
+          <p class="text-sm text-text-muted">Identificación:</p>
+          <p class="font-medium">{cliente.identificacion}</p>
+        </div>
+      )}
+    </div>
+  </div>
+  
+  <!-- Resumen financiero -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+      <div class="flex items-start gap-3">
+        <div class="p-2 bg-azul-claro/10 rounded-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-azul-claro" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-text-muted text-sm">Total Compra</p>
+          <p class="font-bold text-lg">${totalCompra.toFixed(2)}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+      <div class="flex items-start gap-3">
+        <div class="p-2 bg-verde-lima/10 rounded-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-verde-lima" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-text-muted text-sm">Total Venta</p>
+          <p class="font-bold text-lg">${totalVenta.toFixed(2)}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
+      <div class="flex items-start gap-3">
+        <div class="p-2 bg-amarillo/10 rounded-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-text-muted text-sm">Ganancia</p>
+          <div class="flex items-end gap-2">
+            <p class="font-bold text-lg">${gananciaTotal.toFixed(2)}</p>
+            <p class="text-xs text-verde-lima">({porcentajeGanancia.toFixed(0)}%)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Productos -->
+  <div class="bg-background-alt p-6 rounded-lg shadow-sm border border-border">
+    <h2 class="text-xl font-heading font-bold mb-4 text-azul-profundo">Productos ({productos.length})</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-border">
+        <thead>
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">#</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Categoría</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Subcategoría</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Marca</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Modalidad</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Compra</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Venta</th>
+          </tr>
+        </thead>
+        <tbody class="bg-background divide-y divide-border">
+          {productos.map((producto, index) => (
+            <tr class="hover:bg-background-alt transition-colors">
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                {index + 1}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                {producto.categoria}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                {producto.subcategoria}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                {producto.marca}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                <span class={`px-2 py-1 rounded-full text-xs ${
+                  producto.estado === 'Excelente' ? 'bg-verde-lima/20 text-verde-lima' :
+                  producto.estado === 'Bueno' ? 'bg-azul-claro/20 text-azul-claro' :
+                  'bg-amarillo/20 text-amarillo'
+                }`}>
+                  {producto.estado}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">
+                {producto.modalidad}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-right">
+                ${producto.precioCompra.toFixed(2)}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-right">
+                ${producto.precioVenta.toFixed(2)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr class="bg-background-alt">
+            <td colspan="6" class="px-4 py-3 text-sm font-medium text-right">
+              Total:
+            </td>
+            <td class="px-4 py-3 text-sm font-bold text-right">
+              ${totalCompra.toFixed(2)}
+            </td>
+            <td class="px-4 py-3 text-sm font-bold text-right">
+              ${totalVenta.toFixed(2)}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div> 

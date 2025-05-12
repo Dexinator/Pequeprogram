@@ -377,7 +377,7 @@ const estadisticas = {
     // Implementar impresión de valuación individual
     const imprimirBtns = document.querySelectorAll('[title="Imprimir"]');
     imprimirBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function(this: HTMLElement) {
         const fila = this.closest('tr');
         const id = fila?.querySelector('td:first-child')?.textContent?.trim();
         
