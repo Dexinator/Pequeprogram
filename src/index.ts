@@ -10,10 +10,22 @@ const port = config.port;
 
 // Configuración de CORS
 app.use(cors({
-  origin: config.corsOrigin || ['https://pequeprogram-valuador-c7m7.vercel.app', 'http://localhost:4321'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: '*', // Permitir todas las solicitudes en desarrollo
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Middleware para imprimir información de las solicitudes (solo en desarrollo)
+if (config.nodeEnv === 'development') {
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log(`${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
+    if (req.body && Object.keys(req.body).length > 0) {
+      console.log('Body:', req.body);
+    }
+    next();
+  });
+}
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -70,12 +82,12 @@ async function startServer() {
       console.error('No se pudo conectar a la base de datos. Verificar configuración.');
       process.exit(1);
     }
-    
+
     /*
     // Inicializar base de datos y ejecutar migraciones
     await initializeDatabase();
     */
-    
+
     // Iniciar servidor Express
     app.listen(port, () => {
       console.log(`Entorno: ${config.nodeEnv}`);
@@ -89,4 +101,4 @@ async function startServer() {
 }
 
 // Iniciar la aplicación
-startServer(); 
+startServer();

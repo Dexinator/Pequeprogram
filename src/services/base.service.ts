@@ -8,11 +8,11 @@ import { QueryResult } from 'pg';
  */
 export abstract class BaseService<T extends BaseModel> {
   protected tableName: string;
-  
+
   constructor(tableName: string) {
     this.tableName = tableName;
   }
-  
+
   /**
    * Obtiene todos los registros de la tabla
    */
@@ -21,41 +21,61 @@ export abstract class BaseService<T extends BaseModel> {
     const result = await pool.query(query);
     return result.rows as T[];
   }
-  
+
   /**
    * Obtiene un registro por su ID
    */
   async findById(id: number): Promise<T | null> {
     const query = `SELECT * FROM ${this.tableName} WHERE id = $1 AND is_active = true`;
     const result = await pool.query(query, [id]);
-    
+
     if (result.rows.length === 0) {
       return null;
     }
-    
+
     return result.rows[0] as T;
   }
-  
+
   /**
    * Crea un nuevo registro
    */
   async create(data: Partial<T>): Promise<T> {
-    // Construye dinámicamente la consulta INSERT
-    const keys = Object.keys(data);
-    const values = Object.values(data);
-    const placeholders = keys.map((_, index) => `$${index + 1}`).join(', ');
-    const columns = keys.join(', ');
-    
-    const query = `
-      INSERT INTO ${this.tableName} (${columns})
-      VALUES (${placeholders})
-      RETURNING *
-    `;
-    
-    const result = await pool.query(query, values);
-    return result.rows[0] as T;
+    try {
+      console.log(`BaseService.create: Creando registro en tabla ${this.tableName}`);
+      console.log(`BaseService.create: Datos recibidos:`, Object.keys(data).reduce((acc, key) => {
+        if (key === 'password_hash') {
+          acc[key] = (data[key] as string).substring(0, 10) + '...';
+        } else {
+          acc[key] = data[key];
+        }
+        return acc;
+      }, {} as Record<string, any>));
+
+      // Construye dinámicamente la consulta INSERT
+      const keys = Object.keys(data);
+      const values = Object.values(data);
+      const placeholders = keys.map((_, index) => `$${index + 1}`).join(', ');
+      const columns = keys.join(', ');
+
+      const query = `
+        INSERT INTO ${this.tableName} (${columns})
+        VALUES (${placeholders})
+        RETURNING *
+      `;
+
+      console.log(`BaseService.create: Consulta SQL generada: ${query.replace(/\s+/g, ' ').trim()}`);
+      console.log(`BaseService.create: Número de valores: ${values.length}`);
+
+      const result = await pool.query(query, values);
+      console.log(`BaseService.create: Registro creado exitosamente con ID: ${result.rows[0]?.id}`);
+
+      return result.rows[0] as T;
+    } catch (error) {
+      console.error(`BaseService.create: Error al crear registro en tabla ${this.tableName}:`, error);
+      throw error;
+    }
   }
-  
+
   /**
    * Actualiza un registro existente
    */
@@ -66,23 +86,23 @@ export abstract class BaseService<T extends BaseModel> {
     const setClause = keys
       .map((key, index) => `${key} = $${index + 1}`)
       .join(', ');
-    
+
     const query = `
       UPDATE ${this.tableName}
       SET ${setClause}, updated_at = CURRENT_TIMESTAMP
       WHERE id = $${keys.length + 1}
       RETURNING *
     `;
-    
+
     const result = await pool.query(query, [...values, id]);
-    
+
     if (result.rows.length === 0) {
       return null;
     }
-    
+
     return result.rows[0] as T;
   }
-  
+
   /**
    * Elimina lógicamente un registro (soft delete)
    */
@@ -92,11 +112,11 @@ export abstract class BaseService<T extends BaseModel> {
       SET is_active = false, updated_at = CURRENT_TIMESTAMP
       WHERE id = $1
     `;
-    
+
     const result = await pool.query(query, [id]);
     return result.rowCount !== null && result.rowCount > 0;
   }
-  
+
   /**
    * Elimina físicamente un registro de la base de datos
    * (usar con precaución)
@@ -106,4 +126,4 @@ export abstract class BaseService<T extends BaseModel> {
     const result = await pool.query(query, [id]);
     return result.rowCount !== null && result.rowCount > 0;
   }
-} 
+}
