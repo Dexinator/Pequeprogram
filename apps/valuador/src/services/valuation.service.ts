@@ -1,4 +1,5 @@
 import { HttpService } from './http.service';
+import { AuthService } from './auth.service';
 import type {
   Client,
   CreateClientDto,
@@ -19,10 +20,15 @@ import type {
 // Servicio para operaciones de valuación
 export class ValuationService {
   private http: HttpService;
+  private authService: AuthService;
   private baseEndpoint = '/valuations';
 
   constructor() {
     this.http = new HttpService();
+    this.authService = new AuthService();
+
+    // Inicializar el token de autenticación si existe
+    this.refreshAuthToken();
   }
 
   // ---------------- Operaciones de clientes ----------------
@@ -73,15 +79,37 @@ export class ValuationService {
   async getValuations(params: ValuationQueryParams = {}): Promise<{ valuations: Valuation[], total: number }> {
     return this.http.get<{ valuations: Valuation[], total: number }>(this.baseEndpoint, params);
   }
-  
+
+  // Actualizar el token de autenticación
+  refreshAuthToken(): void {
+    // Intentar obtener el token directamente de localStorage primero
+    let token = null;
+
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('entrepeques_auth_token');
+    }
+
+    // Si no se encontró en localStorage, intentar obtenerlo del AuthService
+    if (!token) {
+      token = this.authService.getToken();
+    }
+
+    if (token) {
+      console.log('Configurando token de autenticación en ValuationService');
+      this.http.setAuthToken(token);
+    } else {
+      console.warn('No se encontró token de autenticación para ValuationService');
+    }
+  }
+
   // ---------------- Operaciones de categorías y subcategorías ----------------
-  
+
   // Obtener todas las categorías
   async getCategories(): Promise<Category[]> {
     const response = await this.http.get<{success: boolean, data: Category[]}>('/categories');
     return response.data || [];
   }
-  
+
   // Obtener subcategorías por categoría
   async getSubcategories(categoryId: number): Promise<Subcategory[]> {
     try {
@@ -92,7 +120,7 @@ export class ValuationService {
       return [];
     }
   }
-  
+
   // Obtener todas las subcategorías
   async getAllSubcategories(): Promise<Subcategory[]> {
     try {
@@ -103,9 +131,9 @@ export class ValuationService {
       return [];
     }
   }
-  
+
   // ---------------- Operaciones de marcas ----------------
-  
+
   // Obtener marcas por subcategoría
   async getBrands(subcategoryId?: number): Promise<Brand[]> {
     try {
@@ -120,7 +148,7 @@ export class ValuationService {
   }
 
   // ---------------- Operaciones de características ----------------
-  
+
   // Obtener definiciones de características por subcategoría
   async getFeatureDefinitions(subcategoryId: number): Promise<FeatureDefinition[]> {
     try {
@@ -143,4 +171,4 @@ export class ValuationService {
       throw error;
     }
   }
-} 
+}

@@ -20,14 +20,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const authService = new AuthService();
 
-  useEffect(() => {
-    // Verificar si hay un usuario autenticado al inicio
-    const checkAuth = () => {
+  // Función para verificar la autenticación
+  const checkAuth = () => {
+    try {
+      console.log('Verificando autenticación...');
       const storedUser = authService.getUser();
-      setUser(storedUser);
-      setIsLoading(false);
-    };
+      const token = authService.getToken();
 
+      console.log('Token encontrado:', !!token);
+      console.log('Usuario encontrado:', !!storedUser);
+
+      if (token && storedUser) {
+        console.log('Usuario autenticado:', storedUser.username);
+        setUser(storedUser);
+      } else {
+        console.log('No hay usuario autenticado');
+        setUser(null);
+      }
+    } catch (err) {
+      console.error('Error al verificar autenticación:', err);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
     checkAuth();
   }, []);
 
@@ -36,9 +55,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
 
     try {
+      console.log('Iniciando sesión con credenciales:', credentials.username);
       const response = await authService.login(credentials);
-      setUser(response.user);
+
+      if (response.success && response.token && response.user) {
+        console.log('Login exitoso, actualizando estado de usuario');
+        setUser(response.user);
+
+        // Verificar que el token se haya guardado correctamente
+        const savedToken = authService.getToken();
+        if (savedToken) {
+          console.log('Token guardado correctamente');
+        } else {
+          console.warn('El token no se guardó correctamente');
+        }
+      } else {
+        console.error('Respuesta de login no válida:', response);
+        setError(response.message || 'Error al iniciar sesión');
+      }
     } catch (err) {
+      console.error('Error en login:', err);
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
       setIsLoading(false);

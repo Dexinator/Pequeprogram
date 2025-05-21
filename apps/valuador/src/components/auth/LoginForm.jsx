@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { AuthService } from '../../services/auth.service';
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Componente de formulario de inicio de sesión
- * Utiliza directamente el servicio de autenticación
+ * Utiliza el contexto de autenticación
  */
 export default function LoginForm() {
+  const { login, error: authError, isLoading: authLoading } = useAuth();
+
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -16,19 +18,12 @@ export default function LoginForm() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Crear una instancia del servicio de autenticación solo en el cliente
-  // Usamos useEffect para asegurarnos de que solo se ejecute en el navegador
-  const [authService, setAuthService] = useState(null);
-
-  // Inicializar el servicio de autenticación solo en el cliente
-  useEffect(() => {
-    // Verificar si estamos en un entorno de navegador
-    if (typeof window !== 'undefined') {
-      const service = new AuthService();
-      setAuthService(service);
-      console.log('URL de la API en LoginForm:', service.getBaseUrl());
+  // Actualizar el error local si hay un error en el contexto de autenticación
+  React.useEffect(() => {
+    if (authError) {
+      setError(authError);
     }
-  }, []);
+  }, [authError]);
 
   // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
@@ -68,33 +63,21 @@ export default function LoginForm() {
     e.preventDefault();
 
     if (validateForm()) {
-      // Verificar si el servicio de autenticación está disponible
-      if (!authService) {
-        setError('El servicio de autenticación no está disponible');
-        return;
-      }
-
-      setIsSubmitting(true);
       setIsLoading(true);
       setError(null);
 
       try {
         console.log('Enviando formulario de login:', formData);
 
-        // Usar el servicio de autenticación
-        const response = await authService.login(formData);
+        // Usar el contexto de autenticación para iniciar sesión
+        await login(formData);
 
-        console.log('Respuesta del login:', response);
-
-        // Si el login es exitoso, redirigir a la página principal
-        if (response && response.success && response.user) {
-          console.log('Login exitoso, redirigiendo...');
+        // Esperar un momento para que se actualice el estado
+        setTimeout(() => {
+          // Redirigir a la página principal
+          console.log('Login procesado, redirigiendo...');
           window.location.href = '/';
-        } else {
-          // Mostrar mensaje de error
-          console.error('Error en la respuesta del login:', response);
-          setError(response?.message || 'Error al iniciar sesión. Verifica tus credenciales.');
-        }
+        }, 500);
       } catch (err) {
         console.error('Error al iniciar sesión:', err);
         if (err.message && err.message.includes('Failed to fetch')) {
@@ -103,7 +86,6 @@ export default function LoginForm() {
           setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
         }
       } finally {
-        setIsSubmitting(false);
         setIsLoading(false);
       }
     }

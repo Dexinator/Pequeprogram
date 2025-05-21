@@ -119,8 +119,11 @@ export class AuthService {
   getToken(): string | null {
     // Verificar si estamos en un entorno de navegador
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      return localStorage.getItem(this.TOKEN_KEY);
+      const token = localStorage.getItem(this.TOKEN_KEY);
+      console.log('Token obtenido de localStorage:', token ? 'Presente' : 'No encontrado');
+      return token;
     }
+    console.log('No se pudo obtener el token (no estamos en un navegador)');
     return null;
   }
 
@@ -128,7 +131,18 @@ export class AuthService {
   saveToken(token: string): void {
     // Verificar si estamos en un entorno de navegador
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      console.log('Guardando token en localStorage');
       localStorage.setItem(this.TOKEN_KEY, token);
+
+      // Verificar que se haya guardado correctamente
+      const savedToken = localStorage.getItem(this.TOKEN_KEY);
+      if (savedToken) {
+        console.log('Token guardado correctamente en localStorage');
+      } else {
+        console.warn('No se pudo guardar el token en localStorage');
+      }
+    } else {
+      console.warn('No se pudo guardar el token (no estamos en un navegador)');
     }
   }
 
@@ -136,9 +150,25 @@ export class AuthService {
   getUser(): User | null {
     // Verificar si estamos en un entorno de navegador
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      const userJson = localStorage.getItem(this.USER_KEY);
-      return userJson ? JSON.parse(userJson) : null;
+      try {
+        const userJson = localStorage.getItem(this.USER_KEY);
+        console.log('Datos de usuario obtenidos de localStorage:', userJson ? 'Presentes' : 'No encontrados');
+
+        if (!userJson) {
+          return null;
+        }
+
+        const user = JSON.parse(userJson);
+        console.log('Usuario recuperado de localStorage:', user?.username);
+        return user;
+      } catch (error) {
+        console.error('Error al parsear datos de usuario de localStorage:', error);
+        // Si hay un error al parsear, limpiar el localStorage
+        localStorage.removeItem(this.USER_KEY);
+        return null;
+      }
     }
+    console.log('No se pudo obtener el usuario (no estamos en un navegador)');
     return null;
   }
 
@@ -146,7 +176,23 @@ export class AuthService {
   saveUser(user: User): void {
     // Verificar si estamos en un entorno de navegador
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      try {
+        console.log('Guardando datos de usuario en localStorage:', user?.username);
+        const userJson = JSON.stringify(user);
+        localStorage.setItem(this.USER_KEY, userJson);
+
+        // Verificar que se haya guardado correctamente
+        const savedUserJson = localStorage.getItem(this.USER_KEY);
+        if (savedUserJson) {
+          console.log('Datos de usuario guardados correctamente en localStorage');
+        } else {
+          console.warn('No se pudieron guardar los datos de usuario en localStorage');
+        }
+      } catch (error) {
+        console.error('Error al guardar datos de usuario en localStorage:', error);
+      }
+    } else {
+      console.warn('No se pudieron guardar los datos de usuario (no estamos en un navegador)');
     }
   }
 
