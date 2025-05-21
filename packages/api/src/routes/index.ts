@@ -4,6 +4,8 @@ import categoryRoutes from './category.routes';
 import productRoutes from './product.routes';
 import valuationRoutes from './valuation.routes';
 import brandRoutes from './brand.routes';
+import userRoutes from './user.routes';
+import roleRoutes from './role.routes';
 
 const router = Router();
 
@@ -22,7 +24,10 @@ router.use('/valuations', valuationRoutes);
 // Rutas de marcas
 router.use('/brands', brandRoutes);
 
-// Aquí se pueden agregar otras rutas de la API
-// router.use('/users', userRoutes);
+// Rutas de usuarios
+router.use('/users', userRoutes);
 
-export default router; 
+// Rutas de roles
+router.use('/roles', roleRoutes);
+
+export default router;

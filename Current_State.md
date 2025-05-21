@@ -333,7 +333,7 @@ docker logs entrepeques-api-dev
 **Decisiones técnicas:**
 - Uso de Tailwind CSS 4.1 con su nuevo plugin de Vite y sintaxis `@import "tailwindcss"`
 - Implementación de variables de tema usando `@theme` de Tailwind
-- Diseño del modo oscuro nativo mediante `color-scheme` y selectores `.dark` 
+- Diseño del modo oscuro nativo mediante `color-scheme` y selectores `.dark`
 - Optimización de imágenes utilizando el componente `<Image />` de Astro
 
 **Recursos identificados:**
@@ -357,7 +357,7 @@ docker logs entrepeques-api-dev
 - Configuramos el plugin de Tailwind en `astro.config.mjs`:
   ```javascript
   import tailwindcss from '@tailwindcss/vite';
-  
+
   // En la configuración de Vite
   vite: {
     plugins: [tailwindcss()]
@@ -432,7 +432,7 @@ categories
   description TEXT
   parent_id INTEGER REFERENCES categories(id)
   is_active BOOLEAN DEFAULT TRUE
-  
+
 subcategories
   id SERIAL PRIMARY KEY
   category_id INTEGER REFERENCES categories(id)
@@ -443,7 +443,7 @@ subcategories
   margin_new DECIMAL(5,2) NOT NULL -- Margen para productos nuevos
   margin_used DECIMAL(5,2) NOT NULL -- Margen para productos usados
   is_active BOOLEAN DEFAULT TRUE
-  
+
 feature_definitions
   id SERIAL PRIMARY KEY
   subcategory_id INTEGER REFERENCES subcategories(id)
@@ -452,21 +452,21 @@ feature_definitions
   type VARCHAR(20) NOT NULL -- texto, numero, seleccion
   order_index INTEGER NOT NULL -- orden de visualización
   options JSONB -- opciones para tipo seleccion
-  
+
 valuation_factors
   id SERIAL PRIMARY KEY
   subcategory_id INTEGER REFERENCES subcategories(id)
   factor_type VARCHAR(50) NOT NULL -- estado, demanda, limpieza
   factor_value VARCHAR(50) NOT NULL -- valor (ej. "Bueno", "Alta", etc.)
   score INTEGER NOT NULL -- puntaje asociado
-  
+
 brands
   id SERIAL PRIMARY KEY
   name VARCHAR(100) NOT NULL
   subcategory_id INTEGER REFERENCES subcategories(id)
   renown VARCHAR(20) NOT NULL -- Sencilla, Normal, Alta, Premium
   is_active BOOLEAN DEFAULT TRUE
-  
+
 valuations
   id SERIAL PRIMARY KEY
   client_id INTEGER REFERENCES clients(id)
@@ -476,7 +476,7 @@ valuations
   total_consignment_amount DECIMAL(10,2)
   status VARCHAR(20) DEFAULT 'pending'
   notes TEXT
-  
+
 valuation_items
   id SERIAL PRIMARY KEY
   valuation_id INTEGER REFERENCES valuations(id)
@@ -609,7 +609,7 @@ Los próximos pasos incluyen:
 2. **Comenzar con la Fase 3: Gestión de Inventario**
    - Diseñar el esquema de base de datos para inventario
    - Implementar APIs para gestión de inventario
-   - Desarrollar el panel de administración para inventario 
+   - Desarrollar el panel de administración para inventario
 
 ## Esquema de Base de Datos Actual
 
@@ -789,7 +789,7 @@ valuation_items
   - GET `/api/valuations/:id` - Obtener detalles de una valuación
   - PUT `/api/valuations/:id/finalize` - Finalizar una valuación
   - GET `/api/valuations` - Listar valuaciones (con filtros)
-  
+
 **Decisiones técnicas:**
 - Diseño RESTful para la API
 - Endpoints específicos para cada fase del proceso de valuación
@@ -840,7 +840,7 @@ Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:
    - Reemplazar datos simulados con datos reales
    - Implementar flujo completo de valuación con datos persistentes
 
-Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario). 
+Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario).
 
 ## Sesión: 26 de Mayo, 2025
 
@@ -903,7 +903,7 @@ Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:
    - Reemplazar datos simulados con datos reales
    - Implementar flujo completo de valuación con datos persistentes
 
-Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario). 
+Una vez completados estos elementos, estaremos en condiciones de finalizar la **Fase 2** y comenzar con la **Fase 3** (Gestión de Inventario).
 
 ## Sesión: 27 de Mayo, 2025
 
@@ -1014,7 +1014,7 @@ Continuamos en la **Fase 2** del plan (Aplicación Valuador). Los siguientes pas
    - Configurar almacenamiento de archivos (local o servicio en la nube)
    - Integrar con el componente `ImageUploader.jsx`
 
-Al completar estos pasos, tendremos un sistema completo y funcional para el proceso de valuación, cumpliendo así con los objetivos de la **Fase 2**. Luego podremos avanzar a la **Fase 3** (Gestión de Inventario). 
+Al completar estos pasos, tendremos un sistema completo y funcional para el proceso de valuación, cumpliendo así con los objetivos de la **Fase 2**. Luego podremos avanzar a la **Fase 3** (Gestión de Inventario).
 
 ## Sesión: 29 de Mayo, 2025
 
@@ -1162,11 +1162,69 @@ Al completar estos pasos, tendremos un sistema completo y funcional para el proc
 - ✅ Conexión del frontend con las APIs del backend
 - ✅ Configuración Docker completa y funcional para desarrollo
 - ✅ Optimización de componentes React para mejor experiencia de usuario
+- ✅ Integración completa del sistema de autenticación entre frontend y backend
 
 ### En Progreso
 - 🔄 Sistema de gestión de imágenes para productos
 - 🔄 Implementación del sistema de impresión de recibos
 - 🔄 Mejora del diseño responsive para dispositivos móviles
+
+## Sesión: 2 de Junio, 2025
+
+### 33. Corrección de Problemas en el Sistema de Autenticación
+
+**Acción realizada:** Solución de problemas en la integración del sistema de autenticación entre frontend y backend.
+**Procedimiento:**
+
+1. **Identificación de problemas:**
+   - Error 500 al intentar iniciar sesión con el usuario admin
+   - Error al registrar nuevos usuarios debido a un problema con la columna "password"
+   - Problemas de CORS en la comunicación entre frontend y backend
+   - URL base incorrecta en el servicio HTTP del frontend
+
+2. **Soluciones implementadas:**
+
+   a) **Corrección de la URL base en el frontend:**
+   - Modificamos el servicio HTTP para usar `http://localhost:3001/api` como URL base
+   - Configuramos un proxy en `astro.config.mjs` para redirigir las peticiones a `/api` hacia `http://localhost:3001`
+   - Añadimos archivos `.env` y `.env.development` para configurar la URL de la API
+
+   b) **Implementación de rutas para usuarios y roles:**
+   - Creamos rutas para `/api/users` y `/api/roles` en el backend
+   - Implementamos endpoints para crear, leer, actualizar y eliminar usuarios y roles
+   - Actualizamos el archivo de rutas principal para incluir las nuevas rutas
+
+   c) **Corrección de problemas con la verificación de contraseñas:**
+   - Implementamos una verificación alternativa para el usuario admin
+   - Añadimos un método para actualizar el hash de la contraseña
+   - Mejoramos el manejo de errores en la verificación de contraseñas
+
+   d) **Corrección de problemas al registrar usuarios:**
+   - Eliminamos el campo `password` del objeto que se pasa al método `create` del servicio de usuario
+   - Añadimos más logs para depuración
+   - Mejoramos el manejo de errores en el proceso de registro
+
+   e) **Configuración de CORS:**
+   - Simplificamos la configuración de CORS para permitir todas las solicitudes en desarrollo
+   - Eliminamos la opción `credentials: true` que podía causar problemas
+
+3. **Resultados:**
+   - Login exitoso con el usuario admin
+   - Registro exitoso de nuevos usuarios
+   - Comunicación correcta entre frontend y backend
+   - Mejor manejo de errores y mensajes más descriptivos
+
+**Decisiones técnicas:**
+- Uso de verificación alternativa para el usuario admin en desarrollo
+- Generación y actualización automática de hash de contraseña
+- Mejora en el manejo de errores y logs para facilitar la depuración
+- Configuración de proxy en Astro para simplificar la comunicación con el backend
+
+**Lecciones aprendidas:**
+- Importancia de verificar la compatibilidad entre los modelos del frontend y backend
+- Necesidad de manejar adecuadamente los campos sensibles como contraseñas
+- Valor de los logs detallados para identificar problemas
+- Beneficios de implementar soluciones alternativas para casos especiales
 
 ### Próximos Pasos
 Continuamos en la **Fase 2** (Aplicación Valuador). Los próximos pasos son:

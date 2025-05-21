@@ -36,6 +36,49 @@
     *   Configurar despliegue inicial del backend en Heroku (`api.entrepeques.com`).
 *   **Entregable:** API funcional con gestión básica de usuarios, categorías y productos, desplegada en Heroku, y entorno de desarrollo Dockerizado.
 
+#### Detalles de Implementación de Autenticación
+
+La autenticación se implementa utilizando JSON Web Tokens (JWT) con las siguientes características:
+
+1. **Registro de usuarios**:
+   - Endpoint: `POST /api/auth/register`
+   - Campos requeridos: `username`, `email`, `password`, `first_name`, `last_name`, `role_id`
+   - La contraseña se almacena hasheada usando bcrypt (10 rondas de salt)
+   - Validación de unicidad de username y email
+
+2. **Login de usuarios**:
+   - Endpoint: `POST /api/auth/login`
+   - Campos requeridos: `username`, `password`
+   - Retorna token JWT y datos del usuario (sin contraseña)
+   - El token incluye: `userId`, `username`, `role`
+   - Expiración del token: 24 horas
+
+3. **Middleware de autenticación**:
+   - Verifica token JWT en header `Authorization`
+   - Añade información del usuario a `req.user`
+   - Middleware adicional para verificación de roles
+
+4. **Obtener usuario actual**:
+   - Endpoint: `GET /api/auth/me`
+   - Protegido por middleware de autenticación
+   - Retorna datos del usuario actual
+
+5. **Gestión de usuarios**:
+   - Endpoints CRUD para usuarios en `/api/users`
+   - Protegidos por middleware de autenticación y roles
+   - Soporte para búsqueda, filtrado y paginación
+
+6. **Gestión de roles**:
+   - Endpoints para obtener y gestionar roles en `/api/roles`
+   - Roles predefinidos: admin, manager, valuator, sales
+
+7. **Consideraciones de seguridad**:
+   - Validación de datos de entrada
+   - Protección contra inyección SQL
+   - Manejo seguro de contraseñas con bcrypt
+   - Verificación de permisos basada en roles
+   - Mensajes de error genéricos para evitar fugas de información
+
 ### Fase 2: Aplicación Valuador
 *   **Tareas:**
     *   Inicializar proyecto Frontend para Valuador (Astro + React, TypeScript).
@@ -157,4 +200,4 @@ Se aprovecharán las capacidades nativas de Astro para la optimización de imág
 * Manejo de imágenes responsive
 * Implementación de estrategias de placeholder para mejorar la percepción de carga
 
-Todas las imágenes de productos se procesarán mediante esta canalización para garantizar tiempos de carga óptimos y buena experiencia de usuario en todos los dispositivos. 
+Todas las imágenes de productos se procesarán mediante esta canalización para garantizar tiempos de carga óptimos y buena experiencia de usuario en todos los dispositivos.

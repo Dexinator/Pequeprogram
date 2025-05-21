@@ -16,6 +16,16 @@ export default defineConfig({
   },
   // Configuración de Vite con Tailwind CSS
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    // Configuración del servidor de desarrollo
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          secure: false
+        }
+      }
+    }
   }
-}); 
+});

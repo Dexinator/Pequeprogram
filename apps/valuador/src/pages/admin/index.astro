@@ -1,0 +1,16 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import UserManagement from "../../components/admin/UserManagement";
+---
+
+<MainLayout title="Administración | Entrepeques">
+  <div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold text-text-base mb-6">Panel de Administración</h1>
+      
+      <div class="bg-background-alt shadow overflow-hidden sm:rounded-lg p-6 mb-6">
+        <UserManagement client:load />
+      </div>
+    </div>
+  </div>
+</MainLayout>

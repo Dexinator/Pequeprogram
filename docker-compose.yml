@@ -33,7 +33,7 @@ services:
       # Añadir otras variables de entorno necesarias para la API aquí
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET:-your-development-secret-key}
-      JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4321}
     volumes:
       - ./packages/api:/app # Mapear código fuente para live reload
@@ -84,4 +84,4 @@ networks:
 volumes:
   postgres_data: # Volumen nombrado para la persistencia de datos
   api_node_modules:
-  frontend_node_modules: 
+  frontend_node_modules:

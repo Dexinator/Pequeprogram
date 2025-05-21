@@ -1,0 +1,22 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import LoginForm from "../components/auth/LoginForm";
+---
+
+<MainLayout title="Iniciar Sesión | Entrepeques">
+  <div class="flex min-h-[calc(100vh-80px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md space-y-8">
+      <div class="text-center">
+        <h1 class="mt-6 text-3xl font-bold tracking-tight text-pink-600 dark:text-pink-400">
+          Entrepeques
+        </h1>
+        <h2 class="mt-2 text-xl text-gray-900 dark:text-gray-100">
+          Inicia sesión en tu cuenta
+        </h2>
+      </div>
+
+      <LoginForm client:load />
+
+    </div>
+  </div>
+</MainLayout>

@@ -5,7 +5,7 @@ interface Props {
 
 const { title } = Astro.props;
 
-// Script para manejar preferencia de tema oscuro/claro
+// Importaciones
 import "../styles/global.css";
 ---
 
@@ -21,21 +21,32 @@ import "../styles/global.css";
     <link rel="stylesheet" href="../styles/global.css" />
   </head>
   <body class="bg-background text-text-base flex flex-col min-h-screen">
+    <!-- Componentes que no necesitan AuthProvider -->
     <header class="bg-azul-claro text-white py-4">
       <div class="container mx-auto px-4 max-w-7xl">
-        <div class="flex justify-between items-center md:flex-row flex-col md:gap-0 gap-4">
-          <h1 class="text-2xl font-heading font-bold">Entrepeques Valuador</h1>
-          <nav>
-            <ul class="flex gap-6 list-none">
-              <li><a href="/" class="text-white hover:underline font-medium">Inicio</a></li>
-              <li><a href="/nueva-valuacion" class="text-white hover:underline font-medium">Nueva Valuación</a></li>
-              <li><a href="/historial" class="text-white hover:underline font-medium">Historial</a></li>
-            </ul>
-          </nav>
-          <button id="theme-toggle" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-            <span class="dark:hidden">🌙</span>
-            <span class="hidden dark:inline">☀️</span>
-          </button>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <h1 class="text-2xl font-heading font-bold">Entrepeques Valuador</h1>
+          </div>
+
+          <div class="flex items-center space-x-6">
+            <nav>
+              <ul class="flex gap-6 list-none">
+                <li><a href="/" class="text-white hover:text-white/80 transition-colors">Inicio</a></li>
+                <li><a href="/nueva-valuacion" class="text-white hover:text-white/80 transition-colors">Nueva Valuación</a></li>
+                <li><a href="/historial" class="text-white hover:text-white/80 transition-colors">Historial</a></li>
+                <li><a href="/admin" class="text-white hover:text-white/80 transition-colors">Administración</a></li>
+              </ul>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+              <a href="/login" class="text-white hover:text-white/80 transition-colors">Iniciar Sesión</a>
+              <button id="theme-toggle" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                <span class="dark:hidden">🌙</span>
+                <span class="hidden dark:inline">☀️</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -52,20 +63,20 @@ import "../styles/global.css";
       </div>
     </footer>
 
+    <!-- Script para manejar el cambio de tema -->
     <script>
-      // Script para manejar el cambio de tema oscuro/claro
       document.addEventListener('DOMContentLoaded', () => {
         const themeToggle = document.getElementById('theme-toggle');
-        
+
         // Verificar si hay preferencia guardada
         const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
+
         // Aplicar tema según preferencia guardada o del sistema
         if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
           document.documentElement.classList.add('dark');
         }
-        
+
         // Manejar clic en el botón de cambio de tema
         themeToggle?.addEventListener('click', () => {
           const isDark = document.documentElement.classList.toggle('dark');
@@ -74,4 +85,4 @@ import "../styles/global.css";
       });
     </script>
   </body>
-</html> 
+</html>
