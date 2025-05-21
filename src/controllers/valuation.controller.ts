@@ -19,13 +19,13 @@ export const valuationController = {
   createClient: async (req: Request, res: Response) => {
     try {
       const clientData = req.body;
-      
+
       if (!clientData.name || !clientData.phone) {
-        return res.status(400).json({ 
-          error: 'El nombre y teléfono del cliente son obligatorios' 
+        return res.status(400).json({
+          error: 'El nombre y teléfono del cliente son obligatorios'
         });
       }
-      
+
       const client = await valuationService.createClient(clientData);
       res.status(201).json(client);
     } catch (error: any) {
@@ -33,20 +33,20 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Buscar clientes por nombre o teléfono
    */
   searchClients: async (req: Request, res: Response) => {
     try {
       const { term } = req.query;
-      
+
       if (!term || typeof term !== 'string') {
-        return res.status(400).json({ 
-          error: 'Se requiere un término de búsqueda (term)' 
+        return res.status(400).json({
+          error: 'Se requiere un término de búsqueda (term)'
         });
       }
-      
+
       const clients = await valuationService.searchClients(term);
       res.json(clients);
     } catch (error: any) {
@@ -54,7 +54,7 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Obtener un cliente por ID
    */
@@ -62,36 +62,38 @@ export const valuationController = {
     try {
       const { id } = req.params;
       const client = await valuationService.getClient(parseInt(id));
-      
+
       if (!client) {
         return res.status(404).json({ error: 'Cliente no encontrado' });
       }
-      
+
       res.json(client);
     } catch (error: any) {
       console.error('Error al obtener cliente:', error);
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Crear una nueva valuación
    */
   createValuation: async (req: Request, res: Response) => {
     try {
       // @ts-expect-error La propiedad user se agrega en el middleware de autenticación
-      const userId = req.user?.id;
-      
+      const userId = req.user?.userId; // Cambiado de req.user?.id a req.user?.userId
+
+      console.log('Datos del usuario autenticado:', req.user); // Agregar log para depuración
+
       if (!userId) {
         return res.status(401).json({ error: 'Usuario no autenticado' });
       }
-      
+
       const valuationData: CreateValuationDto = req.body;
-      
+
       if (!valuationData.client_id) {
         return res.status(400).json({ error: 'El ID del cliente es obligatorio' });
       }
-      
+
       const valuation = await valuationService.createValuation(userId, valuationData);
       res.status(201).json(valuation);
     } catch (error: any) {
@@ -99,7 +101,7 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Obtener una valuación por ID
    */
@@ -107,18 +109,18 @@ export const valuationController = {
     try {
       const { id } = req.params;
       const valuation = await valuationService.getValuation(parseInt(id));
-      
+
       if (!valuation) {
         return res.status(404).json({ error: 'Valuación no encontrada' });
       }
-      
+
       res.json(valuation);
     } catch (error: any) {
       console.error('Error al obtener valuación:', error);
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Calcular el precio de compra y venta para un producto
    */
@@ -133,7 +135,7 @@ export const valuationController = {
           return res.status(400).json({ error: `El campo '${field}' es obligatorio` });
         }
       }
-      
+
       const result = await valuationService.calculateValuation(calculationData);
       res.json(result);
     } catch (error: any) {
@@ -141,7 +143,7 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Agregar un item a una valuación existente
    */
@@ -149,19 +151,19 @@ export const valuationController = {
     try {
       const { id } = req.params;
       const itemData: AddValuationItemDto = req.body;
-      
+
       // Validar datos requeridos
       const requiredFields = [
-        'category_id', 'subcategory_id', 'status', 'brand_renown', 
+        'category_id', 'subcategory_id', 'status', 'brand_renown',
         'modality', 'condition_state', 'demand', 'cleanliness', 'new_price'
       ];
-      
+
       for (const field of requiredFields) {
         if (!(field in itemData)) {
           return res.status(400).json({ error: `El campo '${field}' es obligatorio` });
         }
       }
-      
+
       const item = await valuationService.addValuationItem(parseInt(id), itemData);
       res.status(201).json(item);
     } catch (error: any) {
@@ -169,7 +171,7 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Finalizar una valuación (completada o cancelada)
    */
@@ -177,13 +179,13 @@ export const valuationController = {
     try {
       const { id } = req.params;
       const finalizationData: FinalizeValuationDto = req.body;
-      
+
       if (!finalizationData.status || !['completed', 'cancelled'].includes(finalizationData.status)) {
-        return res.status(400).json({ 
-          error: "El estado debe ser 'completed' o 'cancelled'" 
+        return res.status(400).json({
+          error: "El estado debe ser 'completed' o 'cancelled'"
         });
       }
-      
+
       const valuation = await valuationService.finalizeValuation(parseInt(id), finalizationData);
       res.json(valuation);
     } catch (error: any) {
@@ -191,7 +193,7 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   },
-  
+
   /**
    * Listar valuaciones con filtros y paginación
    */
@@ -206,7 +208,7 @@ export const valuationController = {
         page: req.query.page ? parseInt(req.query.page as string) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string) : 10
       };
-      
+
       const result = await valuationService.getValuations(params);
       res.json(result);
     } catch (error: any) {
@@ -214,4 +216,4 @@ export const valuationController = {
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
   }
-}; 
+};
