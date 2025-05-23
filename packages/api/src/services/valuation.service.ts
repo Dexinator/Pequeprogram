@@ -151,8 +151,20 @@ export class ValuationService extends BaseService<Valuation> {
       
       const valuation: Valuation = result.rows[0];
       
-      // Consultar los items de la valuación
-      const itemsQuery = 'SELECT * FROM valuation_items WHERE valuation_id = $1';
+      // Consultar los items de la valuación con información de categorías, subcategorías y marcas
+      const itemsQuery = `
+        SELECT 
+          vi.*,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name
+        FROM valuation_items vi
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE vi.valuation_id = $1
+        ORDER BY vi.created_at ASC
+      `;
       const itemsResult = await dbClient.query(itemsQuery, [id]);
       
       valuation.items = itemsResult.rows;

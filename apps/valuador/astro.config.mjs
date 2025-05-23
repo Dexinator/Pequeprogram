@@ -5,8 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
-  // Configuración para despliegue en Vercel
-  output: 'static',
+  // Configuración para modo servidor completo
+  output: 'server',
   // Base URL para subdominios
   base: '/',
   // Configuración de desarrollo
