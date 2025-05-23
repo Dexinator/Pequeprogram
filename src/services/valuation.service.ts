@@ -419,11 +419,22 @@ export class ValuationService extends BaseService<Valuation> {
     try {
       dbClient = await pool.connect();
       
-      // Construir la consulta con filtros opcionales
+      // Construir la consulta con filtros opcionales, incluyendo información del cliente y conteo de items
       let query = `
-        SELECT v.*, c.name as client_name
+        SELECT 
+          v.*,
+          c.name as client_name,
+          c.phone as client_phone,
+          c.email as client_email,
+          c.identification as client_identification,
+          COALESCE(item_count.total_items, 0) as items_count
         FROM valuations v
         JOIN clients c ON v.client_id = c.id
+        LEFT JOIN (
+          SELECT valuation_id, COUNT(*) as total_items
+          FROM valuation_items
+          GROUP BY valuation_id
+        ) item_count ON v.id = item_count.valuation_id
         WHERE 1=1
       `;
       
@@ -455,6 +466,14 @@ export class ValuationService extends BaseService<Valuation> {
         queryParams.push(params.end_date);
       }
       
+      // Búsqueda por texto (ID, nombre del cliente o teléfono)
+      if (params.search) {
+        query += ` AND (v.id::text LIKE $${paramIndex++} OR c.name ILIKE $${paramIndex++} OR c.phone LIKE $${paramIndex++})`;
+        const searchTerm = `%${params.search}%`;
+        queryParams.push(searchTerm, searchTerm, searchTerm);
+        paramIndex += 2; // Ajustar el índice por los 3 parámetros añadidos
+      }
+      
       // Obtener el total de resultados
       const countQuery = `SELECT COUNT(*) FROM (${query}) as count_query`;
       const countResult = await dbClient.query(countQuery, queryParams);
@@ -470,8 +489,31 @@ export class ValuationService extends BaseService<Valuation> {
       
       const result = await dbClient.query(query, queryParams);
       
+      // Formatear los resultados para incluir información del cliente como objeto
+      const valuations = result.rows.map(row => ({
+        id: row.id,
+        client_id: row.client_id,
+        user_id: row.user_id,
+        valuation_date: row.valuation_date,
+        total_purchase_amount: row.total_purchase_amount,
+        total_consignment_amount: row.total_consignment_amount,
+        status: row.status,
+        notes: row.notes,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        client: {
+          id: row.client_id,
+          name: row.client_name,
+          phone: row.client_phone,
+          email: row.client_email,
+          identification: row.client_identification
+        },
+        items: [], // Los items se cargan individualmente si se necesitan
+        items_count: parseInt(row.items_count)
+      }));
+      
       return {
-        valuations: result.rows,
+        valuations,
         total
       };
     } catch (error) {
