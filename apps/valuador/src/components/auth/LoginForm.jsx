@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, AuthProvider } from '../../context/AuthContext';
 
 /**
  * Componente de formulario de inicio de sesión
  * Utiliza el contexto de autenticación
  */
-export default function LoginForm() {
+function LoginFormContent() {
   const { login, error: authError, isLoading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -67,25 +67,44 @@ export default function LoginForm() {
       setError(null);
 
       try {
-        console.log('Enviando formulario de login:', formData);
+        console.log('📝 LoginForm: Enviando formulario de login:', formData);
 
         // Usar el contexto de autenticación para iniciar sesión
+        console.log('📝 LoginForm: Llamando a login() del contexto...');
         await login(formData);
+        console.log('📝 LoginForm: login() completado sin errores');
 
+        // Verificar que el token se haya guardado
+        if (typeof window !== 'undefined') {
+          const tokenSaved = localStorage.getItem('entrepeques_auth_token');
+          const userSaved = localStorage.getItem('entrepeques_user');
+          
+          console.log('📝 LoginForm: Verificación post-login:');
+          console.log('  - Token guardado:', tokenSaved ? 'SÍ' : 'NO');
+          console.log('  - Usuario guardado:', userSaved ? 'SÍ' : 'NO');
+          
+          if (!tokenSaved || !userSaved) {
+            console.error('❌ LoginForm: Falló el guardado en localStorage');
+            setError('Error: No se pudo completar el inicio de sesión. Intenta nuevamente.');
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        console.log('📝 LoginForm: Login exitoso, esperando 500ms antes de redirigir...');
         // Esperar un momento para que se actualice el estado
         setTimeout(() => {
           // Redirigir a la página principal
-          console.log('Login procesado, redirigiendo...');
-          window.location.href = '/';
+          console.log('📝 LoginForm: Redirigiendo a /historial...');
+          window.location.href = '/historial';
         }, 500);
       } catch (err) {
-        console.error('Error al iniciar sesión:', err);
+        console.error('❌ LoginForm: Error al iniciar sesión:', err);
         if (err.message && err.message.includes('Failed to fetch')) {
           setError('No se pudo conectar con el servidor. Verifica tu conexión a internet o contacta al administrador.');
         } else {
           setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
         }
-      } finally {
         setIsLoading(false);
       }
     }
@@ -208,5 +227,13 @@ export default function LoginForm() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function LoginForm() {
+  return (
+    <AuthProvider>
+      <LoginFormContent />
+    </AuthProvider>
   );
 }

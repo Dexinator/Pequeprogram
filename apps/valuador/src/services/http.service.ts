@@ -26,10 +26,16 @@ export class HttpService {
 
   // Configurar el token de autenticación
   setAuthToken(token: string) {
+    console.log('🔧 HttpService.setAuthToken() - Configurando token...');
+    console.log('🔧 Token recibido:', `${token.substring(0, 50)}...`);
+    
     this.headers = {
       ...this.headers,
       'Authorization': `Bearer ${token}`,
     };
+    
+    console.log('🔧 Headers después de configurar token:', this.headers);
+    console.log('✅ Token configurado en headers HTTP');
   }
 
   // Obtener la URL base
@@ -44,6 +50,8 @@ export class HttpService {
 
   // Método GET genérico
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    console.log(`📡 GET ${endpoint} - Iniciando petición...`);
+    
     // Verificar si estamos en un entorno de navegador
     if (!this.isBrowser()) {
       console.warn('Intentando hacer una petición GET en el servidor');
@@ -59,16 +67,34 @@ export class HttpService {
         ).toString()
       : '';
 
-    const response = await fetch(`${this.baseUrl}${endpoint}${queryString}`, {
+    const fullUrl = `${this.baseUrl}${endpoint}${queryString}`;
+    console.log(`📡 URL completa: ${fullUrl}`);
+    console.log(`📡 Headers que se enviarán:`, this.headers);
+
+    const response = await fetch(fullUrl, {
       method: 'GET',
       headers: this.headers,
     });
 
+    console.log(`📡 Respuesta recibida:`, {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    });
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Error en petición GET:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
       throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log(`✅ Datos recibidos de ${endpoint}:`, data);
+    return data;
   }
 
   // Método POST genérico

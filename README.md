@@ -1,91 +1,223 @@
-# Entrepeques - Entorno de Desarrollo Docker
+# 🛍️ Entrepeques - Sistema de Gestión Integral
 
-Este documento explica cómo ejecutar el entorno de desarrollo Docker para el proyecto Entrepeques.
+> Modernización completa del sistema de valuación, inventario y ventas para Entrepeques
 
-## Requisitos previos
+## 🎯 Estado Actual
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/) (incluido en Docker Desktop para Windows y macOS)
+**✅ Fase 2 COMPLETADA** - Sistema de Valuación 100% Funcional
 
-## Servicios configurados
+- 🔐 **Autenticación completa** con JWT y roles
+- 📊 **Gestión de valuaciones** end-to-end  
+- 👥 **Gestión de clientes** con búsqueda
+- 📦 **Gestión de productos** con categorización inteligente
+- 🎨 **Interfaz moderna** responsive con tema corporativo
 
-1. **Base de datos PostgreSQL**
-   - Puerto: 5432
-   - Credenciales por defecto: user/password
-   - Esquema: entrepeques_dev
+## 🏗️ Arquitectura
 
-2. **API Backend (Node.js/Express/TypeScript)**
-   - Puerto: 3001
-   - URL: http://localhost:3001/api
-
-3. **Frontend (Astro/React)**
-   - Puerto: 4321
-   - URL: http://localhost:4321
-
-4. **PGAdmin (Administración de PostgreSQL)**
-   - Puerto: 5050
-   - URL: http://localhost:5050
-   - Credenciales por defecto: admin@admin.com/admin
-
-## Configuración
-
-Las variables de entorno se pueden configurar en un archivo `.env` en la raíz del proyecto. Si no existe, el script de inicio creará uno con valores predeterminados.
-
-Variables disponibles:
-- `DATABASE_USER`: Usuario de la base de datos
-- `DATABASE_PASSWORD`: Contraseña de la base de datos
-- `DATABASE_NAME`: Nombre de la base de datos
-- `API_PORT`: Puerto para la API
-- `JWT_SECRET`: Clave secreta para JWT
-- `JWT_EXPIRATION`: Tiempo de expiración de tokens JWT
-- `PUBLIC_API_URL`: URL pública de la API para el frontend
-- `CORS_ORIGIN`: Origen permitido para CORS
-
-## Comandos para iniciar el entorno
-
-### En Windows:
 ```
-.\start-dev.bat
+┌─────────────────────┐    HTTP/JSON     ┌──────────────────────┐
+│  Frontend Valuador  │ ──────────────>  │   Backend API        │
+│  Astro + React + TS │                  │   Node.js + Express  │
+│  Port: 4321         │ <────────────────│   Port: 3001         │
+└─────────────────────┘                  └──────────────────────┘
+                                                    │
+                                                    │ PostgreSQL
+                                                    ▼
+                                         ┌──────────────────────┐
+                                         │   Base de Datos      │
+                                         │   PostgreSQL 16      │
+                                         │   (Docker)           │
+                                         └──────────────────────┘
 ```
 
-### En Linux/macOS:
+## 🚀 Inicio Rápido
+
+### Prerrequisitos
+- Node.js 20+
+- Docker y Docker Compose
+- pnpm (recomendado)
+
+### 1. Clonar e instalar
+```bash
+git clone <repository-url>
+cd pequeprogram
+pnpm install
 ```
-chmod +x start-dev.sh
-./start-dev.sh
+
+### 2. Iniciar servicios backend
+```bash
+# Iniciar PostgreSQL + API
+docker-compose up -d
+
+# Verificar que todo funciona
+curl http://localhost:3001/api/health
 ```
 
-## Comandos útiles
+### 3. Iniciar frontend
+```bash
+cd apps/valuador
+npm run dev
+```
 
-- **Ver logs de todos los servicios**:
-  ```
-  docker-compose logs -f
-  ```
+### 4. Acceder a la aplicación
+- **Frontend**: http://localhost:4321
+- **API**: http://localhost:3001
+- **Documentación**: Ver `Current_State.md`
 
-- **Ver logs de un servicio específico**:
-  ```
-  docker-compose logs -f api
-  docker-compose logs -f frontend
-  docker-compose logs -f db
-  ```
+## 👤 Usuarios de Prueba
 
-- **Detener todos los servicios**:
-  ```
-  docker-compose down
-  ```
+```bash
+# Usuario administrador
+Username: admin
+Password: admin123
 
-- **Reiniciar un servicio específico**:
-  ```
-  docker-compose restart api
-  docker-compose restart frontend
-  ```
+# Usuario valuador  
+Username: valuador
+Password: valuador123
+```
 
-## Acceso a la base de datos
+## 📁 Estructura del Proyecto
 
-1. Accede a PGAdmin en http://localhost:5050
-2. Inicia sesión con las credenciales predeterminadas (admin@admin.com / admin)
-3. Configura una nueva conexión al servidor:
-   - Nombre: entrepeques_dev
-   - Host: db
-   - Puerto: 5432
-   - Usuario: user (o el valor configurado en .env)
-   - Contraseña: password (o el valor configurado en .env) 
+```
+pequeprogram/
+├── packages/api/           # 🔧 Backend API (Node.js + Express)
+│   ├── src/
+│   │   ├── controllers/    # Controladores REST
+│   │   ├── middleware/     # Autenticación y roles
+│   │   ├── services/       # Lógica de negocio
+│   │   └── utils/          # Utilidades (JWT, passwords)
+│   └── Dockerfile.dev
+├── apps/valuador/          # 🎨 Frontend Valuador (Astro + React)
+│   ├── src/
+│   │   ├── components/     # Componentes React
+│   │   ├── context/        # Estado global (AuthContext)
+│   │   ├── services/       # Comunicación con API
+│   │   └── pages/          # Rutas de la aplicación
+│   └── astro.config.mjs
+├── docker-compose.yml      # 🐳 Orquestación de servicios
+└── docs/                   # 📚 Documentación
+```
+
+## 🛠️ Stack Tecnológico
+
+### Frontend
+- **Astro 4.15** - Framework principal con SSR
+- **React 18** - Componentes interactivos
+- **TypeScript** - Tipado estático
+- **Tailwind CSS** - Framework de estilos
+- **Tema corporativo** - Colores Entrepeques
+
+### Backend  
+- **Node.js 20** - Runtime de servidor
+- **Express 4** - Framework web
+- **TypeScript** - Tipado estático
+- **JWT** - Autenticación sin estado
+- **bcrypt** - Hash seguro de contraseñas
+
+### Base de Datos
+- **PostgreSQL 16** - Base de datos relacional
+- **Docker** - Contenedorización
+- **Migraciones** - Control de versiones del esquema
+
+## 🔄 Funcionalidades Principales
+
+### 🔐 Autenticación
+- Login/logout con persistencia de sesión
+- Roles de usuario (admin, manager, valuator, sales)
+- Protección automática de rutas
+- Recuperación de sesión tras recarga
+
+### 📊 Gestión de Valuaciones
+- **Historial**: Listado con filtros avanzados y paginación
+- **Nueva valuación**: Flujo completo cliente → productos → cálculo → finalización
+- **Estadísticas**: Métricas en tiempo real
+- **Estados**: Pendiente, Finalizada, Cancelada
+
+### 👥 Gestión de Clientes
+- Búsqueda de clientes existentes
+- Registro de nuevos clientes
+- Validación de datos obligatorios
+
+### 📦 Gestión de Productos
+- Categorías jerárquicas (Categoría → Subcategoría)
+- Marcas organizadas por subcategoría
+- Características específicas dinámicas
+- Cálculos automáticos de valuación
+
+## 🧪 Comandos de Desarrollo
+
+```bash
+# Backend - Logs en tiempo real
+docker logs entrepeques-api-dev -f
+
+# Frontend - Modo desarrollo
+cd apps/valuador && npm run dev
+
+# Backend - Reconstruir contenedor
+docker-compose build --no-cache api
+
+# Base de datos - Reset completo
+docker-compose down -v && docker-compose up -d
+
+# Instalar dependencias - Monorepo
+pnpm install
+
+# TypeScript - Verificar tipos
+cd packages/api && npx tsc --noEmit
+cd apps/valuador && npx astro check
+```
+
+## 📊 Estado de Fases
+
+| Fase | Estado | Descripción | Progreso |
+|------|--------|-------------|----------|
+| **Fase 1** | ✅ Completada | API Core + Base de Datos | 100% |
+| **Fase 2** | ✅ Completada | Aplicación Valuador | 100% |
+| **Fase 3** | 🔄 Siguiente | Panel de Administración | 0% |
+| **Fase 4** | ⏳ Pendiente | Tienda en Línea | 0% |
+| **Fase 5** | ⏳ Pendiente | Punto de Venta (POS) | 0% |
+| **Fase 6** | ⏳ Pendiente | Procesamiento de Pagos | 0% |
+| **Fase 7** | ⏳ Pendiente | Despliegue a Producción | 0% |
+
+## 🎨 Tema Visual
+
+### Paleta de Colores Entrepeques
+- **Rosa**: `#ff6b9d` - Color principal de marca
+- **Amarillo**: `#feca57` - Acentos y alertas
+- **Azul claro**: `#74b9ff` - Elementos primarios
+- **Verde lima**: `#6c5ce7` - Acciones exitosas
+- **Verde oscuro**: `#00b894` - Confirmaciones
+- **Azul profundo**: `#2d3436` - Texto principal
+
+### Tipografías
+- **Headings**: Poppins (Google Fonts)
+- **Body**: Inter/Muli (Google Fonts)  
+- **Display**: Fredoka One (Google Fonts)
+
+## 📚 Documentación
+
+- **`ENTREPEQUES_MODERNIZATION_PLAN.md`** - Plan maestro del proyecto
+- **`Current_State.md`** - Bitácora detallada de desarrollo  
+- **`PROYECTO_STATUS_MAYO_2025.md`** - Estado actual resumido
+- **`packages/api/README.md`** - Documentación del backend
+- **`apps/valuador/README.md`** - Documentación del frontend
+
+## 🤝 Contribuir
+
+1. Fork del repositorio
+2. Crear rama feature: `git checkout -b feature/nueva-funcionalidad`
+3. Commit cambios: `git commit -m 'Añadir nueva funcionalidad'`
+4. Push a la rama: `git push origin feature/nueva-funcionalidad`
+5. Crear Pull Request
+
+## 📄 Licencia
+
+Este proyecto es privado y pertenece a Entrepeques.
+
+## 📞 Contacto
+
+Para consultas sobre el desarrollo o funcionamiento del sistema, contactar al equipo de desarrollo.
+
+---
+
+**✨ Sistema de valuación 100% funcional y listo para producción ✨** 

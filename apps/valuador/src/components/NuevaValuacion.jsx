@@ -2,14 +2,51 @@ import React, { useState, useEffect } from 'react';
 import { ProductoForm } from './ProductoForm';
 import { ClienteForm } from './ClienteForm';
 import { ValuationService } from '../services';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, AuthProvider } from '../context/AuthContext';
 
 // En un proyecto Astro puedes importar el layout directamente o usar un componente Layout React
 // Para este ejemplo, asumimos que estamos usando la integración de React en Astro
 
-export default function NuevaValuacion() {
-  // Obtener contexto de autenticación
-  const { isAuthenticated, user } = useAuth();
+// Componente interno que usa el contexto
+function NuevaValuacionContent() {
+  console.log('📝 NuevaValuacionContent: Componente renderizándose...');
+  console.log('📝 Entorno de navegador:', typeof window !== 'undefined');
+  
+  // DIAGNÓSTICO AUTOMÁTICO
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('🔍 === DIAGNÓSTICO AUTOMÁTICO - NUEVA VALUACION ===');
+      console.log('🔍 LocalStorage disponible:', typeof localStorage !== 'undefined');
+      
+      const rawToken = localStorage.getItem('entrepeques_auth_token');
+      const rawUser = localStorage.getItem('entrepeques_user');
+      
+      console.log('🔍 Raw token en localStorage:', rawToken ? `${rawToken.substring(0, 30)}...` : 'NULL');
+      console.log('🔍 Raw user en localStorage:', rawUser ? rawUser.substring(0, 100) + '...' : 'NULL');
+      
+      if (rawUser) {
+        try {
+          const parsedUser = JSON.parse(rawUser);
+          console.log('🔍 Usuario parseado:', parsedUser.username, '| ID:', parsedUser.id);
+        } catch (e) {
+          console.error('🔍 Error parseando usuario:', e);
+        }
+      }
+      console.log('🔍 === FIN DIAGNÓSTICO - NUEVA VALUACION ===');
+    }
+  }, []);
+
+  // Estado de autenticación
+  const authContext = useAuth();
+  const { isAuthenticated, user, isLoading: authLoading } = authContext;
+  
+  console.log('📝 NuevaValuacionContent: Contexto completo:', authContext);
+  console.log('📝 NuevaValuacionContent: useAuth resultado:', { 
+    isAuthenticated, 
+    user: user?.username || 'null', 
+    authLoading,
+    userObject: user 
+  });
 
   // Estado para la valuación
   const [valuation, setValuation] = useState(null);
@@ -56,21 +93,10 @@ export default function NuevaValuacion() {
 
   // Verificar autenticación al cargar el componente
   useEffect(() => {
-    console.log('Estado de autenticación en NuevaValuacion:', { isAuthenticated, user });
+    console.log('📝 Estado de autenticación en NuevaValuacion:', { isAuthenticated, user: user?.username, authLoading });
 
-    if (!isAuthenticated) {
-      console.warn('Usuario no autenticado en NuevaValuacion');
-      setError('Debe iniciar sesión para utilizar esta funcionalidad');
-      showNotification('Debe iniciar sesión para utilizar esta funcionalidad', 'error');
-
-      // Verificar si hay un token en localStorage directamente
-      if (typeof window !== 'undefined' && localStorage.getItem('entrepeques_auth_token')) {
-        console.log('Se encontró un token en localStorage pero isAuthenticated es false');
-        console.log('Intentando actualizar el token en el servicio de valuación de todos modos');
-        valuationService.refreshAuthToken();
-      }
-    } else {
-      console.log('Usuario autenticado en NuevaValuacion:', user?.username);
+    if (isAuthenticated && !authLoading) {
+      console.log('📝 Usuario autenticado en NuevaValuacion:', user?.username);
       // Actualizar el token en el servicio de valuación
       valuationService.refreshAuthToken();
 
@@ -78,8 +104,12 @@ export default function NuevaValuacion() {
       if (error && error.includes('iniciar sesión')) {
         setError(null);
       }
+    } else if (!isAuthenticated && !authLoading) {
+      console.warn('📝 Usuario no autenticado en NuevaValuacion');
+      setError('Debe iniciar sesión para utilizar esta funcionalidad');
+      showNotification('Debe iniciar sesión para utilizar esta funcionalidad', 'error');
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, authLoading]);
 
   // Mostrar notificación
   const showNotification = (message, type = 'success') => {
@@ -484,6 +514,89 @@ export default function NuevaValuacion() {
     );
   };
 
+  // Pantalla de carga durante verificación de autenticación
+  if (authLoading) {
+    console.log('🔄 Nueva Valuación: Mostrando pantalla de carga. Valores:', { authLoading, isAuthenticated, user: user?.username });
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-azul-claro mx-auto mb-4"></div>
+          <h2 className="text-xl font-medium text-gray-700">Verificando autenticación...</h2>
+          <p className="text-gray-500">Por favor espere</p>
+          <div className="mt-4 text-xs text-gray-400 bg-gray-100 p-2 rounded">
+            <p>AuthLoading: {authLoading.toString()}</p>
+            <p>IsAuthenticated: {isAuthenticated.toString()}</p>
+            <p>User: {user?.username || 'null'}</p>
+            <p>Timestamp: {new Date().toLocaleTimeString()}</p>
+          </div>
+          
+          <button 
+            onClick={() => {
+              console.log('🔄 Forzando recarga manual de la página...');
+              if (typeof window !== 'undefined') {
+                window.location.reload();
+              }
+            }}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Si queda cargando, haz clic aquí
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Pantalla de acceso restringido si no está autenticado
+  if (!isAuthenticated) {
+    let diagnosticInfo = '';
+    if (typeof window !== 'undefined') {
+      const rawToken = localStorage.getItem('entrepeques_auth_token');
+      const rawUser = localStorage.getItem('entrepeques_user');
+      diagnosticInfo = `
+Token en localStorage: ${rawToken ? 'Presente' : 'Ausente'}
+Usuario en localStorage: ${rawUser ? 'Presente' : 'Ausente'}
+AuthContext isAuthenticated: ${isAuthenticated}
+AuthContext user: ${user?.username || 'null'}
+AuthContext loading: ${authLoading}
+      `.trim();
+    }
+    
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Acceso restringido</h2>
+          <p className="text-gray-600 mb-6">Debe iniciar sesión para crear nuevas valuaciones.</p>
+          
+          <div className="bg-gray-100 p-4 rounded-lg mb-6 text-left text-xs">
+            <h3 className="font-bold mb-2">Información de Diagnóstico:</h3>
+            <pre className="whitespace-pre-wrap">{diagnosticInfo}</pre>
+          </div>
+          
+          <div className="space-y-3">
+            <a 
+              href="/login" 
+              className="inline-flex items-center px-4 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-profundo transition-colors"
+            >
+              Ir a iniciar sesión
+            </a>
+            
+            <button 
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  console.log('🔄 Forzando recarga completa...');
+                  window.location.reload();
+                }
+              }}
+              className="block w-full px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+            >
+              Recargar Página
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-10">
       <div className="flex justify-between items-center">
@@ -566,5 +679,13 @@ export default function NuevaValuacion() {
         renderSummary()
       )}
     </div>
+  );
+}
+
+export default function NuevaValuacion() {
+  return (
+    <AuthProvider>
+      <NuevaValuacionContent />
+    </AuthProvider>
   );
 }

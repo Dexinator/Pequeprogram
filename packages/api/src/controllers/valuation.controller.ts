@@ -79,7 +79,7 @@ export const valuationController = {
    */
   createValuation: async (req: Request, res: Response) => {
     try {
-      // @ts-expect-error La propiedad user se agrega en el middleware de autenticación
+
       const userId = req.user?.userId; // Cambiado de req.user?.id a req.user?.userId
 
       console.log('Datos del usuario autenticado:', req.user); // Agregar log para depuración
@@ -205,6 +205,7 @@ export const valuationController = {
         status: req.query.status as string | undefined,
         start_date: req.query.start_date as string | undefined,
         end_date: req.query.end_date as string | undefined,
+        search: req.query.search as string | undefined,
         page: req.query.page ? parseInt(req.query.page as string) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string) : 10
       };

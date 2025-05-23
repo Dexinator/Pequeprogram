@@ -119,11 +119,12 @@ export class AuthService {
   getToken(): string | null {
     // Verificar si estamos en un entorno de navegador
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      console.log('🔍 AuthService.getToken() - Obteniendo token de localStorage...');
       const token = localStorage.getItem(this.TOKEN_KEY);
-      console.log('Token obtenido de localStorage:', token ? 'Presente' : 'No encontrado');
+      console.log('🔍 Token raw de localStorage:', token ? `${token.substring(0, 20)}...` : 'null');
       return token;
     }
-    console.log('No se pudo obtener el token (no estamos en un navegador)');
+    console.log('❌ No se pudo obtener el token (no estamos en un navegador)');
     return null;
   }
 
@@ -151,24 +152,31 @@ export class AuthService {
     // Verificar si estamos en un entorno de navegador
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       try {
+        console.log('🔍 AuthService.getUser() - Obteniendo datos de localStorage...');
         const userJson = localStorage.getItem(this.USER_KEY);
-        console.log('Datos de usuario obtenidos de localStorage:', userJson ? 'Presentes' : 'No encontrados');
+        console.log('🔍 Raw user JSON from localStorage:', userJson);
 
         if (!userJson) {
+          console.log('❌ No se encontraron datos de usuario en localStorage');
           return null;
         }
 
+        console.log('🔍 Parseando JSON de usuario...');
         const user = JSON.parse(userJson);
-        console.log('Usuario recuperado de localStorage:', user?.username);
+        console.log('✅ Usuario parseado exitosamente:', {
+          id: user?.id,
+          username: user?.username,
+          email: user?.email
+        });
         return user;
       } catch (error) {
-        console.error('Error al parsear datos de usuario de localStorage:', error);
+        console.error('💥 Error al parsear datos de usuario de localStorage:', error);
         // Si hay un error al parsear, limpiar el localStorage
         localStorage.removeItem(this.USER_KEY);
         return null;
       }
     }
-    console.log('No se pudo obtener el usuario (no estamos en un navegador)');
+    console.log('❌ No se pudo obtener el usuario (no estamos en un navegador)');
     return null;
   }
 

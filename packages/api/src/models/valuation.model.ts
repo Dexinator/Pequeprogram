@@ -133,6 +133,7 @@ export interface ValuationQueryParams {
   status?: string;
   start_date?: string;
   end_date?: string;
+  search?: string;
   page?: number;
   limit?: number;
 } 

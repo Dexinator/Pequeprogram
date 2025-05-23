@@ -22,13 +22,23 @@ export class ValuationService {
   private http: HttpService;
   private authService: AuthService;
   private baseEndpoint = '/valuations';
+  private initialized = false;
 
   constructor() {
     this.http = new HttpService();
     this.authService = new AuthService();
 
-    // Inicializar el token de autenticación si existe
-    this.refreshAuthToken();
+    // Solo inicializar el token si estamos en el navegador
+    this.initializeIfBrowser();
+  }
+
+  // Inicializar solo si estamos en el navegador
+  private initializeIfBrowser(): void {
+    if (typeof window !== 'undefined' && !this.initialized) {
+      console.log('Inicializando ValuationService en el navegador');
+      this.refreshAuthToken();
+      this.initialized = true;
+    }
   }
 
   // ---------------- Operaciones de clientes ----------------
@@ -77,29 +87,62 @@ export class ValuationService {
 
   // Listar valuaciones con filtros y paginación
   async getValuations(params: ValuationQueryParams = {}): Promise<{ valuations: Valuation[], total: number }> {
+    this.ensureAuthenticated();
     return this.http.get<{ valuations: Valuation[], total: number }>(this.baseEndpoint, params);
   }
 
   // Actualizar el token de autenticación
   refreshAuthToken(): void {
+    console.log('🔑 ValuationService.refreshAuthToken() - Iniciando...');
+    
     // Intentar obtener el token directamente de localStorage primero
     let token = null;
 
     if (typeof window !== 'undefined') {
+      console.log('🔑 Obteniendo token directamente de localStorage...');
       token = localStorage.getItem('entrepeques_auth_token');
+      console.log('🔑 Token de localStorage:', token ? `${token.substring(0, 50)}...` : 'null');
+    } else {
+      console.log('🔑 Window no disponible, saltando localStorage');
     }
 
     // Si no se encontró en localStorage, intentar obtenerlo del AuthService
     if (!token) {
+      console.log('🔑 Token no encontrado en localStorage, probando AuthService...');
       token = this.authService.getToken();
+      console.log('🔑 Token de AuthService:', token ? `${token.substring(0, 50)}...` : 'null');
     }
 
     if (token) {
-      console.log('Configurando token de autenticación en ValuationService');
+      console.log('✅ Configurando token de autenticación en ValuationService');
+      console.log('🔑 Token que se configurará:', `${token.substring(0, 50)}...`);
       this.http.setAuthToken(token);
+      console.log('✅ Token configurado en HttpService');
     } else {
-      console.warn('No se encontró token de autenticación para ValuationService');
+      console.warn('❌ No se encontró token de autenticación para ValuationService');
     }
+  }
+
+  // Verificar y actualizar token antes de cada llamada
+  private ensureAuthenticated(): void {
+    console.log('🛡️ ensureAuthenticated() - Verificando autenticación...');
+    
+    // Asegurar que estemos inicializados
+    this.initializeIfBrowser();
+    
+    console.log('🛡️ Llamando a refreshAuthToken()...');
+    this.refreshAuthToken();
+    
+    // Verificar si tenemos un token válido
+    const token = this.authService.getToken();
+    console.log('🛡️ Token final verificado:', token ? `${token.substring(0, 50)}...` : 'null');
+    
+    if (!token) {
+      console.error('❌ No está autenticado para hacer la petición');
+      throw new Error('No está autenticado. Por favor inicie sesión.');
+    }
+    
+    console.log('✅ Autenticación verificada correctamente');
   }
 
   // ---------------- Operaciones de categorías y subcategorías ----------------
