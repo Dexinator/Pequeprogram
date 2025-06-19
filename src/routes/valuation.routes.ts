@@ -24,8 +24,16 @@ router.post('/:id/items', authMiddleware, valuationController.addValuationItem);
 // @ts-expect-error - Express y TypeScript tienen problemas de tipos con middleware
 router.put('/:id/finalize', authMiddleware, valuationController.finalizeValuation);
 
+// Ruta para crear y finalizar valuación con todos los items de una vez
+// @ts-expect-error - Express y TypeScript tienen problemas de tipos con middleware
+router.post('/finalize-complete', authMiddleware, valuationController.finalizeComplete);
+
 // Ruta para cálculo de valoración (puede ser usada sin crear una valoración completa)
 // @ts-expect-error - Express y TypeScript tienen problemas de tipos con middleware
 router.post('/calculate', valuationController.calculateValuation);
+
+// Ruta para cálculo de múltiples productos sin insertar en DB
+// @ts-expect-error - Express y TypeScript tienen problemas de tipos con middleware
+router.post('/calculate-batch', authMiddleware, valuationController.calculateBatch);
 
 export default router; 

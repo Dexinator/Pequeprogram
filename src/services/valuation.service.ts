@@ -252,17 +252,241 @@ export class ValuationService extends BaseService<Valuation> {
       const purchasePriceMultiplier = 1 - margin + purchaseScore / 100;
       const purchasePrice = salePrice * purchasePriceMultiplier;
       
-      // 5. Calcular precio de consignación (generalmente un 15-25% más alto que el de compra)
-      const consignmentPrice = purchasePrice * 1.2;
+      // 5. Calcular precios para diferentes modalidades
+      const consignmentPrice = purchasePrice * 1.2; // 20% más que compra directa
+      const storeCreditPrice = purchasePrice * 1.1; // 10% más que compra directa
       
       return {
         purchase_score: purchaseScore,
         sale_score: saleScore,
         suggested_purchase_price: Math.round(purchasePrice * 100) / 100,
         suggested_sale_price: Math.round(salePrice * 100) / 100,
-        consignment_price: Math.round(consignmentPrice * 100) / 100
+        consignment_price: Math.round(consignmentPrice * 100) / 100,
+        store_credit_price: Math.round(storeCreditPrice * 100) / 100
       };
     } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async calculateBatch(products: any[]): Promise<any[]> {
+    let dbClient: PoolClient | undefined;
+    const calculatedProducts = [];
+    
+    try {
+      dbClient = await pool.connect();
+      
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        try {
+          // Usar el método de cálculo existente para cada producto
+          const calculation = await this.calculateValuation({
+            subcategory_id: product.subcategory_id,
+            status: product.status,
+            condition_state: product.condition_state,
+            demand: product.demand,
+            cleanliness: product.cleanliness,
+            new_price: product.new_price
+          });
+
+          // Obtener nombres de categoría y subcategoría si no están disponibles
+          let categoryName = product.categoryName || '';
+          let subcategoryName = product.subcategoryName || '';
+          let brandName = product.brandName || '';
+
+          if (!subcategoryName && product.subcategory_id) {
+            const subcategoryQuery = `
+              SELECT s.name as subcategory_name, c.name as category_name
+              FROM subcategories s
+              LEFT JOIN categories c ON s.category_id = c.id
+              WHERE s.id = $1
+            `;
+            const subcategoryResult = await dbClient.query(subcategoryQuery, [product.subcategory_id]);
+            if (subcategoryResult.rows.length > 0) {
+              subcategoryName = subcategoryResult.rows[0].subcategory_name || '';
+              if (!categoryName) {
+                categoryName = subcategoryResult.rows[0].category_name || '';
+              }
+            }
+          }
+
+          if (!brandName && product.brand_id) {
+            const brandQuery = 'SELECT name FROM brands WHERE id = $1';
+            const brandResult = await dbClient.query(brandQuery, [product.brand_id]);
+            if (brandResult.rows.length > 0) {
+              brandName = brandResult.rows[0].name || '';
+            }
+          }
+
+          // Combinar datos del producto con cálculos
+          calculatedProducts.push({
+            ...product,
+            ...calculation,
+            // Agregar un ID temporal para el frontend
+            id: `temp_${Date.now()}_${i}`,
+            // Agregar nombres obtenidos de la base de datos
+            categoryName,
+            subcategoryName,
+            brandName
+          });
+        } catch (error) {
+          console.error(`Error calculando producto ${i + 1}:`, error);
+          // En caso de error, incluir el producto con valores por defecto
+          calculatedProducts.push({
+            ...product,
+            id: `temp_${Date.now()}_${i}`,
+            purchase_score: 0,
+            sale_score: 0,
+            suggested_purchase_price: 0,
+            suggested_sale_price: 0,
+            consignment_price: 0,
+            store_credit_price: 0,
+            categoryName: '',
+            subcategoryName: '',
+            brandName: '',
+            error: 'Error en cálculo'
+          });
+        }
+      }
+      
+      return calculatedProducts;
+    } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async finalizeComplete(userId: number, clientId: number, products: any[], notes: string): Promise<any> {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      
+      // Iniciar transacción
+      await dbClient.query('BEGIN');
+      
+      // 1. Crear la valuación
+      const valuationQuery = `
+        INSERT INTO valuations (client_id, user_id, status, notes, created_at, updated_at)
+        VALUES ($1, $2, 'completed', $3, NOW(), NOW())
+        RETURNING *
+      `;
+      
+      const valuationResult = await dbClient.query(valuationQuery, [clientId, userId, notes]);
+      const valuation = valuationResult.rows[0];
+      
+      console.log('Valuación creada:', valuation);
+      
+      // 2. Insertar todos los items con cálculo de precios
+      const insertedItems = [];
+      
+      for (const product of products) {
+        // Calcular precios para el producto
+        const calculation = await this.calculateValuation({
+          subcategory_id: product.subcategory_id,
+          status: product.status,
+          condition_state: product.condition_state,
+          demand: product.demand,
+          cleanliness: product.cleanliness,
+          new_price: product.new_price
+        });
+        
+        // Insertar el item con precios calculados
+        const itemQuery = `
+          INSERT INTO valuation_items (
+            valuation_id, category_id, subcategory_id, brand_id, status, brand_renown,
+            modality, condition_state, demand, cleanliness, new_price, quantity, features, notes, images,
+            purchase_score, sale_score, suggested_purchase_price, suggested_sale_price, 
+            consignment_price, store_credit_price, final_purchase_price, final_sale_price, created_at, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, NOW(), NOW())
+          RETURNING *
+        `;
+        
+        const itemValues = [
+          valuation.id,
+          product.category_id,
+          product.subcategory_id,
+          product.brand_id || null,
+          product.status,
+          product.brand_renown,
+          product.modality,
+          product.condition_state,
+          product.demand,
+          product.cleanliness,
+          product.new_price,
+          product.quantity || 1,
+          JSON.stringify(product.features || {}),
+          product.notes || '',
+          JSON.stringify(product.images || []),
+          calculation.purchase_score,
+          calculation.sale_score,
+          calculation.suggested_purchase_price,
+          calculation.suggested_sale_price,
+          calculation.consignment_price,
+          calculation.store_credit_price,
+          product.final_purchase_price || calculation.suggested_purchase_price,
+          product.final_sale_price || calculation.suggested_sale_price
+        ];
+        
+        const itemResult = await dbClient.query(itemQuery, itemValues);
+        insertedItems.push(itemResult.rows[0]);
+      }
+      
+      // 3. Calcular totales finales (multiplicar por cantidad)
+      const totalsQuery = `
+        SELECT 
+          SUM(CASE WHEN modality = 'compra directa' THEN 
+            COALESCE(final_purchase_price, suggested_purchase_price) * quantity ELSE 0 END) as total_purchase,
+          SUM(CASE WHEN modality = 'crédito en tienda' THEN 
+            COALESCE(final_purchase_price, store_credit_price) * quantity ELSE 0 END) as total_store_credit,
+          SUM(CASE WHEN modality = 'consignación' THEN 
+            COALESCE(consignment_price, 0) * quantity ELSE 0 END) as total_consignment
+        FROM valuation_items
+        WHERE valuation_id = $1
+      `;
+      
+      const totalsResult = await dbClient.query(totalsQuery, [valuation.id]);
+      const totals = totalsResult.rows[0];
+      
+      // 4. Actualizar la valuación con los totales
+      const updateQuery = `
+        UPDATE valuations
+        SET 
+          total_purchase_amount = $1,
+          total_store_credit_amount = $2,
+          total_consignment_amount = $3,
+          updated_at = NOW()
+        WHERE id = $4
+        RETURNING *
+      `;
+      
+      const finalValuationResult = await dbClient.query(updateQuery, [
+        parseFloat(totals.total_purchase) || 0,
+        parseFloat(totals.total_store_credit) || 0,
+        parseFloat(totals.total_consignment) || 0,
+        valuation.id
+      ]);
+      
+      // Confirmar transacción
+      await dbClient.query('COMMIT');
+      
+      // Retornar valuación completa con items
+      return {
+        ...finalValuationResult.rows[0],
+        items: insertedItems
+      };
+      
+    } catch (error) {
+      // Rollback en caso de error
+      if (dbClient) {
+        await dbClient.query('ROLLBACK');
+      }
       throw error;
     } finally {
       if (dbClient) {
@@ -305,11 +529,11 @@ export class ValuationService extends BaseService<Valuation> {
         INSERT INTO valuation_items (
           valuation_id, category_id, subcategory_id, brand_id, 
           status, brand_renown, modality, condition_state, demand, cleanliness,
-          features, new_price, purchase_score, sale_score,
-          suggested_purchase_price, suggested_sale_price, consignment_price,
+          quantity, features, new_price, purchase_score, sale_score,
+          suggested_purchase_price, suggested_sale_price, consignment_price, store_credit_price,
           images, notes
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
         RETURNING *
       `;
       
@@ -324,6 +548,7 @@ export class ValuationService extends BaseService<Valuation> {
         data.condition_state,
         data.demand,
         data.cleanliness,
+        data.quantity || 1,
         data.features ? JSON.stringify(data.features) : null,
         data.new_price,
         calculation.purchase_score,
@@ -331,6 +556,7 @@ export class ValuationService extends BaseService<Valuation> {
         calculation.suggested_purchase_price,
         calculation.suggested_sale_price,
         calculation.consignment_price,
+        calculation.store_credit_price,
         data.images ? JSON.stringify(data.images) : null,
         data.notes || null
       ]);
@@ -361,26 +587,30 @@ export class ValuationService extends BaseService<Valuation> {
             SET 
               final_purchase_price = $1,
               final_sale_price = $2,
+              modality = $3,
               updated_at = NOW()
-            WHERE id = $3 AND valuation_id = $4
+            WHERE id = $4 AND valuation_id = $5
           `;
           
           await dbClient.query(updateItemQuery, [
             item.final_purchase_price || null,
             item.final_sale_price || null,
+            item.modality || 'compra directa',
             item.id,
             id
           ]);
         }
       }
       
-      // 2. Calcular totales
+      // 2. Calcular totales (multiplicar por cantidad)
       const totalsQuery = `
         SELECT 
           SUM(CASE WHEN modality = 'compra directa' THEN 
-            COALESCE(final_purchase_price, suggested_purchase_price) ELSE 0 END) as total_purchase,
+            COALESCE(final_purchase_price, suggested_purchase_price) * quantity ELSE 0 END) as total_purchase,
+          SUM(CASE WHEN modality = 'crédito en tienda' THEN 
+            COALESCE(final_purchase_price, store_credit_price) * quantity ELSE 0 END) as total_store_credit,
           SUM(CASE WHEN modality = 'consignación' THEN 
-            COALESCE(consignment_price, 0) ELSE 0 END) as total_consignment
+            COALESCE(consignment_price, 0) * quantity ELSE 0 END) as total_consignment
         FROM valuation_items
         WHERE valuation_id = $1
       `;
@@ -395,9 +625,10 @@ export class ValuationService extends BaseService<Valuation> {
           status = $1,
           notes = $2,
           total_purchase_amount = $3,
-          total_consignment_amount = $4,
+          total_store_credit_amount = $4,
+          total_consignment_amount = $5,
           updated_at = NOW()
-        WHERE id = $5
+        WHERE id = $6
         RETURNING *
       `;
       
@@ -405,6 +636,7 @@ export class ValuationService extends BaseService<Valuation> {
         data.status,
         data.notes || null,
         totals.total_purchase || 0,
+        totals.total_store_credit || 0,
         totals.total_consignment || 0,
         id
       ]);
@@ -443,7 +675,7 @@ export class ValuationService extends BaseService<Valuation> {
         FROM valuations v
         JOIN clients c ON v.client_id = c.id
         LEFT JOIN (
-          SELECT valuation_id, COUNT(*) as total_items
+          SELECT valuation_id, SUM(quantity) as total_items
           FROM valuation_items
           GROUP BY valuation_id
         ) item_count ON v.id = item_count.valuation_id

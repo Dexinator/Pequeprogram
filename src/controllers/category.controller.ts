@@ -291,6 +291,60 @@ export class CategoryController {
       });
     }
   }
+
+  // Obtener definiciones de características marcadas para ofertas por subcategoría
+  getOfferFeatureDefinitionsBySubcategory = async (req: Request, res: Response) => {
+    try {
+      const { subcategoryId } = req.params;
+      const client = await pool.connect();
+      
+      try {
+        // Verificar que la subcategoría existe
+        const subcategoryCheck = await client.query(
+          'SELECT id FROM subcategories WHERE id = $1',
+          [subcategoryId]
+        );
+        
+        if (subcategoryCheck.rows.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Subcategoría no encontrada'
+          });
+        }
+        
+        // Obtener solo las definiciones de características marcadas para ofertas
+        const result = await client.query(`
+          SELECT * FROM feature_definitions
+          WHERE subcategory_id = $1 AND offer_print = TRUE
+          ORDER BY order_index
+        `, [subcategoryId]);
+        
+        // Procesar las opciones de selección (convertir de JSONB a array)
+        const features = result.rows.map(feature => {
+          if (feature.type === 'seleccion' && feature.options) {
+            return {
+              ...feature,
+              options: Array.isArray(feature.options) ? feature.options : Object.values(feature.options)
+            };
+          }
+          return feature;
+        });
+        
+        res.status(200).json({
+          success: true,
+          data: features
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('Error al obtener definiciones de características para oferta:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al obtener definiciones de características para oferta'
+      });
+    }
+  }
 }
 
 // Exportar una instancia singleton del controlador
