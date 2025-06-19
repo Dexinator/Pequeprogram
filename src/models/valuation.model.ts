@@ -42,6 +42,12 @@ export interface Client extends BaseModel {
   is_active: boolean;
 }
 
+export interface Inventario extends BaseModel {
+  id: string; // SKU + número secuencial
+  quantity: number;
+  location: string;
+}
+
 export interface Valuation extends BaseModel {
   client_id: number;
   user_id: number;
@@ -75,6 +81,9 @@ export interface ValuationItem extends BaseModel {
   consignment_price?: number;
   images?: string[];
   notes?: string;
+  location: string;
+  quantity: number;
+  store_credit_price?: number;
 }
 
 // DTOs para request/response

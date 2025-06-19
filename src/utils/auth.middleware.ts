@@ -87,4 +87,8 @@ export function roleMiddleware(allowedRoles: string[]) {
       });
     }
   };
-} 
+}
+
+// Alias para compatibilidad con otros módulos
+export const protect = authMiddleware;
+export const authorize = roleMiddleware; 
