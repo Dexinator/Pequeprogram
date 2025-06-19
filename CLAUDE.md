@@ -71,15 +71,15 @@ docker-compose down -v && docker-compose up -d
 This is a modernization project for "Entrepeques" - a second-hand children's items business. The system replaces legacy applications (VB Valuator, My Business POS, WooCommerce) with a unified web platform for valuation, inventory, online store, and point-of-sale management.
 
 ### 7-Phase Implementation Plan
-**Current Status: Phase 2 ✅ COMPLETED (Valuation System 100% Functional)**
+**Current Status: Phase 3 ✅ COMPLETED (Sales System 100% Functional)**
 
 1. **Phase 1** ✅ - Foundation & Core API (Backend with PostgreSQL, JWT auth, basic CRUD)
 2. **Phase 2** ✅ - Valuation Application (Astro + React frontend, complete valuation workflow)
-3. **Phase 3** 🔄 - Inventory Management & Admin Panel (Next to implement)
-4. **Phase 4** ⏳ - Online Store (Public e-commerce frontend)
-5. **Phase 5** ⏳ - Physical POS (Point of sale interface + local printer bridge)
-6. **Phase 6** ⏳ - Payment Processing (PSP integration)
-7. **Phase 7** ⏳ - Testing, Deployment & Migration
+3. **Phase 3** ✅ - Physical Store Sales System (Inventory management, sales processing, mixed payments)
+4. **Phase 4** ⏳ - Admin Panel & User Management (Next to implement)
+5. **Phase 5** ⏳ - Online Store (Public e-commerce frontend)
+6. **Phase 6** ⏳ - Enhanced POS (Point of sale interface + local printer bridge)
+7. **Phase 7** ⏳ - Payment Processing & Final Integration (PSP integration, deployment, migration)
 
 ### Monorepo Structure
 - **packages/api/**: Node.js + Express API with TypeScript, JWT authentication, PostgreSQL
@@ -129,10 +129,19 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - `POST /api/valuations/calculate-batch` - Calculate multiple products
 - `POST /api/valuations/finalize-complete` - Complete valuation process
 
+**Sales & Inventory (Phase 3):**
+- `POST /api/sales` - Create new sale (simple or mixed payments)
+- `GET /api/sales` - List sales with filtering and pagination
+- `GET /api/sales/:id` - Get sale details with payment breakdown
+- `GET /api/inventory/search` - Search products in inventory
+- `GET /api/inventory/available` - Get available products (stock > 0)
+
 **Enhanced Features:**
 - All valuation endpoints return `store_credit_price` calculations
 - Offer endpoints filter features using `offer_print = TRUE`
 - History endpoints include quantity-based product counting
+- Sales system supports mixed payments with detailed tracking
+- Automatic inventory management with stock reduction
 
 ### Database Schema (PostgreSQL 16)
 Complete relational schema with 12 core tables and optimized indexes:
@@ -161,6 +170,12 @@ Complete relational schema with 12 core tables and optimized indexes:
   - Dynamic attributes: features JSONB (category-specific fields)
   - Pricing: new_price, purchase_score, sale_score, suggested_purchase_price, suggested_sale_price, final_purchase_price, final_sale_price, consignment_price, store_credit_price
   - Additional: images JSONB, notes, online_store_ready
+
+**Sales & Inventory (Phase 3):**
+- **inventario**: Product inventory with auto-generated IDs (id, quantity, location)
+- **sales**: Complete sales transactions (id, client_id/client_name, user_id, total_amount, payment_method, status, location, notes)
+- **sale_items**: Items sold in each transaction (sale_id, inventario_id, quantity_sold, unit_price, total_price)
+- **payment_details**: Detailed payment breakdown for mixed payments (sale_id, payment_method, amount, notes)
 
 **Key Relationships:**
 - users.role_id → roles.id
@@ -198,6 +213,10 @@ Complete relational schema with 12 core tables and optimized indexes:
 - **Dynamic Forms**: Category-based product attributes and brand selection
 - **Offer Generation**: Database-driven product descriptions with print optimization
 - **Payment Modalities**: Three types - direct purchase, store credit (+10%), consignment (+20%)
+- **Sales System (Phase 3)**: Complete point-of-sale workflow with inventory management
+- **Mixed Payments**: Support for multiple payment methods in single transaction
+- **Inventory Tracking**: Real-time stock management with auto-generated product IDs
+- **Sales Analytics**: Real-time statistics and comprehensive reporting
 - **Responsive Design**: Corporate theme with Entrepeques color palette
 
 ### Business Logic - Valuation System
@@ -274,6 +293,10 @@ Multi-step valuation process:
 - **Offer Printing**: Optimized CSS for multi-page printing with proper break rules
 - **Product Descriptions**: Database-driven dynamic descriptions using feature flags
 - **History Display**: Removed consignación column, added quantity-based counting, cash flow card
+- **PostgreSQL Type Conversion**: parseFloat/parseInt for numeric fields to prevent NaN errors
+- **Mixed Payment Validation**: Tolerance-based comparison for decimal calculations
+- **SQL Parameter Indexing**: Careful management of parameterized query indexes
+- **Inventory ID Generation**: SKU-based automatic ID generation for product tracking
 
 ## Important Implementation Details
 
@@ -295,7 +318,11 @@ Multi-step valuation process:
   - 001-004: Core schema (users, categories, products, valuations)
   - 005: Added `offer_print` field to feature_definitions
   - 006-007: Complete feature_definitions data load (102 records from CSV)
+  - 008: Added location field and inventario table
+  - 009: Created sales and sale_items tables
+  - 010: Added payment_details table for mixed payments
 - **Feature Definitions**: 102 complete records with offer printing flags (45 marked for offers)
+- **Sales System**: Complete inventory and transaction management with mixed payment support
 - **Backup Strategy**: Docker volumes for development persistence
 
 ### Performance Considerations

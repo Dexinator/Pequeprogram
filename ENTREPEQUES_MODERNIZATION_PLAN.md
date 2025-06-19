@@ -91,72 +91,79 @@ La autenticación se implementa utilizando JSON Web Tokens (JWT) con las siguien
     *   Configurar despliegue del valuador en Vercel (`valuador.entrepeques.com`).
 *   **Entregable:** Aplicación web funcional para realizar y consultar valuaciones de artículos.
 
-### Fase 3: Gestión de Inventario y Panel de Administración
+### Fase 3: Sistema de Ventas Físicas ✅ COMPLETADA
+*   **Tareas Completadas:**
+    *   ✅ Implementar gestión automática de inventario desde valuaciones
+    *   ✅ Crear tablas: `inventario`, `sales`, `sale_items`, `payment_details`
+    *   ✅ Desarrollar sistema completo de ventas con clientes registrados y ocasionales
+    *   ✅ Implementar sistema de pagos mixtos (efectivo, tarjeta, transferencia)
+    *   ✅ Crear interfaz de nueva venta con flujo de 4 pasos
+    *   ✅ Desarrollar historial de ventas con estadísticas en tiempo real
+    *   ✅ Integrar búsqueda de productos en inventario con filtros
+    *   ✅ Implementar validaciones robustas y transacciones ACID
+    *   ✅ Crear generación automática de IDs de inventario basados en SKU
+    *   ✅ Documentar completamente el módulo de ventas
+*   **Entregable Completado:** Sistema completo de ventas para tienda física integrado con el sistema de valuación, con capacidades profesionales de manejo de inventario, clientes y pagos mixtos.
+
+### Fase 4: Panel de Administración y Gestión de Usuarios
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para Admin (Astro + React, TypeScript).
-    *   Ampliar esquema BD: Tabla `InventoryItems` (vinculada a `Valuations` o `Products`, con campos como `sku`, `purchase_price`, `selling_price`, `status` [en stock, vendido, etc.], `location`).
-    *   Desarrollar lógica de Backend para gestionar el ciclo de vida del inventario (desde valuación aceptada hasta venta).
-    *   Implementar endpoints API para CRUD de `InventoryItems`, gestión de usuarios, categorías, reglas de valuación.
+    *   Inicializar proyecto Frontend para Admin (Astro + React, TypeScript)
     *   Desarrollar UI del Panel de Administración para:
-        *   Ver/Gestionar Usuarios y Roles.
-        *   Ver/Gestionar Categorías y Productos base.
-        *   Ver/Aprobar/Rechazar Valuaciones.
-        *   Ver/Gestionar Inventario (asignar precios de venta, marcar como comprado, etc.).
-        *   Gestionar Reglas de Valuación.
-    *   Asegurar rutas de API y Frontend del panel de administración.
-    *   Configurar despliegue del admin en Vercel (`admin.entrepeques.com`).
-*   **Entregable:** Panel de administración para gestionar entidades clave y el inventario.
+        *   Ver/Gestionar Usuarios y Roles
+        *   Ver/Gestionar Categorías y Productos base
+        *   Ver/Aprobar/Rechazar Valuaciones pendientes
+        *   Ver/Gestionar Inventario (asignar precios, marcar disponibilidad)
+        *   Gestionar Reglas de Valuación y configuraciones
+        *   Dashboard con métricas y reportes del negocio
+    *   Implementar endpoints API para gestión administrativa
+    *   Asegurar permisos y roles para acceso administrativo
+    *   Configurar despliegue del admin en Vercel (`admin.entrepeques.com`)
+*   **Entregable:** Panel de administración completo para gestionar el sistema.
 
-### Fase 4: Tienda en Línea (Frontend Público)
+### Fase 5: Tienda en Línea (Frontend Público)
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para Tienda (Astro + React, TypeScript).
-    *   Diseñar UI/UX pública (listado de productos, detalle, carrito).
-    *   Implementar endpoints API públicos (lectura) para obtener productos en stock, categorías, detalles de producto.
-    *   Desarrollar componentes Astro para:
-        *   Página de inicio.
-        *   Listado de productos (con filtros y búsqueda).
-        *   Página de detalle de producto.
-        *   Carrito de compras (puede ser state local o en backend).
-    *   Conectar Frontend con API para mostrar datos.
-    *   Optimizar para SEO y rendimiento (Astro ayuda mucho aquí).
-    *   Configurar despliegue de la tienda en Vercel (`tienda.entrepeques.com`).
-*   **Entregable:** Frontend de la tienda en línea mostrando productos del inventario.
+    *   Inicializar proyecto Frontend para Tienda (Astro + React, TypeScript)
+    *   Diseñar UI/UX pública (listado de productos, detalle, carrito)
+    *   Implementar endpoints API públicos para productos en stock, categorías
+    *   Desarrollar componentes para:
+        *   Página de inicio con productos destacados
+        *   Listado de productos con filtros y búsqueda
+        *   Página de detalle de producto con imágenes
+        *   Carrito de compras y proceso de checkout
+    *   Conectar Frontend con API para mostrar inventario disponible
+    *   Optimizar para SEO y rendimiento con Astro
+    *   Configurar despliegue en Vercel (`tienda.entrepeques.com`)
+*   **Entregable:** Frontend de tienda en línea mostrando productos del inventario.
 
-### Fase 5: Punto de Venta (POS) Físico
+### Fase 6: Sistema POS Avanzado y Puente de Impresión
 *   **Tareas:**
-    *   Inicializar proyecto Frontend para POS (Astro + React, TypeScript, enfocado en simplicidad y rapidez).
-    *   Diseñar UI/UX del POS: Búsqueda/escaneo rápido, añadir a venta, seleccionar cliente (opcional), totalizar, registrar pago.
-    *   Integrar lector de códigos de barras (como entrada de teclado HID).
-    *   Ampliar esquema BD: Tabla `Orders` (con `OrderItems`), `Customers` (opcional), `Payments`.
-    *   Desarrollar lógica y endpoints API para crear órdenes desde el POS, registrar pagos y actualizar el estado del inventario.
-    *   Desarrollar la **Aplicación Puente para Impresora Local**:
-        *   Tecnología: Node.js (con pkg para empaquetar) o Electron.
-        *   Funcionalidad: Conectarse a la API (via WebSockets o polling) para recibir eventos de "imprimir ticket", comunicarse con la impresora local (USB/Red) usando comandos ESC/POS para formatear e imprimir tickets y abrir cajón.
-    *   Implementar comunicación entre POS Frontend -> API -> Aplicación Puente Local.
-    *   Configurar despliegue del POS en Vercel (`pos.entrepeques.com`).
+    *   Inicializar proyecto Frontend para POS (Astro + React, enfocado en simplicidad)
+    *   Diseñar UI/UX del POS: búsqueda rápida, añadir a venta, totalizar, registrar pago
+    *   Integrar lector de códigos de barras (entrada de teclado HID)
+    *   Ampliar esquema BD: Tabla `Orders` (con `OrderItems`), `Customers`, `Payments`
+    *   Desarrollar endpoints API para crear órdenes, registrar pagos, actualizar inventario
+    *   Desarrollar **Aplicación Puente para Impresora Local**:
+        *   Tecnología: Node.js (con pkg) o Electron
+        *   Funcionalidad: WebSockets/polling con API, comandos ESC/POS, impresión local
+    *   Implementar comunicación POS Frontend → API → Aplicación Puente Local
+    *   Configurar despliegue del POS en Vercel (`pos.entrepeques.com`)
 *   **Entregable:** Interfaz web POS funcional y aplicación local para imprimir tickets.
 
-### Fase 6: Procesamiento de Pagos y Checkout
+### Fase 7: Procesamiento de Pagos y Integración Final
 *   **Tareas:**
-    *   Seleccionar e integrar un Proveedor de Servicios de Pago (PSP) (ej. Stripe, Mercado Pago).
-    *   Implementar lógica en el Backend para interactuar con la API del PSP (crear intentos de pago, manejar webhooks de confirmación).
-    *   Implementar flujo de checkout completo en la Tienda en Línea (Frontend): introducir datos, seleccionar envío (si aplica), pagar.
-    *   Implementar registro de métodos de pago en el POS Frontend (efectivo, tarjeta via terminal externa, enlace de pago del PSP).
-    *   Actualizar estado de `Orders` y `Payments` tras confirmación del pago.
-    *   Implementar notificaciones básicas (ej. email de confirmación de orden).
-*   **Entregable:** Flujo de pago funcional tanto en la tienda online como en el POS.
-
-### Fase 7: Pruebas, Despliegue Final y Migración
-*   **Tareas:**
-    *   Implementar estrategia de pruebas: Unitarias (Backend/Frontend), Integración (API), End-to-End (flujos completos).
-    *   Realizar pruebas exhaustivas en todos los módulos.
-    *   Optimizar rendimiento y seguridad.
-    *   Preparar scripts o procesos para migrar datos existentes (si es viable desde VB/MyBusiness/WooCommerce a PostgreSQL).
-    *   Realizar la migración de datos.
-    *   Entrenamiento del personal sobre el nuevo sistema.
-    *   Configuraciones finales de despliegue (DNS, variables de entorno, monitorización).
-    *   Lanzamiento oficial (Go Live).
-*   **Entregable:** Sistema completo desplegado, probado, con datos migrados (si aplica) y personal entrenado.
+    *   Seleccionar e integrar PSP (Stripe, Mercado Pago)
+    *   Implementar lógica Backend para PSP (pagos, webhooks)
+    *   Implementar checkout completo en Tienda en Línea
+    *   Integrar métodos de pago en POS (efectivo, tarjeta, PSP)
+    *   Actualizar estado de órdenes tras confirmación de pago
+    *   Implementar notificaciones (email de confirmación)
+    *   Implementar pruebas exhaustivas (unitarias, integración, E2E)
+    *   Optimizar rendimiento y seguridad
+    *   Preparar migración de datos existentes
+    *   Entrenar personal en el nuevo sistema
+    *   Configurar DNS, variables de entorno, monitoreo
+    *   Lanzamiento oficial (Go Live)
+*   **Entregable:** Sistema completo desplegado y listo para producción.
 
 ## 3. Consideraciones Adicionales y Futuras
 

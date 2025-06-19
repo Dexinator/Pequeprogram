@@ -1,0 +1,60 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import VentasApp from '../components/VentasApp.jsx';
+---
+
+<MainLayout title="Ventas">
+  <VentasApp client:load />
+</MainLayout>
+
+
+<style>
+  /* Estilos específicos para la página de ventas */
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* Estilos para impresión de tickets */
+  @media print {
+    .no-print {
+      display: none;
+    }
+    
+    body {
+      background: white;
+    }
+    
+    .print-ticket {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.2;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    
+    .print-ticket h1,
+    .print-ticket h2,
+    .print-ticket h3 {
+      text-align: center;
+      margin: 5px 0;
+    }
+    
+    .print-ticket .divider {
+      border-top: 1px dashed #000;
+      margin: 10px 0;
+    }
+    
+    .print-ticket .item-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 2px 0;
+    }
+    
+    .print-ticket .total-line {
+      font-weight: bold;
+      border-top: 1px solid #000;
+      padding-top: 5px;
+      margin-top: 10px;
+    }
+  }
+</style>

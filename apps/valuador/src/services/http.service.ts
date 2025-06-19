@@ -224,3 +224,6 @@ export class HttpService {
     return response.json();
   }
 }
+
+// Exportar una instancia por defecto
+export const httpService = new HttpService();

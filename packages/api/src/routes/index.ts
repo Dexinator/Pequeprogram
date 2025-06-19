@@ -6,6 +6,8 @@ import valuationRoutes from './valuation.routes';
 import brandRoutes from './brand.routes';
 import userRoutes from './user.routes';
 import roleRoutes from './role.routes';
+import salesRoutes from './sales.routes';
+import inventoryRoutes from './inventory.routes';
 
 const router = Router();
 
@@ -29,5 +31,11 @@ router.use('/users', userRoutes);
 
 // Rutas de roles
 router.use('/roles', roleRoutes);
+
+// Rutas de ventas
+router.use('/sales', salesRoutes);
+
+// Rutas de inventario
+router.use('/inventory', inventoryRoutes);
 
 export default router;

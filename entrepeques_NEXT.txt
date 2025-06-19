@@ -1,4 +1,10 @@
-A continuación implementaremos la lógica necesaria para que la tienda pueda operar. Hasta ahora habíamos estado concentrados en el proceso de valuación, mismo que ya terminamos.
+A continuación implementaremos la lógica necesaria para que la tienda pueda operar. Hasta ahora habíamos estado concentrados en el proceso de valuación, mismo que ya terminamos. Recuerda que tienes la estructura actual de la base de datos en Pequeprogram\data\sql-structure\local-schema.sql
 
 Agrega una columna a valuation_items llamada "location" y por ahora siempre enviaremos "Polanco" para indicar que se hizo en este lugar, no agregues campos al formulario. 
 Debemos crear una nueva tabla llamada "inventario", su objetivo es tener la información actualizada sobre la cantidad de productos que tenemos. Debe llevar 3 columnas: id, quantity y location. Id debe calcularse como el SKU del producto que se obtiene consultando la tabla subcategories en la columna sku, se debe hacer una consulta de cuántos productos tenemos en inventario de esta categoría (número de filas) y agregar uno más. Así el id sería sku de la subcategoría + número de producto. Quantity es la cantidad que tenemos de dicho producto que debemos enviar el mismo número que a quantity de valuation_items y location también enviar siempre "Polanco".
+
+Necesitamos registrar las ventas y pagos. Necesitamos una página y componente para las ventas de la tienda física.
+
+Necesitamos una página y componente para las consignaciones. Todos los productos en consignación se quedan en la tienda y no se le paga al proveedor hasta que se vende el producto. Es por esto que necesitamos tener acceso a la información de qué productos tenemos en consignación y saber cuando alguno se vende para poder informar al proveedor que lo dejó. 
+
+Necesitamos una página y componente de carga tienda en línea. Para esto tenemos que modificar la columna online_store_ready para que no sea booleano pues necesitamos tres estados: "pendiente", "no-aplica", "aprobado". En esta misma página podremos subir las imágenes, que se almacenarán en AWS S3. 

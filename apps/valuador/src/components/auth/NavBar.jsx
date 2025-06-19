@@ -104,6 +104,12 @@ export default function NavBar() {
                 >
                   Historial
                 </a>
+                <a
+                  href="/ventas"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Ventas
+                </a>
 
                 {/* Botón de cambio de tema */}
                 <button
@@ -204,6 +210,12 @@ export default function NavBar() {
                   className="block hover:bg-azul-profundo px-3 py-2 rounded-md"
                 >
                   Historial
+                </a>
+                <a
+                  href="/ventas"
+                  className="block hover:bg-azul-profundo px-3 py-2 rounded-md"
+                >
+                  Ventas
                 </a>
                 {user?.role === 'admin' && (
                   <a

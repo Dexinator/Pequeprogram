@@ -397,14 +397,37 @@ export class ValuationService extends BaseService<Valuation> {
           new_price: product.new_price
         });
         
-        // Insertar el item con precios calculados
+        // Obtener SKU de la subcategoría para generar ID del inventario
+        const skuQuery = 'SELECT sku FROM subcategories WHERE id = $1';
+        const skuResult = await dbClient.query(skuQuery, [product.subcategory_id]);
+        
+        if (skuResult.rows.length === 0) {
+          throw new Error(`Subcategoría ${product.subcategory_id} no encontrada`);
+        }
+        
+        const sku = skuResult.rows[0].sku;
+        
+        // Contar productos existentes en inventario para esta subcategoría para generar número secuencial
+        const countQuery = `
+          SELECT COUNT(*) as count
+          FROM inventario
+          WHERE id LIKE $1
+        `;
+        const countResult = await dbClient.query(countQuery, [`${sku}%`]);
+        const productCount = parseInt(countResult.rows[0].count) + 1;
+        
+        // Generar ID del inventario (SKU + número secuencial)
+        const inventarioId = `${sku}${productCount.toString().padStart(3, '0')}`;
+        
+        // Insertar el item con precios calculados y location
         const itemQuery = `
           INSERT INTO valuation_items (
             valuation_id, category_id, subcategory_id, brand_id, status, brand_renown,
             modality, condition_state, demand, cleanliness, new_price, quantity, features, notes, images,
             purchase_score, sale_score, suggested_purchase_price, suggested_sale_price, 
-            consignment_price, store_credit_price, final_purchase_price, final_sale_price, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, NOW(), NOW())
+            consignment_price, store_credit_price, final_purchase_price, final_sale_price, location,
+            created_at, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, NOW(), NOW())
           RETURNING *
         `;
         
@@ -431,11 +454,25 @@ export class ValuationService extends BaseService<Valuation> {
           calculation.consignment_price,
           calculation.store_credit_price,
           product.final_purchase_price || calculation.suggested_purchase_price,
-          product.final_sale_price || calculation.suggested_sale_price
+          product.final_sale_price || calculation.suggested_sale_price,
+          'Polanco' // location por defecto
         ];
         
         const itemResult = await dbClient.query(itemQuery, itemValues);
-        insertedItems.push(itemResult.rows[0]);
+        const insertedItem = itemResult.rows[0];
+        insertedItems.push(insertedItem);
+        
+        // Insertar en tabla inventario
+        const inventarioQuery = `
+          INSERT INTO inventario (id, quantity, location, created_at, updated_at)
+          VALUES ($1, $2, $3, NOW(), NOW())
+        `;
+        
+        await dbClient.query(inventarioQuery, [
+          inventarioId,
+          product.quantity || 1,
+          'Polanco' // location por defecto
+        ]);
       }
       
       // 3. Calcular totales finales (multiplicar por cantidad)
@@ -531,9 +568,9 @@ export class ValuationService extends BaseService<Valuation> {
           status, brand_renown, modality, condition_state, demand, cleanliness,
           quantity, features, new_price, purchase_score, sale_score,
           suggested_purchase_price, suggested_sale_price, consignment_price, store_credit_price,
-          images, notes
+          images, notes, location
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
         RETURNING *
       `;
       
@@ -558,7 +595,8 @@ export class ValuationService extends BaseService<Valuation> {
         calculation.consignment_price,
         calculation.store_credit_price,
         data.images ? JSON.stringify(data.images) : null,
-        data.notes || null
+        data.notes || null,
+        'Polanco' // location por defecto
       ]);
       
       return result.rows[0];
