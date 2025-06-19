@@ -1,0 +1,103 @@
+id,subcategory_id,name,display_name,type,order_index,options,created_at,updated_at,mandatory
+1,1,modelo,Modelo,seleccion,1,"['Portabebé 0-13 kg', 'Autoasientos 0-18 a 25 kg', 'Autoasientos 9-18 a 30 kg', 'Booster 15 a 45 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+2,1,tipo_asiento,Tipo de asiento,seleccion,2,"['Ajustable alturas', 'No ajustable alturas', 'Elevador', 'Con respaldo y cinturones', 'Elevador con respaldo']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+3,1,sistemas_anclaje,Sistemas de anclaje,seleccion,3,"['Sistema Latch', 'Sistema Isofix', 'Cinturón de Seguridad']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+4,1,cantidad_posiciones,Cantidad de posiciones,seleccion,4,"['Reclinable', 'No Reclinable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+5,2,modelo,Modelo,seleccion,1,"['Mochila Ergonómica', 'Mei Thai', 'Rebozo', 'Fular 3m', 'Fular 5m', 'Bambineto', 'Cangurera', 'Mochila Senderismo', 'Cargador niñ@ grande']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+6,3,modelo,Modelo,seleccion,1,"['Con portabebé', 'Sin portabebé', 'Doble', 'Portabebé y Base']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+7,3,tipo,Tipo,seleccion,2,"['Bastón', 'Ligera', 'Tradicional', 'Para correr', 'Gemelar Horizontal', 'Gemelar Vertical', 'Doble Bebe + Niño', 'Base para portabebe']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+8,3,incluye_travel_system,Incluye travel system,seleccion,3,"['No Travel System', 'Travel System']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+9,3,capacidad_carriola,Capacidad de la carriola,seleccion,4,"['Sencilla', 'Doble']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+10,3,es_reclinable,Es reclinable,seleccion,5,"['Reclinable', 'No Reclinable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+11,3,es_3_en_1,Es 3 en 1,seleccion,6,"['3 en 1', 'No 3en1']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+12,3,cantidad_posiciones_reclinado,Cantidad de posiciones de reclinado,seleccion,7,"['1 Posición', '2 Posiciones', '3 Posiciones']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+13,3,peso_maximo,Peso máximo,seleccion,8,"['15 kg', '20 kg', '22 kg', '25 kg', '35 kg', '50 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+14,3,peso_carriola,Peso de la carriola,seleccion,9,"['5 kg', '6 kg', '7 kg', '8 kg', '9 kg', '10 kg', '11 kg', '12 kg', '13 kg', '14 kg', '15 kg', '16 kg', '17 kg', '18 kg', '19 kg', '20 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+15,3,tipo_manijas,Tipo de manijas,seleccion,10,"['Manija única', 'Manijas independientes']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+16,3,incluye_capota,Incluye capota,seleccion,11,"['Con capota', 'Sin capota']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+17,3,tipo_ruedas,Tipo de ruedas,seleccion,12,"['4 ruedas', '3 ruedas', '8 ruedas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+18,3,ruedas_giratorias,Ruedas giratorias,seleccion,13,"['Delanteras giratorias', 'Fijas', 'Todas giratorias']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+19,3,sistema_seguridad,Sistema de seguridad,seleccion,14,"['5 puntos', '3 puntos', 'Magnético', 'Botón']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+20,3,incluye_canasta,Incluye canasta,seleccion,15,"['Con canasta', 'Sin canasta']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+21,3,tamano_plegado,Tamaño plegado,seleccion,16,"['Compacto', 'Estándar']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+22,3,incluye_bandeja,Incluye bandeja,seleccion,17,"['Con bandeja', 'Sin bandeja']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+23,3,sistema_frenos,Sistema de frenos,seleccion,18,"['Freno de pie', 'Freno de mano', 'Sin frenos']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+24,3,incluye_mosquitero,Incluye mosquitero,seleccion,19,"['Con mosquitero', 'Sin mosquitero']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+25,3,incluye_cubre_lluvia,Incluye cubre lluvia,seleccion,20,"['Con cubre lluvia', 'Sin cubre lluvia']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+26,3,incluye_cubre_piernas,Incluye cubre piernas,seleccion,21,"['Con cubre piernas', 'Sin cubre piernas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+27,3,incluye_cup_holder,Incluye cup holder,seleccion,22,"['Con cup holder', 'Sin cup holder']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+28,3,edad_recomendada,Edad recomendada,seleccion,23,"['0-6 meses', '6-36 meses', '0-3 años', '0-4 años', '0-5 años']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+29,4,modelo,Modelo,seleccion,1,"['Corral rectangular', 'Corral hexagonal', 'Corral octagonal', 'Corral básico', 'Corral de lujo', 'Pack and play', 'Pack and play doble']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+30,4,incluye_base_movil,Incluye base móvil,seleccion,2,"['Con base móvil', 'Sin base móvil']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+31,4,incluye_cambiador,Incluye cambiador,seleccion,3,"['Con cambiador', 'Sin cambiador']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+32,4,incluye_moviles,Incluye móviles,seleccion,4,"['Con móviles', 'Sin móviles']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+33,4,incluye_vibrador,Incluye vibrador,seleccion,5,"['Con vibrador', 'Sin vibrador']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+34,4,incluye_sonidos,Incluye sonidos,seleccion,6,"['Con sonidos', 'Sin sonidos']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+35,4,plegable,Plegable,seleccion,7,"['Plegable', 'No plegable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+36,4,peso_maximo,Peso máximo,seleccion,8,"['9 kg', '13 kg', '15 kg', '20 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+37,4,edad_recomendada,Edad recomendada,seleccion,9,"['0-6 meses', '0-36 meses', '0-3 años']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+38,5,modelo,Modelo,seleccion,1,"['Mecedora vibratoria', 'Mecedora musical', 'Mecedora básica', 'Mecedora eléctrica', 'Bouncer', 'Silla mecedora']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+39,5,incluye_vibrador,Incluye vibrador,seleccion,2,"['Con vibrador', 'Sin vibrador']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+40,5,incluye_sonidos,Incluye sonidos,seleccion,3,"['Con sonidos', 'Sin sonidos']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+41,5,incluye_moviles,Incluye móviles,seleccion,4,"['Con móviles', 'Sin móviles']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+42,5,es_reclinable,Es reclinable,seleccion,5,"['Reclinable', 'No reclinable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+43,5,sistema_seguridad,Sistema de seguridad,seleccion,6,"['5 puntos', '3 puntos']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+44,5,peso_maximo,Peso máximo,seleccion,7,"['9 kg', '11 kg', '13 kg', '18 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+45,5,edad_recomendada,Edad recomendada,seleccion,8,"['0-6 meses', '0-12 meses', '0-18 meses', '0-2 años']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+46,6,modelo,Modelo,seleccion,1,"['Silla de comer básica', 'Silla de comer reclinable', 'Silla de comer portátil', 'Silla de comer evolutiva', 'Booster', 'Trona de madera']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+47,6,es_reclinable,Es reclinable,seleccion,2,"['Reclinable', 'No reclinable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+48,6,incluye_bandeja,Incluye bandeja,seleccion,3,"['Con bandeja', 'Sin bandeja']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+49,6,es_portatil,Es portátil,seleccion,4,"['Portátil', 'No portátil']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+50,6,altura_ajustable,Altura ajustable,seleccion,5,"['Altura ajustable', 'Altura fija']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+51,6,sistema_seguridad,Sistema de seguridad,seleccion,6,"['5 puntos', '3 puntos', 'Barra frontal']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+52,6,incluye_ruedas,Incluye ruedas,seleccion,7,"['Con ruedas', 'Sin ruedas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+53,6,peso_maximo,Peso máximo,seleccion,8,"['15 kg', '18 kg', '22 kg', '25 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+54,6,edad_recomendada,Edad recomendada,seleccion,9,"['6-36 meses', '6 meses-3 años', '6 meses-4 años', '6 meses-5 años']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+55,7,modelo,Modelo,seleccion,1,"['Andadera básica', 'Andadera musical', 'Andadera evolutiva', 'Centro de actividades', 'Saltarín']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+56,7,incluye_sonidos,Incluye sonidos,seleccion,2,"['Con sonidos', 'Sin sonidos']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+57,7,incluye_luces,Incluye luces,seleccion,3,"['Con luces', 'Sin luces']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+58,7,incluye_juguetes,Incluye juguetes,seleccion,4,"['Con juguetes', 'Sin juguetes']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+59,7,altura_ajustable,Altura ajustable,seleccion,5,"['Altura ajustable', 'Altura fija']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+60,7,incluye_ruedas,Incluye ruedas,seleccion,6,"['Con ruedas', 'Sin ruedas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+61,7,es_plegable,Es plegable,seleccion,7,"['Plegable', 'No plegable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+62,7,peso_maximo,Peso máximo,seleccion,8,"['11 kg', '12 kg', '13 kg', '15 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+63,7,edad_recomendada,Edad recomendada,seleccion,9,"['6-12 meses', '6-15 meses', '6-18 meses', '4-16 meses']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+64,8,modelo,Modelo,seleccion,1,"['Cuna básica', 'Cuna colecho', 'Cuna convertible', 'Moisés', 'Cuna de viaje', 'Cuna mecedora']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+65,8,es_colecho,Es colecho,seleccion,2,"['Colecho', 'No colecho']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+66,8,es_convertible,Es convertible,seleccion,3,"['Convertible', 'No convertible']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+67,8,incluye_colchon,Incluye colchón,seleccion,4,"['Con colchón', 'Sin colchón']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+68,8,altura_ajustable,Altura ajustable,seleccion,5,"['Altura ajustable', 'Altura fija']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+69,8,incluye_ruedas,Incluye ruedas,seleccion,6,"['Con ruedas', 'Sin ruedas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+70,8,material,Material,seleccion,7,"['Madera', 'Metal', 'Plástico', 'Mixto']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+71,8,es_plegable,Es plegable,seleccion,8,"['Plegable', 'No plegable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+72,8,incluye_mosquitero,Incluye mosquitero,seleccion,9,"['Con mosquitero', 'Sin mosquitero']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+73,8,peso_maximo,Peso máximo,seleccion,10,"['15 kg', '20 kg', '25 kg', '30 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+74,8,edad_recomendada,Edad recomendada,seleccion,11,"['0-6 meses', '0-2 años', '0-3 años', '0-5 años']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+75,9,modelo,Modelo,seleccion,1,"['Triciclo básico', 'Triciclo evolutivo', 'Triciclo con manija', 'Triciclo eléctrico', 'Balance bike']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+76,9,incluye_manija_direccional,Incluye manija direccional,seleccion,2,"[]",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+77,9,es_evolutivo,Es evolutivo,seleccion,3,"[]",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+78,9,tipo_ruedas,Tipo de ruedas,seleccion,4,"[]",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+79,9,incluye_canasta,Incluye canasta,seleccion,5,"['Con canasta', 'Sin canasta']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+80,9,incluye_capota,Incluye capota,seleccion,6,"['Con capota', 'Sin capota']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+81,9,sistema_seguridad,Sistema de seguridad,seleccion,7,"['5 puntos', '3 puntos', 'Barra frontal', 'Sin seguridad']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+82,9,material_estructura,Material de la estructura,seleccion,8,"['Metal', 'Plástico', 'Mixto']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+83,9,peso_maximo,Peso máximo,seleccion,9,"['20 kg', '25 kg', '30 kg', '35 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+84,9,edad_recomendada,Edad recomendada,seleccion,10,"['1-3 años', '2-5 años', '3-6 años', '1-6 años']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+85,10,modelo,Modelo,seleccion,1,"['Monitor básico', 'Monitor con cámara', 'Monitor inteligente', 'Monitor respiración']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+86,10,tipo_conexion,Tipo de conexión,seleccion,2,"['Analógico', 'Digital', 'WiFi', 'Bluetooth']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+87,10,incluye_video,Incluye video,seleccion,3,"['Solo audio', 'Audio y video']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+88,10,alcance,Alcance,seleccion,4,"['50 metros', '100 metros', '300 metros', '500+ metros']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+89,10,incluye_sensor_temperatura,Incluye sensor de temperatura,seleccion,5,"['Con sensor', 'Sin sensor']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+90,10,vision_nocturna,Visión nocturna,seleccion,6,"['Con visión nocturna', 'Sin visión nocturna']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+91,10,comunicacion_bidireccional,Comunicación bidireccional,seleccion,7,"['Bidireccional', 'Solo recepción']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+92,10,incluye_nanas,Incluye nanas,seleccion,8,"['Con nanas', 'Sin nanas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+93,10,alertas,Alertas,seleccion,9,"['Vibración', 'Sonido', 'Luz', 'Múltiples alertas']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+94,10,pantalla_receptor,Pantalla del receptor,seleccion,10,"['Sin pantalla', 'LCD pequeña', 'LCD grande', 'Pantalla táctil']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+95,11,modelo,Modelo,seleccion,1,"['Hamaca básica', 'Hamaca vibratoria', 'Hamaca musical', 'Hamaca eléctrica', 'Hamaca portátil']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+96,11,incluye_vibrador,Incluye vibrador,seleccion,2,"['Con vibrador', 'Sin vibrador']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+97,11,incluye_sonidos,Incluye sonidos,seleccion,3,"['Con sonidos', 'Sin sonidos']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+98,11,incluye_moviles,Incluye móviles,seleccion,4,"['Con móviles', 'Sin móviles']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+99,11,es_reclinable,Es reclinable,seleccion,5,"['Reclinable', 'No reclinable']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+100,11,material,Material,seleccion,6,"['Tela', 'Algodón', 'Poliéster', 'Mixto']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+101,11,peso_maximo,Peso máximo,seleccion,7,"['9 kg', '11 kg', '13 kg', '15 kg']",2024-01-01 00:00:00,2024-01-01 00:00:00,f
+102,11,edad_recomendada,Edad recomendada,seleccion,8,"['0-6 meses', '0-12 meses', '0-18 meses']",2024-01-01 00:00:00,2024-01-01 00:00:00,f

@@ -1696,3 +1696,386 @@ La **Fase 2: Aplicación Valuador** del plan de modernización ha sido completad
 - ✅ Problemas de hidratación solucionados
 
 **Entregable completado:** Aplicación web funcional para realizar y consultar valuaciones de artículos, desplegada localmente y lista para producción.
+
+## Sesión: 10 de Enero, 2025
+
+### 107. Mejoras Avanzadas en Nueva Valuación
+
+**Acción realizada:** Implementación de funcionalidades avanzadas de selección y edición en el resumen de valuación.
+
+#### Funcionalidades Implementadas
+
+**A. Selección/Deselección de Productos en Resumen**
+- **Checkbox individual** para cada producto en la tabla del resumen
+- **Checkbox maestro** "Seleccionar/Deseleccionar todos" en el header
+- **Cálculo dinámico** de totales basado en productos seleccionados
+- **Feedback visual** para productos deseleccionados (opacidad reducida)
+- **Validaciones** que impiden finalizar sin productos seleccionados
+- **Confirmación** antes de finalizar con productos deseleccionados
+
+**B. Edición de Precios en el Resumen**
+- **Botón de edición** (✏️) en cada fila para modificar precios
+- **Edición in-line** con inputs numéricos para precio de compra y venta
+- **Botones de guardar/cancelar** para confirmar o descartar cambios
+- **Indicadores visuales** para precios personalizados (color verde)
+- **Cálculos automáticos** que incluyen precios editados en totales
+- **Persistencia** de precios editados durante la sesión
+
+**C. Descripciones Descriptivas de Productos**
+- **Función `getProductDescription()`** que genera descripciones inteligentes
+- **Jerarquía de nombres**: Subcategoría → Categoría → "Producto #X"
+- **Detección de marca** (excluye marcas genéricas)
+- **Estado y condición** formateados apropiadamente
+- **Características importantes** (color, talla, edad, modelo)
+- **Compatibilidad** con formatos camelCase y snake_case del backend
+
+#### Estado de Datos Implementado
+
+```javascript
+// Estados para selección de productos
+const [selectedProducts, setSelectedProducts] = useState(new Set());
+const [selectAll, setSelectAll] = useState(true);
+
+// Estados para edición de precios
+const [editedPrices, setEditedPrices] = useState({});
+const [editingProduct, setEditingProduct] = useState(null);
+```
+
+#### Funciones Principales Agregadas
+
+**1. Manejo de Selección:**
+```javascript
+const handleProductSelection = (productId, isSelected) => { /* ... */ };
+const handleSelectAll = (shouldSelectAll) => { /* ... */ };
+const calculateSelectedTotals = () => { /* ... */ };
+```
+
+**2. Edición de Precios:**
+```javascript
+const startEditingPrice = (productId) => { /* ... */ };
+const saveEditedPrice = (productId, purchasePrice, salePrice) => { /* ... */ };
+const getFinalPrice = (product, type) => { /* ... */ };
+```
+
+**3. Descripción de Productos:**
+```javascript
+const getProductDescription = (product, index) => { /* ... */ };
+```
+
+#### Interface de Usuario Mejorada
+
+**A. Información Contextual:**
+- Panel informativo explicando las funcionalidades
+- Contador de productos seleccionados vs total
+- Estado de precios personalizados
+- Mensajes de validación claros
+
+**B. Tabla del Resumen:**
+- Columna de checkboxes para selección
+- Columna de acciones para edición
+- Precios editados resaltados en verde
+- Indicadores de estado por producto
+- Footer con totales de productos seleccionados
+
+**C. Tarjetas de Totales:**
+```
+[Productos Seleccionados]  [Valor Compra Seleccionado]  [Valor Venta Seleccionado]
+        3 de 5 total              $1,250.00                    $1,875.00
+                               Total: $1,500.00             Total: $2,250.00
+```
+
+#### Ejemplos de Descripciones Generadas
+
+**Antes:**
+```
+"Producto #1"
+"Producto #2" 
+"Producto #3"
+```
+
+**Después:**
+```
+"Carriola - Graco - Usado (Bueno) - Azul"
+"Zapatos deportivos - Nike - Como Nuevo - Talla 25"
+"Ropa (0-6 meses) - Usado (Excelente) - Rosa, Talla 2T"
+"Juguetes didácticos - Fisher-Price - Nuevo"
+"Cuna - Usado (Regular)"
+```
+
+#### Lógica de Finalización Mejorada
+
+**A. Validaciones:**
+- Verificar que hay al menos un producto seleccionado
+- Mostrar confirmación si hay productos deseleccionados
+- Incluir contador en mensaje de confirmación
+
+**B. Datos Enviados al Backend:**
+```javascript
+const selectedItems = valuation.items?.filter(item => 
+  selectedProducts.has(item.id)
+).map(item => {
+  const editedPrice = editedPrices[item.id];
+  return {
+    id: item.id,
+    final_purchase_price: editedPrice?.purchase || item.suggested_purchase_price,
+    final_sale_price: editedPrice?.sale || item.suggested_sale_price
+  };
+});
+```
+
+**C. Notas Automáticas:**
+- Se agregan notas cuando hay productos deseleccionados
+- Se indica el número de productos incluidos vs total valuados
+
+#### Bugs Solucionados
+
+**A. Precios en Cero en Tabla:**
+- **Problema**: `finalPurchasePrice.toFixed is not a function`
+- **Causa**: Valores undefined/null del backend
+- **Solución**: Función `getFinalPrice()` con validación de tipos
+- **Verificación**: `typeof finalPurchasePrice === 'number' ? finalPurchasePrice.toFixed(2) : '0.00'`
+
+**B. Compatibilidad de Nombres de Propiedades:**
+- **Problema**: Backend usa snake_case (`category_name`) vs Frontend camelCase (`categoryName`)
+- **Solución**: Detección múltiple de formatos en `getProductDescription()`
+- **Compatibilidad**: `product.subcategoryName || product.subcategory_name || product.subcategory?.name`
+
+**C. Datos Desactualizados en Resumen:**
+- **Problema**: Usar `productResults` en lugar de datos actualizados del backend
+- **Solución**: Usar `updatedValuation.items` para resumen
+- **Resultado**: Datos siempre sincronizados con la base de datos
+
+#### Flujo Completo de Usuario
+
+1. **Crear Valuación**: Llenar datos de cliente y productos
+2. **Generar Resumen**: Ver todos los productos valuados (todos seleccionados por defecto)
+3. **Personalizar Selección**: Seleccionar/deseleccionar productos según negociación
+4. **Editar Precios**: Modificar precios individuales usando el botón ✏️
+5. **Revisar Totales**: Ver totales actualizados dinámicamente
+6. **Finalizar**: Confirmar y enviar solo productos seleccionados con precios finales
+
+#### Beneficios Empresariales
+
+**A. Flexibilidad de Negociación:**
+- Proveedores pueden elegir exactamente qué vender
+- Negociación precio por precio
+- Adaptación a diferentes estrategias de venta
+
+**B. Experiencia de Usuario:**
+- Interface intuitiva y profesional
+- Feedback visual inmediato
+- Procesos claros y guiados
+
+**C. Precisión Operacional:**
+- Descripciones claras para identificación de productos
+- Cálculos exactos con precios reales
+- Trazabilidad completa de cambios
+
+#### Código Técnico Clave
+
+**Archivo modificado:** `apps/valuador/src/components/NuevaValuacion.jsx`
+
+**Líneas de código agregadas:** ~300 líneas
+**Funciones nuevas:** 7 funciones principales
+**Estados nuevos:** 4 estados adicionales
+**Mejoras de UX:** 15+ mejoras visuales y funcionales
+
+#### Próximos Pasos Sugeridos
+
+1. **Testing**: Probar con diferentes tipos de productos y marcas
+2. **Feedback**: Recoger opiniones de usuarios valuadores
+3. **Optimización**: Mejorar rendimiento para listas grandes de productos
+4. **Exportación**: Agregar capacidad de exportar resúmenes a PDF
+5. **Historial**: Mantener historial de precios editados para análisis
+
+### 108. Estado Actualizado del Sistema
+
+El sistema de valuación ahora cuenta con funcionalidades avanzadas que permiten:
+
+- ✅ **Selección granular** de productos en el resumen
+- ✅ **Edición flexible** de precios de compra y venta
+- ✅ **Descripciones inteligentes** de productos
+- ✅ **Cálculos dinámicos** de totales
+- ✅ **Validaciones robustas** para prevenir errores
+- ✅ **Interface profesional** para negociaciones con proveedores
+
+**Resultado:** Sistema completo y robusto para gestión avanzada de valuaciones, listo para uso en producción con capacidades empresariales.
+
+## Sesión: 19 de Junio, 2025
+
+### 109. Implementación de Funcionalidad de Impresión en Historial de Valuaciones
+
+**Objetivo:** Permitir imprimir ofertas de compra directamente desde el historial de valuaciones, complementando la funcionalidad ya existente en nueva valuación.
+
+#### Análisis de Requerimientos
+**Problema identificado:** Los usuarios necesitaban la capacidad de reimprimir ofertas de valuaciones ya completadas sin tener que recrear el proceso.
+
+**Solución:** Agregar botón de impresión en la tabla del historial que genere ofertas usando los mismos componentes y lógica que la nueva valuación.
+
+#### Implementación Técnica
+
+**1. Actualización de HistorialValuaciones.jsx:**
+
+**Estados agregados:**
+```javascript
+const [showOfferModal, setShowOfferModal] = useState(false);
+const [offerData, setOfferData] = useState(null);
+const [loadingOffer, setLoadingOffer] = useState(false);
+```
+
+**Función de impresión implementada:**
+```javascript
+const printValuation = async (valuationId) => {
+  setLoadingOffer(true);
+  try {
+    // 1. Obtener valuación completa
+    const fullValuation = await valuationService.getValuation(valuationId);
+    
+    // 2. Filtrar productos para oferta (solo compra directa y crédito en tienda)
+    const offerProducts = fullValuation.items.filter(item => 
+      item.modality === 'compra directa' || item.modality === 'crédito en tienda'
+    );
+    
+    // 3. Validar productos disponibles
+    if (offerProducts.length === 0) {
+      alert('Esta valuación no tiene productos válidos para generar una oferta.');
+      return;
+    }
+    
+    // 4. Calcular totales por modalidad
+    const totals = offerProducts.reduce((acc, product) => {
+      const quantity = product.quantity || 1;
+      if (product.modality === 'compra directa') {
+        const price = product.final_purchase_price || product.suggested_purchase_price || 0;
+        acc.directPurchase += price * quantity;
+      } else if (product.modality === 'crédito en tienda') {
+        const price = product.final_purchase_price || product.store_credit_price || 0;
+        acc.storeCredit += price * quantity;
+      }
+      return acc;
+    }, { directPurchase: 0, storeCredit: 0 });
+    
+    // 5. Preparar datos para modal
+    setOfferData({
+      client: { /* datos del cliente */ },
+      products: offerProducts,
+      totals: totals,
+      date: new Date().toLocaleDateString('es-MX', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      })
+    });
+    
+    // 6. Mostrar modal
+    setShowOfferModal(true);
+  } catch (error) {
+    console.error('Error al cargar valuación:', error);
+    alert('Error al cargar la valuación. Por favor, inténtelo de nuevo.');
+  } finally {
+    setLoadingOffer(false);
+  }
+};
+```
+
+**2. Mejoras en la interfaz de usuario:**
+
+**Botón de impresión con estados:**
+```javascript
+<button 
+  onClick={() => printValuation(valuation.id)}
+  disabled={loadingOffer}
+  className="text-rosa hover:text-rosa/80 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+  title="Imprimir"
+>
+  {loadingOffer ? (
+    <div className="animate-spin h-5 w-5 border-2 border-rosa border-t-transparent rounded-full"></div>
+  ) : (
+    <svg>...</svg>
+  )}
+</button>
+```
+
+**Modal de oferta implementado:**
+```javascript
+{showOfferModal && offerData && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="flex justify-between items-center p-4 border-b">
+        <h3 className="text-lg font-semibold">Oferta de Compra</h3>
+        <div className="flex items-center gap-3">
+          <button onClick={() => window.print()}>Imprimir</button>
+          <button onClick={() => setShowOfferModal(false)}>Cerrar</button>
+        </div>
+      </div>
+      <div className="flex-1 overflow-auto">
+        <OfertaDocument 
+          client={offerData.client}
+          selectedProducts={offerData.products}
+          editedPrices={{}}
+          editedModalities={{}}
+          getProductDescription={getProductDescription}
+        />
+      </div>
+    </div>
+  </div>
+)}
+```
+
+**3. Reutilización de componentes:**
+
+**Función getProductDescription copiada de NuevaValuacion.jsx:**
+- Genera descripciones inteligentes de productos
+- Utiliza características con `offer_print=TRUE`
+- Incluye subcategoría/categoría, características importantes, marca y estado
+- Mantiene consistencia entre nueva valuación e historial
+
+#### Beneficios de la Implementación
+
+**1. Experiencia de Usuario Mejorada:**
+- Impresión de ofertas sin recrear valuaciones
+- Estados de carga claros durante el proceso
+- Interfaz consistente con el resto del sistema
+- Validación automática de productos válidos para ofertas
+
+**2. Reutilización Eficiente:**
+- Aprovecha componente `OfertaDocument` existente
+- Utiliza la misma lógica de descripción de productos
+- Mantiene consistencia visual y funcional
+- Reduce duplicación de código
+
+**3. Robustez Técnica:**
+- Manejo de errores completo
+- Validación de datos antes de mostrar ofertas
+- Estados de carga para mejorar UX
+- Filtrado automático de productos según modalidad
+
+#### Flujo Completo Implementado
+
+1. **Usuario en Historial:** Ve tabla con valuaciones completadas
+2. **Selección:** Hace clic en botón "Imprimir" de una valuación
+3. **Carga:** Sistema muestra estado de carga en el botón
+4. **Obtención:** Backend proporciona valuación completa con todos los items
+5. **Filtrado:** Frontend filtra productos válidos para oferta
+6. **Validación:** Sistema verifica que hay productos para la oferta
+7. **Cálculos:** Se calculan totales por modalidad de pago
+8. **Modal:** Se muestra documento de oferta en modal
+9. **Impresión:** Usuario puede imprimir directamente
+10. **Cierre:** Modal se cierra después de imprimir
+
+#### Estado Final del Sistema
+
+**✅ Funcionalidad de Impresión Completa:**
+- ✅ Impresión desde nueva valuación (implementado previamente)
+- ✅ Impresión desde historial de valuaciones (implementado ahora)
+- ✅ Documento de oferta optimizado para impresión
+- ✅ Descripciones inteligentes de productos
+- ✅ Información empresarial actualizada
+- ✅ Filtrado automático por modalidades válidas
+
+**✅ Interfaz de Usuario Robusta:**
+- ✅ Estados de carga en botones de impresión
+- ✅ Validaciones antes de mostrar ofertas
+- ✅ Modales responsivos para vista de documentos
+- ✅ Mensajes de error informativos
+- ✅ Consistencia visual en todo el sistema
+
+**Resultado:** Sistema completo de gestión de valuaciones con capacidades profesionales de impresión de ofertas, listo para uso empresarial en producción.

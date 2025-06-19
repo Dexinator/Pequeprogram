@@ -214,4 +214,75 @@ export class ValuationService {
       throw error;
     }
   }
+
+  // ---------------- Operaciones de valuación ----------------
+
+  // Crear un cliente
+  async createClient(clientData: CreateClientDto): Promise<Client> {
+    this.ensureAuthenticated();
+    return this.http.post<Client>(`${this.baseEndpoint}/clients`, clientData);
+  }
+
+  // Buscar clientes
+  async searchClients(term: string): Promise<Client[]> {
+    this.ensureAuthenticated();
+    return this.http.get<Client[]>(`${this.baseEndpoint}/clients/search`, { term });
+  }
+
+  // Obtener un cliente por ID
+  async getClient(id: number): Promise<Client> {
+    this.ensureAuthenticated();
+    return this.http.get<Client>(`${this.baseEndpoint}/clients/${id}`);
+  }
+
+  // Crear una nueva valuación
+  async createValuation(valuationData: CreateValuationDto): Promise<Valuation> {
+    this.ensureAuthenticated();
+    return this.http.post<Valuation>(this.baseEndpoint, valuationData);
+  }
+
+  // Obtener una valuación por ID
+  async getValuation(id: number): Promise<Valuation> {
+    this.ensureAuthenticated();
+    return this.http.get<Valuation>(`${this.baseEndpoint}/${id}`);
+  }
+
+  // Obtener lista de valuaciones
+  async getValuations(params?: ValuationQueryParams): Promise<any> {
+    this.ensureAuthenticated();
+    return this.http.get(`${this.baseEndpoint}`, params);
+  }
+
+  // Calcular precios para un producto individual
+  async calculateValuation(data: CalculateValuationDto): Promise<ValuationCalculationResult> {
+    return this.http.post<ValuationCalculationResult>(`${this.baseEndpoint}/calculate`, data);
+  }
+
+  // Calcular precios para múltiples productos (nuevo método)
+  async calculateBatch(products: any[]): Promise<any[]> {
+    this.ensureAuthenticated();
+    return this.http.post<any[]>(`${this.baseEndpoint}/calculate-batch`, { products });
+  }
+
+  // Agregar item a una valuación
+  async addValuationItem(valuationId: number, itemData: AddValuationItemDto): Promise<ValuationItem> {
+    this.ensureAuthenticated();
+    return this.http.post<ValuationItem>(`${this.baseEndpoint}/${valuationId}/items`, itemData);
+  }
+
+  // Finalizar valuación
+  async finalizeValuation(id: number, data: FinalizeValuationDto): Promise<Valuation> {
+    this.ensureAuthenticated();
+    return this.http.put<Valuation>(`${this.baseEndpoint}/${id}/finalize`, data);
+  }
+
+  // Finalizar valuación completa (crear + insertar items + finalizar en una transacción)
+  async finalizeComplete(clientId: number, products: any[], notes: string = ''): Promise<Valuation> {
+    this.ensureAuthenticated();
+    return this.http.post<Valuation>(`${this.baseEndpoint}/finalize-complete`, {
+      client_id: clientId,
+      products,
+      notes
+    });
+  }
 }

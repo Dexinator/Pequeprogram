@@ -7,7 +7,7 @@ export default defineConfig({
   integrations: [react()],
   // Configuración para modo servidor completo
   output: 'server',
-  // Base URL para subdominios
+  // Base URL para subdominios  
   base: '/',
   // Configuración de desarrollo
   server: {

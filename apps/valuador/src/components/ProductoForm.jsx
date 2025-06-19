@@ -6,6 +6,7 @@ export function ProductoForm({
   id = "producto-form", 
   index = 0, 
   className = "", 
+  initialData = {},
   onRemove,
   onChange = () => {} 
 }) {
@@ -13,18 +14,19 @@ export function ProductoForm({
   const productoId = `producto-${index}`;
   
   const [formData, setFormData] = useState({
-    category_id: "",
-    subcategory_id: "",
-    status: "",
-    brand_id: "",
-    brand_renown: "",
-    modality: "",
-    condition_state: "",
-    demand: "media", // Valor predeterminado
-    cleanliness: "buena", // Valor predeterminado
-    new_price: "",
-    features: {},
-    notes: ""
+    category_id: initialData.category_id || "",
+    subcategory_id: initialData.subcategory_id || "",
+    status: initialData.status || "",
+    brand_id: initialData.brand_id || "",
+    brand_renown: initialData.brand_renown || "",
+    modality: initialData.modality || "compra directa",
+    condition_state: initialData.condition_state || "",
+    demand: initialData.demand || "media", // Valor predeterminado
+    cleanliness: initialData.cleanliness || "buena", // Valor predeterminado
+    new_price: initialData.new_price || "",
+    quantity: initialData.quantity || 1, // Valor predeterminado
+    features: initialData.features || {},
+    notes: initialData.notes || ""
   });
   
   // Estados para listas y opciones
@@ -50,6 +52,27 @@ export function ProductoForm({
   
   // Servicio de valuación
   const valuationService = new ValuationService();
+
+  // Actualizar formData cuando cambie initialData
+  useEffect(() => {
+    if (Object.keys(initialData).length > 0) {
+      setFormData({
+        category_id: initialData.category_id || "",
+        subcategory_id: initialData.subcategory_id || "",
+        status: initialData.status || "",
+        brand_id: initialData.brand_id || "",
+        brand_renown: initialData.brand_renown || "",
+        modality: initialData.modality || "compra directa",
+        condition_state: initialData.condition_state || "",
+        demand: initialData.demand || "media",
+        cleanliness: initialData.cleanliness || "buena",
+        new_price: initialData.new_price || "",
+        quantity: initialData.quantity || 1,
+        features: initialData.features || {},
+        notes: initialData.notes || ""
+      });
+    }
+  }, [initialData]);
   
   // Cargar categorías al montar el componente
   useEffect(() => {
@@ -563,6 +586,7 @@ export function ProductoForm({
             >
               <option value="">Seleccionar modalidad</option>
               <option value="compra directa">Compra directa</option>
+              <option value="crédito en tienda">Crédito en tienda</option>
               <option value="consignación">Consignación</option>
             </select>
           </div>
@@ -624,7 +648,7 @@ export function ProductoForm({
           </div>
         </div>
         
-        {/* Sección 4: Precio y Notas */}
+        {/* Sección 4: Precio, Cantidad y Notas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="space-y-2">
             <label className="block font-medium" htmlFor={`new_price-${productoId}`}>
@@ -646,7 +670,22 @@ export function ProductoForm({
             </div>
           </div>
           
-          <div className="space-y-2 md:col-span-2">
+          <div className="space-y-2">
+            <label className="block font-medium" htmlFor={`quantity-${productoId}`}>
+              Cantidad
+            </label>
+            <input 
+              type="number" 
+              id={`quantity-${productoId}`} 
+              name={`quantity-${productoId}`} 
+              className="w-full p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
+              min="1"
+              value={formData.quantity}
+              onChange={handleChange}
+            />
+          </div>
+          
+          <div className="space-y-2">
             <label className="block font-medium" htmlFor={`notes-${productoId}`}>
               Notas
             </label>
@@ -663,19 +702,6 @@ export function ProductoForm({
         
         {/* Sección 5: Características específicas */}
         {renderFeatureFields()}
-        
-        {/* Sección 6: Imágenes */}
-        <div className="mb-6">
-          <h3 className="text-lg font-medium mb-3 text-azul-profundo">Imágenes del Producto</h3>
-          <ImageUploader 
-            id={`images-${productoId}`}
-            onImagesChange={(images) => {
-              const newFormData = { ...formData, images };
-              setFormData(newFormData);
-              onChange(newFormData);
-            }}
-          />
-        </div>
         
         {/* Sección 7: Cálculo y Resultados */}
         <div className="flex flex-col gap-4">
@@ -699,8 +725,11 @@ export function ProductoForm({
                 <div>
                   <p className="text-base">Precio de Compra: <span className="font-medium text-azul-profundo">${calculationResult.suggested_purchase_price.toFixed(2)}</span></p>
                   <p className="text-base">Precio de Venta: <span className="font-medium text-azul-profundo">${calculationResult.suggested_sale_price.toFixed(2)}</span></p>
+                  {calculationResult.store_credit_price && (
+                    <p className="text-base">Precio Crédito Tienda: <span className="font-medium text-verde-oscuro">${calculationResult.store_credit_price.toFixed(2)}</span></p>
+                  )}
                   {calculationResult.consignment_price && (
-                    <p className="text-base">Precio Consignación: <span className="font-medium text-azul-profundo">${calculationResult.consignment_price.toFixed(2)}</span></p>
+                    <p className="text-base">Precio Consignación: <span className="font-medium text-amarillo">${calculationResult.consignment_price.toFixed(2)}</span></p>
                   )}
                 </div>
               </div>

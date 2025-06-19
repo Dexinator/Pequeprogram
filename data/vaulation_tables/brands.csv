@@ -1,0 +1,730 @@
+﻿id,name,renown,is_active,created_at,updated_at,subcategory_id
+1,General,Normal,t,,,3
+2,Prinsel,Normal,t,,,3
+3,Chicco,Alta,t,,,3
+4,Infanti,Normal,t,,,3
+5,Evenflo,Normal,t,,,3
+6,Graco,Alta,t,,,3
+7,Brevi,Alta,t,,,3
+8,The first years,Normal,t,,,3
+9,Britax,Alta,t,,,3
+10,ABC Design,Premium,t,,,3
+11,Stokke,Premium,t,,,3
+12,Maxicosi,Premium,t,,,3
+13,Mama Mia,Normal,t,,,3
+14,PegP√©rego,Alta,t,,,3
+15,Baby Trend,Normal,t,,,3
+16,Pock It,Normal,t,,,3
+17,Phill&Teds,Alta,t,,,3
+18,Quinny,Alta,t,,,3
+19,Safety 1st,Normal,t,,,3
+20,UppaBaby,Premium,t,,,3
+21,Baby Jogger,Alta,t,,,3
+22,CityMini,Alta,t,,,3
+23,Orbit Baby,Alta,t,,,3
+24,Mima,Premium,t,,,3
+25,Cybex,Premium,t,,,3
+26,Maclaren,Alta,t,,,3
+27,Sorel,Normal,t,,,3
+28,Silver Cross,Premium,t,,,3
+29,Inglesina,Alta,t,,,3
+30,Nuna,Premium,t,,,3
+31,Bebeconfort,Alta,t,,,3
+32,Bugaboo,Premium,t,,,3
+33,D Beb√©,Normal,t,,,3
+34,Diono,Alta,t,,,3
+35,Yoyo,Premium,t,,,3
+36,Joie,Alta,t,,,3
+37,City Mini,Alta,t,,,3
+38,Phil&Teds,Alta,t,,,3
+39,Donna,Alta,t,,,3
+40,BabyZenl,Alta,t,,,3
+41,Thule,Premium,t,,,3
+42,Joovy,Alta,t,,,3
+43,Buggy pod,Normal,t,,,3
+44,Dogona,Normal,t,,,3
+45,Hot Mom,Normal,t,,,3
+46,Mc Laren,Alta,t,,,3
+47,zIPPY,Normal,t,,,3
+48,kolcraft,Normal,t,,,3
+49,GB,Normal,t,,,3
+50,BabyJogger,Alta,t,,,3
+51,Joolz,Alta,t,,,3
+52,Kelly,Normal,t,,,3
+53,General,Normal,t,,,10
+54,Mi Cuna,Normal,t,,,10
+55,La Cuna Encantada,Normal,t,,,10
+56,Baby Smile,Alta,t,,,10
+57,Grand home,Alta,t,,,10
+58,Munire furniture,Alta,t,,,10
+59,Ikea,Normal,t,,,10
+60,Mon Caramel,Normal,t,,,10
+61,Bloom,Alta,t,,,10
+62,Carters,Alta,t,,,10
+63,Pottery Barn,Alta,t,,,10
+64,Madera Fina,Alta,t,,,10
+65,Baby&Kids,Normal,t,,,10
+66,Babys and Kids,Normal,t,,,10
+67,Aranjuez,Normal,t,,,10
+68,General,Normal,t,,,1
+69,Prinsel,Normal,t,,,1
+70,Chicco,Alta,t,,,1
+71,Infanti,Normal,t,,,1
+72,Evenflo,Normal,t,,,1
+73,Graco,Alta,t,,,1
+74,Brevi,Alta,t,,,1
+75,The first years,Normal,t,,,1
+76,Britax,Alta,t,,,1
+77,PegP√©rego,Alta,t,,,1
+78,Stokke,Premium,t,,,1
+79,Maxicosi,Alta,t,,,1
+80,BeSafe,Alta,t,,,1
+81,Sorel,Normal,t,,,1
+82,Cybex,Premium,t,,,1
+83,Alpha omega,Normal,t,,,1
+84,Safety 1st,Normal,t,,,1
+85,Cosco,Normal,t,,,1
+86,Dbebe,Normal,t,,,1
+87,Mon Caramel,Normal,t,,,1
+88,Nuna,Premium,t,,,1
+89,Prinsel,Normal,t,,,1
+90,Joie,Alta,t,,,1
+91,Mifold,Normal,t,,,1
+92,General,Normal,t,,,7
+93,Polissport,Normal,t,,,7
+94,Thule,Premium,t,,,7
+95,Bobike,Alta,t,,,7
+96,Hamax,Alta,t,,,7
+97,Topeak,Alta,t,,,7
+98,General,Normal,t,,,2
+99,Prinsel,Normal,t,,,2
+100,Chicco,Alta,t,,,2
+101,Infanti,Normal,t,,,2
+102,Evenflo,Normal,t,,,2
+103,BabyBjorn,Premium,t,,,2
+104,Ergobaby,Alta,t,,,2
+105,Infantino,Normal,t,,,2
+106,Changuitos,Normal,t,,,2
+107,Manduca,Alta,t,,,2
+108,D Yali,Normal,t,,,2
+109,JJ Cole,Normal,t,,,2
+110,Kristian,Normal,t,,,2
+111,Lulyboo,Normal,t,,,2
+112,Saddle Baby,Normal,t,,,2
+113,Mon Caramel,Normal,t,,,2
+114,Babyanny,Normal,t,,,2
+115,Babuu,Normal,t,,,2
+116,Stokke,Premium,t,,,2
+117,Collections,Normal,t,,,2
+118,Home line baby,Normal,t,,,2
+119,Baby Mobel,Normal,t,,,2
+120,Marsupial,Normal,t,,,2
+121,Bobba,Normal,t,,,2
+122,Cybex,Premium,t,,,2
+123,Avi,Normal,t,,,2
+124,Boppy,Normal,t,,,2
+125,Britax,Alta,t,,,2
+126,Marsupi,Normal,t,,,2
+127,Twingar,Normal,t,,,2
+128,Twingo,Normal,t,,,2
+129,Koala Kin,Normal,t,,,2
+130,Yemaya,Normal,t,,,2
+131,LILLE,Normal,t,,,2
+132,La Barriguita de mama,Sencilla,t,,,2
+133,Baby Gaon,Normal,t,,,2
+134,Diva Essenza,Normal,t,,,2
+135,D Yaly,Normal,t,,,2
+136,Bebear,Normal,t,,,2
+137,Graco,Alta,t,,,2
+138,TushBaby,Normal,t,,,2
+139,General,Normal,t,,,4
+140,Prinsel,Normal,t,,,4
+141,Chicco,Alta,t,,,4
+142,Infanti,Normal,t,,,4
+143,Evenflo,Normal,t,,,4
+144,Graco,Alta,t,,,4
+145,Brevi,Normal,t,,,4
+146,The first years,Normal,t,,,4
+147,Britax,Alta,t,,,4
+148,ABC Design,Alta,t,,,4
+149,Stokke,Premium,t,,,4
+150,Fisher Price,Alta,t,,,4
+151,Tiny Love,Alta,t,,,4
+152,Prince Lionheart,Normal,t,,,4
+153,Stroller,Normal,t,,,4
+154,Baby jogger,Alta,t,,,4
+155,Skip hop,Alta,t,,,4
+156,Cozy Carrier,Normal,t,,,4
+157,Pac Back,Normal,t,,,4
+158,Gap,Alta,t,,,4
+159,Buggy Board,Normal,t,,,4
+160,Ideas,Sencilla,t,,,4
+161,Smart elf,Normal,t,,,4
+162,YoYo,Alta,t,,,4
+163,Ezimoov,Normal,t,,,4
+164,General,Normal,t,,,9
+165,Prinsel,Normal,t,,,9
+166,Chicco,Premium,t,,,9
+167,Infanti,Normal,t,,,9
+168,Evenflo,Normal,t,,,9
+169,Graco,Alta,t,,,9
+170,Brevi,Normal,t,,,9
+171,The first years,Normal,t,,,9
+172,Britax,Alta,t,,,9
+173,Safety 1st,Normal,t,,,9
+174,Stokke,Premium,t,,,9
+175,Tiny Love,Alta,t,,,9
+176,Fisher Price,Alta,t,,,9
+177,Cloe,Normal,t,,,9
+178,Coach,Premium,t,,,9
+179,Avi Collections,Normal,t,,,9
+180,Fisher Price,Alta,t,,,9
+181,Jean Book,Normal,t,,,9
+182,Marvel,Alta,t,,,9
+183,Swimways,Normal,t,,,9
+184,Campanita,Sencilla,t,,,9
+185,Uppababy,Premium,t,,,9
+186,Baby Star,Normal,t,,,9
+187,Salvavidas,Sencilla,t,,,9
+188,Toto,Normal,t,,,9
+189,Chenson,Normal,t,,,9
+190,Delta Baby,Normal,t,,,9
+191,Eddie Bauer,Alta,t,,,9
+192,Panbitt,Normal,t,,,9
+193,Ride Safer,Normal,t,,,9
+194,Skip Hop,Alta,t,,,9
+195,Hornit,Normal,t,,,9
+196,Btwin,Normal,t,,,9
+197,Spin Master,Alta,t,,,9
+198,Sombras,Sencilla,t,,,9
+199,Buggy Butler,Normal,t,,,9
+200,Accesorio,Sencilla,t,,,9
+201,Happy Walk,Normal,t,,,9
+202,Arnes,Sencilla,t,,,9
+203,Thule,Premium,t,,,9
+204,Kipling,Alta,t,,,9
+205,International Traveller,Normal,t,,,9
+206,Distroller,Alta,t,,,9
+207,Its Imagical,Normal,t,,,9
+208,Manboo baby,Normal,t,,,9
+209,Bestway,Normal,t,,,9
+210,Bami,Normal,t,,,9
+211,Moose,Normal,t,,,9
+212,Oxelo,Normal,t,,,9
+213,General,Normal,t,,,11
+214,Prinsel,Normal,t,,,11
+215,Chicco,Premium,t,,,11
+216,Infanti,Normal,t,,,11
+217,Evenflo,Normal,t,,,11
+218,Graco,Alta,t,,,11
+219,Brevi,Normal,t,,,11
+220,The first years,Normal,t,,,11
+221,Fisher Price,Alta,t,,,11
+222,Babymobel,Normal,t,,,11
+223,Snuggle Nest,Alta,t,,,11
+224,Mon Caramel,Normal,t,,,11
+225,Dreams,Normal,t,,,11
+226,Madera Fina,Alta,t,,,11
+227,Baby Colors,Normal,t,,,11
+228,Simmons,Alta,t,,,11
+229,Maxicosi,Alta,t,,,11
+230,Halo,Alta,t,,,11
+231,Kristhian,Normal,t,,,11
+232,General,Normal,t,,,12
+233,Prinsel,Normal,t,,,12
+234,Chicco,Premium,t,,,12
+235,Infanti,Normal,t,,,12
+236,Evenflo,Normal,t,,,12
+237,Graco,Alta,t,,,12
+238,General de gas,Sencilla,t,,,12
+239,Safety 1st,Normal,t,,,12
+240,Ingenuity,Normal,t,,,12
+241,Baby&Kids,Normal,t,,,12
+242,Dbebe,Normal,t,,,12
+243,Phil&Teds,Alta,t,,,12
+244,Delta Children,Normal,t,,,12
+245,Cosco,Normal,t,,,12
+246,Besrey,Normal,t,,,12
+247,Engenuity,Normal,t,,,12
+248,Aeromoov,Normal,t,,,12
+249,BabyMoov,Normal,t,,,12
+250,Infanti,Normal,t,,,12
+251,Tuc Tuc,Normal,t,,,12
+252,Maxi Cosi,Alta,t,,,12
+253,Mon Caramel,Normal,t,,,12
+254,Babybjorn,Premium,t,,,12
+255,Fisher Price,Alta,t,,,12
+256,General,Normal,t,,,21
+257,Prinsel,Normal,t,,,21
+258,Chicco,Premium,t,,,21
+259,Infanti,Normal,t,,,21
+260,Evenflo,Normal,t,,,21
+261,Graco,Alta,t,,,21
+262,Brevi,Normal,t,,,21
+263,The first years,Normal,t,,,21
+264,Bright Starts,Normal,t,,,21
+265,Fisher Price,Alta,t,,,21
+266,Ingenuity,Normal,t,,,21
+267,BabyBjorn,Premium,t,,,21
+268,Stokke,Premium,t,,,21
+269,4 Moms,Alta,t,,,21
+270,Maxi cosi,Alta,t,,,21
+271,Kids 2,Normal,t,,,21
+272,Tiny love,Alta,t,,,21
+273,Beaba,Alta,t,,,21
+274,Disney,Alta,t,,,21
+275,Infanti Joie,Normal,t,,,21
+276,Cybex,Premium,t,,,21
+277,General,Normal,t,,,30
+278,Avent,Alta,t,,,30
+279,Lansinoh,Alta,t,,,30
+280,Tommee Tippee,Alta,t,,,30
+281,Chicco,Premium,t,,,30
+282,Pigeon,Alta,t,,,30
+283,Spectra,Alta,t,,,30
+284,Dr. Browns,Alta,t,,,30
+285,Evenflo,Normal,t,,,30
+286,Medela,Premium,t,,,30
+287,General,Normal,t,,,46
+288,Fisher Price,Alta,t,,,46
+289,Crayola,Alta,t,,,46
+290,Elmer's,Normal,t,,,46
+291,Kidkraft,Alta,t,,,46
+292,Play-Doh,Alta,t,,,46
+293,Melissa&Doug,Alta,t,,,46
+294,Cabbage Patch,Alta,t,,,46
+295,Cat,Normal,t,,,46
+296,Geli,Sencilla,t,,,46
+297,Nenuco,Normal,t,,,46
+298,Step2,Alta,t,,,46
+299,My little pony,Alta,t,,,46
+300,Distroller,Alta,t,,,46
+301,Little mommy,Normal,t,,,46
+302,Hot Wheels,Alta,t,,,46
+303,Lego,Premium,t,,,46
+304,Little People,Alta,t,,,46
+305,Little Tikes,Alta,t,,,46
+306,ItsIMagical,Normal,t,,,46
+307,Lamaze,Alta,t,,,46
+308,Play Mobil,Alta,t,,,46
+309,Mega Bloks,Alta,t,,,46
+310,Baby Einstein,Alta,t,,,46
+311,Tiny Love,Alta,t,,,46
+312,Brigth Starts,Normal,t,,,46
+313,DC Comics,Alta,t,,,46
+314,Alex,Normal,t,,,46
+315,Build a Bear,Alta,t,,,46
+316,Leap Frog,Alta,t,,,46
+317,Playgro,Normal,t,,,46
+318,Playskool,Alta,t,,,46
+319,Nickelodeon,Alta,t,,,46
+320,Mattel,Alta,t,,,46
+321,Marvel,Alta,t,,,46
+322,Hasbro,Alta,t,,,46
+323,Hello Kitty,Alta,t,,,46
+324,Vtech,Alta,t,,,46
+325,Barbie,Alta,t,,,46
+326,Disney,Alta,t,,,46
+327,Funko Pop,Alta,t,,,46
+328,Paw Patrol,Alta,t,,,46
+329,General,Normal,t,,,13
+330,Pottery Barn,Premium,t,,,13
+331,Carters,Alta,t,,,13
+332,Fisher Price,Alta,t,,,13
+333,Skip Hop,Alta,t,,,13
+334,The First Years,Normal,t,,,13
+335,Cloud Island,Normal,t,,,13
+336,Gerber,Normal,t,,,13
+337,Burt's Bees,Alta,t,,,13
+338,Hudson Baby,Normal,t,,,13
+339,Little Giraffe,Premium,t,,,13
+340,Munchkin,Alta,t,,,13
+341,Summer Infant,Normal,t,,,13
+342,General,Normal,t,,,14
+343,Simmons,Premium,t,,,14
+344,Sealy,Premium,t,,,14
+345,Serta,Premium,t,,,14
+346,Colgate,Alta,t,,,14
+347,Moonlight Slumber,Alta,t,,,14
+348,Safety 1st,Normal,t,,,14
+349,Graco,Alta,t,,,14
+350,Dream On Me,Normal,t,,,14
+351,Delta Children,Normal,t,,,14
+352,Milliard,Alta,t,,,14
+353,Lullaby Earth,Alta,t,,,14
+354,General,Normal,t,,,15
+355,Boppy,Premium,t,,,15
+356,Leachco,Alta,t,,,15
+357,My Brest Friend,Alta,t,,,15
+358,Chicco,Premium,t,,,15
+359,Fisher Price,Alta,t,,,15
+360,Summer Infant,Normal,t,,,15
+361,The First Years,Normal,t,,,15
+362,Munchkin,Alta,t,,,15
+363,Safety 1st,Normal,t,,,15
+364,Infantino,Normal,t,,,15
+365,Lansinoh,Alta,t,,,15
+366,General,Normal,t,,,16
+367,Fisher Price,Alta,t,,,16
+368,Tiny Love,Alta,t,,,16
+369,Manhattan Toy,Alta,t,,,16
+370,VTech,Alta,t,,,16
+371,Skip Hop,Alta,t,,,16
+372,Baby Einstein,Alta,t,,,16
+373,Lamaze,Alta,t,,,16
+374,Sassy,Normal,t,,,16
+375,The First Years,Normal,t,,,16
+376,Infantino,Normal,t,,,16
+377,Bright Starts,Normal,t,,,16
+378,General,Normal,t,,,17
+379,Regalo,Alta,t,,,17
+380,Summer Infant,Normal,t,,,17
+381,Safety 1st,Normal,t,,,17
+382,Toddleroo,Alta,t,,,17
+383,Delta Children,Normal,t,,,17
+384,Dream On Me,Normal,t,,,17
+385,Evenflo,Normal,t,,,17
+386,KidCo,Alta,t,,,17
+387,North States,Alta,t,,,17
+388,General,Normal,t,,,18
+389,Pottery Barn Kids,Premium,t,,,18
+390,Ikea,Normal,t,,,18
+391,Delta Children,Normal,t,,,18
+392,DaVinci,Alta,t,,,18
+393,Storkcraft,Alta,t,,,18
+394,Dream On Me,Normal,t,,,18
+395,South Shore,Normal,t,,,18
+396,Dorel,Alta,t,,,18
+397,Bassett,Premium,t,,,18
+398,Ethan Allen,Premium,t,,,18
+399,Munire,Alta,t,,,18
+400,General,Normal,t,,,19
+401,Skip Hop,Alta,t,,,19
+402,Munchkin,Alta,t,,,19
+403,Safety 1st,Normal,t,,,19
+404,Summer Infant,Normal,t,,,19
+405,The First Years,Normal,t,,,19
+406,Fisher Price,Alta,t,,,19
+407,VTech,Alta,t,,,19
+408,Hatch,Premium,t,,,19
+409,Dohm,Alta,t,,,19
+410,Cloud B,Alta,t,,,19
+411,Marpac,Alta,t,,,19
+412,General,Normal,t,,,20
+413,Fisher Price,Alta,t,,,20
+414,Graco,Alta,t,,,20
+415,Chicco,Alta,t,,,20
+416,Ingenuity,Normal,t,,,20
+417,Evenflo,Normal,t,,,20
+418,Safety 1st,Normal,t,,,20
+419,Joovy,Alta,t,,,20
+420,Stokke,Premium,t,,,20
+421,Peg Perego,Premium,t,,,20
+422,Maxi-Cosi,Alta,t,,,20
+423,Abiie,Alta,t,,,20
+424,General,Normal,t,,,22
+425,Fisher Price,Alta,t,,,22
+426,Little Tikes,Alta,t,,,22
+427,Step2,Alta,t,,,22
+428,Bounce Pro,Alta,t,,,22
+429,Skywalker,Alta,t,,,22
+430,JumpKing,Alta,t,,,22
+431,Sportspower,Normal,t,,,22
+432,Inflatable World,Normal,t,,,22
+433,Banzai,Normal,t,,,22
+434,General,Normal,t,,,23
+435,Graco,Alta,t,,,23
+436,Evenflo,Normal,t,,,23
+437,Safety 1st,Normal,t,,,23
+438,Regalo,Alta,t,,,23
+439,Baby Trend,Normal,t,,,23
+440,Summer Infant,Normal,t,,,23
+441,Delta Children,Normal,t,,,23
+442,North States,Alta,t,,,23
+443,Toddleroo,Alta,t,,,23
+444,Joovy,Alta,t,,,23
+445,4moms,Premium,t,,,23
+446,General,Normal,t,,,24
+447,Safety 1st,Normal,t,,,24
+448,Munchkin,Alta,t,,,24
+449,Summer Infant,Normal,t,,,24
+450,The First Years,Normal,t,,,24
+451,Regalo,Alta,t,,,24
+452,Toddleroo,Alta,t,,,24
+453,North States,Alta,t,,,24
+454,Mommy's Helper,Normal,t,,,24
+455,KidCo,Alta,t,,,24
+456,Prince Lionheart,Normal,t,,,24
+457,Dreambaby,Normal,t,,,24
+458,General,Normal,t,,,25
+459,Safety 1st,Normal,t,,,25
+460,Regalo,Alta,t,,,25
+461,Summer Infant,Normal,t,,,25
+462,Toddleroo,Alta,t,,,25
+463,North States,Alta,t,,,25
+464,KidCo,Alta,t,,,25
+465,Evenflo,Normal,t,,,25
+466,Munchkin,Alta,t,,,25
+467,Prince Lionheart,Normal,t,,,25
+468,Dreambaby,Normal,t,,,25
+469,Cardinal Gates,Alta,t,,,25
+470,General,Normal,t,,,26
+471,VTech,Alta,t,,,26
+472,Motorola,Premium,t,,,26
+473,Infant Optics,Alta,t,,,26
+474,Summer Infant,Normal,t,,,26
+475,Safety 1st,Normal,t,,,26
+476,Owlet,Premium,t,,,26
+477,Nanit,Premium,t,,,26
+478,Cocoon Cam,Alta,t,,,26
+479,Angelcare,Alta,t,,,26
+480,Philips Avent,Premium,t,,,26
+481,Hello Baby,Normal,t,,,26
+482,General,Normal,t,,,27
+483,Munchkin,Alta,t,,,27
+484,Summer Infant,Normal,t,,,27
+485,Safety 1st,Normal,t,,,27
+486,The First Years,Normal,t,,,27
+487,Nuby,Normal,t,,,27
+488,Dr. Brown's,Alta,t,,,27
+489,Philips Avent,Premium,t,,,27
+490,Tommee Tippee,Alta,t,,,27
+491,Pigeon,Alta,t,,,27
+492,NUK,Alta,t,,,27
+493,Medela,Premium,t,,,27
+494,General,Normal,t,,,28
+495,Summer Infant,Normal,t,,,28
+496,Safety 1st,Normal,t,,,28
+497,The First Years,Normal,t,,,28
+498,Munchkin,Alta,t,,,28
+499,Fisher Price,Alta,t,,,28
+500,Skip Hop,Alta,t,,,28
+501,Angelcare,Alta,t,,,28
+502,4moms,Premium,t,,,28
+503,Puj,Alta,t,,,28
+504,Primo,Normal,t,,,28
+505,Boon,Alta,t,,,28
+506,General,Normal,t,,,29
+507,Pampers,Premium,t,,,29
+508,Huggies,Premium,t,,,29
+509,Luvs,Normal,t,,,29
+510,Seventh Generation,Alta,t,,,29
+511,Honest,Alta,t,,,29
+512,Bambo Nature,Alta,t,,,29
+513,Earth's Best,Alta,t,,,29
+514,Kirkland,Normal,t,,,29
+515,Up&Up,Normal,t,,,29
+516,Parents Choice,Normal,t,,,29
+517,Hello Bello,Alta,t,,,29
+518,General,Normal,t,,,31
+519,Philips Avent,Premium,t,,,31
+520,Tommee Tippee,Alta,t,,,31
+521,Munchkin,Alta,t,,,31
+522,The First Years,Normal,t,,,31
+523,Dr. Brown's,Alta,t,,,31
+524,Kiinde,Alta,t,,,31
+525,Baby Brezza,Premium,t,,,31
+526,Nuby,Normal,t,,,31
+527,NUK,Alta,t,,,31
+528,Pigeon,Alta,t,,,31
+529,Medela,Premium,t,,,31
+530,General,Normal,t,,,32
+531,Philips Avent,Premium,t,,,32
+532,Tommee Tippee,Alta,t,,,32
+533,Munchkin,Alta,t,,,32
+534,Dr. Brown's,Alta,t,,,32
+535,Medela,Premium,t,,,32
+536,Nuby,Normal,t,,,32
+537,NUK,Alta,t,,,32
+538,Pigeon,Alta,t,,,32
+539,Kiinde,Alta,t,,,32
+540,Baby Brezza,Premium,t,,,32
+541,The First Years,Normal,t,,,32
+542,General,Normal,t,,,33
+543,Medela,Premium,t,,,33
+544,Spectra,Premium,t,,,33
+545,Philips Avent,Premium,t,,,33
+546,Lansinoh,Alta,t,,,33
+547,Evenflo,Normal,t,,,33
+548,NUK,Alta,t,,,33
+549,Tommee Tippee,Alta,t,,,33
+550,Motif Medical,Alta,t,,,33
+551,BellaBaby,Normal,t,,,33
+552,Haakaa,Alta,t,,,33
+553,Elvie,Premium,t,,,33
+554,General,Normal,t,,,34
+555,Beaba,Premium,t,,,34
+556,Baby Bullet,Alta,t,,,34
+557,Cuisinart,Premium,t,,,34
+558,Philips Avent,Premium,t,,,34
+559,Munchkin,Alta,t,,,34
+560,Nuby,Normal,t,,,34
+561,The First Years,Normal,t,,,34
+562,Oster,Alta,t,,,34
+563,Hamilton Beach,Alta,t,,,34
+564,NutriBullet,Alta,t,,,34
+565,Baby Brezza,Premium,t,,,34
+566,General,Normal,t,,,35
+567,Munchkin,Alta,t,,,35
+568,Philips Avent,Premium,t,,,35
+569,Tommee Tippee,Alta,t,,,35
+570,Dr. Brown's,Alta,t,,,35
+571,Nuby,Normal,t,,,35
+572,NUK,Alta,t,,,35
+573,Pigeon,Alta,t,,,35
+574,Skip Hop,Alta,t,,,35
+575,Boon,Alta,t,,,35
+576,The First Years,Normal,t,,,35
+577,Olababy,Alta,t,,,35
+578,General,Normal,t,,,36
+579,Carter's,Alta,t,,,36
+580,GAP,Alta,t,,,36
+581,H&M,Normal,t,,,36
+582,Zara,Alta,t,,,36
+583,OshKosh B'gosh,Alta,t,,,36
+584,The Children's Place,Normal,t,,,36
+585,Gymboree,Alta,t,,,36
+586,Ralph Lauren,Premium,t,,,36
+587,Burberry,Premium,t,,,36
+588,Nike,Premium,t,,,36
+589,Adidas,Premium,t,,,36
+590,Under Armour,Alta,t,,,36
+591,Old Navy,Normal,t,,,36
+592,Target,Normal,t,,,36
+593,Walmart,Normal,t,,,36
+594,Amazon,Normal,t,,,36
+595,Macy's,Normal,t,,,36
+596,JCPenney,Normal,t,,,36
+597,Kohl's,Normal,t,,,36
+598,General,Normal,t,,,47
+599,Disney,Premium,t,,,47
+600,Marvel,Premium,t,,,47
+601,DC Comics,Premium,t,,,47
+602,Rubie's,Alta,t,,,47
+603,Spirit Halloween,Alta,t,,,47
+604,Leg Avenue,Alta,t,,,47
+605,Fun World,Normal,t,,,47
+606,California Costumes,Alta,t,,,47
+607,Smiffy's,Normal,t,,,47
+608,Morphsuits,Alta,t,,,47
+609,Disguise,Alta,t,,,47
+610,General,Normal,t,,,48
+611,Hasbro,Premium,t,,,48
+612,Mattel,Premium,t,,,48
+613,Ravensburger,Alta,t,,,48
+614,ThinkFun,Alta,t,,,48
+615,Educational Insights,Alta,t,,,48
+616,Melissa & Doug,Alta,t,,,48
+617,Peaceable Kingdom,Alta,t,,,48
+618,Blue Orange,Alta,t,,,48
+619,Haba,Alta,t,,,48
+620,Gamewright,Alta,t,,,48
+621,SmartGames,Alta,t,,,48
+622,General,Normal,t,,,49
+623,Fisher Price,Alta,t,,,49
+624,VTech,Alta,t,,,49
+625,LeapFrog,Alta,t,,,49
+626,Little Tikes,Alta,t,,,49
+627,Step2,Alta,t,,,49
+628,Skip Hop,Alta,t,,,49
+629,Baby Einstein,Alta,t,,,49
+630,Manhattan Toy,Alta,t,,,49
+631,Tiny Love,Alta,t,,,49
+632,Infantino,Normal,t,,,49
+633,Bright Starts,Normal,t,,,49
+634,General,Normal,t,,,50
+635,Melissa & Doug,Alta,t,,,50
+636,Ravensburger,Alta,t,,,50
+637,Clementoni,Alta,t,,,50
+638,Disney,Premium,t,,,50
+639,Scholastic,Alta,t,,,50
+640,Usborne,Alta,t,,,50
+641,DK,Alta,t,,,50
+642,National Geographic,Premium,t,,,50
+643,Crayola,Alta,t,,,50
+644,ThinkFun,Alta,t,,,50
+645,Educational Insights,Alta,t,,,50
+646,General,Normal,t,,,51
+647,Fisher Price,Alta,t,,,51
+648,Skip Hop,Alta,t,,,51
+649,Tiny Love,Alta,t,,,51
+650,Baby Einstein,Alta,t,,,51
+651,Manhattan Toy,Alta,t,,,51
+652,Infantino,Normal,t,,,51
+653,Bright Starts,Normal,t,,,51
+654,The First Years,Normal,t,,,51
+655,VTech,Alta,t,,,51
+656,Lamaze,Alta,t,,,51
+657,Sassy,Normal,t,,,51
+658,General,Normal,t,,,52
+659,VTech,Alta,t,,,52
+660,Fisher Price,Alta,t,,,52
+661,Baby Einstein,Alta,t,,,52
+662,Bright Starts,Normal,t,,,52
+663,The First Years,Normal,t,,,52
+664,Safety 1st,Normal,t,,,52
+665,Joovy,Alta,t,,,52
+666,Kolcraft,Normal,t,,,52
+667,Baby Trend,Normal,t,,,52
+668,Evenflo,Normal,t,,,52
+669,Graco,Alta,t,,,52
+670,General,Normal,t,,,53
+671,Radio Flyer,Premium,t,,,53
+672,Little Tikes,Alta,t,,,53
+673,Step2,Alta,t,,,53
+674,Fisher Price,Alta,t,,,53
+675,VTech,Alta,t,,,53
+676,Baby Einstein,Alta,t,,,53
+677,Infantino,Normal,t,,,53
+678,Bright Starts,Normal,t,,,53
+679,The First Years,Normal,t,,,53
+680,Safety 1st,Normal,t,,,53
+681,Joovy,Alta,t,,,53
+682,General,Normal,t,,,54
+683,Power Wheels,Premium,t,,,54
+684,Little Tikes,Alta,t,,,54
+685,Step2,Alta,t,,,54
+686,Radio Flyer,Premium,t,,,54
+687,Peg Perego,Premium,t,,,54
+688,Kid Trax,Alta,t,,,54
+689,Best Choice,Normal,t,,,54
+690,Costzon,Normal,t,,,54
+691,Hauck,Alta,t,,,54
+692,Berg,Premium,t,,,54
+693,Kettler,Premium,t,,,54
+694,General,Normal,t,,,55
+695,Radio Flyer,Premium,t,,,55
+696,Schwinn,Premium,t,,,55
+697,Trek,Premium,t,,,55
+698,Specialized,Premium,t,,,55
+699,Strider,Premium,t,,,55
+700,Huffy,Alta,t,,,55
+701,Dynacraft,Normal,t,,,55
+702,RoyalBaby,Alta,t,,,55
+703,Joystar,Normal,t,,,55
+704,Kent,Normal,t,,,55
+705,Guardian,Alta,t,,,55
+706,General,Normal,t,,,56
+707,Razor,Premium,t,,,56
+708,Micro,Premium,t,,,56
+709,Globber,Alta,t,,,56
+710,Roller Derby,Alta,t,,,56
+711,K2,Premium,t,,,56
+712,Powerslide,Premium,t,,,56
+713,Rollerblade,Premium,t,,,56
+714,Sector 9,Premium,t,,,56
+715,Penny,Premium,t,,,56
+716,Landyachtz,Premium,t,,,56
+717,Atom,Alta,t,,,56
+718,General,Normal,t,,,57
+719,Little Tikes,Alta,t,,,57
+720,Step2,Alta,t,,,57
+721,Backyard Discovery,Alta,t,,,57
+722,KidKraft,Alta,t,,,57
+723,Lifetime,Alta,t,,,57
+724,Gorilla Playsets,Alta,t,,,57
+725,Creative Playthings,Premium,t,,,57
+726,Swing-N-Slide,Alta,t,,,57
+727,Skywalker,Alta,t,,,57
+728,Bounce Pro,Alta,t,,,57
+729,Intex,Normal,t,,,57

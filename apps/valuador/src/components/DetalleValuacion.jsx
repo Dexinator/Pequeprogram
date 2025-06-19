@@ -129,6 +129,10 @@ const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalCo
                         <span className="ml-1 font-medium">{producto.cleanliness}</span>
                       </div>
                       <div>
+                        <span className="text-text-muted">Cantidad:</span>
+                        <span className="ml-1 font-medium">{Number(producto.quantity) || 1}</span>
+                      </div>
+                      <div>
                         <span className="text-text-muted">Precio nuevo:</span>
                         <span className="ml-1 font-medium">{formatCurrency(producto.new_price)}</span>
                       </div>
@@ -149,6 +153,11 @@ const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalCo
                       <p className="text-lg font-bold text-verde-oscuro">
                         {formatCurrency(producto.final_purchase_price || producto.suggested_purchase_price)}
                       </p>
+                      {(Number(producto.quantity) || 1) > 1 && (
+                        <p className="text-xs text-text-muted">
+                          Total: {formatCurrency((producto.final_purchase_price || producto.suggested_purchase_price) * (Number(producto.quantity) || 1))}
+                        </p>
+                      )}
                     </div>
                     
                     <div className="text-center">
@@ -156,6 +165,11 @@ const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalCo
                       <p className="text-lg font-bold text-azul-profundo">
                         {formatCurrency(producto.final_sale_price || producto.suggested_sale_price)}
                       </p>
+                      {(Number(producto.quantity) || 1) > 1 && (
+                        <p className="text-xs text-text-muted">
+                          Total: {formatCurrency((producto.final_sale_price || producto.suggested_sale_price) * (Number(producto.quantity) || 1))}
+                        </p>
+                      )}
                     </div>
 
                     {producto.modality === 'consignación' && producto.consignment_price && (
@@ -164,6 +178,11 @@ const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalCo
                         <p className="text-lg font-bold text-amarillo">
                           {formatCurrency(producto.consignment_price)}
                         </p>
+                        {(Number(producto.quantity) || 1) > 1 && (
+                          <p className="text-xs text-text-muted">
+                            Total: {formatCurrency(producto.consignment_price * (Number(producto.quantity) || 1))}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -309,12 +328,13 @@ function DetalleValuacionContent({ valuationId }) {
       const purchasePrice = item.final_purchase_price || item.suggested_purchase_price || 0;
       const salePrice = item.final_sale_price || item.suggested_sale_price || 0;
       const consignmentPrice = item.consignment_price || 0;
+      const quantity = Number(item.quantity) || 1;
 
-      totalCompra += purchasePrice;
-      totalVenta += salePrice;
+      totalCompra += purchasePrice * quantity;
+      totalVenta += salePrice * quantity;
       
       if (item.modality === 'consignación') {
-        totalConsignacion += consignmentPrice;
+        totalConsignacion += consignmentPrice * quantity;
       }
     });
 

@@ -83,13 +83,35 @@ export class HttpService {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      let errorMessage = `Error en la petición: ${response.status} ${response.statusText}`;
+      let errorBody = null;
+      
+      try {
+        errorBody = await response.json();
+        if (errorBody && errorBody.error) {
+          errorMessage = errorBody.error;
+        }
+      } catch (parseError) {
+        // Si no se puede parsear como JSON, intentar como texto
+        try {
+          errorBody = await response.text();
+        } catch (textError) {
+          // Usar mensaje genérico si todo falla
+        }
+      }
+      
       console.error(`❌ Error en petición GET:`, {
         status: response.status,
         statusText: response.statusText,
-        body: errorText
+        body: errorBody
       });
-      throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
+      
+      // Crear error con información adicional
+      const error = new Error(errorMessage);
+      // @ts-ignore - Agregar propiedades personalizadas
+      error.status = response.status;
+      error.statusText = response.statusText;
+      throw error;
     }
 
     const data = await response.json();
@@ -126,18 +148,30 @@ export class HttpService {
       if (!response.ok) {
         // Intentar obtener el mensaje de error del cuerpo de la respuesta
         let errorMessage = `Error en la petición: ${response.status} ${response.statusText}`;
+        let errorData = null;
+        
         try {
-          const errorData = await response.json();
-          if (errorData && errorData.message) {
-            errorMessage = errorData.message;
+          errorData = await response.json();
+          if (errorData && (errorData.error || errorData.message)) {
+            errorMessage = errorData.error || errorData.message;
           }
-          console.error('Error en la respuesta:', errorData);
-          throw new Error(errorMessage);
         } catch (parseError) {
-          // Si no se puede parsear el cuerpo como JSON, usar el mensaje genérico
-          console.error('Error al parsear la respuesta de error:', parseError);
-          throw new Error(errorMessage);
+          // Si no se puede parsear el cuerpo como JSON, intentar como texto
+          try {
+            errorData = await response.text();
+          } catch (textError) {
+            // Usar mensaje genérico si todo falla
+          }
         }
+        
+        console.error('Error en la respuesta:', errorData);
+        
+        // Crear error con información adicional
+        const error = new Error(errorMessage);
+        // @ts-ignore - Agregar propiedades personalizadas
+        error.status = response.status;
+        error.statusText = response.statusText;
+        throw error;
       }
 
       const responseData = await response.json();

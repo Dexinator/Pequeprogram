@@ -216,5 +216,91 @@ export const valuationController = {
       console.error('Error al listar valuaciones:', error);
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
+  },
+
+  /**
+   * Calcular precios para múltiples productos sin insertar en DB
+   */
+  calculateBatch: async (req: Request, res: Response) => {
+    try {
+      const { products } = req.body;
+
+      if (!products || !Array.isArray(products) || products.length === 0) {
+        return res.status(400).json({ 
+          error: 'Se requiere un array de productos para calcular' 
+        });
+      }
+
+      // Validar cada producto
+      const requiredFields = [
+        'category_id', 'subcategory_id', 'status', 'brand_renown',
+        'modality', 'condition_state', 'demand', 'cleanliness', 'new_price'
+      ];
+
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        for (const field of requiredFields) {
+          if (!(field in product)) {
+            return res.status(400).json({ 
+              error: `El campo '${field}' es obligatorio en el producto ${i + 1}` 
+            });
+          }
+        }
+      }
+
+      const calculatedProducts = await valuationService.calculateBatch(products);
+      res.json(calculatedProducts);
+    } catch (error: any) {
+      console.error('Error al calcular lote de productos:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
+  },
+
+  /**
+   * Crear valuación completa con todos los items y finalizarla en una transacción
+   */
+  finalizeComplete: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+
+      const { client_id, products, notes } = req.body;
+
+      if (!client_id) {
+        return res.status(400).json({ error: 'El ID del cliente es obligatorio' });
+      }
+
+      if (!products || !Array.isArray(products) || products.length === 0) {
+        return res.status(400).json({ 
+          error: 'Se requiere al menos un producto para finalizar la valuación' 
+        });
+      }
+
+      // Validar cada producto
+      const requiredFields = [
+        'category_id', 'subcategory_id', 'status', 'brand_renown',
+        'modality', 'condition_state', 'demand', 'cleanliness', 'new_price'
+      ];
+
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        for (const field of requiredFields) {
+          if (!(field in product)) {
+            return res.status(400).json({ 
+              error: `El campo '${field}' es obligatorio en el producto ${i + 1}` 
+            });
+          }
+        }
+      }
+
+      const valuation = await valuationService.finalizeComplete(userId, client_id, products, notes || '');
+      res.status(201).json(valuation);
+    } catch (error: any) {
+      console.error('Error al finalizar valuación completa:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
   }
 };

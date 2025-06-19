@@ -119,18 +119,31 @@ Para implementar esta lógica, se requieren las siguientes tablas:
 - Se genera un resumen con todos los artículos
 
 ### 5.2 Modalidades de Pago
-- **Compra Directa**: Pago inmediato al cliente, precio más bajo
-- **Consignación**: Sin pago inmediato, porcentaje mayor al vender
-- Siempre calcular ambos valores, aunque el cliente elija solo una modalidad
+- **Compra Directa**: Pago inmediato al cliente en efectivo, precio base
+- **Crédito en Tienda**: Pago mediante vales/créditos canjeables únicamente en la tienda, 10% más que compra directa  
+- **Consignación**: Sin pago inmediato, porcentaje mayor al vender (20% más que compra directa)
+- Siempre calcular los tres valores, aunque el cliente elija solo una modalidad
 
-### 5.3 Ajustes Manuales
+### 5.3 Generación de Ofertas de Compra
+- **Documento de Oferta**: Se genera automáticamente para productos con modalidad "Compra Directa" y "Crédito en Tienda"
+- **Impresión Optimizada**: Documento con formato profesional incluyendo:
+  - Información de la empresa (Entrepeques)
+  - Datos del proveedor/cliente
+  - Lista detallada de productos con descripciones inteligentes
+  - Totales separados por modalidad de pago
+  - Términos y condiciones (válida por 7 días)
+- **Descripción de Productos**: Se genera automáticamente usando características importantes (offer_print=TRUE en feature_definitions)
+- **Acceso desde Historial**: Funcionalidad disponible tanto en nueva valuación como en historial de valuaciones
+
+### 5.4 Ajustes Manuales
 - El sistema calcula precios sugeridos, pero el empleado puede ajustarlos
 - Se deben guardar tanto el precio sugerido como el precio final para control
 
-### 5.4 Historial y Trazabilidad
+### 5.5 Historial y Trazabilidad
 - Mantener registro de todas las valuaciones realizadas
 - Permitir consulta por cliente, fecha, empleado, etc.
 - Facilitar la búsqueda de artículos similares previamente valuados
+- **Funcionalidad de Impresión**: Impresión de ofertas directamente desde el historial de valuaciones
 
 ## 6. Implementación en Base de Datos
 
@@ -162,6 +175,8 @@ feature_definitions
   type VARCHAR(20) NOT NULL -- texto, numero, seleccion
   order_index INTEGER NOT NULL -- orden de visualización
   options JSONB -- opciones para tipo seleccion
+  mandatory BOOLEAN DEFAULT FALSE -- si el campo es obligatorio
+  offer_print BOOLEAN DEFAULT FALSE -- si aparece en ofertas impresas
   
 valuation_factors
   id SERIAL PRIMARY KEY
@@ -182,6 +197,7 @@ valuations
   user_id INTEGER REFERENCES users(id)
   valuation_date TIMESTAMP DEFAULT NOW()
   total_purchase_amount DECIMAL(10,2)
+  total_store_credit_amount DECIMAL(10,2)
   total_consignment_amount DECIMAL(10,2)
   status VARCHAR(20) DEFAULT 'pending'
   notes TEXT
@@ -194,7 +210,7 @@ valuation_items
   brand_id INTEGER REFERENCES brands(id)
   status VARCHAR(50) NOT NULL -- Nuevo, Usado como nuevo, etc.
   brand_renown VARCHAR(20) NOT NULL
-  modality VARCHAR(20) NOT NULL -- compra directa, consignación
+  modality VARCHAR(20) NOT NULL -- compra directa, crédito en tienda, consignación
   condition_state VARCHAR(20) NOT NULL -- excelente, bueno, regular
   demand VARCHAR(20) NOT NULL -- alta, media, baja
   cleanliness VARCHAR(20) NOT NULL -- buena, regular, mala
@@ -207,6 +223,7 @@ valuation_items
   final_purchase_price DECIMAL(10,2) -- precio de compra final
   final_sale_price DECIMAL(10,2) -- precio de venta final
   consignment_price DECIMAL(10,2) -- precio en caso de consignación
+  store_credit_price DECIMAL(10,2) -- precio para crédito en tienda
   images JSONB -- URLs de imágenes
   notes TEXT
 ```
@@ -219,5 +236,86 @@ valuation_items
 4. Aplicar fórmulas de cálculo para obtener precio de venta y compra sugeridos
 5. Devolver resultado al frontend
 6. Almacenar valuación completa cuando se finalice
+
+## 8. Proceso de Generación de Ofertas de Compra
+
+### 8.1 Flujo de Impresión de Ofertas
+
+1. **Desde Nueva Valuación**:
+   - Una vez completado el resumen de productos
+   - Se filtran automáticamente productos con modalidad "Compra Directa" y "Crédito en Tienda"
+   - Se genera documento de oferta en modal
+   - Usuario puede imprimir directamente
+
+2. **Desde Historial de Valuaciones**:
+   - Usuario selecciona valuación desde tabla de historial
+   - Clic en botón "Imprimir" (icono de impresora)
+   - Sistema obtiene valuación completa via API `getValuation(id)`
+   - Se filtran productos válidos para oferta
+   - Se calcula totales por modalidad
+   - Se muestra modal con documento de oferta
+   - Usuario puede imprimir desde modal
+
+### 8.2 Lógica de Descripción de Productos
+
+La descripción de productos en las ofertas se genera siguiendo esta prioridad:
+
+1. **Nombre del Producto**: Subcategoría > Categoría > "Artículo"
+2. **Características Importantes**: Campos con `offer_print=TRUE`:
+   - `modelo`, `talla`, `edad`, `tipo`, `tamano`, `color`, `size`
+   - Máximo 2 características más importantes
+3. **Marca**: Solo si no es genérica ("Sin marca", "Genérica")
+4. **Estado**: Solo para productos usados con descripción del estado
+
+Ejemplo de descripción generada:
+- "Autoasiento - Portabebé 0-13 kg, Ajustable alturas - Chicco - Estado Excelente"
+- "Cuna Estándar - Incluye colchón - Buen Estado"
+
+### 8.3 Configuración de Características para Ofertas
+
+En la tabla `feature_definitions`, el campo `offer_print` determina qué características aparecen en las ofertas:
+
+- `offer_print = TRUE`: Características importantes que aparecen en descripciones
+- `offer_print = FALSE`: Características internas que no aparecen en ofertas
+
+Características comunes con `offer_print = TRUE`:
+- **modelo**: Tipo específico del producto
+- **talla**: Talla de ropa/calzado  
+- **tipo**: Variante del producto
+- **incluye_colchon**: Si incluye accesorios importantes
+
+### 8.4 Estructura del Documento de Oferta
+
+1. **Encabezado Empresarial**:
+   - Logo y nombre "Entrepeques"
+   - Dirección: Av. Homero 1616, Polanco, Miguel Hidalgo, CDMX 11510
+   - Teléfono: 55 6588 3245
+   - Email: contacto@entrepeques.mx
+
+2. **Información de la Oferta**:
+   - Título "OFERTA DE COMPRA"
+   - Fecha actual
+   - Validez: 7 días
+
+3. **Datos del Proveedor**:
+   - Nombre, teléfono, email, identificación del cliente
+
+4. **Tabla de Productos**:
+   - Número consecutivo
+   - Descripción inteligente del producto
+   - Modalidad de pago (Efectivo/Crédito en tienda)
+   - Cantidad
+   - Precio unitario
+   - Total por producto
+
+5. **Totales**:
+   - Total en efectivo (compra directa)
+   - Total en crédito en tienda
+   - Gran total
+
+6. **Términos y Condiciones**:
+   - Validez de 7 días
+   - Condiciones de pago
+   - Información sobre crédito en tienda
 
 Este documento servirá como referencia para garantizar que la implementación del sistema mantenga la lógica de negocio correcta de Entrepeques. 

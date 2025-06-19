@@ -13,8 +13,14 @@ export function ClienteForm({
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [searchError, setSearchError] = useState(null);
   
   const valuationService = new ValuationService();
+
+  // Actualizar formData cuando cambien los initialData
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
   
   // Manejar cambios en el formulario
   const handleChange = (e) => {
@@ -29,13 +35,40 @@ export function ClienteForm({
     if (!searchTerm.trim()) return;
     
     setIsSearching(true);
+    setSearchError(null);
+    
     try {
       const results = await valuationService.searchClients(searchTerm);
       setSearchResults(results);
       setShowResults(true);
+      
+      // Si no hay resultados, mostrar mensaje apropiado
+      if (results.length === 0) {
+        setSearchError('No se encontraron clientes con ese término de búsqueda');
+      }
     } catch (error) {
       console.error('Error al buscar clientes:', error);
       setSearchResults([]);
+      setShowResults(false);
+      
+      // Manejar diferentes tipos de errores
+      if (error.message?.includes('iniciar sesión') || 
+          error.message?.includes('autenticado') || 
+          error.message?.includes('Token') ||
+          error.status === 401) {
+        setSearchError('Su sesión ha expirado. Por favor, inicie sesión nuevamente.');
+        
+        // Opcional: redirigir al login después de un momento
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+        }, 3000);
+      } else if (error.status === 500) {
+        setSearchError('Error del servidor. Por favor, intente nuevamente.');
+      } else {
+        setSearchError('Error al buscar clientes. Verifique su conexión e intente nuevamente.');
+      }
     } finally {
       setIsSearching(false);
     }
@@ -57,6 +90,7 @@ export function ClienteForm({
       id: client.id
     });
     setShowResults(false);
+    setSearchError(null); // Limpiar cualquier error previo
   };
   
   // Buscar cuando se presiona Enter en el campo de búsqueda
@@ -116,7 +150,17 @@ export function ClienteForm({
                   className="flex-1 p-2 border border-border rounded-md bg-background focus:ring-2 focus:ring-azul-claro/50 focus:border-azul-claro outline-none transition-all"
                   placeholder="Buscar por nombre o teléfono"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    // Limpiar errores cuando el usuario escriba
+                    if (searchError) {
+                      setSearchError(null);
+                    }
+                    // Ocultar resultados previos
+                    if (showResults) {
+                      setShowResults(false);
+                    }
+                  }}
                   onKeyDown={handleSearchKeyDown}
                 />
                 <button 
@@ -155,9 +199,20 @@ export function ClienteForm({
                   </div>
                 )}
                 
-                {showResults && searchResults.length === 0 && (
+                {showResults && searchResults.length === 0 && !searchError && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-md shadow-lg z-10 p-2">
                     <p className="text-text-muted">No se encontraron resultados</p>
+                  </div>
+                )}
+                
+                {searchError && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-rosa rounded-md shadow-lg z-10 p-2">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-4 h-4 text-rosa mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <p className="text-rosa text-sm">{searchError}</p>
+                    </div>
                   </div>
                 )}
               </div>

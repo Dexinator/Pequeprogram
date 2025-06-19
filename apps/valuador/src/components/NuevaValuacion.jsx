@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ProductoForm } from './ProductoForm';
 import { ClienteForm } from './ClienteForm';
+import OfertaDocument from './OfertaDocument';
 import { ValuationService } from '../services';
 import { useAuth, AuthProvider } from '../context/AuthContext';
 
@@ -75,6 +76,20 @@ function NuevaValuacionContent() {
     productDetails: []
   });
 
+  // Estado para productos seleccionados en el resumen
+  const [selectedProducts, setSelectedProducts] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(true);
+
+  // Estado para precios editados en el resumen
+  const [editedPrices, setEditedPrices] = useState({});
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  // Estado para modalidades editadas en el resumen
+  const [editedModalities, setEditedModalities] = useState({});
+
+  // Estado para mostrar documento de oferta
+  const [showOfferDocument, setShowOfferDocument] = useState(false);
+
   // Estado para error
   const [error, setError] = useState(null);
 
@@ -119,6 +134,278 @@ function NuevaValuacionContent() {
     setTimeout(() => {
       setNotification(null);
     }, 5000);
+  };
+
+  // Funciones para manejo de selección de productos
+  const handleProductSelection = (productId, isSelected) => {
+    setSelectedProducts(prev => {
+      const newSelected = new Set(prev);
+      if (isSelected) {
+        newSelected.add(productId);
+      } else {
+        newSelected.delete(productId);
+      }
+      
+      // Actualizar el estado de "Seleccionar todos"
+      setSelectAll(newSelected.size === summary.productDetails.length);
+      
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = (shouldSelectAll) => {
+    setSelectAll(shouldSelectAll);
+    if (shouldSelectAll) {
+      const allProductIds = new Set(summary.productDetails.map(product => product.id));
+      setSelectedProducts(allProductIds);
+    } else {
+      setSelectedProducts(new Set());
+    }
+  };
+
+  // Calcular totales de productos seleccionados (considerando precios editados)
+  const calculateSelectedTotals = () => {
+    const selectedProductList = summary.productDetails.filter(product => 
+      selectedProducts.has(product.id)
+    );
+
+    const totalPurchase = selectedProductList.reduce((sum, item) => {
+      // Usar precio editado si existe, sino el precio sugerido
+      const editedPrice = editedPrices[item.id];
+      const price = editedPrice?.purchase !== undefined 
+        ? Number(editedPrice.purchase)
+        : (item.suggested_purchase_price ? Number(item.suggested_purchase_price) : 0);
+      const quantity = Number(item.quantity) || 1;
+      return sum + (isNaN(price) ? 0 : price * quantity);
+    }, 0);
+
+    const totalSale = selectedProductList.reduce((sum, item) => {
+      // Usar precio editado si existe, sino el precio sugerido
+      const editedPrice = editedPrices[item.id];
+      const price = editedPrice?.sale !== undefined 
+        ? Number(editedPrice.sale)
+        : (item.suggested_sale_price ? Number(item.suggested_sale_price) : 0);
+      const quantity = Number(item.quantity) || 1;
+      return sum + (isNaN(price) ? 0 : price * quantity);
+    }, 0);
+
+    const totalConsignment = selectedProductList.reduce((sum, item) => {
+      // Usar modalidad editada si existe, sino la original
+      const finalModality = editedModalities[item.id] || item.modality;
+      if (finalModality !== 'consignación') return sum;
+      const price = item.consignment_price ? Number(item.consignment_price) : 0;
+      const quantity = Number(item.quantity) || 1;
+      return sum + (isNaN(price) ? 0 : price * quantity);
+    }, 0);
+
+    return {
+      count: selectedProductList.length,
+      totalPurchase: Number(totalPurchase) || 0,
+      totalSale: Number(totalSale) || 0,
+      totalConsignment: Number(totalConsignment) || 0
+    };
+  };
+
+  // Funciones para editar precios
+  const startEditingPrice = (productId) => {
+    setEditingProduct(productId);
+  };
+
+  const cancelEditingPrice = () => {
+    setEditingProduct(null);
+  };
+
+  const saveEditedPrice = (productId, purchasePrice, salePrice) => {
+    setEditedPrices(prev => ({
+      ...prev,
+      [productId]: {
+        purchase: Number(purchasePrice) || 0,
+        sale: Number(salePrice) || 0
+      }
+    }));
+    setEditingProduct(null);
+  };
+
+  // Manejar cambio de modalidad
+  const handleModalityChange = (productId, newModality) => {
+    setEditedModalities(prev => ({
+      ...prev,
+      [productId]: newModality
+    }));
+
+    // Actualizar precios automáticamente según la modalidad
+    const product = summary.productDetails.find(p => p.id === productId);
+    if (!product) return;
+
+    const currentEditedPrice = editedPrices[productId];
+    const basePurchasePrice = currentEditedPrice?.purchase !== undefined 
+      ? currentEditedPrice.purchase 
+      : (product.suggested_purchase_price || 0);
+    const originalPrice = product.suggested_purchase_price || 0;
+
+    if (newModality === 'consignación') {
+      // Al cambiar a consignación, aumentar precio de compra en 20%
+      const newPurchasePrice = originalPrice * 1.2;
+      setEditedPrices(prev => ({
+        ...prev,
+        [productId]: {
+          ...prev[productId],
+          purchase: newPurchasePrice
+        }
+      }));
+    } else if (newModality === 'crédito en tienda') {
+      // Al cambiar a crédito en tienda, aumentar precio de compra en 10%
+      const newPurchasePrice = originalPrice * 1.1;
+      setEditedPrices(prev => ({
+        ...prev,
+        [productId]: {
+          ...prev[productId],
+          purchase: newPurchasePrice
+        }
+      }));
+    } else if (newModality === 'compra directa') {
+      // Al cambiar a compra directa, restaurar precio original
+      setEditedPrices(prev => ({
+        ...prev,
+        [productId]: {
+          ...prev[productId],
+          purchase: originalPrice
+        }
+      }));
+    }
+  };
+
+  // Obtener modalidad final (editada o original)
+  const getFinalModality = (product) => {
+    return editedModalities[product.id] || product.modality;
+  };
+
+  // Obtener precio final (editado o sugerido)
+  const getFinalPrice = (product, type) => {
+    const editedPrice = editedPrices[product.id];
+    let price = 0;
+    
+    if (type === 'purchase') {
+      price = editedPrice?.purchase !== undefined 
+        ? editedPrice.purchase 
+        : (product.suggested_purchase_price || 0);
+    } else if (type === 'sale') {
+      price = editedPrice?.sale !== undefined 
+        ? editedPrice.sale 
+        : (product.suggested_sale_price || 0);
+    }
+    
+    // Asegurar que siempre devolvemos un número válido
+    const numericPrice = Number(price);
+    const finalPrice = isNaN(numericPrice) ? 0 : numericPrice;
+    
+    return finalPrice;
+  };
+
+  // Cache para las definiciones de características de oferta por subcategoría
+  const [offerFeatureCache, setOfferFeatureCache] = useState({});
+
+  // Obtener definiciones de características para ofertas
+  const getOfferFeatureDefinitions = async (subcategoryId) => {
+    // Verificar si ya está en cache
+    if (offerFeatureCache[subcategoryId]) {
+      return offerFeatureCache[subcategoryId];
+    }
+
+    try {
+      const response = await fetch(`${valuationService.baseURL}/api/categories/subcategories/${subcategoryId}/offer-features`);
+      if (response.ok) {
+        const result = await response.json();
+        const features = result.data || [];
+        
+        // Guardar en cache
+        setOfferFeatureCache(prev => ({
+          ...prev,
+          [subcategoryId]: features
+        }));
+        
+        return features;
+      }
+    } catch (error) {
+      console.error('Error al obtener definiciones de características para oferta:', error);
+    }
+    
+    return [];
+  };
+
+  // Generar descripción descriptiva del producto usando database-driven features
+  const getProductDescription = (product, index) => {
+    const parts = [];
+    
+    // 1. Obtener nombre de subcategoría/categoría (el backend debe proporcionarlos)
+    const subcategoryName = product.subcategoryName || product.subcategory_name;
+    const categoryName = product.categoryName || product.category_name;
+    
+    // Determinar qué nombre usar
+    if (subcategoryName && subcategoryName.trim()) {
+      parts.push(subcategoryName);
+    } else if (categoryName && categoryName.trim()) {
+      parts.push(categoryName);
+    } else {
+      parts.push('Artículo');
+    }
+    
+    // 2. Características importantes basadas en database (offer_print=TRUE)
+    if (product.features && typeof product.features === 'object' && product.subcategory_id) {
+      // Para optimizar, usar un approach sincrónico basado en reglas conocidas
+      // ya que no podemos hacer llamadas async en esta función de render
+      const importantFeatures = [];
+      
+      // Aplicar las mismas reglas que definimos en la migración
+      const importantFields = ['modelo', 'talla', 'edad', 'tipo', 'tamano', 'color', 'size'];
+      
+      importantFields.forEach(fieldName => {
+        if (product.features[fieldName]) {
+          let value = product.features[fieldName];
+          
+          // Formatear valores especiales
+          if (fieldName === 'talla' || fieldName === 'size') {
+            value = `Talla ${value}`;
+          } else if (fieldName === 'edad') {
+            value = `${value}`;
+          }
+          
+          importantFeatures.push(value);
+        }
+      });
+      
+      // Limitar a las 2 características más importantes
+      if (importantFeatures.length > 0) {
+        parts.push(importantFeatures.slice(0, 2).join(', '));
+      }
+    }
+    
+    // 3. Marca (si está disponible y no es genérica) - después de características
+    const brandName = product.brandName || product.brand_name || product.brand?.name;
+    if (brandName && 
+        brandName !== 'Sin marca' && 
+        brandName !== 'Genérica' &&
+        brandName !== 'sin marca' &&
+        brandName !== 'genérica' &&
+        brandName.toLowerCase() !== 'sin marca' &&
+        brandName.toLowerCase() !== 'genérica') {
+      parts.push(brandName);
+    }
+    
+    // 4. Estado/condición de manera concisa (solo para productos usados)
+    if (product.status && product.status.toLowerCase() === 'usado' && product.condition_state) {
+      const conditionMap = {
+        'excelente': 'Estado Excelente',
+        'bueno': 'Buen Estado',
+        'regular': 'Estado Regular',
+        'malo': 'Estado Deteriorado'
+      };
+      
+      const conditionText = conditionMap[product.condition_state?.toLowerCase()] || product.condition_state;
+      parts.push(conditionText);
+    }
+    
+    return parts.join(' - ');
   };
 
   // Manejar cambios en el formulario de cliente
@@ -236,112 +523,83 @@ function NuevaValuacionContent() {
     setIsAddingItems(true);
 
     try {
-      // Crear valuación si no existe
-      let valuationId = valuation?.id;
+      // Preparar datos de productos para cálculo
+      const productsForCalculation = validProducts.map(product => ({
+        category_id: Number(product.data.category_id),
+        subcategory_id: Number(product.data.subcategory_id),
+        brand_id: product.data.brand_id ? Number(product.data.brand_id) : null,
+        status: product.data.status,
+        brand_renown: product.data.brand_renown || 'Normal',
+        modality: product.data.modality || 'compra directa',
+        condition_state: product.data.condition_state || 'bueno',
+        demand: product.data.demand || 'media',
+        cleanliness: product.data.cleanliness || 'buena',
+        new_price: Number(product.data.new_price),
+        quantity: Number(product.data.quantity) || 1,
+        features: product.data.features || {},
+        notes: product.data.notes || '',
+        images: product.data.images || [],
+        // Mantener nombres del formulario para compatibilidad
+        categoryName: product.data.categoryName,
+        subcategoryName: product.data.subcategoryName,
+        brandName: product.data.brandName
+      }));
 
-      if (!valuationId) {
-        console.log('No hay valuación existente, creando una nueva');
-        const newValuation = await createValuation();
-        if (!newValuation) {
-          setIsAddingItems(false);
-          return;
-        }
-        valuationId = newValuation.id;
-        console.log('Nueva valuación creada con ID:', valuationId);
-      } else {
-        console.log('Usando valuación existente con ID:', valuationId);
-      }
+      console.log('Calculando precios para productos:', productsForCalculation);
 
-      // Agregar productos a la valuación
-      const productResults = [];
-      let errorCount = 0;
+      // Usar el nuevo endpoint calculateBatch en lugar de insertar en DB
+      const calculatedProducts = await valuationService.calculateBatch(productsForCalculation);
+      console.log('Productos calculados:', calculatedProducts);
 
-      console.log(`Agregando ${validProducts.length} productos a la valuación`);
-
-      for (const product of validProducts) {
-        try {
-          const itemData = {
-            category_id: Number(product.data.category_id),
-            subcategory_id: Number(product.data.subcategory_id),
-            brand_id: product.data.brand_id ? Number(product.data.brand_id) : null,
-            status: product.data.status,
-            brand_renown: product.data.brand_renown || 'Normal',
-            modality: product.data.modality || 'compra directa',
-            condition_state: product.data.condition_state || 'bueno',
-            demand: product.data.demand || 'media',
-            cleanliness: product.data.cleanliness || 'buena',
-            new_price: Number(product.data.new_price),
-            features: product.data.features || {},
-            notes: product.data.notes || '',
-            images: product.data.images || []
-          };
-
-          console.log('Enviando datos de producto:', itemData);
-
-          const result = await valuationService.addValuationItem(valuationId, itemData);
-          console.log('Producto agregado con éxito:', result);
-
-          productResults.push({
-            ...result,
-            categoryName: product.data.categoryName,
-            subcategoryName: product.data.subcategoryName,
-            brandName: product.data.brandName
-          });
-        } catch (error) {
-          console.error('Error al agregar producto:', error);
-          errorCount++;
-        }
-      }
-
-      if (errorCount > 0) {
-        showNotification(`${errorCount} productos no pudieron ser agregados`, 'warning');
-      }
-
-      // Actualizar valuación después de agregar productos
-      console.log('Obteniendo valuación actualizada');
-      const updatedValuation = await valuationService.getValuation(valuationId);
-      console.log('Valuación actualizada:', updatedValuation);
-      setValuation(updatedValuation);
-
-      // Preparar resumen
-      // Ensure all values are numbers with default value of 0
-      const totalPurchase = productResults.reduce((sum, item) => {
+      // Calcular totales (multiplicar por cantidad)
+      const totalPurchase = calculatedProducts.reduce((sum, item) => {
         const price = item.suggested_purchase_price ? Number(item.suggested_purchase_price) : 0;
-        return sum + (isNaN(price) ? 0 : price);
+        const quantity = Number(item.quantity) || 1;
+        return sum + (isNaN(price) ? 0 : price * quantity);
       }, 0);
 
-      const totalSale = productResults.reduce((sum, item) => {
+      const totalSale = calculatedProducts.reduce((sum, item) => {
         const price = item.suggested_sale_price ? Number(item.suggested_sale_price) : 0;
-        return sum + (isNaN(price) ? 0 : price);
+        const quantity = Number(item.quantity) || 1;
+        return sum + (isNaN(price) ? 0 : price * quantity);
       }, 0);
 
-      const totalConsignment = productResults.reduce((sum, item) => {
-        if (item.modality !== 'consignación') return sum;
+      const totalConsignment = calculatedProducts.reduce((sum, item) => {
+        // Usar modalidad editada si existe, sino la original
+        const finalModality = editedModalities[item.id] || item.modality;
+        if (finalModality !== 'consignación') return sum;
         const price = item.consignment_price ? Number(item.consignment_price) : 0;
-        return sum + (isNaN(price) ? 0 : price);
+        const quantity = Number(item.quantity) || 1;
+        return sum + (isNaN(price) ? 0 : price * quantity);
       }, 0);
 
       console.log('Calculated totals:', {
         totalPurchase,
         totalSale,
         totalConsignment,
-        isNumber: {
-          totalPurchase: typeof totalPurchase === 'number',
-          totalSale: typeof totalSale === 'number',
-          totalConsignment: typeof totalConsignment === 'number'
-        }
+        itemsCount: calculatedProducts.length
       });
 
       setSummary({
-        totalProducts: productResults.length,
+        totalProducts: calculatedProducts.length,
         totalPurchaseValue: Number(totalPurchase) || 0,
         totalSaleValue: Number(totalSale) || 0,
         totalConsignmentValue: Number(totalConsignment) || 0,
-        productDetails: productResults
+        productDetails: calculatedProducts
       });
 
+      // Inicializar todos los productos como seleccionados
+      const allProductIds = new Set(calculatedProducts.map(product => product.id));
+      setSelectedProducts(allProductIds);
+      setSelectAll(true);
+
+      // Limpiar precios editados al regenerar resumen
+      setEditedPrices({});
+      setEditingProduct(null);
+      setEditedModalities({});
+
       setShowSummary(true);
-      showNotification(`Resumen generado con ${productResults.length} productos`);
+      showNotification(`Resumen generado con ${calculatedProducts.length} productos`);
     } catch (error) {
       console.error('Error al generar resumen:', error);
       setError('Error al generar el resumen. Por favor intente nuevamente.');
@@ -351,38 +609,150 @@ function NuevaValuacionContent() {
     }
   };
 
+  // Imprimir oferta
+  const printOffer = () => {
+    // Validar que haya al menos un producto seleccionado
+    if (selectedProducts.size === 0) {
+      setError('Debe seleccionar al menos un producto para imprimir la oferta');
+      showNotification('Debe seleccionar al menos un producto para imprimir la oferta', 'error');
+      return;
+    }
+
+    // Validar que el cliente tenga datos básicos
+    if (!client.name || !client.phone) {
+      setError('Debe completar al menos el nombre y teléfono del cliente para imprimir la oferta');
+      showNotification('Debe completar los datos básicos del cliente', 'error');
+      return;
+    }
+
+    // Contar productos que aparecen en la oferta (compra directa y crédito en tienda)
+    const offerProducts = summary.productDetails.filter(product => 
+      selectedProducts.has(product.id) && 
+      (getFinalModality(product) === 'compra directa' || getFinalModality(product) === 'crédito en tienda')
+    );
+
+    const consignmentProducts = summary.productDetails.filter(product => 
+      selectedProducts.has(product.id) && 
+      getFinalModality(product) === 'consignación'
+    );
+
+    // Validar que haya al menos un producto para la oferta
+    if (offerProducts.length === 0) {
+      setError('No hay productos para incluir en la oferta. Solo productos de "compra directa" y "crédito en tienda" aparecen en la oferta.');
+      showNotification('No hay productos válidos para incluir en la oferta', 'error');
+      return;
+    }
+
+    // Mostrar advertencia si hay productos en consignación
+    if (consignmentProducts.length > 0) {
+      const confirmed = window.confirm(
+        `La oferta incluirá ${offerProducts.length} producto(s) (compra directa y crédito en tienda).\n\n` +
+        `${consignmentProducts.length} producto(s) en consignación NO aparecerán en la oferta impresa.\n\n` +
+        `¿Desea continuar?`
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    // Mostrar el documento de oferta en el modal
+    setShowOfferDocument(true);
+    
+    // Limpiar cualquier error previo
+    setError(null);
+  };
+
   // Finalizar valuación
   const finalizeValuation = async (e) => {
     e.preventDefault();
 
-    if (!valuation) {
-      setError('No hay una valuación en curso para finalizar');
-      showNotification('No hay una valuación en curso para finalizar', 'error');
+    if (!client.name || !client.phone) {
+      setError('Se requieren los datos básicos del cliente para finalizar');
+      showNotification('Se requieren los datos básicos del cliente', 'error');
       return;
+    }
+
+    // Validar que haya al menos un producto seleccionado
+    if (selectedProducts.size === 0) {
+      setError('Debe seleccionar al menos un producto para finalizar la valuación');
+      showNotification('Debe seleccionar al menos un producto para finalizar la valuación', 'error');
+      return;
+    }
+
+    // Mostrar confirmación si hay productos deseleccionados
+    const unselectedCount = summary.productDetails.length - selectedProducts.size;
+    if (unselectedCount > 0) {
+      const confirmed = window.confirm(
+        `Está a punto de finalizar la valuación con ${selectedProducts.size} productos seleccionados. ` +
+        `${unselectedCount} producto(s) no se incluirán en la finalización. ¿Desea continuar?`
+      );
+      if (!confirmed) {
+        return;
+      }
     }
 
     setIsFinalizingValuation(true);
     setError(null);
 
     try {
-      console.log('Finalizando valuación con ID:', valuation.id);
+      // 1. Asegurar que el cliente existe
+      let clientId = client.id;
+      
+      if (!clientId) {
+        console.log('Creando cliente antes de finalizar valuación');
+        const clientResponse = await valuationService.createClient({
+          name: client.name,
+          phone: client.phone,
+          email: client.email || '',
+          identification: client.identification || ''
+        });
+        clientId = clientResponse.id;
+        console.log('Cliente creado con ID:', clientId);
+      }
 
-      const finalizationData = {
-        status: 'completed',
-        notes: '',
-        items: valuation.items?.map(item => ({
-          id: item.id,
-          final_purchase_price: item.suggested_purchase_price,
-          final_sale_price: item.suggested_sale_price
-        }))
-      };
+      // 2. Preparar productos seleccionados con precios/modalidades editados
+      const selectedProductsData = summary.productDetails
+        .filter(product => selectedProducts.has(product.id))
+        .map(product => {
+          const editedPrice = editedPrices[product.id];
+          const editedModality = editedModalities[product.id];
+          
+          return {
+            category_id: product.category_id,
+            subcategory_id: product.subcategory_id,
+            brand_id: product.brand_id || null,
+            status: product.status,
+            brand_renown: product.brand_renown,
+            modality: editedModality || product.modality,
+            condition_state: product.condition_state,
+            demand: product.demand,
+            cleanliness: product.cleanliness,
+            new_price: product.new_price,
+            quantity: product.quantity || 1,
+            features: product.features || {},
+            notes: product.notes || '',
+            images: product.images || [],
+            // Incluir precios editados si existen
+            final_purchase_price: editedPrice?.purchase,
+            final_sale_price: editedPrice?.sale
+          };
+        });
 
-      console.log('Datos de finalización:', finalizationData);
+      const notes = unselectedCount > 0 ? 
+        `Finalizada con ${selectedProducts.size} productos seleccionados de ${summary.productDetails.length} valuados` : 
+        '';
 
-      const finalizedValuation = await valuationService.finalizeValuation(valuation.id, finalizationData);
+      console.log('Finalizando valuación completa:', {
+        clientId,
+        productsCount: selectedProductsData.length,
+        notes
+      });
+
+      // 3. Usar el nuevo endpoint que crea todo en una transacción
+      const finalizedValuation = await valuationService.finalizeComplete(clientId, selectedProductsData, notes);
 
       console.log('Valuación finalizada con éxito:', finalizedValuation);
-      showNotification('Valuación finalizada con éxito');
+      showNotification(`Valuación finalizada con éxito. ${selectedProducts.size} productos incluidos.`);
 
       // Redirigir al historial
       setTimeout(() => {
@@ -401,27 +771,59 @@ function NuevaValuacionContent() {
   const renderSummary = () => {
     if (!showSummary) return null;
 
+    const selectedTotals = calculateSelectedTotals();
+
     return (
       <div className="bg-background-alt p-6 rounded-lg shadow-md border border-border mt-8">
-        <h2 className="text-2xl font-heading font-bold text-azul-profundo mb-4">Resumen de Valuación</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-heading font-bold text-azul-profundo">Resumen de Valuación</h2>
+          <div className="text-sm text-gray-600">
+            {selectedProducts.size} de {summary.totalProducts} productos seleccionados
+          </div>
+        </div>
 
+        {/* Información sobre la funcionalidad */}
+        <div className="bg-azul-claro/10 border border-azul-claro/30 p-4 rounded-md mb-6">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-azul-claro mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm text-azul-profundo font-medium">Personalice su valuación final</p>
+              <div className="text-xs text-gray-600 mt-1 space-y-1">
+                <p>• Seleccione los productos que desea incluir en la valuación final</p>
+                <p>• Use el botón ✏️ para editar precios de compra y venta individualmente</p>
+                <p>• Los precios editados se muestran en <span className="text-verde-oscuro font-bold">color verde</span> y se usan para los cálculos finales</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tarjetas de totales - ahora muestran totales de productos seleccionados */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-background rounded-md">
           <div className="text-center p-3 border border-border rounded-md bg-azul-claro/5">
-            <p className="text-sm text-gray-600">Total de Productos</p>
-            <p className="text-2xl font-bold text-azul-profundo">{summary.totalProducts}</p>
+            <p className="text-sm text-gray-600">Productos Seleccionados</p>
+            <p className="text-2xl font-bold text-azul-profundo">{selectedTotals.count}</p>
+            <p className="text-xs text-gray-500">de {summary.totalProducts} total</p>
           </div>
 
           <div className="text-center p-3 border border-border rounded-md bg-verde-lima/5">
-            <p className="text-sm text-gray-600">Valor Total de Compra</p>
+            <p className="text-sm text-gray-600">Valor de Compra Seleccionado</p>
             <p className="text-2xl font-bold text-verde-oscuro">
-              ${typeof summary.totalPurchaseValue === 'number' ? summary.totalPurchaseValue.toFixed(2) : '0.00'}
+              ${selectedTotals.totalPurchase.toFixed(2)}
+            </p>
+            <p className="text-xs text-gray-500">
+              Total: ${summary.totalPurchaseValue.toFixed(2)}
             </p>
           </div>
 
           <div className="text-center p-3 border border-border rounded-md bg-amarillo/5">
-            <p className="text-sm text-gray-600">Valor Total de Venta</p>
+            <p className="text-sm text-gray-600">Valor de Venta Seleccionado</p>
             <p className="text-2xl font-bold text-azul-profundo">
-              ${typeof summary.totalSaleValue === 'number' ? summary.totalSaleValue.toFixed(2) : '0.00'}
+              ${selectedTotals.totalSale.toFixed(2)}
+            </p>
+            <p className="text-xs text-gray-500">
+              Total: ${summary.totalSaleValue.toFixed(2)}
             </p>
           </div>
         </div>
@@ -430,85 +832,277 @@ function NuevaValuacionContent() {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-background-alt border-b border-border">
+                <th className="p-2 text-left w-12">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      className="w-4 h-4 text-azul-claro border-gray-300 rounded focus:ring-azul-claro focus:ring-2"
+                    />
+                    <span className="sr-only">Seleccionar todos</span>
+                  </label>
+                </th>
                 <th className="p-2 text-left">Producto</th>
-                <th className="p-2 text-right">Precio Compra</th>
-                <th className="p-2 text-right">Precio Venta</th>
+                <th className="p-2 text-center">Modalidad</th>
+                <th className="p-2 text-center">Cantidad</th>
+                <th className="p-2 text-right">Precio Unit. Compra</th>
+                <th className="p-2 text-right">Precio Unit. Venta</th>
+                <th className="p-2 text-right">Total Compra</th>
                 <th className="p-2 text-right">Consignación</th>
+                <th className="p-2 text-center w-24">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {summary.productDetails.map((product, index) => (
-                <tr key={product.id} className={index % 2 === 0 ? 'bg-background' : 'bg-background-alt'}>
-                  <td className="p-2 border-b border-border">
-                    <div className="font-medium">{product.subcategoryName || `Producto #${index + 1}`}</div>
-                    <div className="text-sm text-gray-600">
-                      {product.status} • {product.condition_state} • {product.demand}
-                    </div>
-                  </td>
-                  <td className="p-2 text-right border-b border-border font-medium">
-                    ${typeof product.suggested_purchase_price === 'number'
-                      ? product.suggested_purchase_price.toFixed(2)
-                      : '0.00'}
-                  </td>
-                  <td className="p-2 text-right border-b border-border font-medium">
-                    ${typeof product.suggested_sale_price === 'number'
-                      ? product.suggested_sale_price.toFixed(2)
-                      : '0.00'}
-                  </td>
-                  <td className="p-2 text-right border-b border-border font-medium">
-                    {typeof product.consignment_price === 'number' && product.consignment_price > 0
-                      ? `$${product.consignment_price.toFixed(2)}`
-                      : '-'
-                    }
-                  </td>
-                </tr>
-              ))}
+              {summary.productDetails.map((product, index) => {
+                const isSelected = selectedProducts.has(product.id);
+                const isEditing = editingProduct === product.id;
+                
+                // Verificar que los precios del producto sean válidos
+                const safePurchasePrice = Number(product.suggested_purchase_price) || 0;
+                const safeSalePrice = Number(product.suggested_sale_price) || 0;
+                
+                const finalPurchasePrice = getFinalPrice(product, 'purchase');
+                const finalSalePrice = getFinalPrice(product, 'sale');
+                
+                return (
+                  <tr 
+                    key={product.id} 
+                    className={`
+                      ${index % 2 === 0 ? 'bg-background' : 'bg-background-alt'} 
+                      ${!isSelected ? 'opacity-50' : ''} 
+                      transition-opacity duration-200
+                    `}
+                  >
+                    <td className="p-2 border-b border-border">
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => handleProductSelection(product.id, e.target.checked)}
+                          className="w-4 h-4 text-azul-claro border-gray-300 rounded focus:ring-azul-claro focus:ring-2"
+                        />
+                        <span className="sr-only">Seleccionar producto</span>
+                      </label>
+                    </td>
+                    <td className="p-2 border-b border-border">
+                      <div className="font-medium">{getProductDescription(product, index)}</div>
+                      <div className="text-sm text-gray-600 flex items-center gap-2">
+                        <span>Demanda: {product.demand || 'N/A'}</span>
+                        {product.new_price && (
+                          <span className="text-azul-claro">• Precio nuevo: ${Number(product.new_price).toFixed(2)}</span>
+                        )}
+                      </div>
+                      {!isSelected && (
+                        <div className="text-xs text-rosa italic mt-1">No incluido en la valuación final</div>
+                      )}
+                      {editedPrices[product.id] && (
+                        <div className="text-xs text-verde-oscuro italic mt-1">✓ Precio personalizado</div>
+                      )}
+                      {editedModalities[product.id] && (
+                        <div className="text-xs text-azul-claro italic mt-1">🔄 Modalidad modificada: {editedModalities[product.id]}</div>
+                      )}
+                    </td>
+                    
+                    {/* Modalidad */}
+                    <td className="p-2 text-center border-b border-border">
+                      <select
+                        value={getFinalModality(product)}
+                        onChange={(e) => handleModalityChange(product.id, e.target.value)}
+                        className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-azul-claro focus:border-azul-claro"
+                      >
+                        <option value="compra directa">Compra directa</option>
+                        <option value="crédito en tienda">Crédito en tienda</option>
+                        <option value="consignación">Consignación</option>
+                      </select>
+                    </td>
+                    
+                    {/* Cantidad */}
+                    <td className="p-2 text-center border-b border-border font-medium">
+                      {product.quantity || 1}
+                    </td>
+                    
+                    {/* Precio Unitario de Compra */}
+                    <td className="p-2 text-right border-b border-border font-medium">
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          defaultValue={finalPurchasePrice || 0}
+                          className="w-20 px-2 py-1 text-sm border border-gray-300 rounded text-right focus:ring-azul-claro focus:border-azul-claro"
+                          id={`purchase-${product.id}`}
+                        />
+                      ) : (
+                        <span className={editedPrices[product.id] ? 'text-verde-oscuro font-bold' : ''}>
+                          ${typeof finalPurchasePrice === 'number' ? finalPurchasePrice.toFixed(2) : '0.00'}
+                        </span>
+                      )}
+                    </td>
+                    
+                    {/* Precio de Venta */}
+                    <td className="p-2 text-right border-b border-border font-medium">
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          defaultValue={finalSalePrice || 0}
+                          className="w-20 px-2 py-1 text-sm border border-gray-300 rounded text-right focus:ring-azul-claro focus:border-azul-claro"
+                          id={`sale-${product.id}`}
+                        />
+                      ) : (
+                        <span className={editedPrices[product.id] ? 'text-verde-oscuro font-bold' : ''}>
+                          ${typeof finalSalePrice === 'number' ? finalSalePrice.toFixed(2) : '0.00'}
+                        </span>
+                      )}
+                    </td>
+                    
+                    {/* Total Compra */}
+                    <td className="p-2 text-right border-b border-border font-medium text-verde-oscuro font-bold">
+                      ${(finalPurchasePrice * (product.quantity || 1)).toFixed(2)}
+                    </td>
+                    
+                    {/* Consignación */}
+                    <td className="p-2 text-right border-b border-border font-medium">
+                      {getFinalModality(product) === 'consignación' && typeof product.consignment_price === 'number' && product.consignment_price > 0
+                        ? `$${(product.consignment_price * (product.quantity || 1)).toFixed(2)}`
+                        : '-'
+                      }
+                    </td>
+                    
+                    {/* Acciones */}
+                    <td className="p-2 text-center border-b border-border">
+                      {isEditing ? (
+                        <div className="flex gap-1 justify-center">
+                          <button
+                            onClick={() => {
+                              const purchaseInput = document.getElementById(`purchase-${product.id}`);
+                              const saleInput = document.getElementById(`sale-${product.id}`);
+                              saveEditedPrice(product.id, purchaseInput.value, saleInput.value);
+                            }}
+                            className="px-2 py-1 text-xs bg-verde-lima text-white rounded hover:bg-verde-oscuro transition-colors"
+                            title="Guardar cambios"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={cancelEditingPrice}
+                            className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                            title="Cancelar"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => startEditingPrice(product.id)}
+                          className="px-2 py-1 text-xs bg-azul-claro text-white rounded hover:bg-azul-profundo transition-colors"
+                          title="Editar precios"
+                        >
+                          ✏️
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
             <tfoot>
               <tr className="bg-azul-claro/10 font-bold">
-                <td className="p-2">TOTAL</td>
+                <td className="p-2"></td>
+                <td className="p-2">TOTAL SELECCIONADO</td>
+                <td className="p-2"></td>
+                <td className="p-2"></td>
+                <td className="p-2"></td>
+                <td className="p-2"></td>
                 <td className="p-2 text-right">
-                  ${typeof summary.totalPurchaseValue === 'number' ? summary.totalPurchaseValue.toFixed(2) : '0.00'}
+                  ${selectedTotals.totalPurchase.toFixed(2)}
                 </td>
                 <td className="p-2 text-right">
-                  ${typeof summary.totalSaleValue === 'number' ? summary.totalSaleValue.toFixed(2) : '0.00'}
-                </td>
-                <td className="p-2 text-right">
-                  {typeof summary.totalConsignmentValue === 'number' && summary.totalConsignmentValue > 0
-                    ? `$${summary.totalConsignmentValue.toFixed(2)}`
+                  {selectedTotals.totalConsignment > 0
+                    ? `$${selectedTotals.totalConsignment.toFixed(2)}`
                     : '-'
                   }
                 </td>
+                <td className="p-2"></td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <div className="mt-6 flex flex-col md:flex-row justify-end gap-4">
-          <button
-            type="button"
-            className="px-4 py-2 bg-background border border-border rounded-md hover:bg-background-alt transition-colors"
-            onClick={() => setShowSummary(false)}
-          >
-            Volver a Editar
-          </button>
-
-          <button
-            type="button"
-            className="px-4 py-2 bg-verde-lima text-white rounded-md hover:bg-verde-oscuro transition-colors"
-            onClick={finalizeValuation}
-            disabled={isFinalizingValuation}
-          >
-            {isFinalizingValuation ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Finalizando...
+        <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-sm text-gray-600 space-y-1">
+            {selectedProducts.size === 0 && (
+              <span className="text-rosa font-medium">⚠️ Debe seleccionar al menos un producto para continuar</span>
+            )}
+            {selectedProducts.size > 0 && selectedProducts.size < summary.totalProducts && (
+              <span className="text-amarillo font-medium block">
+                ⚠️ {summary.totalProducts - selectedProducts.size} producto(s) no se incluirán en la valuación final
               </span>
-            ) : 'Finalizar Valuación'}
-          </button>
+            )}
+            {selectedProducts.size === summary.totalProducts && selectedProducts.size > 0 && (
+              <span className="text-verde-oscuro font-medium block">✓ Todos los productos están seleccionados</span>
+            )}
+            {Object.keys(editedPrices).length > 0 && (
+              <span className="text-azul-profundo font-medium block">
+                ✏️ {Object.keys(editedPrices).length} producto(s) con precios personalizados
+              </span>
+            )}
+            {Object.keys(editedModalities).length > 0 && (
+              <span className="text-azul-profundo font-medium block">
+                🔄 {Object.keys(editedModalities).length} producto(s) con modalidad modificada
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-4">
+            <button
+              type="button"
+              className="px-4 py-2 bg-background border border-border rounded-md hover:bg-background-alt transition-colors"
+              onClick={() => setShowSummary(false)}
+            >
+              Volver a Editar
+            </button>
+
+            <button
+              type="button"
+              className={`px-4 py-2 rounded-md transition-colors flex items-center gap-2 ${
+                selectedProducts.size === 0 || !client.name || !client.phone
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-azul-claro text-white hover:bg-azul-profundo'
+              }`}
+              onClick={printOffer}
+              disabled={selectedProducts.size === 0 || !client.name || !client.phone}
+              title={selectedProducts.size === 0 ? 'Seleccione al menos un producto' : !client.name || !client.phone ? 'Complete los datos básicos del cliente' : 'Imprimir oferta de compra'}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+              </svg>
+              Imprimir Oferta
+            </button>
+
+            <button
+              type="button"
+              className={`px-4 py-2 rounded-md transition-colors ${
+                selectedProducts.size === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-verde-lima text-white hover:bg-verde-oscuro'
+              }`}
+              onClick={finalizeValuation}
+              disabled={isFinalizingValuation || selectedProducts.size === 0}
+            >
+              {isFinalizingValuation ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 814 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Finalizando...
+                </span>
+              ) : `Finalizar Valuación (${selectedProducts.size} productos)`}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -631,7 +1225,10 @@ AuthContext loading: ${authLoading}
           {/* Sección de Cliente */}
           <div className="bg-background-alt p-6 rounded-lg shadow-sm border border-border">
             <h2 className="text-xl font-heading font-bold text-azul-claro mb-4">Datos del Cliente</h2>
-            <ClienteForm onChange={handleClientChange} />
+            <ClienteForm 
+              initialData={client}
+              onChange={handleClientChange} 
+            />
           </div>
 
           {/* Sección de Productos */}
@@ -640,6 +1237,7 @@ AuthContext loading: ${authLoading}
               key={product.id}
               id={`producto-${product.id}`}
               index={index}
+              initialData={product.data}
               onRemove={() => removeProduct(product.id)}
               onChange={(data) => updateProductData(product.id, data)}
             />
@@ -677,6 +1275,41 @@ AuthContext loading: ${authLoading}
         </>
       ) : (
         renderSummary()
+      )}
+
+      {/* Modal del documento de oferta */}
+      {showOfferDocument && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-azul-profundo">Oferta de Compra - Entrepeques</h2>
+                <button
+                  onClick={() => setShowOfferDocument(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  data-modal-close
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-4">
+                <OfertaDocument
+                  client={client}
+                  selectedProducts={summary.productDetails.filter(product => 
+                    selectedProducts.has(product.id) && 
+                    (getFinalModality(product) === 'compra directa' || getFinalModality(product) === 'crédito en tienda')
+                  )}
+                  editedPrices={editedPrices}
+                  editedModalities={editedModalities}
+                  getProductDescription={getProductDescription}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
