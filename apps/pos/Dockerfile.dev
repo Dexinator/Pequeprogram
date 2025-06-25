@@ -14,6 +14,9 @@ COPY pnpm-lock.yaml* ./
 # Instalar dependencias
 RUN pnpm install --frozen-lockfile || pnpm install
 
+# Instalar dependencias de React si no están instaladas
+RUN pnpm add @astrojs/react react react-dom @types/react @types/react-dom
+
 # Copiar archivos de configuración si existen
 COPY astro.config.mjs* ./
 COPY tailwind.config.mjs* ./

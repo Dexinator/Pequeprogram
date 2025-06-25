@@ -21,14 +21,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Running the complete application
 ```bash
-# Start all services (database, API, frontend)
+# Start all services (database, API, all frontends)
 docker-compose up -d
 
 # Check API health
 curl http://localhost:3001/api/health
 
-# Start frontend development server
-cd apps/valuador && npm run dev
+# Access applications
+# Valuador: http://localhost:4321
+# Admin: http://localhost:4322
+# Tienda: http://localhost:4323
+# POS: http://localhost:4324
+# pgAdmin: http://localhost:5050
 ```
 
 ### Backend API Development (packages/api)
@@ -67,11 +71,15 @@ npx astro check
 
 ### Docker Development
 ```bash
-# View API logs in real-time
+# View logs in real-time
 docker logs entrepeques-api-dev -f
+docker logs entrepeques-valuador-dev -f
+docker logs entrepeques-admin-dev -f
+docker logs entrepeques-tienda-dev -f
+docker logs entrepeques-pos-dev -f
 
-# Rebuild API container (after dependency changes)
-docker-compose build --no-cache api
+# Rebuild containers (after dependency changes)
+docker-compose build --no-cache [service]
 
 # Reset database completely
 docker-compose down -v && docker-compose up -d
@@ -86,24 +94,24 @@ docker-compose down -v && docker-compose up -d
 This is a modernization project for "Entrepeques" - a second-hand children's items business. The system replaces legacy applications (VB Valuator, My Business POS, WooCommerce) with a unified web platform for valuation, inventory, online store, and point-of-sale management.
 
 ### 7-Phase Implementation Plan
-**Current Status: Phase 3 ✅ COMPLETED (Sales System 100% Functional)**
+**Current Status: Phase 4 🚀 EN PROGRESO (25% - Admin, Tienda, POS apps created)**
 
 1. **Phase 1** ✅ - Foundation & Core API (Backend with PostgreSQL, JWT auth, basic CRUD)
 2. **Phase 2** ✅ - Valuation Application (Astro + React frontend, complete valuation workflow)
 3. **Phase 3** ✅ - Physical Store Sales System (Inventory management, sales processing, mixed payments)
-4. **Phase 4** ⏳ - Admin Panel & User Management (Next to implement)
-5. **Phase 5** ⏳ - Online Store (Public e-commerce frontend)
-6. **Phase 6** ⏳ - Enhanced POS (Point of sale interface + local printer bridge)
-7. **Phase 7** ⏳ - Payment Processing & Final Integration (PSP integration, deployment, migration)
+4. **Phase 4** 🚀 - Multi-App Architecture (Admin Panel, Online Store, POS - 25% complete)
+5. **Phase 5** ⏳ - Enhanced Features (App-specific functionality implementation)
+6. **Phase 6** ⏳ - Payment Processing (PSP integration, payment gateway)
+7. **Phase 7** ⏳ - Final Integration & Deployment (Production setup, data migration)
 
 ### Monorepo Structure
 - **packages/api/**: Node.js + Express API with TypeScript, JWT authentication, PostgreSQL
-- **apps/valuador/**: Astro + React frontend with TypeScript, Tailwind CSS (Phase 2 complete)
-- **apps/admin/**: Admin panel (Phase 3 - not yet implemented)
-- **apps/tienda/**: Public e-commerce store (Phase 4 - not yet implemented)
-- **apps/pos/**: Point-of-sale interface (Phase 5 - not yet implemented)
+- **apps/valuador/**: Astro + React frontend with TypeScript, Tailwind CSS (Phase 2-3 complete)
+- **apps/admin/**: Admin panel (Phase 4 - implemented with authentication)
+- **apps/tienda/**: Public e-commerce store (Phase 4 - implemented with authentication)
+- **apps/pos/**: Point-of-sale interface (Phase 4 - implemented with authentication)
 - **data/**: CSV files and SQL inserts for seed data
-- **docker-compose.yml**: Orchestrates PostgreSQL, API, frontend, and pgAdmin services
+- **docker-compose.yml**: Orchestrates PostgreSQL, API, all frontend apps, and pgAdmin services
 
 ### Planned Domain Structure
 - `api.entrepeques.com`: Backend API
@@ -223,7 +231,9 @@ Complete relational schema with 12 core tables and optimized indexes:
 - idx_valuations_client, idx_valuations_date, idx_valuations_status, idx_valuations_user
 - idx_valuation_items_valuation, idx_valuation_items_category, idx_valuation_items_subcategory
 
-## Frontend Architecture (apps/valuador/src/)
+## Frontend Architecture
+
+### Valuador App (apps/valuador/src/)
 
 ### Structure
 - **components/**: React components organized by feature
@@ -357,9 +367,32 @@ Multi-step valuation process:
   - 008: Added location field and inventario table
   - 009: Created sales and sale_items tables
   - 010: Added payment_details table for mixed payments
+  - 011: Added consignment payment tracking fields
 - **Feature Definitions**: 102 complete records with offer printing flags (45 marked for offers)
 - **Sales System**: Complete inventory and transaction management with mixed payment support
+- **Consignments System**: Three-state tracking with supplier payment management
+- **Multi-App Architecture**: 4 frontend applications with shared authentication
 - **Backup Strategy**: Docker volumes for development persistence
+
+### New Applications (Phase 4)
+
+#### Admin App (apps/admin/src/)
+- **Purpose**: Administrative panel for system management
+- **Access**: Only admin and manager roles
+- **Auth**: Mandatory login with role verification (AuthGuard)
+- **Status**: Basic structure with authentication implemented
+
+#### Tienda App (apps/tienda/src/)
+- **Purpose**: Public e-commerce storefront
+- **Access**: Public with optional customer login
+- **Auth**: Optional authentication for enhanced features
+- **Status**: Public pages and login system implemented
+
+#### POS App (apps/pos/src/)
+- **Purpose**: Point-of-sale for physical store operations
+- **Access**: sales, manager, and admin roles
+- **Auth**: Mandatory login with role verification
+- **Status**: Basic structure with authentication implemented
 
 ### Performance Considerations
 - **Image Optimization**: Planned Astro native image optimization
@@ -375,3 +408,4 @@ Multi-step valuation process:
 - **documentacion/modulo-ventas.md**: Sales system comprehensive documentation
 - **documentacion/modulo-consignaciones.md**: Consignments system detailed documentation
 - **documentacion/errores-comunes.md**: Common errors and solutions reference
+- **DOCUMENTACION_IMPLEMENTACION_APPS.md**: Multi-app architecture implementation details

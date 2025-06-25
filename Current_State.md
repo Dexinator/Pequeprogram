@@ -2737,3 +2737,242 @@ PUT /consignments/:id/paid → Campos de pago actualizados → Estado: sold_paid
 #### Próximas Fases
 
 **Fase 4: Panel de Administración y Gestión de Usuarios** - Listo para implementación con sistema robusto de ventas y consignaciones como base.
+
+## Sesión: 25 de Junio, 2025
+
+### 116. Implementación de Múltiples Aplicaciones (Fase 4)
+
+**Acción realizada:** Creación e implementación de 3 nuevas aplicaciones frontend (admin, tienda, pos) para expandir el sistema empresarial.
+
+#### Análisis de Arquitectura
+
+**Decisión arquitectónica:** Mantener estructura monorepo con aplicaciones separadas.
+
+**Beneficios identificados:**
+- **Separación de preocupaciones:** Cada app con su propio dominio y responsabilidades
+- **Seguridad mejorada:** Autenticación y autorización específica por aplicación
+- **Performance optimizada:** Bundles más pequeños, carga solo lo necesario
+- **Despliegue independiente:** Cada app puede actualizarse sin afectar otras
+- **Escalabilidad:** Facilita crecimiento y mantenimiento a largo plazo
+
+#### Implementación de Infraestructura
+
+**1. Estructura de Carpetas:**
+```
+apps/
+├── valuador/    # ✅ Existente (Fase 2-3)
+├── admin/       # 🆕 Panel administrativo
+├── tienda/      # 🆕 E-commerce público
+└── pos/         # 🆕 Punto de venta
+```
+
+**2. Configuración Docker:**
+- Dockerfile.dev creado para cada aplicación
+- Docker Compose actualizado con 3 nuevos servicios
+- Puertos asignados: 4322 (admin), 4323 (tienda), 4324 (pos)
+- Volúmenes separados para node_modules
+- Variables de entorno configuradas
+
+**3. Instalación de Dependencias:**
+```json
+// Package.json de cada app
+{
+  "dependencies": {
+    "@astrojs/react": "^4.3.0",
+    "@tailwindcss/vite": "^4.1.10",
+    "astro": "^5.10.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.1.10"
+  }
+}
+```
+
+#### Implementación de Autenticación
+
+**1. Admin Panel:**
+- **Acceso:** Solo roles admin y manager
+- **AuthGuard:** Verificación estricta de roles
+- **Login obligatorio:** No hay contenido público
+- **Dashboard:** Tarjetas de acceso rápido a funciones
+
+**2. Tienda Online:**
+- **Acceso:** Público con login opcional
+- **Menú contextual:** Cambia según estado de autenticación
+- **StoreApp:** Componente principal para catálogo
+- **Rutas mixtas:** Públicas y protegidas
+
+**3. POS (Point of Sale):**
+- **Acceso:** Roles sales, manager y admin
+- **AuthGuard:** Similar a admin pero con más roles
+- **Interfaz:** Optimizada para ventas rápidas
+- **Login obligatorio:** Seguridad para transacciones
+
+#### Problemas Resueltos Durante Implementación
+
+**1. Dependencias de React:**
+- **Problema:** Error "Cannot find module '@astrojs/react'"
+- **Causa:** Conflicto entre npm local y pnpm en Docker
+- **Solución:** 
+  - Instalar React en Dockerfile durante build
+  - Eliminar node_modules locales
+  - Usar volúmenes Docker para aislar dependencias
+
+**2. Bloqueo de Contenedores:**
+- **Problema:** pnpm install interactivo bloqueaba inicio
+- **Causa:** CMD ejecutaba install que pedía confirmación
+- **Solución:** Remover pnpm install del CMD, solo en build
+
+**3. Sincronización de Puertos:**
+- **Problema:** Conflictos de puertos entre aplicaciones
+- **Solución:** Asignación clara y documentada de puertos
+
+#### Componentes Comunes Implementados
+
+**1. Servicios HTTP:**
+```typescript
+// http.service.ts compartido
+export class HttpService {
+  protected async request<T>(url: string, options: RequestInit = {}): Promise<T> {
+    await this.ensureAuthenticated();
+    const token = this.authService.getToken();
+    // ... configuración de headers con JWT
+  }
+}
+```
+
+**2. Context de Autenticación:**
+```typescript
+// AuthContext.tsx
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Estados: user, isLoading, error, isAuthenticated
+  // Funciones: login, logout
+  // Persistencia con localStorage
+}
+```
+
+**3. Componentes de Auth:**
+- LoginContainer.jsx: UI de login reutilizable
+- AuthGuard.jsx: Protección de rutas con verificación de roles
+- AuthProvider.jsx: Wrapper para proveer contexto
+
+#### Estado de Implementación por Aplicación
+
+**Admin Panel (localhost:4322):**
+- ✅ Sistema de autenticación con JWT
+- ✅ Verificación de roles admin/manager
+- ✅ Dashboard básico con navegación
+- ✅ Integración con backend API
+- ⏳ Gestión de usuarios pendiente
+- ⏳ Configuración de sistema pendiente
+
+**Tienda Online (localhost:4323):**
+- ✅ Página pública de inicio
+- ✅ Login opcional para clientes
+- ✅ Menú contextual según autenticación
+- ✅ Servicio de productos preparado
+- ⏳ Catálogo de productos pendiente
+- ⏳ Carrito de compras pendiente
+
+**POS (localhost:4324):**
+- ✅ Login obligatorio con verificación de roles
+- ✅ AuthGuard para roles de ventas
+- ✅ Interfaz básica lista
+- ⏳ Sistema de ventas rápidas pendiente
+- ⏳ Gestión de caja pendiente
+
+#### Arquitectura Final Implementada
+
+```
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│   Valuador   │ │    Admin     │ │    Tienda    │ │     POS      │
+│  Port: 4321  │ │  Port: 4322  │ │  Port: 4323  │ │  Port: 4324  │
+└──────┬───────┘ └──────┬───────┘ └──────┬───────┘ └──────┬───────┘
+       └─────────────────┴─────────────────┴─────────────────┘
+                                   │
+                                   ▼
+                         ┌──────────────────┐
+                         │   Backend API    │
+                         │   Port: 3001     │
+                         └────────┬─────────┘
+                                  │
+                                  ▼
+                         ┌──────────────────┐
+                         │  PostgreSQL DB   │
+                         └──────────────────┘
+```
+
+#### Comandos de Desarrollo Actualizados
+
+```bash
+# Iniciar todas las aplicaciones
+docker-compose up -d
+
+# Ver logs de cada aplicación
+docker logs entrepeques-admin-dev -f
+docker logs entrepeques-tienda-dev -f
+docker logs entrepeques-pos-dev -f
+
+# Reconstruir después de cambios en dependencias
+docker-compose build --no-cache [servicio]
+
+# Limpiar y reiniciar
+docker-compose down -v && docker-compose up -d
+```
+
+#### Documentación Creada
+
+**1. DOCUMENTACION_IMPLEMENTACION_APPS.md:**
+- Arquitectura completa de las 3 nuevas apps
+- Estructura de archivos detallada
+- Configuración Docker específica
+- Problemas resueltos y soluciones
+- Estado actual y próximos pasos
+
+**2. Actualización PROYECTO_STATUS_MAYO_2025.md:**
+- Estado cambiado a Fase 4 en progreso (25%)
+- Nuevas aplicaciones documentadas
+- Progreso actual detallado
+
+**3. Actualización de versiones:**
+- Astro actualizado a 5.10.1 en nuevas apps
+- React 18.3.1 (versión 19 en POS)
+- Tailwind CSS 4.1 con nuevo sistema de configuración
+
+### 117. Estado Actual: Fase 4 EN PROGRESO 🚀
+
+**Progreso de Fase 4:** 25% completado
+
+#### Completado
+- ✅ Infraestructura de 3 nuevas aplicaciones
+- ✅ Dockerización completa
+- ✅ Sistema de autenticación en todas las apps
+- ✅ Conexión con backend API
+- ✅ Interfaces básicas funcionando
+- ✅ Documentación técnica actualizada
+
+#### Pendiente
+- ⏳ Funcionalidades específicas de Admin Panel
+- ⏳ Catálogo y carrito de Tienda Online
+- ⏳ Sistema completo de POS
+- ⏳ Testing de integración
+- ⏳ Optimizaciones de performance
+
+#### Lecciones Aprendidas
+
+**1. Gestión de Dependencias en Monorepo:**
+- pnpm workspaces funcionan bien con Docker
+- Volúmenes separados evitan conflictos
+- Build en Docker más confiable que local
+
+**2. Arquitectura de Múltiples Apps:**
+- Separación clara mejora mantenibilidad
+- Autenticación compartida pero autorización específica
+- Reutilización de componentes mediante copia controlada
+
+**3. Docker en Desarrollo:**
+- Dockerfiles optimizados para desarrollo rápido
+- Hot reload funciona correctamente
+- Logs centralizados facilitan debugging
+
+**Siguiente paso:** Implementar funcionalidades específicas de cada aplicación según prioridades del negocio.

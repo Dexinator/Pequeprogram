@@ -3,7 +3,13 @@
     "allow": [
       "Bash(grep:*)",
       "Bash(docker exec:*)",
-      "Bash(docker cp:*)"
+      "Bash(docker cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(npm install:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker volume rm:*)",
+      "Bash(docker logs:*)"
     ],
     "deny": []
   }
