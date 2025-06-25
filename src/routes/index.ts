@@ -8,6 +8,7 @@ import userRoutes from './user.routes';
 import roleRoutes from './role.routes';
 import salesRoutes from './sales.routes';
 import inventoryRoutes from './inventory.routes';
+import consignmentRoutes from './consignment.routes';
 
 const router = Router();
 
@@ -37,5 +38,8 @@ router.use('/sales', salesRoutes);
 
 // Rutas de inventario
 router.use('/inventory', inventoryRoutes);
+
+// Rutas de consignaciones
+router.use('/consignments', consignmentRoutes);
 
 export default router;
