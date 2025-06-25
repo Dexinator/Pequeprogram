@@ -44,8 +44,8 @@ services:
     networks:
       - entrepeques-net
 
-  frontend:
-    container_name: entrepeques-frontend-dev
+  valuador:
+    container_name: entrepeques-valuador-dev
     build:
       context: ./apps/valuador
       dockerfile: Dockerfile.dev
@@ -57,7 +57,64 @@ services:
       PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3001/api}
     volumes:
       - ./apps/valuador:/app
-      - frontend_node_modules:/app/node_modules
+      - valuador_node_modules:/app/node_modules
+    depends_on:
+      - api
+    networks:
+      - entrepeques-net
+
+  admin:
+    container_name: entrepeques-admin-dev
+    build:
+      context: ./apps/admin
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "4322:4322"
+    environment:
+      NODE_ENV: development
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3001/api}
+    volumes:
+      - ./apps/admin:/app
+      - admin_node_modules:/app/node_modules
+    depends_on:
+      - api
+    networks:
+      - entrepeques-net
+
+  tienda:
+    container_name: entrepeques-tienda-dev
+    build:
+      context: ./apps/tienda
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "4323:4323"
+    environment:
+      NODE_ENV: development
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3001/api}
+    volumes:
+      - ./apps/tienda:/app
+      - tienda_node_modules:/app/node_modules
+    depends_on:
+      - api
+    networks:
+      - entrepeques-net
+
+  pos:
+    container_name: entrepeques-pos-dev
+    build:
+      context: ./apps/pos
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "4324:4324"
+    environment:
+      NODE_ENV: development
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3001/api}
+    volumes:
+      - ./apps/pos:/app
+      - pos_node_modules:/app/node_modules
     depends_on:
       - api
     networks:
@@ -84,4 +141,7 @@ networks:
 volumes:
   postgres_data: # Volumen nombrado para la persistencia de datos
   api_node_modules:
-  frontend_node_modules:
+  valuador_node_modules:
+  admin_node_modules:
+  tienda_node_modules:
+  pos_node_modules:

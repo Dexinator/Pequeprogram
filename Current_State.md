@@ -2488,3 +2488,252 @@ La **Fase 3: Sistema de Ventas Físicas** del plan de modernización ha sido com
 - Flujos de usuario clarificados
 
 **Estado Final del Proyecto:** Sistema completo de valuación y ventas documentado exhaustivamente, con base sólida para futuras fases de desarrollo y mantenimiento a largo plazo.
+
+## Sesión: 19 de Junio, 2025
+
+### 113. Implementación del Sistema de Consignaciones
+
+**Acción realizada:** Desarrollo completo del módulo de gestión de consignaciones para rastrear productos dejados por proveedores y sus pagos.
+
+#### Contexto del Negocio
+En el modelo de consignación de Entrepeques:
+- Los proveedores dejan productos en la tienda
+- Los productos permanecen hasta venderse
+- El proveedor solo recibe pago cuando el producto se vende
+- La tienda necesita rastrear cuándo pagar a cada proveedor
+
+#### Desarrollo Backend
+
+**1. Análisis de Base de Datos Existente:**
+- Identificamos que productos en consignación se almacenan en `valuation_items` con `modality = 'consignación'`
+- Estado vendido determinado por presencia en `sale_items`
+- Necesidad de rastrear pagos a proveedores
+
+**2. Migración 011 - Campos de Pago:**
+```sql
+ALTER TABLE valuation_items 
+ADD COLUMN consignment_paid BOOLEAN DEFAULT FALSE,
+ADD COLUMN consignment_paid_date TIMESTAMP WITHOUT TIME ZONE,
+ADD COLUMN consignment_paid_amount NUMERIC(10,2),
+ADD COLUMN consignment_paid_notes TEXT;
+```
+
+**3. Sistema de Estados Implementado:**
+- **available**: En tienda, no vendido (`sale_items.id IS NULL`)
+- **sold_unpaid**: Vendido pero pendiente de pago (`sale_items.id IS NOT NULL AND consignment_paid = FALSE`)
+- **sold_paid**: Vendido y pagado (`sale_items.id IS NOT NULL AND consignment_paid = TRUE`)
+
+**4. Servicios Backend:**
+- `ConsignmentService` con métodos completos:
+  - `getAllConsignments()`: Lista con filtros y paginación
+  - `getConsignmentById()`: Detalle específico
+  - `markAsPaid()`: Marcar como pagado con transacciones seguras
+  - `getConsignmentStats()`: Estadísticas completas
+
+**5. API Endpoints:**
+- `GET /api/consignments` - Lista con filtros
+- `GET /api/consignments/:id` - Detalle específico
+- `GET /api/consignments/stats` - Estadísticas del sistema
+- `PUT /api/consignments/:id/paid` - Marcar como pagado
+
+#### Desarrollo Frontend
+
+**1. Página de Consignaciones:**
+- **Archivo:** `apps/valuador/src/pages/consignaciones.astro`
+- Integrada en navegación principal
+
+**2. Componente Principal:**
+- **Archivo:** `apps/valuador/src/components/ConsignmentsList.jsx`
+- **Características implementadas:**
+  - Panel de estadísticas con 6 métricas
+  - Sistema de filtros avanzado
+  - Tabla responsive con información completa
+  - Modales de detalle y pago
+  - Paginación integrada
+
+**3. Servicio Frontend:**
+- **Archivo:** `apps/valuador/src/services/consignment.service.ts`
+- Siguiendo patrón establecido con `HttpService` y `AuthService`
+- Métodos para todas las operaciones
+- Utilidades de formateo (moneda, fechas, descripciones)
+
+#### Problemas Técnicos Resueltos
+
+**1. Error de Importación JWT:**
+- **Problema:** Uso incorrecto de `import { authenticateToken } from '../utils/jwt'`
+- **Solución:** Usar patrón establecido `import { protect, authorize } from '../utils/auth.middleware'`
+- **Documentado en:** `documentacion/errores-comunes.md`
+
+**2. Error de Autenticación "Bearer null":**
+- **Problema:** Servicio no usaba patrón de autenticación del proyecto
+- **Solución:** Refactorizar para usar `HttpService` y `AuthService` existentes
+- **Patrón:** `ensureAuthenticated()` antes de cada petición
+
+**3. Consulta de Datos Incorrecta:**
+- **Problema:** Búsqueda por 'consignacion' sin acento vs 'consignación' en BD
+- **Solución:** Usar acento correcto en todas las consultas
+- **Lección:** Verificar datos reales antes de escribir consultas
+
+**4. Estadísticas Monetarias:**
+- **Problema:** Valores mostrando $0.00 en frontend
+- **Solución:** Verificación de formato de respuesta API y mapeo correcto
+- **Resolución:** API retornaba valores correctos, frontend los mostraba apropiadamente
+
+#### Características del Sistema Implementado
+
+**1. Panel de Estadísticas:**
+- Total de productos en consignación
+- Productos disponibles en tienda
+- Productos vendidos sin pagar
+- Productos vendidos pagados
+- Valores monetarios totales por categoría
+
+**2. Sistema de Filtros:**
+- Por estado (disponible, vendido sin pagar, vendido pagado)
+- Por ubicación (Polanco, Satélite, Roma)
+- Por cliente específico
+- Paginación configurable
+
+**3. Gestión de Pagos:**
+- Modal de confirmación con detalles
+- Campo de monto pagado (pre-poblado)
+- Notas del pago opcionales
+- Validación de datos requeridos
+- Transacciones seguras en base de datos
+
+**4. Información Detallada:**
+- Descripción dinámica de productos
+- Información completa del cliente
+- Precios de consignación y venta
+- Características específicas del producto
+- Historial de venta y pago
+
+#### Consultas SQL Críticas
+
+**Determinación de Estados:**
+```sql
+CASE 
+  WHEN si.id IS NULL THEN 'available'
+  WHEN si.id IS NOT NULL AND vi.consignment_paid = FALSE THEN 'sold_unpaid'
+  WHEN si.id IS NOT NULL AND vi.consignment_paid = TRUE THEN 'sold_paid'
+END as status
+```
+
+**Estadísticas Completas:**
+```sql
+SELECT 
+  COUNT(*) as total_items,
+  COUNT(CASE WHEN si.id IS NULL THEN 1 END) as available_items,
+  COUNT(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = FALSE THEN 1 END) as sold_unpaid_items,
+  COUNT(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = TRUE THEN 1 END) as sold_paid_items,
+  SUM(CASE WHEN si.id IS NULL THEN vi.consignment_price ELSE 0 END) as total_available_value,
+  SUM(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = FALSE THEN vi.consignment_price ELSE 0 END) as total_unpaid_value,
+  SUM(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = TRUE THEN vi.consignment_paid_amount ELSE 0 END) as total_paid_value
+FROM valuation_items vi
+LEFT JOIN sale_items si ON si.inventario_id = CAST(vi.id AS VARCHAR)
+WHERE vi.modality = 'consignación'
+```
+
+#### Flujo de Trabajo Completo
+
+**1. Registro de Consignación:**
+```
+Valuación → Modalidad "Consignación" → Estado: available
+```
+
+**2. Venta de Producto:**
+```
+Sistema de Ventas → sale_items creado → Estado: sold_unpaid
+```
+
+**3. Pago a Proveedor:**
+```
+PUT /consignments/:id/paid → Campos de pago actualizados → Estado: sold_paid
+```
+
+#### Seguridad y Permisos
+
+**Roles de Acceso:**
+- **Consulta:** admin, manager, valuator, sales
+- **Pagos:** admin, manager (solo roles administrativos)
+
+**Validaciones Implementadas:**
+- JWT requerido para todas las operaciones
+- Verificación de estado antes de pagos
+- Transacciones de base de datos para consistencia
+- Validación de montos positivos
+
+### 114. Documentación Completa del Sistema de Consignaciones
+
+**Acción realizada:** Creación de documentación técnica exhaustiva del sistema de consignaciones.
+
+#### Documentación Creada
+
+**1. Documentación Específica:**
+- ✅ `documentacion/modulo-consignaciones.md` - Documentación completa del sistema
+- Contenido: Arquitectura, API, frontend, SQL, problemas resueltos, flujos de trabajo
+
+**2. Actualización de Documentación Principal:**
+- ✅ `CLAUDE.md` actualizado con:
+  - Sistema de consignaciones en esquema de BD
+  - Nuevos endpoints de API
+  - Componentes frontend agregados
+  - Referencias a documentación específica
+- ✅ `Current_State.md` actualizado con sesión completa de implementación
+- ✅ `documentacion/errores-comunes.md` actualizado con errores específicos y soluciones
+
+#### Contenido de la Documentación
+
+**Documentación técnica incluye:**
+
+1. **Modelo de Negocio:** Explicación del sistema de consignación
+2. **Arquitectura Completa:** Base de datos, backend, frontend
+3. **Estados del Sistema:** Tres estados con lógica de transición
+4. **API Completa:** Todos los endpoints documentados con ejemplos
+5. **Interfaz de Usuario:** Componentes, modales, filtros, estadísticas
+6. **Consultas SQL:** Queries críticas para estados y estadísticas
+7. **Seguridad:** Permisos, validaciones, transacciones
+8. **Problemas Resueltos:** Errores técnicos y soluciones implementadas
+9. **Flujos de Trabajo:** Procesos completos paso a paso
+10. **Extensibilidad:** Puntos de mejora futuros identificados
+
+#### Archivos del Sistema Documentados
+
+**Backend:**
+- `packages/api/src/controllers/consignment.controller.ts`
+- `packages/api/src/services/consignment.service.ts`
+- `packages/api/src/routes/consignment.routes.ts`
+- `packages/api/src/migrations/011-add-consignment-payment-fields.sql`
+
+**Frontend:**
+- `apps/valuador/src/pages/consignaciones.astro`
+- `apps/valuador/src/components/ConsignmentsList.jsx`
+- `apps/valuador/src/services/consignment.service.ts`
+
+**Documentación:**
+- `documentacion/modulo-consignaciones.md`
+- `documentacion/errores-comunes.md` (errores registrados)
+
+### 115. Estado Actual: Fase 3 COMPLETADA ✅ EXTENDIDA
+
+**Estado Final de Fase 3:** Completada exitosamente con extensión de sistema de consignaciones.
+
+#### Funcionalidades Implementadas en Fase 3
+
+**Sistema de Ventas (Original):**
+- ✅ Gestión completa de inventario
+- ✅ Procesamiento de ventas con pagos mixtos
+- ✅ Integración con sistema de valuación
+- ✅ Estadísticas y reportes en tiempo real
+
+**Sistema de Consignaciones (Extensión):**
+- ✅ Rastreo completo de productos en consignación
+- ✅ Sistema de tres estados (available → sold_unpaid → sold_paid)
+- ✅ Gestión de pagos a proveedores
+- ✅ Estadísticas detalladas de consignaciones
+- ✅ Interfaz completa con filtros y modales
+- ✅ Documentación técnica exhaustiva
+
+#### Próximas Fases
+
+**Fase 4: Panel de Administración y Gestión de Usuarios** - Listo para implementación con sistema robusto de ventas y consignaciones como base.

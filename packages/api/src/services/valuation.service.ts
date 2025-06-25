@@ -462,16 +462,17 @@ export class ValuationService extends BaseService<Valuation> {
         const insertedItem = itemResult.rows[0];
         insertedItems.push(insertedItem);
         
-        // Insertar en tabla inventario
+        // Insertar en tabla inventario con valuation_item_id
         const inventarioQuery = `
-          INSERT INTO inventario (id, quantity, location, created_at, updated_at)
-          VALUES ($1, $2, $3, NOW(), NOW())
+          INSERT INTO inventario (id, quantity, location, valuation_item_id, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, NOW(), NOW())
         `;
         
         await dbClient.query(inventarioQuery, [
           inventarioId,
           product.quantity || 1,
-          'Polanco' // location por defecto
+          'Polanco', // location por defecto
+          insertedItem.id // valuation_item_id
         ]);
       }
       
@@ -753,7 +754,7 @@ export class ValuationService extends BaseService<Valuation> {
         query += ` AND (v.id::text LIKE $${paramIndex++} OR c.name ILIKE $${paramIndex++} OR c.phone LIKE $${paramIndex++})`;
         const searchTerm = `%${params.search}%`;
         queryParams.push(searchTerm, searchTerm, searchTerm);
-        paramIndex += 2; // Ajustar el índice por los 3 parámetros añadidos
+        // No need to adjust paramIndex since it was already incremented 3 times above
       }
       
       // Obtener el total de resultados

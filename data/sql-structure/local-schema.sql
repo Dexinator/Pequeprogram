@@ -5,7 +5,7 @@
 -- Dumped from database version 16.9
 -- Dumped by pg_dump version 16.9
 
--- Started on 2025-06-19 04:42:09 UTC
+-- Started on 2025-06-17 01:10:49 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,7 +27,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
 --
--- TOC entry 3564 (class 0 OID 0)
+-- TOC entry 3561 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
 --
@@ -74,7 +74,7 @@ CREATE SEQUENCE public.brands_id_seq
 ALTER SEQUENCE public.brands_id_seq OWNER TO "user";
 
 --
--- TOC entry 3565 (class 0 OID 0)
+-- TOC entry 3562 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: brands_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -100,7 +100,7 @@ CREATE TABLE public.categories (
 ALTER TABLE public.categories OWNER TO "user";
 
 --
--- TOC entry 3566 (class 0 OID 0)
+-- TOC entry 3563 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: TABLE categories; Type: COMMENT; Schema: public; Owner: user
 --
@@ -125,7 +125,7 @@ CREATE SEQUENCE public.categories_id_seq
 ALTER SEQUENCE public.categories_id_seq OWNER TO "user";
 
 --
--- TOC entry 3567 (class 0 OID 0)
+-- TOC entry 3564 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -169,7 +169,7 @@ CREATE SEQUENCE public.clients_id_seq
 ALTER SEQUENCE public.clients_id_seq OWNER TO "user";
 
 --
--- TOC entry 3568 (class 0 OID 0)
+-- TOC entry 3565 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: clients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -192,8 +192,7 @@ CREATE TABLE public.feature_definitions (
     options jsonb,
     created_at timestamp without time zone DEFAULT now(),
     updated_at timestamp without time zone DEFAULT now(),
-    mandatory boolean DEFAULT false,
-    offer_print boolean DEFAULT false
+    mandatory boolean DEFAULT false
 );
 
 
@@ -216,7 +215,7 @@ CREATE SEQUENCE public.feature_definitions_id_seq
 ALTER SEQUENCE public.feature_definitions_id_seq OWNER TO "user";
 
 --
--- TOC entry 3569 (class 0 OID 0)
+-- TOC entry 3566 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: feature_definitions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -255,7 +254,7 @@ CREATE SEQUENCE public.migrations_id_seq
 ALTER SEQUENCE public.migrations_id_seq OWNER TO "user";
 
 --
--- TOC entry 3570 (class 0 OID 0)
+-- TOC entry 3567 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -301,7 +300,7 @@ CREATE SEQUENCE public.products_id_seq
 ALTER SEQUENCE public.products_id_seq OWNER TO "user";
 
 --
--- TOC entry 3571 (class 0 OID 0)
+-- TOC entry 3568 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -342,7 +341,7 @@ CREATE SEQUENCE public.roles_id_seq
 ALTER SEQUENCE public.roles_id_seq OWNER TO "user";
 
 --
--- TOC entry 3572 (class 0 OID 0)
+-- TOC entry 3569 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -389,7 +388,7 @@ CREATE SEQUENCE public.subcategories_id_seq
 ALTER SEQUENCE public.subcategories_id_seq OWNER TO "user";
 
 --
--- TOC entry 3573 (class 0 OID 0)
+-- TOC entry 3570 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: subcategories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -435,7 +434,7 @@ CREATE SEQUENCE public.users_id_seq
 ALTER SEQUENCE public.users_id_seq OWNER TO "user";
 
 --
--- TOC entry 3574 (class 0 OID 0)
+-- TOC entry 3571 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -478,7 +477,7 @@ CREATE SEQUENCE public.valuation_factors_id_seq
 ALTER SEQUENCE public.valuation_factors_id_seq OWNER TO "user";
 
 --
--- TOC entry 3575 (class 0 OID 0)
+-- TOC entry 3572 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: valuation_factors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -516,9 +515,7 @@ CREATE TABLE public.valuation_items (
     notes text,
     created_at timestamp without time zone DEFAULT now(),
     updated_at timestamp without time zone DEFAULT now(),
-    online_store_ready boolean DEFAULT false,
-    quantity integer DEFAULT 1 NOT NULL,
-    store_credit_price numeric(10,2)
+    online_store_ready boolean DEFAULT false
 );
 
 
@@ -541,7 +538,7 @@ CREATE SEQUENCE public.valuation_items_id_seq
 ALTER SEQUENCE public.valuation_items_id_seq OWNER TO "user";
 
 --
--- TOC entry 3576 (class 0 OID 0)
+-- TOC entry 3573 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: valuation_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -564,8 +561,7 @@ CREATE TABLE public.valuations (
     status character varying(20) DEFAULT 'pending'::character varying,
     notes text,
     created_at timestamp without time zone DEFAULT now(),
-    updated_at timestamp without time zone DEFAULT now(),
-    total_store_credit_amount numeric(10,2)
+    updated_at timestamp without time zone DEFAULT now()
 );
 
 
@@ -588,7 +584,7 @@ CREATE SEQUENCE public.valuations_id_seq
 ALTER SEQUENCE public.valuations_id_seq OWNER TO "user";
 
 --
--- TOC entry 3577 (class 0 OID 0)
+-- TOC entry 3574 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: valuations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
 --
@@ -597,7 +593,7 @@ ALTER SEQUENCE public.valuations_id_seq OWNED BY public.valuations.id;
 
 
 --
--- TOC entry 3341 (class 2604 OID 16530)
+-- TOC entry 3340 (class 2604 OID 16530)
 -- Name: brands id; Type: DEFAULT; Schema: public; Owner: user
 --
 
@@ -613,7 +609,7 @@ ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.c
 
 
 --
--- TOC entry 3345 (class 2604 OID 16546)
+-- TOC entry 3344 (class 2604 OID 16546)
 -- Name: clients id; Type: DEFAULT; Schema: public; Owner: user
 --
 
@@ -669,7 +665,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 3338 (class 2604 OID 16515)
+-- TOC entry 3337 (class 2604 OID 16515)
 -- Name: valuation_factors id; Type: DEFAULT; Schema: public; Owner: user
 --
 
@@ -677,7 +673,7 @@ ALTER TABLE ONLY public.valuation_factors ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3354 (class 2604 OID 16585)
+-- TOC entry 3353 (class 2604 OID 16585)
 -- Name: valuation_items id; Type: DEFAULT; Schema: public; Owner: user
 --
 
@@ -685,7 +681,7 @@ ALTER TABLE ONLY public.valuation_items ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3349 (class 2604 OID 16558)
+-- TOC entry 3348 (class 2604 OID 16558)
 -- Name: valuations id; Type: DEFAULT; Schema: public; Owner: user
 --
 
@@ -693,7 +689,7 @@ ALTER TABLE ONLY public.valuations ALTER COLUMN id SET DEFAULT nextval('public.v
 
 
 --
--- TOC entry 3388 (class 2606 OID 16535)
+-- TOC entry 3385 (class 2606 OID 16535)
 -- Name: brands brands_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -702,7 +698,7 @@ ALTER TABLE ONLY public.brands
 
 
 --
--- TOC entry 3374 (class 2606 OID 16453)
+-- TOC entry 3372 (class 2606 OID 16453)
 -- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -711,7 +707,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 3390 (class 2606 OID 16551)
+-- TOC entry 3387 (class 2606 OID 16551)
 -- Name: clients clients_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -720,7 +716,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- TOC entry 3381 (class 2606 OID 16504)
+-- TOC entry 3379 (class 2606 OID 16504)
 -- Name: feature_definitions feature_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -729,7 +725,7 @@ ALTER TABLE ONLY public.feature_definitions
 
 
 --
--- TOC entry 3360 (class 2606 OID 16398)
+-- TOC entry 3358 (class 2606 OID 16398)
 -- Name: migrations migrations_name_key; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -738,7 +734,7 @@ ALTER TABLE ONLY public.migrations
 
 
 --
--- TOC entry 3362 (class 2606 OID 16396)
+-- TOC entry 3360 (class 2606 OID 16396)
 -- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -747,7 +743,7 @@ ALTER TABLE ONLY public.migrations
 
 
 --
--- TOC entry 3376 (class 2606 OID 16470)
+-- TOC entry 3374 (class 2606 OID 16470)
 -- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -756,7 +752,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- TOC entry 3364 (class 2606 OID 16422)
+-- TOC entry 3362 (class 2606 OID 16422)
 -- Name: roles roles_name_key; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -765,7 +761,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 3366 (class 2606 OID 16420)
+-- TOC entry 3364 (class 2606 OID 16420)
 -- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -774,7 +770,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 3379 (class 2606 OID 16487)
+-- TOC entry 3377 (class 2606 OID 16487)
 -- Name: subcategories subcategories_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -783,7 +779,7 @@ ALTER TABLE ONLY public.subcategories
 
 
 --
--- TOC entry 3392 (class 2606 OID 16553)
+-- TOC entry 3389 (class 2606 OID 16553)
 -- Name: clients uk_clients_phone; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -792,7 +788,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- TOC entry 3368 (class 2606 OID 16436)
+-- TOC entry 3366 (class 2606 OID 16436)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -801,7 +797,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3370 (class 2606 OID 16432)
+-- TOC entry 3368 (class 2606 OID 16432)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -810,7 +806,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3372 (class 2606 OID 16434)
+-- TOC entry 3370 (class 2606 OID 16434)
 -- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -819,7 +815,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3386 (class 2606 OID 16519)
+-- TOC entry 3383 (class 2606 OID 16519)
 -- Name: valuation_factors valuation_factors_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -828,7 +824,7 @@ ALTER TABLE ONLY public.valuation_factors
 
 
 --
--- TOC entry 3403 (class 2606 OID 16591)
+-- TOC entry 3400 (class 2606 OID 16591)
 -- Name: valuation_items valuation_items_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -837,7 +833,7 @@ ALTER TABLE ONLY public.valuation_items
 
 
 --
--- TOC entry 3398 (class 2606 OID 16566)
+-- TOC entry 3395 (class 2606 OID 16566)
 -- Name: valuations valuations_pkey; Type: CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -846,15 +842,7 @@ ALTER TABLE ONLY public.valuations
 
 
 --
--- TOC entry 3382 (class 1259 OID 49281)
--- Name: idx_feature_definitions_offer_print; Type: INDEX; Schema: public; Owner: user
---
-
-CREATE INDEX idx_feature_definitions_offer_print ON public.feature_definitions USING btree (subcategory_id, offer_print) WHERE (offer_print = true);
-
-
---
--- TOC entry 3383 (class 1259 OID 16510)
+-- TOC entry 3380 (class 1259 OID 16510)
 -- Name: idx_feature_definitions_subcategory; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -862,7 +850,7 @@ CREATE INDEX idx_feature_definitions_subcategory ON public.feature_definitions U
 
 
 --
--- TOC entry 3377 (class 1259 OID 16493)
+-- TOC entry 3375 (class 1259 OID 16493)
 -- Name: idx_subcategories_category; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -870,7 +858,7 @@ CREATE INDEX idx_subcategories_category ON public.subcategories USING btree (cat
 
 
 --
--- TOC entry 3384 (class 1259 OID 16525)
+-- TOC entry 3381 (class 1259 OID 16525)
 -- Name: idx_valuation_factors; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -878,7 +866,7 @@ CREATE INDEX idx_valuation_factors ON public.valuation_factors USING btree (subc
 
 
 --
--- TOC entry 3399 (class 1259 OID 16613)
+-- TOC entry 3396 (class 1259 OID 16613)
 -- Name: idx_valuation_items_category; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -886,7 +874,7 @@ CREATE INDEX idx_valuation_items_category ON public.valuation_items USING btree 
 
 
 --
--- TOC entry 3400 (class 1259 OID 16614)
+-- TOC entry 3397 (class 1259 OID 16614)
 -- Name: idx_valuation_items_subcategory; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -894,7 +882,7 @@ CREATE INDEX idx_valuation_items_subcategory ON public.valuation_items USING btr
 
 
 --
--- TOC entry 3401 (class 1259 OID 16612)
+-- TOC entry 3398 (class 1259 OID 16612)
 -- Name: idx_valuation_items_valuation; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -902,7 +890,7 @@ CREATE INDEX idx_valuation_items_valuation ON public.valuation_items USING btree
 
 
 --
--- TOC entry 3393 (class 1259 OID 16577)
+-- TOC entry 3390 (class 1259 OID 16577)
 -- Name: idx_valuations_client; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -910,7 +898,7 @@ CREATE INDEX idx_valuations_client ON public.valuations USING btree (client_id);
 
 
 --
--- TOC entry 3394 (class 1259 OID 16579)
+-- TOC entry 3391 (class 1259 OID 16579)
 -- Name: idx_valuations_date; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -918,7 +906,7 @@ CREATE INDEX idx_valuations_date ON public.valuations USING btree (valuation_dat
 
 
 --
--- TOC entry 3395 (class 1259 OID 16580)
+-- TOC entry 3392 (class 1259 OID 16580)
 -- Name: idx_valuations_status; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -926,7 +914,7 @@ CREATE INDEX idx_valuations_status ON public.valuations USING btree (status);
 
 
 --
--- TOC entry 3396 (class 1259 OID 16578)
+-- TOC entry 3393 (class 1259 OID 16578)
 -- Name: idx_valuations_user; Type: INDEX; Schema: public; Owner: user
 --
 
@@ -934,7 +922,7 @@ CREATE INDEX idx_valuations_user ON public.valuations USING btree (user_id);
 
 
 --
--- TOC entry 3409 (class 2606 OID 24682)
+-- TOC entry 3406 (class 2606 OID 24682)
 -- Name: brands brands_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -943,7 +931,7 @@ ALTER TABLE ONLY public.brands
 
 
 --
--- TOC entry 3407 (class 2606 OID 16505)
+-- TOC entry 3404 (class 2606 OID 16505)
 -- Name: feature_definitions feature_definitions_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -952,7 +940,7 @@ ALTER TABLE ONLY public.feature_definitions
 
 
 --
--- TOC entry 3405 (class 2606 OID 16471)
+-- TOC entry 3402 (class 2606 OID 16471)
 -- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -961,7 +949,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- TOC entry 3406 (class 2606 OID 16488)
+-- TOC entry 3403 (class 2606 OID 16488)
 -- Name: subcategories subcategories_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -970,7 +958,7 @@ ALTER TABLE ONLY public.subcategories
 
 
 --
--- TOC entry 3404 (class 2606 OID 16437)
+-- TOC entry 3401 (class 2606 OID 16437)
 -- Name: users users_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -979,7 +967,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3408 (class 2606 OID 16520)
+-- TOC entry 3405 (class 2606 OID 16520)
 -- Name: valuation_factors valuation_factors_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -988,7 +976,7 @@ ALTER TABLE ONLY public.valuation_factors
 
 
 --
--- TOC entry 3412 (class 2606 OID 16607)
+-- TOC entry 3409 (class 2606 OID 16607)
 -- Name: valuation_items valuation_items_brand_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -997,7 +985,7 @@ ALTER TABLE ONLY public.valuation_items
 
 
 --
--- TOC entry 3413 (class 2606 OID 16597)
+-- TOC entry 3410 (class 2606 OID 16597)
 -- Name: valuation_items valuation_items_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -1006,7 +994,7 @@ ALTER TABLE ONLY public.valuation_items
 
 
 --
--- TOC entry 3414 (class 2606 OID 16602)
+-- TOC entry 3411 (class 2606 OID 16602)
 -- Name: valuation_items valuation_items_subcategory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -1015,7 +1003,7 @@ ALTER TABLE ONLY public.valuation_items
 
 
 --
--- TOC entry 3415 (class 2606 OID 16592)
+-- TOC entry 3412 (class 2606 OID 16592)
 -- Name: valuation_items valuation_items_valuation_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -1024,7 +1012,7 @@ ALTER TABLE ONLY public.valuation_items
 
 
 --
--- TOC entry 3410 (class 2606 OID 16567)
+-- TOC entry 3407 (class 2606 OID 16567)
 -- Name: valuations valuations_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -1033,7 +1021,7 @@ ALTER TABLE ONLY public.valuations
 
 
 --
--- TOC entry 3411 (class 2606 OID 16572)
+-- TOC entry 3408 (class 2606 OID 16572)
 -- Name: valuations valuations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user
 --
 
@@ -1041,7 +1029,7 @@ ALTER TABLE ONLY public.valuations
     ADD CONSTRAINT valuations_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
--- Completed on 2025-06-19 04:42:09 UTC
+-- Completed on 2025-06-17 01:10:50 UTC
 
 --
 -- PostgreSQL database dump complete

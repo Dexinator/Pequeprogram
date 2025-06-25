@@ -1,0 +1,162 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import ConsignmentsList from '../components/ConsignmentsList.jsx';
+---
+
+<MainLayout title="Consignaciones">
+  <ConsignmentsList client:load />
+</MainLayout>
+
+<style>
+  /* Estilos específicos para la página de consignaciones */
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Optimización para pantallas grandes */
+  @media (min-width: 1024px) {
+    .grid-cols-5 {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+  
+  /* Estilos para estados de consignación */
+  .status-available {
+    background-color: rgb(220 252 231);
+    color: rgb(22 101 52);
+  }
+  
+  .status-sold {
+    background-color: rgb(219 234 254);
+    color: rgb(30 64 175);
+  }
+  
+  /* Estilos para alertas de pagos pendientes */
+  .payment-alert {
+    background-color: rgb(254 243 199);
+    color: rgb(146 64 14);
+    border-left: 4px solid rgb(251 191 36);
+  }
+  
+  /* Hover effects para las filas de la tabla */
+  .table-row:hover {
+    background-color: rgb(249 250 251);
+  }
+  
+  /* Estilos para modales */
+  .modal-overlay {
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-content {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Estilos para badges de estado */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+  }
+  
+  /* Estilos para campos de formulario */
+  .form-input {
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: rgb(59 130 246);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  /* Responsive design para tablas */
+  @media (max-width: 768px) {
+    .table-responsive {
+      font-size: 0.875rem;
+    }
+    
+    .table-responsive th,
+    .table-responsive td {
+      padding: 0.5rem 0.25rem;
+    }
+  }
+  
+  /* Estilos para botones de acción */
+  .action-button {
+    transition: all 0.15s ease-in-out;
+  }
+  
+  .action-button:hover {
+    transform: translateY(-1px);
+  }
+  
+  /* Animaciones de carga */
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Estilos para estadísticas */
+  .stat-card {
+    background: linear-gradient(135deg, rgb(255 255 255) 0%, rgb(249 250 251) 100%);
+    border: 1px solid rgb(229 231 235);
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Estilos para filtros */
+  .filter-section {
+    background: rgb(255 255 255);
+    border: 1px solid rgb(229 231 235);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Estilos para la información del cliente */
+  .client-info {
+    background: rgb(243 244 246);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+  }
+  
+  /* Estilos para información de precios */
+  .price-info {
+    background: linear-gradient(135deg, rgb(249 250 251) 0%, rgb(243 244 246) 100%);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  
+  /* Indicadores visuales para diferentes tipos de precio */
+  .price-consignment {
+    color: rgb(147 51 234);
+    font-weight: 700;
+  }
+  
+  .price-sale {
+    color: rgb(22 163 74);
+    font-weight: 700;
+  }
+  
+  .price-sold {
+    color: rgb(59 130 246);
+    font-weight: 700;
+  }
+</style>

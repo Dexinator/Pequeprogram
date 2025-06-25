@@ -110,6 +110,12 @@ export default function NavBar() {
                 >
                   Ventas
                 </a>
+                <a
+                  href="/consignaciones"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Consignaciones
+                </a>
 
                 {/* Botón de cambio de tema */}
                 <button
@@ -216,6 +222,12 @@ export default function NavBar() {
                   className="block hover:bg-azul-profundo px-3 py-2 rounded-md"
                 >
                   Ventas
+                </a>
+                <a
+                  href="/consignaciones"
+                  className="block hover:bg-azul-profundo px-3 py-2 rounded-md"
+                >
+                  Consignaciones
                 </a>
                 {user?.role === 'admin' && (
                   <a

@@ -1,5 +1,20 @@
 # CLAUDE.md
 
+
+ # IMPORTANT:
+
+# Always read ENTREPEQUES_MODERNIZATION_PLAN.md before writing any code.
+
+# Always read Current_State.md before writing any code.
+
+# After adding a major feature or completing a milestone, update Current_State.md.
+
+# Document the entire database schema in Current_State.md.
+
+#Current structure of database is available at data/sql-structure/local-schema.sql
+
+# For new migrations, make sure to add them to the same folder packages/api/src/migrations. 
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Development Commands
@@ -136,12 +151,20 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - `GET /api/inventory/search` - Search products in inventory
 - `GET /api/inventory/available` - Get available products (stock > 0)
 
+**Consignments Management (Phase 3):**
+- `GET /api/consignments` - List consignment products with filtering and pagination
+- `GET /api/consignments/:id` - Get specific consignment product details
+- `GET /api/consignments/stats` - Get consignment statistics (available, sold, payments)
+- `PUT /api/consignments/:id/paid` - Mark consignment as paid to supplier
+
 **Enhanced Features:**
 - All valuation endpoints return `store_credit_price` calculations
 - Offer endpoints filter features using `offer_print = TRUE`
 - History endpoints include quantity-based product counting
 - Sales system supports mixed payments with detailed tracking
 - Automatic inventory management with stock reduction
+- Consignment system tracks three states: available → sold_unpaid → sold_paid
+- Supplier payment management with detailed tracking and notes
 
 ### Database Schema (PostgreSQL 16)
 Complete relational schema with 12 core tables and optimized indexes:
@@ -177,6 +200,15 @@ Complete relational schema with 12 core tables and optimized indexes:
 - **sale_items**: Items sold in each transaction (sale_id, inventario_id, quantity_sold, unit_price, total_price)
 - **payment_details**: Detailed payment breakdown for mixed payments (sale_id, payment_method, amount, notes)
 
+**Consignments System (Phase 3 Extension):**
+- **valuation_items**: Extended with consignment payment tracking fields (Migration 011):
+  - consignment_paid: BOOLEAN DEFAULT FALSE
+  - consignment_paid_date: TIMESTAMP WITHOUT TIME ZONE
+  - consignment_paid_amount: NUMERIC(10,2)
+  - consignment_paid_notes: TEXT
+- **Consignment States**: available → sold_unpaid → sold_paid (determined by sale_items existence and payment status)
+- **Business Logic**: Products with modality='consignación' stay in store until sold, supplier only paid when product sells
+
 **Key Relationships:**
 - users.role_id → roles.id
 - subcategories.category_id → categories.id
@@ -200,6 +232,8 @@ Complete relational schema with 12 core tables and optimized indexes:
   - **NuevaValuacion.jsx**: End-to-end valuation workflow
   - **ProductoForm.jsx**: Dynamic product form with category-based fields
   - **ClienteForm.jsx**: Client registration and search
+  - **VentasApp.jsx**: Complete sales management system
+  - **ConsignmentsList.jsx**: Consignment tracking and payment management
 - **context/**: React Context for global state (AuthContext for authentication)
 - **services/**: API client services for backend communication
 - **pages/**: Astro pages with file-based routing
@@ -217,6 +251,8 @@ Complete relational schema with 12 core tables and optimized indexes:
 - **Mixed Payments**: Support for multiple payment methods in single transaction
 - **Inventory Tracking**: Real-time stock management with auto-generated product IDs
 - **Sales Analytics**: Real-time statistics and comprehensive reporting
+- **Consignments Management (Phase 3)**: Complete consignment tracking system with three-state workflow (available → sold_unpaid → sold_paid)
+- **Supplier Payment Tracking**: Detailed payment management for consignment suppliers
 - **Responsive Design**: Corporate theme with Entrepeques color palette
 
 ### Business Logic - Valuation System
@@ -336,3 +372,6 @@ Multi-step valuation process:
 - **Current_State.md**: Detailed development log and current implementation status
 - **PROYECTO_STATUS_MAYO_2025.md**: Current phase status and next steps summary
 - **logica_de_valuacion.md**: Business logic for valuation calculations
+- **documentacion/modulo-ventas.md**: Sales system comprehensive documentation
+- **documentacion/modulo-consignaciones.md**: Consignments system detailed documentation
+- **documentacion/errores-comunes.md**: Common errors and solutions reference
