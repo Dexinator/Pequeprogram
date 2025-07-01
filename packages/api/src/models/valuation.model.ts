@@ -40,6 +40,7 @@ export interface Client extends BaseModel {
   email?: string;
   identification?: string;
   is_active: boolean;
+  store_credit?: number;
 }
 
 export interface Inventario extends BaseModel {

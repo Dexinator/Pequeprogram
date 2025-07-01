@@ -39,23 +39,26 @@ export class SalesService extends BaseService<Sale> {
         }
       }
       
-      // 2. Validar información del cliente
+      // 2. Validar información del cliente y obtener crédito disponible
+      let clientStoreCredit = 0;
       if (data.client_id && data.client_name) {
         // Si ambos están presentes, verificar que el cliente existe
-        const clientQuery = 'SELECT id, name FROM clients WHERE id = $1';
+        const clientQuery = 'SELECT id, name, store_credit FROM clients WHERE id = $1';
         const clientResult = await dbClient.query(clientQuery, [data.client_id]);
         
         if (clientResult.rows.length === 0) {
           throw new Error('El cliente especificado no existe');
         }
+        clientStoreCredit = parseFloat(clientResult.rows[0].store_credit) || 0;
       } else if (data.client_id) {
-        // Solo client_id, verificar que existe
-        const clientQuery = 'SELECT id FROM clients WHERE id = $1';
+        // Solo client_id, verificar que existe y obtener crédito
+        const clientQuery = 'SELECT id, store_credit FROM clients WHERE id = $1';
         const clientResult = await dbClient.query(clientQuery, [data.client_id]);
         
         if (clientResult.rows.length === 0) {
           throw new Error('El cliente especificado no existe');
         }
+        clientStoreCredit = parseFloat(clientResult.rows[0].store_credit) || 0;
       } else if (!data.client_name) {
         throw new Error('Debe especificar client_id o client_name');
       }
@@ -72,6 +75,21 @@ export class SalesService extends BaseService<Sale> {
       const paymentTotal = data.payment_details.reduce((sum, payment) => sum + payment.amount, 0);
       if (Math.abs(paymentTotal - totalAmount) > 0.01) { // Tolerancia de 1 centavo para errores de redondeo
         throw new Error(`El total de los pagos (${paymentTotal}) no coincide con el total de la venta (${totalAmount})`);
+      }
+      
+      // Validar crédito en tienda si se está usando
+      const creditPayments = data.payment_details.filter(p => p.payment_method === 'credito_tienda');
+      if (creditPayments.length > 0) {
+        // Solo clientes registrados pueden usar crédito
+        if (!data.client_id) {
+          throw new Error('Solo clientes registrados pueden usar crédito en tienda');
+        }
+        
+        // Validar que no se use más crédito del disponible
+        const totalCreditUsed = creditPayments.reduce((sum, payment) => sum + payment.amount, 0);
+        if (totalCreditUsed > clientStoreCredit) {
+          throw new Error(`Crédito insuficiente. Disponible: $${clientStoreCredit.toFixed(2)}, Solicitado: $${totalCreditUsed.toFixed(2)}`);
+        }
       }
       
       // 4. Crear la venta (mantenemos payment_method para compatibilidad hacia atrás)
@@ -147,6 +165,18 @@ export class SalesService extends BaseService<Sale> {
         `;
         
         await dbClient.query(updateInventoryQuery, [item.quantity_sold, item.inventario_id]);
+      }
+      
+      // 7. Actualizar crédito del cliente si se usó crédito en tienda
+      if (creditPayments.length > 0 && data.client_id) {
+        const totalCreditUsed = creditPayments.reduce((sum, payment) => sum + payment.amount, 0);
+        const updateCreditQuery = `
+          UPDATE clients 
+          SET store_credit = store_credit - $1, updated_at = NOW()
+          WHERE id = $2
+        `;
+        
+        await dbClient.query(updateCreditQuery, [totalCreditUsed, data.client_id]);
       }
       
       // Confirmar transacción
@@ -414,8 +444,9 @@ export class SalesService extends BaseService<Sale> {
       dbClient = await pool.connect();
       
       // Construir consulta para buscar en inventario con información del producto
+      // Incluye tanto productos de valuaciones como otros productos (OTR)
       let query = `
-        SELECT 
+        SELECT DISTINCT
           i.*,
           vi.category_id,
           vi.subcategory_id,
@@ -425,14 +456,16 @@ export class SalesService extends BaseService<Sale> {
           vi.final_sale_price,
           c.name as category_name,
           s.name as subcategory_name,
-          b.name as brand_name
+          b.name as brand_name,
+          -- Campos de otros productos
+          oi.product_name as otr_product_name,
+          oi.sale_unit_price as otr_sale_price
         FROM inventario i
-        LEFT JOIN valuation_items vi ON i.id LIKE CONCAT(
-          (SELECT sku FROM subcategories WHERE id = vi.subcategory_id), '%'
-        )
+        LEFT JOIN valuation_items vi ON i.valuation_item_id = vi.id
         LEFT JOIN categories c ON vi.category_id = c.id
         LEFT JOIN subcategories s ON vi.subcategory_id = s.id
         LEFT JOIN brands b ON vi.brand_id = b.id
+        LEFT JOIN otherprods_items oi ON i.id = oi.sku
         WHERE 1=1
       `;
       
@@ -459,10 +492,10 @@ export class SalesService extends BaseService<Sale> {
       }
       
       if (params.q) {
-        query += ` AND (i.id ILIKE $${paramIndex++} OR c.name ILIKE $${paramIndex++} OR s.name ILIKE $${paramIndex++} OR b.name ILIKE $${paramIndex++})`;
+        query += ` AND (i.id ILIKE $${paramIndex++} OR c.name ILIKE $${paramIndex++} OR s.name ILIKE $${paramIndex++} OR b.name ILIKE $${paramIndex++} OR oi.product_name ILIKE $${paramIndex++})`;
         const searchTerm = `%${params.q}%`;
-        queryParams.push(searchTerm, searchTerm, searchTerm, searchTerm);
-        // No necesitamos incrementar paramIndex aquí porque ya se incrementó 4 veces arriba
+        queryParams.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+        // No necesitamos incrementar paramIndex aquí porque ya se incrementó 5 veces arriba
       }
       
       // Obtener el total de resultados
@@ -481,24 +514,40 @@ export class SalesService extends BaseService<Sale> {
       const result = await dbClient.query(query, queryParams);
       
       // Formatear los resultados
-      const items = result.rows.map(row => ({
-        id: row.id,
-        quantity: parseInt(row.quantity),
-        location: row.location,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-        valuation_item: {
-          category_id: row.category_id,
-          subcategory_id: row.subcategory_id,
-          brand_id: row.brand_id,
-          status: row.status,
-          features: row.features,
-          final_sale_price: parseFloat(row.final_sale_price),
-          category_name: row.category_name,
-          subcategory_name: row.subcategory_name,
-          brand_name: row.brand_name
-        }
-      }));
+      const items = result.rows.map(row => {
+        // Determinar si es un producto OTR
+        const isOtrProduct = row.id && row.id.startsWith('OTRP');
+        
+        return {
+          id: row.id,
+          quantity: parseInt(row.quantity),
+          location: row.location,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          // Para productos OTR, incluir la información relevante
+          valuation_item: isOtrProduct ? {
+            category_id: null,
+            subcategory_id: null,
+            brand_id: null,
+            status: null,
+            features: null,
+            final_sale_price: parseFloat(row.otr_sale_price || 0),
+            category_name: 'Otros Productos',
+            subcategory_name: row.otr_product_name,
+            brand_name: null
+          } : {
+            category_id: row.category_id,
+            subcategory_id: row.subcategory_id,
+            brand_id: row.brand_id,
+            status: row.status,
+            features: row.features,
+            final_sale_price: parseFloat(row.final_sale_price || 0),
+            category_name: row.category_name,
+            subcategory_name: row.subcategory_name,
+            brand_name: row.brand_name
+          }
+        };
+      });
       
       return {
         items,
@@ -511,5 +560,59 @@ export class SalesService extends BaseService<Sale> {
         dbClient.release();
       }
     }
+  }
+
+  /**
+   * Obtener estadísticas de ventas
+   */
+  async getSalesStats(): Promise<any> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    weekAgo.setHours(0, 0, 0, 0);
+    
+    // Ventas de hoy
+    const todayStatsQuery = `
+      SELECT 
+        COUNT(*) as count,
+        COALESCE(SUM(total_amount), 0) as total
+      FROM sales
+      WHERE sale_date >= $1
+      AND status = 'completed'
+    `;
+    
+    // Ventas de la semana
+    const weekStatsQuery = `
+      SELECT 
+        COUNT(*) as count,
+        COALESCE(SUM(total_amount), 0) as total
+      FROM sales
+      WHERE sale_date >= $1
+      AND status = 'completed'
+    `;
+    
+    // Promedio de venta
+    const avgQuery = `
+      SELECT 
+        COALESCE(AVG(total_amount), 0) as average
+      FROM sales
+      WHERE status = 'completed'
+    `;
+    
+    const [todayResult, weekResult, avgResult] = await Promise.all([
+      pool.query(todayStatsQuery, [today]),
+      pool.query(weekStatsQuery, [weekAgo]),
+      pool.query(avgQuery)
+    ]);
+    
+    return {
+      todaySales: parseInt(todayResult.rows[0].count),
+      todayAmount: parseFloat(todayResult.rows[0].total),
+      weekSales: parseInt(weekResult.rows[0].count),
+      weekAmount: parseFloat(weekResult.rows[0].total),
+      averageSale: parseFloat(avgResult.rows[0].average)
+    };
   }
 }

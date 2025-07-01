@@ -165,6 +165,12 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - `GET /api/consignments/stats` - Get consignment statistics (available, sold, payments)
 - `PUT /api/consignments/:id/paid` - Mark consignment as paid to supplier
 
+**Other Products Purchases (Phase 4):**
+- `POST /api/otherprods` - Create new purchase of other products (cigarettes, candy, etc.)
+- `GET /api/otherprods` - List purchases with filtering and pagination
+- `GET /api/otherprods/:id` - Get specific purchase details with items
+- `GET /api/otherprods/stats` - Get purchase statistics and top products
+
 **Enhanced Features:**
 - All valuation endpoints return `store_credit_price` calculations
 - Offer endpoints filter features using `offer_print = TRUE`
@@ -173,9 +179,11 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - Automatic inventory management with stock reduction
 - Consignment system tracks three states: available → sold_unpaid → sold_paid
 - Supplier payment management with detailed tracking and notes
+- Other products purchase system with automatic SKU generation (OTRP1, OTRP2...)
+- Seamless integration between purchases and inventory for immediate availability in sales
 
 ### Database Schema (PostgreSQL 16)
-Complete relational schema with 12 core tables and optimized indexes:
+Complete relational schema with 14 core tables and optimized indexes:
 
 **Core Authentication & Users:**
 - **users**: User accounts with role-based access (id, username, email, password_hash, first_name, last_name, role_id, is_active)
@@ -193,7 +201,7 @@ Complete relational schema with 12 core tables and optimized indexes:
 - **valuation_factors**: Scoring rules for valuation calculation (id, subcategory_id, factor_type, factor_value, score)
 
 **Valuation Business Logic:**
-- **clients**: Customer information (id, name, phone, email, identification) - phone is unique
+- **clients**: Customer information (id, name, phone, email, identification, store_credit) - phone is unique, store_credit tracks accumulated credit balance
 - **valuations**: Main valuation sessions (id, client_id, user_id, valuation_date, total_purchase_amount, total_store_credit_amount, total_consignment_amount, status, notes)
 - **valuation_items**: Individual products within valuations with complete pricing data:
   - Product classification: category_id, subcategory_id, brand_id
@@ -217,6 +225,12 @@ Complete relational schema with 12 core tables and optimized indexes:
 - **Consignment States**: available → sold_unpaid → sold_paid (determined by sale_items existence and payment status)
 - **Business Logic**: Products with modality='consignación' stay in store until sold, supplier only paid when product sells
 
+**Other Products Purchases (Phase 4):**
+- **otherprods**: Purchase records for other products like cigarettes, candy, etc. (id, user_id, supplier_name, purchase_date, total_amount, payment_method, location, notes, created_at, updated_at)
+- **otherprods_items**: Individual items within each purchase (id, otherprod_id, product_name, quantity, purchase_unit_price, sale_unit_price, total_purchase_price, sku, created_at, updated_at)
+- **SKU Generation**: Automatic generation with format OTRP{number} (OTRP1, OTRP2, etc.) using database sequence and trigger
+- **Inventory Integration**: Products automatically added to inventario table for immediate availability in sales system
+
 **Key Relationships:**
 - users.role_id → roles.id
 - subcategories.category_id → categories.id
@@ -225,11 +239,15 @@ Complete relational schema with 12 core tables and optimized indexes:
 - valuation_factors.subcategory_id → subcategories.id
 - valuations.client_id → clients.id, valuations.user_id → users.id
 - valuation_items.valuation_id → valuations.id, valuation_items.category_id → categories.id, valuation_items.subcategory_id → subcategories.id, valuation_items.brand_id → brands.id
+- otherprods.user_id → users.id
+- otherprods_items.otherprod_id → otherprods.id
 
 **Performance Indexes:**
 - idx_subcategories_category, idx_feature_definitions_subcategory, idx_valuation_factors
 - idx_valuations_client, idx_valuations_date, idx_valuations_status, idx_valuations_user
 - idx_valuation_items_valuation, idx_valuation_items_category, idx_valuation_items_subcategory
+- idx_otherprods_user_id, idx_otherprods_purchase_date, idx_otherprods_location
+- idx_otherprods_items_otherprod_id, idx_otherprods_items_sku
 
 ## Frontend Architecture
 
@@ -257,6 +275,7 @@ Complete relational schema with 12 core tables and optimized indexes:
 - **Dynamic Forms**: Category-based product attributes and brand selection
 - **Offer Generation**: Database-driven product descriptions with print optimization
 - **Payment Modalities**: Three types - direct purchase, store credit (+10%), consignment (+20%)
+- **Store Credit System**: Automatic accumulation when paying suppliers with store credit during valuations
 - **Sales System (Phase 3)**: Complete point-of-sale workflow with inventory management
 - **Mixed Payments**: Support for multiple payment methods in single transaction
 - **Inventory Tracking**: Real-time stock management with auto-generated product IDs
@@ -267,12 +286,13 @@ Complete relational schema with 12 core tables and optimized indexes:
 
 ### Business Logic - Valuation System
 Multi-step valuation process:
-1. Client identification (search existing or register new)
+1. Client identification (search existing or register new) - displays available store credit
 2. Product registration with dynamic attributes based on category/subcategory
 3. Automatic valuation calculation using business rules with three pricing tiers
 4. Summary generation with modality selection and price editing
 5. Professional offer document generation with company branding
 6. Complete audit trail with timestamps and user tracking
+7. Automatic store credit accumulation when "crédito en tienda" modality is selected
 
 ### Offer Generation System
 **Database-Driven Product Descriptions:**
@@ -343,6 +363,7 @@ Multi-step valuation process:
 - **Mixed Payment Validation**: Tolerance-based comparison for decimal calculations
 - **SQL Parameter Indexing**: Careful management of parameterized query indexes
 - **Inventory ID Generation**: SKU-based automatic ID generation for product tracking
+- **Store Credit Display**: parseFloat conversion to handle database numeric types in frontend
 
 ## Important Implementation Details
 
@@ -368,6 +389,10 @@ Multi-step valuation process:
   - 009: Created sales and sale_items tables
   - 010: Added payment_details table for mixed payments
   - 011: Added consignment payment tracking fields
+  - 012: Added valuation_item_id column to inventario table
+  - 013: Updated roles hierarchy with hierarchy_level column
+  - 014: Created otherprods and otherprods_items tables with automatic SKU generation
+  - 015: Added store_credit column to clients table for tracking accumulated store credit
 - **Feature Definitions**: 102 complete records with offer printing flags (45 marked for offers)
 - **Sales System**: Complete inventory and transaction management with mixed payment support
 - **Consignments System**: Three-state tracking with supplier payment management
@@ -390,9 +415,23 @@ Multi-step valuation process:
 
 #### POS App (apps/pos/src/)
 - **Purpose**: Point-of-sale for physical store operations
-- **Access**: sales, manager, and admin roles
+- **Access**: superadmin, admin, gerente, and vendedor roles
 - **Auth**: Mandatory login with role verification
-- **Status**: Basic structure with authentication implemented
+- **Status**: Fully implemented with 4 functional modules
+
+**Complete Module Implementation:**
+- **Sales Module**: Full sales workflow with client registration, product search, payment processing, and sales history
+- **Inventory Module**: Read-only inventory consultation with detailed product views, including all valuation_items features
+- **Purchases Module**: Complete other products purchase system (cigarettes, candy, etc.) with automatic inventory integration
+- **Consignments Module**: Full consignment management with payment tracking and statistics
+
+**Key Features:**
+- **Multi-tab navigation**: Seamless switching between modules
+- **Shared authentication**: JWT-based authentication across all modules
+- **Real-time statistics**: Dashboard widgets for each module
+- **Advanced filtering**: Date ranges, locations, suppliers, etc.
+- **Detailed modals**: Complete product and transaction information
+- **Responsive design**: Mobile-friendly interface with Entrepeques branding
 
 ### Performance Considerations
 - **Image Optimization**: Planned Astro native image optimization
@@ -408,4 +447,5 @@ Multi-step valuation process:
 - **documentacion/modulo-ventas.md**: Sales system comprehensive documentation
 - **documentacion/modulo-consignaciones.md**: Consignments system detailed documentation
 - **documentacion/errores-comunes.md**: Common errors and solutions reference
+- **documentacion/login-auth.md**: Authentication system implementation guide
 - **DOCUMENTACION_IMPLEMENTACION_APPS.md**: Multi-app architecture implementation details

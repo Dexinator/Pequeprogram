@@ -4,7 +4,7 @@ import LoginContainer from './LoginContainer';
 
 const AuthGuard = ({ children }) => {
   console.log('🛡️ AuthGuard: Componente renderizado');
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
   
   console.log('🛡️ AuthGuard: Estado actual', { 
     isAuthenticated, 
@@ -32,7 +32,7 @@ const AuthGuard = ({ children }) => {
   }
 
   // Verificar si el usuario tiene permisos para usar el POS
-  const allowedRoles = ['admin', 'manager', 'sales'];
+  const allowedRoles = ['superadmin', 'admin', 'gerente', 'vendedor'];
   const hasAccess = allowedRoles.includes(user?.role?.name || '');
   
   if (!hasAccess) {
@@ -45,10 +45,7 @@ const AuthGuard = ({ children }) => {
             No tienes permisos para acceder al sistema de punto de venta.
           </p>
           <button
-            onClick={() => {
-              const { logout } = useAuth();
-              logout();
-            }}
+            onClick={() => logout()}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
           >
             Cerrar Sesión

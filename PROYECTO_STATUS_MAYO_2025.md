@@ -62,6 +62,8 @@
 - **Búsqueda** de clientes existentes
 - **Registro** de nuevos clientes
 - **Validación** de datos obligatorios
+- **Sistema de crédito en tienda** con acumulación automática
+- **Visualización de crédito disponible** al seleccionar cliente
 
 ### 📦 Gestión de Productos
 - **Categorías jerárquicas** (Categoría → Subcategoría)
@@ -144,7 +146,7 @@ Login → JWT Token → localStorage → AuthContext → Rutas Protegidas
 
 ### 2. Nueva Valuación
 ```
-Cliente → Productos → Categorización → Cálculo → Resumen → Finalización
+Cliente (muestra crédito) → Productos → Categorización → Cálculo → Resumen → Finalización → Actualiza crédito
 ```
 
 ### 3. Consulta de Historial
@@ -172,7 +174,8 @@ Filtros → API Request → Paginación → Estadísticas → Acciones
 - **12 tablas** implementadas
 - **Relaciones** completamente funcionales
 - **Índices** optimizados para consultas frecuentes
-- **Migraciones** versionadas
+- **Migraciones** versionadas (15 migrations)
+- **Campo store_credit** en tabla clients para rastreo de crédito
 
 ### API Endpoints
 - **25+ endpoints** implementados

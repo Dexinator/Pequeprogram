@@ -2976,3 +2976,75 @@ docker-compose down -v && docker-compose up -d
 - Logs centralizados facilitan debugging
 
 **Siguiente paso:** Implementar funcionalidades específicas de cada aplicación según prioridades del negocio.
+
+## Sesión: 26 de Junio, 2025
+
+### 118. Agregar campo store_credit a tabla clients
+
+**Acción realizada:** Agregar columna para rastrear crédito de tienda acumulado por cliente.
+
+**Procedimiento:**
+1. Creación de nueva migración SQL:
+   - Archivo: `015-add-client-store-credit.sql`
+   - Añade columna `store_credit NUMERIC(10,2) DEFAULT 0.00`
+   - Incluye índice para consultas optimizadas
+   - Comentario explicativo del propósito
+
+**Cambios en la base de datos:**
+```sql
+ALTER TABLE clients 
+ADD COLUMN IF NOT EXISTS store_credit NUMERIC(10,2) DEFAULT 0.00;
+```
+
+**Razón del cambio:**
+- La app valuador permite pagar a proveedores con crédito de tienda
+- No existía forma de rastrear cuánto crédito tiene acumulado cada cliente
+- Necesario para gestión correcta de pagos y saldos
+
+**Impacto:**
+- Tabla `clients` ahora incluye campo `store_credit`
+- Valor por defecto: 0.00
+
+### 119. Implementación de Crédito en Tienda como Método de Pago en POS
+
+**Acción realizada:** Agregar soporte completo para usar crédito en tienda como método de pago en el módulo de ventas del POS.
+
+**Procedimiento:**
+1. **Backend - Validación de crédito:**
+   - Modificado `sales.service.ts` para obtener crédito disponible al validar cliente
+   - Agregada validación para evitar usar más crédito del disponible
+   - Implementada lógica para descontar crédito usado después de venta exitosa
+   - Soporte para método de pago `credito_tienda` en payment_details
+
+2. **Frontend - Interfaz de usuario:**
+   - Actualizado `ClientService` para incluir `store_credit` en interfaz Client
+   - Modificado `ClientSelection.jsx` para mostrar crédito disponible al buscar/seleccionar cliente
+   - Actualizado `PaymentMethod.jsx` para:
+     - Mostrar crédito disponible en tarjeta verde
+     - Agregar "Crédito en Tienda" como método de pago (solo si hay crédito)
+     - Validar que no se use más crédito del disponible
+     - Auto-convertir a pago mixto si el total excede el crédito
+     - Incluir crédito en opciones de pago mixto
+   - Mejorado resumen de venta para mostrar correctamente "Crédito en Tienda"
+
+**Reglas de negocio implementadas:**
+- Solo clientes registrados pueden usar crédito en tienda
+- El crédito puede combinarse con otros métodos de pago
+- No hay límite mínimo para usar crédito
+- Límite máximo: el crédito disponible del cliente
+- No requiere autorización especial
+- Si el total excede el crédito, se sugiere automáticamente pago mixto
+
+**Cambios técnicos:**
+- Backend valida crédito disponible antes de procesar venta
+- Se descuenta automáticamente el crédito usado tras venta exitosa
+- Frontend muestra advertencias y validaciones en tiempo real
+- Soporte completo para pagos mixtos con crédito
+
+**Impacto:**
+- Los clientes ahora pueden pagar total o parcialmente con su crédito acumulado
+- El sistema previene sobregiros de crédito
+- Trazabilidad completa de uso de crédito en ventas
+- Mejor experiencia de usuario con validaciones claras
+- Índice agregado para búsquedas eficientes de clientes con crédito
+- Listo para integración con sistema de pagos

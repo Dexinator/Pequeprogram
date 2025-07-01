@@ -13,10 +13,10 @@ router.use(protect);
 // Inventory search routes
 router
   .route('/search')
-  .get(authorize(['admin', 'manager', 'sales']), searchInventory);
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), searchInventory);
 
 router
   .route('/available')
-  .get(authorize(['admin', 'manager', 'sales']), getAvailableInventory);
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getAvailableInventory);
 
 export default router;

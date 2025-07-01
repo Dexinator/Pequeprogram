@@ -2,14 +2,16 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import LoginContainer from './LoginContainer';
 
-const AuthGuard = ({ children }) => {
+const AuthGuard = ({ children, allowedRoles = [] }) => {
   console.log('🛡️ AuthGuard: Componente renderizado');
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
   
   console.log('🛡️ AuthGuard: Estado actual', { 
     isAuthenticated, 
     isLoading, 
-    user: user?.username || 'null' 
+    user: user?.username || 'null',
+    userRole: user?.role?.name,
+    allowedRoles
   });
 
   // Mostrar loading mientras se verifica la autenticación
@@ -31,23 +33,21 @@ const AuthGuard = ({ children }) => {
     return <LoginContainer />;
   }
 
-  // Verificar si el usuario tiene permisos de administrador
-  const isAdmin = user?.role?.name === 'admin' || user?.role?.name === 'manager';
+  // Verificar si el usuario tiene permisos permitidos
+  const hasPermission = allowedRoles.length === 0 || 
+    (user?.role?.name && allowedRoles.includes(user.role.name));
   
-  if (!isAdmin) {
-    console.log('🛡️ AuthGuard: Usuario sin permisos de administrador');
+  if (!hasPermission) {
+    console.log('🛡️ AuthGuard: Usuario sin permisos suficientes');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-blue-50">
         <div className="bg-white rounded-lg shadow-xl p-8 max-w-md">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Acceso Denegado</h2>
           <p className="text-gray-600 mb-6">
-            No tienes permisos para acceder al panel de administración.
+            No tienes permisos para acceder a esta sección. Se requiere uno de los siguientes roles: {allowedRoles.join(', ')}.
           </p>
           <button
-            onClick={() => {
-              const { logout } = useAuth();
-              logout();
-            }}
+            onClick={() => logout()}
             className="w-full bg-pink-600 text-white py-2 px-4 rounded-md hover:bg-pink-700 transition-colors"
           >
             Cerrar Sesión

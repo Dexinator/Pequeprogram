@@ -30,84 +30,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   console.log('🚀 AuthProvider: AuthService creado');
 
   // Función para verificar la autenticación
-  const checkAuth = () => {
+  const checkAuth = async () => {
+    console.log('=== Verificando autenticación ===');
+    
     try {
-      console.log('=== Verificando autenticación ===');
-      console.log('Entorno del navegador:', typeof window !== 'undefined');
-      console.log('LocalStorage disponible:', typeof localStorage !== 'undefined');
+      // Solo verificar si estamos en el cliente
+      if (typeof window === 'undefined') {
+        console.log('❌ No estamos en el cliente, saltando verificación');
+        setIsLoading(false);
+        return;
+      }
       
-      console.log('🔍 Llamando a authService.getUser()...');
       const storedUser = authService.getUser();
-      console.log('🔍 Resultado de getUser():', storedUser);
-      
-      console.log('🔍 Llamando a authService.getToken()...');
       const token = authService.getToken();
-      console.log('🔍 Resultado de getToken():', token ? 'Token presente' : 'Token ausente');
-
+      
       console.log('Token encontrado:', !!token);
       console.log('Usuario encontrado:', !!storedUser);
 
       if (token && storedUser) {
         console.log('✅ Usuario autenticado:', storedUser.username);
-        console.log('ID del usuario:', storedUser.id);
-        console.log('🔧 Llamando a setUser()...');
         setUser(storedUser);
-        console.log('🔧 setUser() completado');
       } else {
         console.log('❌ No hay usuario autenticado');
-        if (!token) console.log('  - Falta token');
-        if (!storedUser) console.log('  - Falta información de usuario');
-        console.log('🔧 Llamando a setUser(null)...');
         setUser(null);
-        console.log('🔧 setUser(null) completado');
       }
     } catch (err) {
       console.error('💥 Error al verificar autenticación:', err);
-      if (err instanceof Error) {
-        console.error('💥 Stack trace:', err.stack);
-      }
       setUser(null);
-    } finally {
-      console.log('🏁 Llamando a setIsLoading(false)...');
-      setIsLoading(false);
-      console.log('=== Fin verificación de autenticación ===');
     }
+    
+    // Siempre establecer isLoading en false
+    setIsLoading(false);
+    console.log('=== Fin verificación de autenticación ===');
   };
 
   // Verificar autenticación al montar el componente
   useEffect(() => {
     console.log('🔥 AuthProvider useEffect: Ejecutándose...');
-    checkAuth();
-    console.log('🔥 AuthProvider useEffect: checkAuth() llamado');
+    
+    // Pequeño retraso para asegurar que el DOM esté listo
+    const timeoutId = setTimeout(() => {
+      console.log('🔥 AuthProvider useEffect: Llamando checkAuth después del timeout...');
+      checkAuth();
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 
-  // Verificación adicional para asegurar hidratación completa
-  useEffect(() => {
-    console.log('🔥 AuthProvider useEffect secundario: Verificando estado...');
-    
-    // Si después de 1 segundo seguimos en loading y hay token en localStorage, forzar verificación
-    const timeoutId = setTimeout(() => {
-      console.log('⏰ Timeout: Verificando si necesitamos forzar checkAuth...');
-      console.log('⏰ Estado actual:', { isLoading, user: user?.username, isAuthenticated: !!user });
-      
-      if (isLoading && typeof window !== 'undefined') {
-        const rawToken = localStorage.getItem('entrepeques_auth_token');
-        const rawUser = localStorage.getItem('entrepeques_user');
-        
-        console.log('⏰ LocalStorage check:', { 
-          token: rawToken ? 'PRESENTE' : 'AUSENTE', 
-          user: rawUser ? 'PRESENTE' : 'AUSENTE' 
-        });
-        
-        if (rawToken && rawUser) {
-          console.log('🔄 Forzando nueva verificación de autenticación...');
-          checkAuth();
-        }
-      }
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
-  }, [isLoading, user]);
 
   const login = async (credentials: LoginCredentials) => {
     console.log('🔐 AuthContext.login(): Iniciando proceso de login...');
@@ -181,33 +150,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   
-  console.log('🔗 useAuth: Contexto obtenido:', context ? 'Contexto encontrado' : 'Contexto NO encontrado');
-  if (context) {
-    console.log('🔗 useAuth: Valores del contexto:', {
-      isAuthenticated: context.isAuthenticated,
-      user: context.user?.username || 'null',
-      isLoading: context.isLoading
-    });
-  }
-
-  // Si estamos en un entorno de servidor (SSR) o el contexto no está disponible,
-  // devolvemos un contexto por defecto en lugar de lanzar un error
-  if (context === undefined) {
-    console.log('⚠️ useAuth: Devolviendo valores por defecto - contexto no disponible');
-    // Valores por defecto para el contexto - indicamos que está cargando para evitar
-    // mostrar la pantalla de acceso restringido antes de verificar la autenticación
-    return {
-      user: null,
-      isLoading: true, // Cambiado a true para indicar que está verificando
-      error: null,
-      isAuthenticated: false,
-      login: async () => {
-        console.warn('useAuth se está usando fuera de un AuthProvider');
-      },
-      logout: () => {
-        console.warn('useAuth se está usando fuera de un AuthProvider');
-      }
-    };
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
 
   return context;

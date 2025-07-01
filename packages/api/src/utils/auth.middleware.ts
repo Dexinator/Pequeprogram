@@ -56,6 +56,36 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 }
 
 /**
+ * Jerarquía de roles (menor número = mayor privilegio)
+ */
+const roleHierarchy: { [key: string]: number } = {
+  'superadmin': 1,
+  'admin': 2,
+  'gerente': 3,
+  'manager': 3, // Alias para compatibilidad
+  'valuador': 4,
+  'valuator': 4, // Alias para compatibilidad
+  'vendedor': 5,
+  'sales': 5 // Alias para compatibilidad
+};
+
+/**
+ * Verificar si un rol tiene permisos suficientes basado en la jerarquía
+ */
+function hasHierarchicalPermission(userRole: string, requiredRole: string): boolean {
+  const userLevel = roleHierarchy[userRole.toLowerCase()];
+  const requiredLevel = roleHierarchy[requiredRole.toLowerCase()];
+  
+  // Si alguno de los roles no está definido, denegar acceso
+  if (userLevel === undefined || requiredLevel === undefined) {
+    return false;
+  }
+  
+  // El usuario puede acceder si su nivel es menor o igual al requerido
+  return userLevel <= requiredLevel;
+}
+
+/**
  * Middleware para autorización basada en roles
  */
 export function roleMiddleware(allowedRoles: string[]) {
@@ -70,7 +100,12 @@ export function roleMiddleware(allowedRoles: string[]) {
       }
       
       // Verificar si el rol del usuario está en los roles permitidos
-      if (!allowedRoles.includes(req.user.role)) {
+      // o si tiene un rol superior en la jerarquía
+      const hasPermission = allowedRoles.some(allowedRole => 
+        req.user.role === allowedRole || hasHierarchicalPermission(req.user.role, allowedRole)
+      );
+      
+      if (!hasPermission) {
         return res.status(403).json({
           success: false,
           message: 'Prohibido: No tiene privilegios suficientes'

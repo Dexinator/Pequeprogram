@@ -76,17 +76,21 @@ export function ClienteForm({
   
   // Seleccionar un cliente de los resultados
   const selectClient = (client) => {
+    const storeCredit = client.store_credit ? parseFloat(client.store_credit) : 0;
+    
     setFormData({
       name: client.name,
       phone: client.phone,
       email: client.email || '',
-      identification: client.identification || ''
+      identification: client.identification || '',
+      store_credit: storeCredit
     });
     onChange({
       name: client.name,
       phone: client.phone,
       email: client.email || '',
       identification: client.identification || '',
+      store_credit: storeCredit,
       id: client.id
     });
     setShowResults(false);
@@ -193,6 +197,11 @@ export function ClienteForm({
                         >
                           <div className="font-medium">{client.name}</div>
                           <div className="text-sm text-text-muted">{client.phone}</div>
+                          {client.store_credit && parseFloat(client.store_credit) > 0 && (
+                            <div className="text-sm text-verde-claro font-medium">
+                              Crédito disponible: ${parseFloat(client.store_credit).toFixed(2)}
+                            </div>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -282,6 +291,20 @@ export function ClienteForm({
             />
           </div>
         </div>
+        
+        {/* Mostrar crédito disponible si el cliente ha sido seleccionado */}
+        {formData.store_credit !== undefined && parseFloat(formData.store_credit) > 0 && (
+          <div className="mt-4 p-4 bg-verde-claro/10 border border-verde-claro rounded-md">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-verde-claro" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-verde-claro font-medium">
+                Crédito en tienda disponible: ${parseFloat(formData.store_credit).toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

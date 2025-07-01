@@ -220,6 +220,14 @@ Los pagos mixtos permiten dividir el total de una venta entre múltiples método
 - Tarjeta: $300
 - Total pagos: $800 ✅
 
+### Métodos de Pago Soportados
+
+1. **Efectivo** - Pago en efectivo tradicional
+2. **Tarjeta** - Tarjetas de crédito/débito
+3. **Transferencia** - Transferencias bancarias
+4. **Crédito en Tienda** - Uso del crédito acumulado del cliente
+5. **Mixto** - Combinación de cualquiera de los anteriores
+
 ### Implementación
 
 **Base de Datos:**
@@ -235,6 +243,44 @@ Los pagos mixtos permiten dividir el total de una venta entre múltiples método
 - Validación que suma = total_amount
 - Transacciones atómicas
 - Compatibilidad hacia atrás con pagos simples
+- Validación de crédito disponible para método `credito_tienda`
+- Actualización automática del saldo de crédito después de venta
+
+## Sistema de Crédito en Tienda
+
+### Concepto
+
+El crédito en tienda permite a los clientes acumular saldo a favor que pueden usar en futuras compras. Este crédito se genera principalmente cuando un proveedor elige recibir su pago en crédito de tienda durante el proceso de valuación.
+
+### Implementación
+
+**Base de Datos:**
+- Campo `store_credit` en tabla `clients` (NUMERIC 10,2)
+- Índice para búsquedas eficientes de clientes con crédito
+- Valor por defecto: 0.00
+
+**Reglas de Negocio:**
+- Solo clientes registrados pueden usar crédito
+- No hay límite mínimo para usar crédito
+- Límite máximo: el crédito disponible del cliente
+- El crédito puede combinarse con otros métodos de pago
+- No requiere autorización especial para su uso
+
+**Proceso de Uso:**
+1. Al seleccionar un cliente registrado, se muestra su crédito disponible
+2. Si tiene crédito, aparece "Crédito en Tienda" como opción de pago
+3. Si el total excede el crédito, se sugiere automáticamente pago mixto
+4. Al confirmar la venta, se descuenta el crédito usado del saldo del cliente
+
+**Validaciones:**
+- Frontend: Previene usar más crédito del disponible
+- Backend: Doble validación antes de procesar la venta
+- Transacción atómica: Si falla algo, no se descuenta el crédito
+
+**Visualización:**
+- Crédito disponible se muestra en verde en la selección de cliente
+- Tarjeta dedicada muestra el crédito al seleccionar método de pago
+- Advertencia clara si no hay cliente registrado seleccionado
 
 ## Manejo de Inventario
 
