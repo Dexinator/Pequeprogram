@@ -511,6 +511,22 @@ export class ValuationService extends BaseService<Valuation> {
         valuation.id
       ]);
       
+      // 5. Si hay crédito en tienda, actualizar el saldo del cliente
+      if (totals.total_store_credit && parseFloat(totals.total_store_credit) > 0) {
+        const updateClientCreditQuery = `
+          UPDATE clients 
+          SET store_credit = COALESCE(store_credit, 0) + $1
+          WHERE id = $2
+        `;
+        
+        await dbClient.query(updateClientCreditQuery, [
+          parseFloat(totals.total_store_credit),
+          clientId
+        ]);
+        
+        console.log(`Actualizado crédito del cliente ${clientId}: +${totals.total_store_credit}`);
+      }
+      
       // Confirmar transacción
       await dbClient.query('COMMIT');
       
@@ -710,6 +726,7 @@ export class ValuationService extends BaseService<Valuation> {
           c.phone as client_phone,
           c.email as client_email,
           c.identification as client_identification,
+          c.store_credit as client_store_credit,
           COALESCE(item_count.total_items, 0) as items_count
         FROM valuations v
         JOIN clients c ON v.client_id = c.id
@@ -789,7 +806,8 @@ export class ValuationService extends BaseService<Valuation> {
           name: row.client_name,
           phone: row.client_phone,
           email: row.client_email,
-          identification: row.client_identification
+          identification: row.client_identification,
+          store_credit: row.client_store_credit ? parseFloat(row.client_store_credit) : 0
         },
         items: [], // Los items se cargan individualmente si se necesitan
         items_count: parseInt(row.items_count)

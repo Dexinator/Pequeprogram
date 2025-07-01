@@ -177,3 +177,15 @@ export const getAvailableInventory = asyncHandler(async (req: Request, res: Resp
     }
   });
 });
+
+// @desc    Get sales statistics
+// @route   GET /api/sales/stats
+// @access  Private
+export const getSalesStats = asyncHandler(async (req: Request, res: Response) => {
+  const stats = await salesService.getSalesStats();
+  
+  res.json({
+    success: true,
+    data: stats
+  });
+});

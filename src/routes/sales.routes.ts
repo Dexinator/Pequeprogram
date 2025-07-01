@@ -4,6 +4,7 @@ import {
   createSale,
   getSales,
   getSale,
+  getSalesStats,
   searchInventory,
   getAvailableInventory
 } from '../controllers/sales.controller';
@@ -16,12 +17,16 @@ router.use(protect);
 // Sales routes
 router
   .route('/')
-  .post(authorize(['admin', 'manager', 'sales']), createSale)
-  .get(authorize(['admin', 'manager', 'sales']), getSales);
+  .post(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), createSale)
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getSales);
+
+router
+  .route('/stats')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getSalesStats);
 
 router
   .route('/:id')
-  .get(authorize(['admin', 'manager', 'sales']), getSale);
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getSale);
 
 // Inventory search routes (separate from sales routes)
 // These will be available at /api/sales/inventory/search and /api/sales/inventory/available
