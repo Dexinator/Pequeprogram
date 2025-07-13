@@ -11,6 +11,7 @@ import inventoryRoutes from './inventory.routes';
 import consignmentRoutes from './consignment.routes';
 import clientRoutes from './client.routes';
 import otherprodsRoutes from './otherprods.routes';
+import clothingRoutes from './clothing.routes';
 
 const router = Router();
 
@@ -49,5 +50,8 @@ router.use('/clients', clientRoutes);
 
 // Rutas de otros productos (compras)
 router.use('/otherprods', otherprodsRoutes);
+
+// Rutas de valuación de ropa
+router.use('/clothing', clothingRoutes);
 
 export default router;
