@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ImageUploader } from './ImageUploader';
 import { ValuationService } from '../services';
+import ClothingProductForm from './ClothingProductForm';
+import { clothingService } from '../services/clothing.service';
 
 export function ProductoForm({ 
   id = "producto-form", 
@@ -10,6 +12,7 @@ export function ProductoForm({
   onRemove,
   onChange = () => {} 
 }) {
+  console.log('ProductoForm initialData:', initialData);
   // Crear un ID estable que no dependa del tiempo ni cambie entre servidor y cliente
   const productoId = `producto-${index}`;
   
@@ -50,6 +53,10 @@ export function ProductoForm({
   const [calculationResult, setCalculationResult] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   
+  // Estado para detectar si es ropa
+  const [isClothingCategory, setIsClothingCategory] = useState(false);
+  const [clothingCategoryGroup, setClothingCategoryGroup] = useState(null);
+  
   // Servicio de valuación
   const valuationService = new ValuationService();
 
@@ -69,8 +76,27 @@ export function ProductoForm({
         new_price: initialData.new_price || "",
         quantity: initialData.quantity || 1,
         features: initialData.features || {},
-        notes: initialData.notes || ""
+        notes: initialData.notes || "",
+        // Preservar datos del formulario de ropa si existen
+        clothingFormData: initialData.clothingFormData || null,
+        isClothing: initialData.isClothing || false,
+        suggested_purchase_price: initialData.suggested_purchase_price || null,
+        suggested_sale_price: initialData.suggested_sale_price || null,
+        store_credit_price: initialData.store_credit_price || null,
+        consignment_price: initialData.consignment_price || null
       });
+      
+      // Si es ropa y tiene datos calculados, restaurar el resultado del cálculo
+      if (initialData.isClothing && initialData.suggested_purchase_price) {
+        setCalculationResult({
+          purchase_score: 0,
+          sale_score: 0,
+          suggested_purchase_price: initialData.suggested_purchase_price,
+          suggested_sale_price: initialData.suggested_sale_price,
+          store_credit_price: initialData.store_credit_price,
+          consignment_price: initialData.consignment_price
+        });
+      }
     }
   }, [initialData]);
   
@@ -164,8 +190,22 @@ export function ProductoForm({
       }
     };
     
+    // Verificar si es categoría de ropa
+    const checkIfClothing = async () => {
+      try {
+        const response = await clothingService.checkIfClothingCategory(Number(formData.subcategory_id));
+        setIsClothingCategory(response.isClothing);
+        setClothingCategoryGroup(response.categoryGroup);
+      } catch (error) {
+        console.error('Error checking if clothing category:', error);
+        setIsClothingCategory(false);
+        setClothingCategoryGroup(null);
+      }
+    };
+    
     fetchBrands();
     fetchFeatureDefinitions();
+    checkIfClothing();
   }, [formData.subcategory_id]);
   
   // Manejar cambios en los campos del formulario
@@ -308,6 +348,49 @@ export function ProductoForm({
     }
   };
   
+  // Manejar envío del formulario de ropa
+  const handleClothingSubmit = (clothingData) => {
+    // Actualizar formData con los datos de ropa
+    const updatedFormData = {
+      ...formData,
+      status: clothingData.status,
+      brand_id: '', // En ropa no usamos brand_id, la marca va en features
+      brand_renown: 'Normal', // Valor por defecto
+      condition_state: clothingData.conditionState,
+      demand: clothingData.demand,
+      cleanliness: clothingData.cleanliness,
+      new_price: clothingData.new_price,
+      quantity: clothingData.quantity,
+      features: clothingData.features,
+      notes: clothingData.notes,
+      // Agregar campos calculados
+      isClothing: true,
+      suggested_purchase_price: clothingData.suggestedPurchasePrice,
+      suggested_sale_price: clothingData.suggestedSalePrice,
+      store_credit_price: clothingData.storeCreditPrice,
+      consignment_price: clothingData.consignmentPrice,
+      // Mantener nombres para mostrar en el resumen
+      categoryName: categories.find(c => c.id === Number(formData.category_id))?.name || '',
+      subcategoryName: subcategories.find(s => s.id === Number(formData.subcategory_id))?.name || '',
+      brandName: clothingData.features?.marca || 'Sin marca',
+      // Guardar datos del formulario de ropa para re-hidratación
+      clothingFormData: clothingData.clothingFormData
+    };
+    
+    setFormData(updatedFormData);
+    setCalculationResult({
+      purchase_score: 0, // No aplica para ropa
+      sale_score: 0, // No aplica para ropa
+      suggested_purchase_price: clothingData.suggestedPurchasePrice,
+      suggested_sale_price: clothingData.suggestedSalePrice,
+      store_credit_price: clothingData.storeCreditPrice,
+      consignment_price: clothingData.consignmentPrice
+    });
+    
+    // Notificar al componente padre
+    onChange(updatedFormData);
+  };
+  
   // Renderizar campos de características específicas
   const renderFeatureFields = () => {
     if (isLoadingFeatures) {
@@ -368,6 +451,29 @@ export function ProductoForm({
     );
   };
   
+  // Si es categoría de ropa y ya se seleccionó subcategoría, mostrar formulario especial
+  if (isClothingCategory && formData.subcategory_id && clothingCategoryGroup) {
+    const selectedSubcategory = subcategories.find(s => s.id === Number(formData.subcategory_id));
+    
+    return (
+      <div className={`producto-form ${className}`} data-index={index}>
+        <ClothingProductForm
+          subcategoryId={Number(formData.subcategory_id)}
+          categoryGroup={clothingCategoryGroup}
+          subcategoryName={selectedSubcategory?.name || ''}
+          initialData={formData.clothingFormData || {}}
+          onSubmit={handleClothingSubmit}
+          onCancel={() => {
+            // Resetear subcategoría para volver al formulario normal
+            setFormData(prev => ({ ...prev, subcategory_id: '' }));
+            setIsClothingCategory(false);
+            setClothingCategoryGroup(null);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`producto-form ${className}`} data-index={index}>
       <div className="bg-background-alt p-6 rounded-lg shadow-sm border border-border mb-6">

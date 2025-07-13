@@ -171,6 +171,12 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - `GET /api/otherprods/:id` - Get specific purchase details with items
 - `GET /api/otherprods/stats` - Get purchase statistics and top products
 
+**Clothing System (Phase 4):**
+- `GET /api/clothing/check-category/:subcategoryId` - Check if subcategory is clothing
+- `GET /api/clothing/garment-types/:categoryGroup` - Get available garment types
+- `GET /api/clothing/sizes/:categoryGroup` - Get size options for category group
+- `POST /api/clothing/calculate` - Calculate clothing valuation with fixed prices
+
 **Enhanced Features:**
 - All valuation endpoints return `store_credit_price` calculations
 - Offer endpoints filter features using `offer_print = TRUE`
@@ -181,6 +187,7 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - Supplier payment management with detailed tracking and notes
 - Other products purchase system with automatic SKU generation (OTRP1, OTRP2...)
 - Seamless integration between purchases and inventory for immediate availability in sales
+- Clothing system with predefined prices and specialized forms
 
 ### Database Schema (PostgreSQL 16)
 Complete relational schema with 14 core tables and optimized indexes:
@@ -230,6 +237,13 @@ Complete relational schema with 14 core tables and optimized indexes:
 - **otherprods_items**: Individual items within each purchase (id, otherprod_id, product_name, quantity, purchase_unit_price, sale_unit_price, total_purchase_price, sku, created_at, updated_at)
 - **SKU Generation**: Automatic generation with format OTRP{number} (OTRP1, OTRP2, etc.) using database sequence and trigger
 - **Inventory Integration**: Products automatically added to inventario table for immediate availability in sales system
+
+**Clothing Valuation System (Phase 4):**
+- **clothing_valuation_prices**: Fixed purchase prices for clothing items (id, category_group, garment_type, quality_level, purchase_price, is_active)
+- **clothing_sizes**: Size definitions per category group (id, category_group, size_value, display_order)
+- **subcategories.is_clothing**: Boolean flag to identify clothing categories
+- **Predefined Prices**: 291 price combinations covering all garment types and quality levels
+- **Size Groups**: Different size scales for general clothing, footwear, and maternity
 
 **Key Relationships:**
 - users.role_id → roles.id
@@ -288,11 +302,26 @@ Complete relational schema with 14 core tables and optimized indexes:
 Multi-step valuation process:
 1. Client identification (search existing or register new) - displays available store credit
 2. Product registration with dynamic attributes based on category/subcategory
+   - **Special handling for clothing**: Automatically detects clothing categories and shows specialized form
 3. Automatic valuation calculation using business rules with three pricing tiers
+   - **Clothing uses fixed prices**: Based on garment type and quality level from `clothing_valuation_prices` table
 4. Summary generation with modality selection and price editing
 5. Professional offer document generation with company branding
 6. Complete audit trail with timestamps and user tracking
 7. Automatic store credit accumulation when "crédito en tienda" modality is selected
+
+### Clothing Valuation System (Special Methodology)
+**Database-Driven Fixed Pricing:**
+- Uses `clothing_valuation_prices` table with predefined purchase prices
+- Prices based on: garment type (e.g., Abrigo, Playera) × quality level (económico, estándar, alto, premium)
+- 5 clothing category groups: cuerpo_completo, arriba_cintura, abajo_cintura, calzado, dama_maternidad
+- Sale prices still calculated dynamically using condition and demand factors
+
+**Clothing-Specific Features:**
+- `ClothingProductForm.jsx`: Specialized form with garment types, quality levels, sizes
+- Automatic price lookup from database instead of manual price entry
+- Size tables specific to clothing type (general sizes vs shoe sizes)
+- Preserves all data when switching between summary and edit modes
 
 ### Offer Generation System
 **Database-Driven Product Descriptions:**

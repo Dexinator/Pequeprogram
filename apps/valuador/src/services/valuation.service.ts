@@ -75,15 +75,6 @@ export class ValuationService {
     return this.http.post<ValuationCalculationResult>(`${this.baseEndpoint}/calculate`, data);
   }
 
-  // Agregar un item a una valuación
-  async addValuationItem(valuationId: number, data: AddValuationItemDto): Promise<ValuationItem> {
-    return this.http.post<ValuationItem>(`${this.baseEndpoint}/${valuationId}/items`, data);
-  }
-
-  // Finalizar una valuación (completar o cancelar)
-  async finalizeValuation(id: number, data: FinalizeValuationDto): Promise<Valuation> {
-    return this.http.put<Valuation>(`${this.baseEndpoint}/${id}/finalize`, data);
-  }
 
   // Listar valuaciones con filtros y paginación
   async getValuations(params: ValuationQueryParams = {}): Promise<{ valuations: Valuation[], total: number }> {

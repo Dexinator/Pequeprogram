@@ -523,33 +523,77 @@ function NuevaValuacionContent() {
     setIsAddingItems(true);
 
     try {
-      // Preparar datos de productos para cálculo
-      const productsForCalculation = validProducts.map(product => ({
-        category_id: Number(product.data.category_id),
-        subcategory_id: Number(product.data.subcategory_id),
-        brand_id: product.data.brand_id ? Number(product.data.brand_id) : null,
-        status: product.data.status,
-        brand_renown: product.data.brand_renown || 'Normal',
-        modality: product.data.modality || 'compra directa',
-        condition_state: product.data.condition_state || 'bueno',
-        demand: product.data.demand || 'media',
-        cleanliness: product.data.cleanliness || 'buena',
-        new_price: Number(product.data.new_price),
-        quantity: Number(product.data.quantity) || 1,
-        features: product.data.features || {},
-        notes: product.data.notes || '',
-        images: product.data.images || [],
-        // Mantener nombres del formulario para compatibilidad
-        categoryName: product.data.categoryName,
-        subcategoryName: product.data.subcategoryName,
-        brandName: product.data.brandName
-      }));
+      // Separar productos de ropa de productos regulares
+      const clothingProducts = validProducts.filter(p => p.data.isClothing === true);
+      const regularProducts = validProducts.filter(p => p.data.isClothing !== true);
 
-      console.log('Calculando precios para productos:', productsForCalculation);
+      let calculatedProducts = [];
 
-      // Usar el nuevo endpoint calculateBatch en lugar de insertar en DB
-      const calculatedProducts = await valuationService.calculateBatch(productsForCalculation);
-      console.log('Productos calculados:', calculatedProducts);
+      // Procesar productos regulares con el endpoint de cálculo batch
+      if (regularProducts.length > 0) {
+        const productsForCalculation = regularProducts.map(product => ({
+          category_id: Number(product.data.category_id),
+          subcategory_id: Number(product.data.subcategory_id),
+          brand_id: product.data.brand_id ? Number(product.data.brand_id) : null,
+          status: product.data.status,
+          brand_renown: product.data.brand_renown || 'Normal',
+          modality: product.data.modality || 'compra directa',
+          condition_state: product.data.condition_state || 'bueno',
+          demand: product.data.demand || 'media',
+          cleanliness: product.data.cleanliness || 'buena',
+          new_price: Number(product.data.new_price),
+          quantity: Number(product.data.quantity) || 1,
+          features: product.data.features || {},
+          notes: product.data.notes || '',
+          images: product.data.images || [],
+          // Mantener nombres del formulario para compatibilidad
+          categoryName: product.data.categoryName,
+          subcategoryName: product.data.subcategoryName,
+          brandName: product.data.brandName
+        }));
+
+        console.log('Calculando precios para productos regulares:', productsForCalculation);
+        const batchCalculated = await valuationService.calculateBatch(productsForCalculation);
+        calculatedProducts.push(...batchCalculated);
+      }
+
+      // Procesar productos de ropa (ya tienen precios calculados)
+      if (clothingProducts.length > 0) {
+        const clothingCalculated = clothingProducts.map((product, index) => ({
+          // Generar un ID temporal único para el producto
+          id: `clothing-${Date.now()}-${index}`,
+          category_id: Number(product.data.category_id),
+          subcategory_id: Number(product.data.subcategory_id),
+          brand_id: null, // Ropa no usa brand_id
+          status: product.data.status,
+          brand_renown: 'Normal',
+          modality: product.data.modality || 'compra directa',
+          condition_state: product.data.condition_state,
+          demand: product.data.demand,
+          cleanliness: product.data.cleanliness,
+          new_price: Number(product.data.new_price),
+          quantity: Number(product.data.quantity) || 1,
+          features: product.data.features || {},
+          notes: product.data.notes || '',
+          images: product.data.images || [],
+          // Usar los precios ya calculados del formulario de ropa
+          suggested_purchase_price: product.data.suggested_purchase_price,
+          suggested_sale_price: product.data.suggested_sale_price,
+          store_credit_price: product.data.store_credit_price,
+          consignment_price: product.data.consignment_price,
+          // Mantener nombres del formulario
+          categoryName: product.data.categoryName,
+          subcategoryName: product.data.subcategoryName,
+          brandName: product.data.features?.marca || 'Sin marca',
+          // Marcar como producto de ropa
+          isClothing: true
+        }));
+
+        console.log('Productos de ropa con precios pre-calculados:', clothingCalculated);
+        calculatedProducts.push(...clothingCalculated);
+      }
+
+      console.log('Todos los productos calculados:', calculatedProducts);
 
       // Calcular totales (multiplicar por cantidad)
       const totalPurchase = calculatedProducts.reduce((sum, item) => {
@@ -717,6 +761,32 @@ function NuevaValuacionContent() {
           const editedPrice = editedPrices[product.id];
           const editedModality = editedModalities[product.id];
           
+          // Para productos de ropa, asegurar que se incluyan los precios calculados
+          if (product.isClothing) {
+            return {
+              category_id: product.category_id,
+              subcategory_id: product.subcategory_id,
+              brand_id: null, // Ropa no usa brand_id
+              status: product.status,
+              brand_renown: product.brand_renown,
+              modality: editedModality || product.modality,
+              condition_state: product.condition_state,
+              demand: product.demand,
+              cleanliness: product.cleanliness,
+              new_price: product.new_price,
+              quantity: product.quantity || 1,
+              features: product.features || {},
+              notes: product.notes || '',
+              images: product.images || [],
+              // Usar precios editados si existen, sino usar los pre-calculados
+              final_purchase_price: editedPrice?.purchase || product.suggested_purchase_price,
+              final_sale_price: editedPrice?.sale || product.suggested_sale_price,
+              // Marcar como producto de ropa
+              isClothing: true
+            };
+          }
+          
+          // Para productos regulares
           return {
             category_id: product.category_id,
             subcategory_id: product.subcategory_id,

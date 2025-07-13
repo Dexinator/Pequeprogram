@@ -124,6 +124,28 @@ Para implementar esta lógica, se requieren las siguientes tablas:
 - **Consignación**: Sin pago inmediato, porcentaje mayor al vender (20% más que compra directa)
 - Siempre calcular los tres valores, aunque el cliente elija solo una modalidad
 
+### 5.6 Metodología Especial para Ropa
+- **Sistema de Precios Fijos**: La ropa utiliza precios predefinidos basados en tipo de prenda y calidad
+- **No requiere precio nuevo**: El sistema consulta automáticamente la tabla `clothing_valuation_prices`
+- **Categorías de Ropa**: 5 grupos principales
+  - Cuerpo completo: Abrigos, vestidos, conjuntos, pijamas
+  - Arriba de cintura: Playeras, camisas, chamarras, sudaderas
+  - Abajo de cintura: Pantalones, shorts, faldas, leggins
+  - Calzado: Tennis, zapatos, botas, sandalias
+  - Dama/Maternidad: Ropa de maternidad y accesorios
+
+**Niveles de Calidad:**
+- Económico: Marcas básicas o genéricas
+- Estándar: Marcas comerciales conocidas
+- Alto: Marcas premium o de diseñador
+- Premium: Marcas de lujo o alta gama
+
+**Cálculo de Precios para Ropa:**
+- Precio de compra: Fijo según tabla (tipo × calidad)
+- Precio de venta: Se calcula con la fórmula estándar usando un precio nuevo estimado
+- Crédito en tienda: Precio de compra × 1.1
+- Consignación: Precio de compra × 1.2
+
 ### 5.3 Generación de Ofertas de Compra
 - **Documento de Oferta**: Se genera automáticamente para productos con modalidad "Compra Directa" y "Crédito en Tienda"
 - **Impresión Optimizada**: Documento con formato profesional incluyendo:
@@ -237,9 +259,47 @@ valuation_items
 5. Devolver resultado al frontend
 6. Almacenar valuación completa cuando se finalice
 
-## 8. Proceso de Generación de Ofertas de Compra
+## 8. Sistema de Valuación de Ropa
 
-### 8.1 Flujo de Impresión de Ofertas
+### 8.1 Flujo Específico para Ropa
+
+1. **Detección Automática**:
+   - Sistema detecta cuando se selecciona una subcategoría de ropa (is_clothing = true)
+   - Muestra automáticamente el formulario especializado ClothingProductForm
+
+2. **Captura de Información**:
+   - Tipo de prenda (desde lista predefinida por categoría)
+   - Nivel de calidad (económico, estándar, alto, premium)
+   - Marca (campo de texto libre)
+   - Talla (desde lista específica por tipo: general, calzado, maternidad)
+   - Color
+   - Estado, condición, demanda y limpieza (igual que otros productos)
+
+3. **Cálculo de Precios**:
+   - Precio de compra: Búsqueda directa en tabla clothing_valuation_prices
+   - No requiere ingresar precio nuevo manualmente
+   - Precio de venta: Calculado con fórmula estándar usando precio estimado
+
+### 8.2 Ejemplo de Precios de Ropa
+
+| Tipo de Prenda | Económico | Estándar | Alto | Premium |
+|----------------|-----------|----------|------|---------|
+| Abrigo | $40 | $70 | $130 | $170 |
+| Playera M/corta | $15 | $20 | $40 | $60 |
+| Pantalón Mezclilla | $30 | $40 | $70 | $130 |
+| Tennis | $35 | $50 | $100 | $130 |
+| Vestido de fiesta | $40 | $60 | $120 | $150 |
+
+### 8.3 Ventajas del Sistema de Ropa
+
+- **Rapidez**: Valuación 80% más rápida que el método tradicional
+- **Consistencia**: Precios estandarizados evitan variaciones
+- **Simplicidad**: No requiere investigación de precios en internet
+- **Flexibilidad**: Precios de venta siguen respondiendo a condición y demanda
+
+## 9. Proceso de Generación de Ofertas de Compra
+
+### 9.1 Flujo de Impresión de Ofertas
 
 1. **Desde Nueva Valuación**:
    - Una vez completado el resumen de productos
@@ -256,7 +316,7 @@ valuation_items
    - Se muestra modal con documento de oferta
    - Usuario puede imprimir desde modal
 
-### 8.2 Lógica de Descripción de Productos
+### 9.2 Lógica de Descripción de Productos
 
 La descripción de productos en las ofertas se genera siguiendo esta prioridad:
 
@@ -271,7 +331,7 @@ Ejemplo de descripción generada:
 - "Autoasiento - Portabebé 0-13 kg, Ajustable alturas - Chicco - Estado Excelente"
 - "Cuna Estándar - Incluye colchón - Buen Estado"
 
-### 8.3 Configuración de Características para Ofertas
+### 9.3 Configuración de Características para Ofertas
 
 En la tabla `feature_definitions`, el campo `offer_print` determina qué características aparecen en las ofertas:
 
@@ -284,7 +344,7 @@ Características comunes con `offer_print = TRUE`:
 - **tipo**: Variante del producto
 - **incluye_colchon**: Si incluye accesorios importantes
 
-### 8.4 Estructura del Documento de Oferta
+### 9.4 Estructura del Documento de Oferta
 
 1. **Encabezado Empresarial**:
    - Logo y nombre "Entrepeques"

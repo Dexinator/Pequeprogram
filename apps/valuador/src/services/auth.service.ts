@@ -209,3 +209,6 @@ export class AuthService {
     return this.http.getBaseUrl();
   }
 }
+
+// Exportar instancia singleton
+export const authService = new AuthService();
