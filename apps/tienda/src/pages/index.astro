@@ -1,51 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import StoreApp from '../components/StoreApp.jsx';
-import '../styles/global.css';
 ---
 
 <Layout title="Inicio">
-  <!-- Header con navegación -->
-  <header class="bg-white shadow-sm sticky top-0 z-40">
-    <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between h-16">
-        <!-- Logo -->
-        <a href="/" class="flex items-center space-x-2">
-          <span class="text-2xl font-bold text-pink-600">Entrepeques</span>
-        </a>
-
-        <!-- Navegación central -->
-        <nav class="hidden md:flex items-center space-x-8">
-          <a href="/" class="text-gray-700 hover:text-pink-600 transition-colors">Inicio</a>
-          <a href="/productos" class="text-gray-700 hover:text-pink-600 transition-colors">Productos</a>
-          <a href="/categorias" class="text-gray-700 hover:text-pink-600 transition-colors">Categorías</a>
-          <a href="/ofertas" class="text-gray-700 hover:text-pink-600 transition-colors">Ofertas</a>
-          <a href="/contacto" class="text-gray-700 hover:text-pink-600 transition-colors">Contacto</a>
-        </nav>
-
-        <!-- Acciones de usuario -->
-        <div class="flex items-center space-x-4">
-          <!-- Búsqueda -->
-          <button class="text-gray-600 hover:text-pink-600 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </button>
-
-          <!-- Carrito -->
-          <a href="/carrito" class="relative text-gray-600 hover:text-pink-600 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            <span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-          </a>
-
-          <!-- Usuario - React Component -->
-          <StoreApp client:load />
-        </div>
-      </div>
-    </div>
-  </header>
 
   <!-- Hero Section -->
   <section class="bg-gradient-to-r from-pink-50 to-blue-50 py-16">

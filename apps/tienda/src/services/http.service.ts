@@ -49,9 +49,36 @@ export class HttpService {
     this.headers = newHeaders;
     console.log('✅ Token limpiado de headers HTTP');
   }
+  
+  // Manejar errores de autenticación
+  private handleUnauthorized() {
+    console.log('🚫 Error 401: No autorizado - manejando...');
+    
+    // Limpiar token inválido
+    this.clearAuthToken();
+    
+    // Limpiar localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('entrepeques_auth_token');
+      localStorage.removeItem('entrepeques_user');
+      
+      // Solo redirigir si no estamos ya en la página de login
+      if (!window.location.pathname.includes('/login')) {
+        // Guardar la URL actual para volver después del login
+        const currentUrl = window.location.pathname + window.location.search;
+        console.log('🔄 Redirigiendo a login, URL de retorno:', currentUrl);
+        window.location.href = `/login?return=${encodeURIComponent(currentUrl)}`;
+      }
+    }
+  }
 
   // Obtener la URL base
   getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
+  // Getter para compatibilidad
+  get baseURL(): string {
     return this.baseUrl;
   }
 
@@ -123,6 +150,12 @@ export class HttpService {
       // @ts-ignore - Agregar propiedades personalizadas
       error.status = response.status;
       error.statusText = response.statusText;
+      
+      // Si es un error 401, redirigir a login
+      if (response.status === 401) {
+        this.handleUnauthorized();
+      }
+      
       throw error;
     }
 
@@ -183,6 +216,12 @@ export class HttpService {
         // @ts-ignore - Agregar propiedades personalizadas
         error.status = response.status;
         error.statusText = response.statusText;
+        
+        // Si es un error 401, redirigir a login
+        if (response.status === 401) {
+          this.handleUnauthorized();
+        }
+        
         throw error;
       }
 
@@ -210,6 +249,10 @@ export class HttpService {
     });
 
     if (!response.ok) {
+      // Si es un error 401, redirigir a login
+      if (response.status === 401) {
+        this.handleUnauthorized();
+      }
       throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
     }
 

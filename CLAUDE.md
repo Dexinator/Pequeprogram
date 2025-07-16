@@ -52,6 +52,9 @@ npm run migrate
 
 # Check TypeScript types (no emit)
 npx tsc --noEmit
+
+# Install dependencies after adding to package.json
+docker exec entrepeques-api-dev npm install
 ```
 
 ### Frontend Development (apps/valuador)
@@ -123,13 +126,18 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 ## API Architecture (packages/api/src/)
 
 ### Core Structure
-- **controllers/**: REST endpoint handlers (auth, brands, categories, products, valuations)
-- **services/**: Business logic layer with database operations
+- **controllers/**: REST endpoint handlers (auth, brands, categories, products, valuations, store)
+- **services/**: Business logic layer with database operations (including S3 service for image uploads)
 - **routes/**: Express route definitions with middleware
 - **models/**: TypeScript interfaces and data models
 - **migrations/**: SQL schema migration files (run with `npm run migrate`)
-- **utils/**: JWT utilities and authentication middleware
+- **utils/**: JWT utilities, authentication middleware, and upload middleware (multer)
 - **config.ts**: Environment configuration and database connection
+
+### Key Services
+- **s3.service.ts**: AWS S3 integration for image uploads with Sharp optimization
+- **store.service.ts**: Online store product preparation and management
+- **upload.middleware.ts**: Multer configuration for handling multipart form data
 
 ### Authentication System (JWT-based)
 - **Registration**: `POST /api/auth/register` with role assignment
@@ -176,6 +184,14 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - `GET /api/clothing/garment-types/:categoryGroup` - Get available garment types
 - `GET /api/clothing/sizes/:categoryGroup` - Get size options for category group
 - `POST /api/clothing/calculate` - Calculate clothing valuation with fixed prices
+
+**Online Store Management (Phase 4):**
+- `GET /api/store/products/pending` - Get products pending online preparation
+- `GET /api/store/products/ready` - Get products ready for online store (public)
+- `GET /api/store/products/:id/prepare` - Get product details for preparation
+- `PUT /api/store/products/:id/prepare` - Mark product as ready for online store
+- `GET /api/store/stats` - Get online store statistics
+- `POST /api/store/upload-images` - Upload product images to AWS S3
 
 **Enhanced Features:**
 - All valuation endpoints return `store_credit_price` calculations
@@ -297,6 +313,8 @@ Complete relational schema with 14 core tables and optimized indexes:
 - **Consignments Management (Phase 3)**: Complete consignment tracking system with three-state workflow (available → sold_unpaid → sold_paid)
 - **Supplier Payment Tracking**: Detailed payment management for consignment suppliers
 - **Responsive Design**: Corporate theme with Entrepeques color palette
+- **Image Upload System (Phase 4)**: AWS S3 integration for product images with automatic optimization
+- **Online Store Preparation**: Workflow for preparing products for e-commerce with weight and pricing
 
 ### Business Logic - Valuation System
 Multi-step valuation process:
@@ -401,6 +419,11 @@ Multi-step valuation process:
 - JWT secrets and CORS origins configurable
 - Frontend API URL via `PUBLIC_API_URL`
 - Database connection string: `postgresql://user:password@db:5432/entrepeques_dev`
+- AWS S3 configuration:
+  - `AWS_ACCESS_KEY_ID`: AWS access key for S3
+  - `AWS_SECRET_ACCESS_KEY`: AWS secret key
+  - `AWS_REGION`: AWS region (default: us-east-2)
+  - `S3_BUCKET_NAME`: S3 bucket name (default: pequetienda)
 
 ### Deployment Strategy
 - **Development**: Docker Compose for local development
@@ -422,6 +445,9 @@ Multi-step valuation process:
   - 013: Updated roles hierarchy with hierarchy_level column
   - 014: Created otherprods and otherprods_items tables with automatic SKU generation
   - 015: Added store_credit column to clients table for tracking accumulated store credit
+  - 016: Added clothing_valuation_prices table for fixed pricing system
+  - 017: Fixed UTF-8 encoding issues in database
+  - 018: Added online store fields to valuation_items (weight_grams, online_price, online_prepared_by, online_prepared_at)
 - **Feature Definitions**: 102 complete records with offer printing flags (45 marked for offers)
 - **Sales System**: Complete inventory and transaction management with mixed payment support
 - **Consignments System**: Three-state tracking with supplier payment management

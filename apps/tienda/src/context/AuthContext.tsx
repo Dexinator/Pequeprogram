@@ -11,6 +11,7 @@ interface AuthContextType {
   logout: () => void;
   isEmployee: boolean;
   isCustomer: boolean;
+  hasRole: (roles: string[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,8 +81,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Verificar autenticación al montar el componente
   useEffect(() => {
     console.log('🔥 AuthProvider useEffect: Ejecutándose...');
-    checkAuth();
-    console.log('🔥 AuthProvider useEffect: checkAuth() llamado');
+    // Solo ejecutar en el cliente
+    if (typeof window !== 'undefined') {
+      checkAuth();
+      console.log('🔥 AuthProvider useEffect: checkAuth() llamado');
+    } else {
+      // En el servidor, establecer isLoading en false inmediatamente
+      console.log('🔥 AuthProvider useEffect: En servidor, estableciendo isLoading=false');
+      setIsLoading(false);
+    }
   }, []);
 
   // Verificación adicional para asegurar hidratación completa
@@ -105,6 +113,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (rawToken && rawUser) {
           console.log('🔄 Forzando nueva verificación de autenticación...');
           checkAuth();
+        } else {
+          // Si no hay token ni usuario, asegurar que isLoading se ponga en false
+          console.log('⏰ No hay autenticación guardada, finalizando carga...');
+          setIsLoading(false);
         }
       }
     }, 1000);
@@ -168,6 +180,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isEmployee = authService.isEmployee();
   const isCustomer = authService.isCustomer();
 
+  // Función para verificar si el usuario tiene uno de los roles especificados
+  const hasRole = (roles: string[]): boolean => {
+    if (!user || !user.role) return false;
+    return roles.includes(user.role.name);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -178,7 +196,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         logout,
         isEmployee,
-        isCustomer
+        isCustomer,
+        hasRole
       }}
     >
       {children}
@@ -213,6 +232,7 @@ export const useAuth = (): AuthContextType => {
       isAuthenticated: false,
       isEmployee: false,
       isCustomer: false,
+      hasRole: () => false,
       login: async () => {
         console.warn('useAuth se está usando fuera de un AuthProvider');
       },

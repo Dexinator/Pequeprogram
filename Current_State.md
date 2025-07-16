@@ -3188,3 +3188,165 @@ export class ClothingService {
 - ✅ Integración perfecta con flujo de valuación existente
 - ✅ 291 combinaciones de precios precargadas
 - ✅ Documentación actualizada en CLAUDE.md
+
+## Sesión: 16 de Enero, 2025
+
+### 210. Implementación de Subida de Imágenes a AWS S3
+
+**Acción realizada:** Integración completa de AWS S3 para almacenamiento de imágenes de productos en la tienda online.
+
+#### Configuración de AWS S3
+
+**1. Credenciales y configuración:**
+- Bucket: pequetienda
+- Región: us-east-2 (US East Ohio)
+- Acceso: Público para lectura de imágenes
+- Estructura de carpetas: `/products/2025/01/[inventory_id]_[timestamp]_[uuid].jpg`
+
+**2. Variables de entorno agregadas:**
+```yaml
+# docker-compose.yml
+AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+AWS_REGION: ${AWS_REGION:-us-east-2}
+S3_BUCKET_NAME: ${S3_BUCKET_NAME:-pequetienda}
+```
+
+#### Implementación del Backend
+
+**1. Servicio S3 (s3.service.ts):**
+```typescript
+export class S3Service {
+  // Subir imagen con optimización automática
+  async uploadProductImage(
+    file: Express.Multer.File,
+    inventoryId: string,
+    createThumbnail = true
+  ): Promise<UploadResult>
+  
+  // Características implementadas:
+  - Validación de tipos: JPG, PNG, WEBP
+  - Límite de tamaño: 5MB
+  - Optimización automática con Sharp
+  - Generación de thumbnails (400x400px)
+  - Cache de 1 año para imágenes
+  - URLs públicas directas
+}
+```
+
+**2. Middleware de upload (upload.middleware.ts):**
+- Multer v2.0 para manejo de archivos
+- Almacenamiento en memoria para procesamiento
+- Límite de 10 archivos por petición
+- Validación de tipos MIME
+
+**3. Endpoint de subida:**
+- `POST /api/store/upload-images`
+- Acepta múltiples imágenes
+- Requiere autenticación
+- Retorna URLs de imágenes y thumbnails
+
+**4. Dependencias agregadas:**
+```json
+{
+  "@aws-sdk/client-s3": "^3.490.0",
+  "multer": "^2.0.0-rc.4",
+  "sharp": "^0.33.2"
+}
+```
+
+#### Implementación del Frontend
+
+**1. Actualización del servicio store.service.ts:**
+```typescript
+// Subir imagen única
+async uploadImage(file: File, inventoryId: string): Promise<string>
+
+// Subir múltiples imágenes
+async uploadImages(files: File[], inventoryId: string): Promise<string[]>
+```
+
+**2. Componente ProductPreparation mejorado:**
+- Validación de archivos antes de subir
+- Indicador de progreso durante subida
+- Vista previa de imágenes subidas
+- Eliminación de imágenes antes de guardar
+- Manejo de errores robusto
+
+**3. Flujo de preparación de productos:**
+1. Seleccionar producto pendiente
+2. Agregar peso y precio online
+3. Subir imágenes (se envían a S3)
+4. Guardar producto como listo para tienda
+
+#### Optimizaciones Implementadas
+
+**1. Procesamiento de imágenes:**
+- Redimensionado automático a 1200x1200px máximo
+- Compresión JPEG al 85% de calidad
+- Generación de thumbnails optimizados
+- Conversión a JPEG progresivo
+
+**2. Rendimiento:**
+- Subida paralela de múltiples imágenes
+- Cache de larga duración (1 año)
+- URLs directas de S3 (sin proxy)
+
+**3. Seguridad:**
+- Validación de tipos MIME
+- Límite de tamaño estricto
+- Nombres de archivo únicos con UUID
+- Autenticación requerida para subidas
+
+#### Configuración recomendada del bucket S3
+
+**1. Política del bucket:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "PublicReadGetObject",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:GetObject",
+    "Resource": "arn:aws:s3:::pequetienda/products/*"
+  }]
+}
+```
+
+**2. Configuración CORS:**
+```json
+[{
+  "AllowedHeaders": ["*"],
+  "AllowedMethods": ["GET", "PUT", "POST"],
+  "AllowedOrigins": [
+    "http://localhost:4323",
+    "https://tienda.entrepeques.com"
+  ],
+  "ExposeHeaders": ["ETag"],
+  "MaxAgeSeconds": 3000
+}]
+```
+
+#### Resultado Final
+
+**Estado de implementación:**
+- ✅ Servicio S3 completamente integrado
+- ✅ Subida de imágenes funcionando en /preparar-productos
+- ✅ Optimización automática de imágenes
+- ✅ Generación de thumbnails
+- ✅ Validaciones de seguridad implementadas
+- ✅ Frontend actualizado con manejo de errores
+
+**Beneficios:**
+- Almacenamiento escalable e ilimitado
+- CDN global de AWS para entrega rápida
+- Imágenes optimizadas automáticamente
+- Costos bajos por almacenamiento
+- Alta disponibilidad garantizada
+
+**Próximos pasos recomendados:**
+- Configurar CloudFront para CDN mejorado
+- Implementar eliminación de imágenes no utilizadas
+- Agregar marca de agua automática
+- Configurar lifecycle policies para archivado

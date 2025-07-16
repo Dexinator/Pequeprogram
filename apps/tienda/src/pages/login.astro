@@ -1,22 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import LoginContainer from '../components/auth/LoginContainer.jsx';
-import { AuthProvider } from '../context/AuthContext';
-import '../styles/global.css';
+import LoginPage from '../components/auth/LoginPage.jsx';
 ---
 
-<Layout title="Iniciar sesión">
-  <div class="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50">
-    <AuthProvider client:load>
-      <LoginContainer 
-        client:load 
-        onSuccess={() => {
-          window.location.href = '/';
-        }}
-        onClose={() => {
-          window.location.href = '/';
-        }}
-      />
-    </AuthProvider>
-  </div>
+<Layout title="Iniciar sesión - Entrepeques">
+  <LoginPage client:only="react" />
 </Layout>

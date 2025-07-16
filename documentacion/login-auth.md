@@ -4,6 +4,14 @@
 
 El sistema de autenticación de Entrepeques utiliza JWT (JSON Web Tokens) para manejar la autenticación de usuarios en todas las aplicaciones del proyecto. Este documento detalla la implementación correcta del sistema de login para garantizar su funcionamiento en cualquier aplicación del monorepo.
 
+## Actualización Enero 2025
+
+Se ha implementado un sistema de autenticación mejorado y homogéneo en la aplicación de tienda que incluye:
+- **OptionalAuthGuard**: Componente para manejar rutas públicas y privadas
+- **Interceptor 401**: Manejo automático de sesiones expiradas
+- **Inicialización de servicios**: Los servicios verifican el token antes de cada petición
+- **Soporte para rutas mixtas**: Rutas públicas con funcionalidad mejorada cuando hay autenticación
+
 ## Arquitectura de Autenticación
 
 ### Backend (API)
@@ -154,9 +162,23 @@ export class AuthService {
 }
 ```
 
-### 3. Contexto de Autenticación (`AuthContext.tsx`)
+### 3. Contexto de Autenticación Mejorado (`AuthContext.tsx`)
+
+El AuthContext ahora incluye funciones helper para verificar roles y tipo de usuario:
 
 ```typescript
+interface AuthContextType {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => void;
+  isEmployee: boolean;
+  isCustomer: boolean;
+  hasRole: (roles: string[]) => boolean;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -190,12 +212,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Pequeño retraso para asegurar hidratación
-    const timeoutId = setTimeout(() => {
+    // Solo ejecutar en el cliente
+    if (typeof window !== 'undefined') {
       checkAuth();
-    }, 100);
-    
-    return () => clearTimeout(timeoutId);
+    } else {
+      // En el servidor, establecer isLoading en false inmediatamente
+      setIsLoading(false);
+    }
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
@@ -222,6 +245,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
+  // Determinar el tipo de usuario
+  const isEmployee = authService.isEmployee();
+  const isCustomer = authService.isCustomer();
+
+  // Función para verificar si el usuario tiene uno de los roles especificados
+  const hasRole = (roles: string[]): boolean => {
+    if (!user || !user.role) return false;
+    return roles.includes(user.role.name);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -230,7 +263,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         error,
         isAuthenticated: !!user,
         login,
-        logout
+        logout,
+        isEmployee,
+        isCustomer,
+        hasRole
       }}
     >
       {children}
@@ -292,7 +328,69 @@ const AuthGuard = ({ children, allowedRoles = [] }) => {
 };
 ```
 
-### 5. Componente Dashboard Principal
+### 5. OptionalAuthGuard Component (Nuevo - Para Apps con Rutas Mixtas)
+
+El `OptionalAuthGuard` es ideal para aplicaciones como la tienda online que tienen rutas públicas y privadas:
+
+```jsx
+// components/auth/OptionalAuthGuard.jsx
+const OptionalAuthGuard = ({ 
+  children, 
+  requireAuth = false, 
+  allowedRoles = [],
+  fallbackComponent = null,
+  showLoginModal = false 
+}) => {
+  const { isAuthenticated, isLoading, user, hasRole } = useAuth();
+
+  // Mostrar spinner mientras se verifica la autenticación
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Si se requiere autenticación y no está autenticado
+  if (requireAuth && !isAuthenticated) {
+    if (showLoginModal) {
+      return (
+        <>
+          {children}
+          <LoginModal />
+        </>
+      );
+    }
+
+    if (fallbackComponent) {
+      return fallbackComponent;
+    }
+
+    return <LoginPrompt />;
+  }
+
+  // Si se requieren roles específicos y el usuario no los tiene
+  if (requireAuth && allowedRoles.length > 0 && !hasRole(allowedRoles)) {
+    return <InsufficientPermissions />;
+  }
+
+  // Si todo está bien, renderizar los children
+  return children;
+};
+```
+
+Uso en páginas con autenticación opcional:
+
+```jsx
+// Página pública (no requiere auth)
+<OptionalAuthGuard>
+  <PublicContent />
+</OptionalAuthGuard>
+
+// Página privada para empleados
+<OptionalAuthGuard requireAuth={true} allowedRoles={['admin', 'manager', 'sales']}>
+  <EmployeeContent />
+</OptionalAuthGuard>
+```
+
+### 6. Componente Dashboard Principal
 
 **IMPORTANTE**: Para evitar errores de contexto, siempre encapsula AuthProvider, AuthGuard y tu componente principal:
 
@@ -324,27 +422,68 @@ import Layout from '../layouts/Layout.astro';
 
 ## Configuración de Servicios que Requieren Autenticación
 
-Cuando crees servicios que necesiten autenticación, asegúrate de configurar el token:
+### Método Mejorado con Inicialización Automática
+
+Cuando crees servicios que necesiten autenticación, implementa la inicialización automática del token:
 
 ```typescript
 export class TuServicio {
-  private http: HttpService;
-
+  private http = httpService;
+  
   constructor() {
-    this.http = new HttpService();
-    
-    // Configurar token si existe
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    // Verificar si hay token guardado al crear el servicio
+    this.initializeAuth();
+  }
+  
+  private initializeAuth() {
+    if (typeof window !== 'undefined') {
       const token = localStorage.getItem('entrepeques_auth_token');
       if (token) {
+        console.log('🔑 TuServicio: Token encontrado, configurando...');
         this.http.setAuthToken(token);
       }
     }
   }
 
-  // Tus métodos...
+  // En cada método que requiera autenticación
+  async getProtectedData() {
+    // Verificar token antes de la petición
+    this.initializeAuth();
+    
+    return this.http.get('/protected-endpoint');
+  }
 }
 ```
+
+### Interceptor 401 Automático
+
+El HttpService ahora incluye un interceptor que maneja automáticamente los errores 401:
+
+```typescript
+// http.service.ts
+private handleUnauthorized() {
+  console.log('🚫 Error 401: No autorizado - manejando...');
+  
+  // Limpiar token inválido
+  this.clearAuthToken();
+  
+  // Limpiar localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('entrepeques_auth_token');
+    localStorage.removeItem('entrepeques_user');
+    
+    // Solo redirigir si no estamos ya en la página de login
+    if (!window.location.pathname.includes('/login')) {
+      // Guardar la URL actual para volver después del login
+      const currentUrl = window.location.pathname + window.location.search;
+      console.log('🔄 Redirigiendo a login, URL de retorno:', currentUrl);
+      window.location.href = `/login?return=${encodeURIComponent(currentUrl)}`;
+    }
+  }
+}
+```
+
+Esto se activa automáticamente en todos los métodos HTTP (GET, POST, PUT, DELETE) cuando el servidor retorna un error 401.
 
 ## Manejo de Sesiones y Logout
 
@@ -384,6 +523,55 @@ window.location.reload();
 4. **Logout**
    - Limpia localStorage
    - Redirige a login
+
+## Configuración de Rutas (Nuevo)
+
+Para aplicaciones con rutas mixtas (públicas y privadas), usa un archivo de configuración centralizado:
+
+```javascript
+// config/routes.config.js
+export const ROUTE_CONFIG = {
+  // Rutas completamente públicas
+  public: [
+    '/',
+    '/productos',
+    '/categorias',
+    '/buscar',
+    '/login',
+    '/registro'
+  ],
+  
+  // Rutas solo para clientes registrados
+  customerOnly: [
+    '/mi-cuenta',
+    '/mis-pedidos',
+    '/checkout'
+  ],
+  
+  // Rutas solo para empleados
+  employeeOnly: [
+    '/preparar-productos',
+    '/reportes-tienda',
+    '/gestionar-pedidos'
+  ],
+  
+  // Rutas con funcionalidad mejorada cuando está autenticado
+  enhanced: [
+    '/carrito', // Guardado persistente del carrito
+    '/producto/:id' // Favoritos, historial
+  ]
+};
+
+// Roles permitidos para rutas de empleados
+export const EMPLOYEE_ROLES = [
+  'superadmin',
+  'admin',
+  'manager',
+  'gerente',
+  'sales',
+  'vendedor'
+];
+```
 
 ## Consideraciones Importantes
 

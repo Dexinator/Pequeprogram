@@ -35,6 +35,10 @@ services:
       JWT_SECRET: ${JWT_SECRET:-your-development-secret-key}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4321}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-AKIA6ODU4K4PJ7R44ZGR}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-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}
+      AWS_REGION: ${AWS_REGION:-us-east-2}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-pequetienda}
     volumes:
       - ./packages/api:/app # Mapear código fuente para live reload
       - api_node_modules:/app/node_modules # Evitar sobreescribir node_modules del contenedor
