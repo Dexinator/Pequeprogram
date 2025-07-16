@@ -10,9 +10,10 @@ const port = config.port;
 
 // Configuración de CORS
 app.use(cors({
-  origin: '*', // Permitir todas las solicitudes en desarrollo
+  origin: ['http://localhost:4321', 'http://localhost:4322', 'http://localhost:4323', 'http://localhost:4324'], // Permitir todas las apps
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 // Middleware para imprimir información de las solicitudes (solo en desarrollo)
