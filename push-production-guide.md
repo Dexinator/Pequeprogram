@@ -104,6 +104,7 @@ heroku open
 ```bash
 # Login to Vercel
 vercel login
+
 ```
 
 ### Deploy Valuador App
