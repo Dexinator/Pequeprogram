@@ -5,7 +5,7 @@ export class HttpService {
     'Content-Type': 'application/json',
   };
 
-  constructor(baseUrl = 'http://localhost:3001/api') {
+  constructor(baseUrl?: string) {
     // Intentar obtener la URL de la API desde las variables de entorno
     // Solo si estamos en un entorno de navegador
     if (typeof window !== 'undefined') {
@@ -13,15 +13,24 @@ export class HttpService {
         // @ts-ignore - Ignorar error de TypeScript
         const envUrl = import.meta?.env?.PUBLIC_API_URL;
         if (envUrl) {
-          baseUrl = envUrl;
+          this.baseUrl = envUrl;
+        } else if (baseUrl) {
+          this.baseUrl = baseUrl;
+        } else {
+          // Solo usar localhost como último recurso
+          this.baseUrl = 'http://localhost:3001/api';
+          console.warn('⚠️ Usando URL por defecto (localhost). Asegúrate de configurar PUBLIC_API_URL en producción.');
         }
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
+        this.baseUrl = baseUrl || 'http://localhost:3001/api';
       }
+    } else {
+      // En el servidor, usar la URL proporcionada o la de entorno
+      this.baseUrl = baseUrl || 'http://localhost:3001/api';
     }
 
-    console.log('API URL:', baseUrl); // Para depuración
-    this.baseUrl = baseUrl;
+    console.log('🔌 API URL configurada:', this.baseUrl);
   }
 
   // Configurar el token de autenticación
