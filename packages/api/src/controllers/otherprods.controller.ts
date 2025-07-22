@@ -9,7 +9,7 @@ const otherProdsService = new OtherProdsService();
 // @route   POST /api/otherprods
 // @access  Private
 export const createPurchase = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.userId || req.user?.id;
+  const userId = req.user?.userId;
   
   if (!userId) {
     res.status(401);
