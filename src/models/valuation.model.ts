@@ -110,6 +110,7 @@ export interface AddValuationItemDto {
   new_price: number;
   images?: string[];
   notes?: string;
+  quantity?: number;
 }
 
 export interface CalculateValuationDto {
@@ -127,6 +128,7 @@ export interface ValuationCalculationResult {
   suggested_purchase_price: number;
   suggested_sale_price: number;
   consignment_price?: number;
+  store_credit_price?: number;
 }
 
 export interface FinalizeValuationDto {
@@ -136,6 +138,7 @@ export interface FinalizeValuationDto {
     id: number;
     final_purchase_price?: number;
     final_sale_price?: number;
+    modality?: 'compra directa' | 'consignación' | 'crédito en tienda';
   }>;
 }
 

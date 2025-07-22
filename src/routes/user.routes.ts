@@ -101,11 +101,15 @@ router.post('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => 
       });
     }
     
+    // Hashear la contraseña
+    const bcrypt = require('bcrypt');
+    const password_hash = await bcrypt.hash(password, 10);
+    
     // Crear el usuario
     const newUser = await userService.create({
       username,
       email,
-      password,
+      password_hash,
       first_name,
       last_name,
       role_id,
@@ -113,7 +117,7 @@ router.post('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => 
     });
     
     // Eliminar datos sensibles
-    const { password_hash, ...userWithoutPassword } = newUser;
+    const { password_hash: _, ...userWithoutPassword } = newUser;
     
     res.status(201).json({
       success: true,
@@ -187,16 +191,24 @@ router.put('/:id', authMiddleware, async (req, res) => {
       });
     }
     
-    // Actualizar el usuario
-    const updatedUser = await userService.update(userId, {
+    // Preparar datos de actualización
+    const updateData: any = {
       username,
       email,
-      password,
       first_name,
       last_name,
       role_id,
       is_active
-    });
+    };
+    
+    // Si se proporciona una nueva contraseña, hashearla
+    if (password) {
+      const bcrypt = require('bcrypt');
+      updateData.password_hash = await bcrypt.hash(password, 10);
+    }
+    
+    // Actualizar el usuario
+    const updatedUser = await userService.update(userId, updateData);
     
     // Eliminar datos sensibles
     const { password_hash, ...userWithoutPassword } = updatedUser;
