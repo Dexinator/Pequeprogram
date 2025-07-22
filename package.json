@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec ts-node --transpile-only src/index.ts",
-    "build": "tsc -p tsconfig.json --skipLibCheck --noEmitOnError false",
+    "build": "tsc -p tsconfig.json --skipLibCheck",
     "start": "node dist/index.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
