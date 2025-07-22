@@ -14,6 +14,7 @@ router.get('/subcategories', asyncHandler(categoryController.getAllSubcategories
 router.get('/subcategories/:subcategoryId/features', asyncHandler(categoryController.getFeatureDefinitionsBySubcategory));
 router.get('/subcategories/:subcategoryId/offer-features', asyncHandler(categoryController.getOfferFeatureDefinitionsBySubcategory));
 
+
 // Rutas protegidas (requieren autenticación y rol admin/manager)
 router.post('/', 
   authMiddleware, 
