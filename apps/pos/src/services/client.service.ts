@@ -33,9 +33,20 @@ export class ClientService {
     }
   }
 
+  // Método para asegurar que el token esté actualizado
+  private ensureTokenIsSet(): void {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
+    }
+  }
+
   // Buscar clientes
   async searchClients(query: string): Promise<Client[]> {
     try {
+      this.ensureTokenIsSet();
       const response = await this.http.get<any>('/clients/search', { q: query });
       return response.data || [];
     } catch (error) {
@@ -47,6 +58,7 @@ export class ClientService {
   // Obtener un cliente por ID
   async getClientById(id: number): Promise<Client | null> {
     try {
+      this.ensureTokenIsSet();
       const response = await this.http.get<any>(`/clients/${id}`);
       return response.data || null;
     } catch (error) {
@@ -58,6 +70,7 @@ export class ClientService {
   // Crear un nuevo cliente
   async createClient(clientData: CreateClientData): Promise<Client | null> {
     try {
+      this.ensureTokenIsSet();
       const response = await this.http.post<any>('/clients', clientData);
       
       if (response.success && response.data) {
@@ -74,6 +87,7 @@ export class ClientService {
   // Actualizar un cliente
   async updateClient(id: number, clientData: Partial<CreateClientData>): Promise<Client | null> {
     try {
+      this.ensureTokenIsSet();
       const response = await this.http.put<any>(`/clients/${id}`, clientData);
       
       if (response.success && response.data) {
