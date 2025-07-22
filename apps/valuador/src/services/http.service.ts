@@ -12,6 +12,9 @@ export class HttpService {
       try {
         // @ts-ignore - Ignorar error de TypeScript
         const envUrl = import.meta?.env?.PUBLIC_API_URL;
+        console.log('🔍 PUBLIC_API_URL desde import.meta.env:', envUrl);
+        console.log('🔍 Todas las variables PUBLIC_:', Object.keys(import.meta.env).filter(k => k.startsWith('PUBLIC_')));
+        
         if (envUrl) {
           this.baseUrl = envUrl;
         } else if (baseUrl) {
@@ -20,6 +23,7 @@ export class HttpService {
           // Solo usar localhost como último recurso
           this.baseUrl = 'http://localhost:3001/api';
           console.warn('⚠️ Usando URL por defecto (localhost). Asegúrate de configurar PUBLIC_API_URL en producción.');
+          console.warn('⚠️ Variables de entorno disponibles:', import.meta.env);
         }
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
@@ -27,7 +31,7 @@ export class HttpService {
       }
     } else {
       // En el servidor, usar la URL proporcionada o la de entorno
-      this.baseUrl = baseUrl || 'http://localhost:3001/api';
+      this.baseUrl = baseUrl || process.env.PUBLIC_API_URL || 'http://localhost:3001/api';
     }
 
     console.log('🔌 API URL configurada:', this.baseUrl);
