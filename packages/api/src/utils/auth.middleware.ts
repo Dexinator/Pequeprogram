@@ -102,7 +102,7 @@ export function roleMiddleware(allowedRoles: string[]) {
       // Verificar si el rol del usuario está en los roles permitidos
       // o si tiene un rol superior en la jerarquía
       const hasPermission = allowedRoles.some(allowedRole => 
-        req.user.role === allowedRole || hasHierarchicalPermission(req.user.role, allowedRole)
+        req.user?.role === allowedRole || hasHierarchicalPermission(req.user?.role || '', allowedRole)
       );
       
       if (!hasPermission) {

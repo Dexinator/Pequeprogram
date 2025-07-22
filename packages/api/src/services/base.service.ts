@@ -42,11 +42,12 @@ export abstract class BaseService<T extends BaseModel> {
   async create(data: Partial<T>): Promise<T> {
     try {
       console.log(`BaseService.create: Creando registro en tabla ${this.tableName}`);
-      console.log(`BaseService.create: Datos recibidos:`, Object.keys(data).reduce((acc, key) => {
-        if (key === 'password_hash') {
-          acc[key] = (data[key] as string).substring(0, 10) + '...';
+      console.log(`BaseService.create: Datos recibidos:`, Object.keys(data).reduce((acc: Record<string, any>, key) => {
+        if (key === 'password_hash' && data.hasOwnProperty(key)) {
+          const value = (data as any)[key];
+          acc[key] = typeof value === 'string' ? value.substring(0, 10) + '...' : value;
         } else {
-          acc[key] = data[key];
+          acc[key] = (data as any)[key];
         }
         return acc;
       }, {} as Record<string, any>));
