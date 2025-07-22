@@ -12,15 +12,22 @@ export class HttpService {
       try {
         // @ts-ignore - Ignorar error de TypeScript
         const envUrl = import.meta?.env?.PUBLIC_API_URL;
+        console.log('🔍 PUBLIC_API_URL desde import.meta.env:', envUrl);
+        console.log('🔍 Todas las variables de entorno:', import.meta.env);
+        console.log('🔍 Variables PUBLIC_:', Object.keys(import.meta.env).filter(k => k.startsWith('PUBLIC_')));
+        
         if (envUrl) {
           baseUrl = envUrl;
+          console.log('✅ Usando PUBLIC_API_URL:', envUrl);
+        } else {
+          console.warn('⚠️ PUBLIC_API_URL no encontrada, usando valor por defecto:', baseUrl);
         }
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
       }
     }
 
-    console.log('API URL:', baseUrl); // Para depuración
+    console.log('🔌 API URL final configurada:', baseUrl);
     this.baseUrl = baseUrl;
   }
 
