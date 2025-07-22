@@ -1,5 +1,5 @@
 export interface OtherProd {
-  id?: number;
+  id: number;
   user_id: number;
   supplier_name: string;
   purchase_date?: Date;

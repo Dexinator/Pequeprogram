@@ -77,7 +77,7 @@ export class S3Service {
         Body: processedMainImage,
         ContentType: 'image/jpeg',
         CacheControl: 'max-age=31536000', // 1 año de cache
-        ACL: 'public-read' // Hacer la imagen pública
+        ACL: 'public-read' as const // Hacer la imagen pública
       };
 
       await this.s3Client.send(new PutObjectCommand(mainUploadParams));
@@ -103,7 +103,7 @@ export class S3Service {
           Body: thumbnailImage,
           ContentType: 'image/jpeg',
           CacheControl: 'max-age=31536000',
-          ACL: 'public-read' // Hacer el thumbnail público
+          ACL: 'public-read' as const // Hacer el thumbnail público
         };
 
         await this.s3Client.send(new PutObjectCommand(thumbnailUploadParams));

@@ -43,10 +43,12 @@ export interface Client extends BaseModel {
   store_credit?: number;
 }
 
-export interface Inventario extends BaseModel {
+export interface Inventario {
   id: string; // SKU + número secuencial
   quantity: number;
   location: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface Valuation extends BaseModel {
