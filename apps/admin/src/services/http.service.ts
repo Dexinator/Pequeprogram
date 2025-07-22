@@ -6,12 +6,16 @@ export class HttpService {
   };
 
   constructor(baseUrl = 'http://localhost:3001/api') {
+    // Forzar la inclusión de PUBLIC_API_URL en el bundle de producción
+    // Esta línea evita que Vite elimine la variable durante el tree-shaking
+    const _publicApiUrl = import.meta.env.PUBLIC_API_URL;
+    
     // Intentar obtener la URL de la API desde las variables de entorno
     // Solo si estamos en un entorno de navegador
     if (typeof window !== 'undefined') {
       try {
-        // @ts-ignore - Ignorar error de TypeScript
-        const envUrl = import.meta?.env?.PUBLIC_API_URL;
+        // Usar la variable que ya capturamos arriba
+        const envUrl = _publicApiUrl;
         if (envUrl) {
           baseUrl = envUrl;
         }
