@@ -1,12 +1,15 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
   // Configuración para modo servidor completo
   output: 'server',
+  // Configuración del adaptador de Vercel
+  adapter: vercel(),
   // Base URL para subdominios  
   base: '/',
   // Configuración de desarrollo
