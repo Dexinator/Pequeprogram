@@ -142,3 +142,6 @@ Thumbs.db
 
 # Miscellaneous
 *.swp 
+
+#data
+data/
