@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import DebugEnv from '../DebugEnv';
 
 const LoginContainer = () => {
   console.log('🔐 LoginContainer: Componente montado');
@@ -143,8 +142,6 @@ const LoginContainer = () => {
           </div>
         </div>
       </div>
-      {/* Debug de variables de entorno */}
-      <DebugEnv />
     </div>
   );
 };
