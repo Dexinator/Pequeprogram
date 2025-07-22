@@ -203,6 +203,138 @@ export class StoreService {
     }
   }
 
+  async getOnlineProductDetail(inventoryId: string) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      
+      const query = `
+        SELECT 
+          vi.id,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.condition_state,
+          vi.features,
+          vi.online_price,
+          vi.weight_grams,
+          vi.images,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE i.id = $1
+        AND vi.online_store_ready = true
+        AND i.quantity > 0
+      `;
+      
+      const result = await dbClient.query(query, [inventoryId]);
+      
+      if (result.rows.length === 0) {
+        return null;
+      }
+      
+      const row = result.rows[0];
+      return {
+        ...row,
+        quantity: parseInt(row.quantity),
+        online_price: parseFloat(row.online_price),
+        weight_grams: parseInt(row.weight_grams || 0),
+        images: row.images || []
+      };
+    } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async getRelatedProducts(productId: number, limit: number = 8) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      
+      // Primero obtener información del producto actual
+      const productQuery = `
+        SELECT category_id, subcategory_id, brand_id
+        FROM valuation_items
+        WHERE id = $1
+      `;
+      
+      const productResult = await dbClient.query(productQuery, [productId]);
+      
+      if (productResult.rows.length === 0) {
+        return [];
+      }
+      
+      const { category_id, subcategory_id, brand_id } = productResult.rows[0];
+      
+      // Buscar productos relacionados
+      // Prioridad: misma subcategoría > misma categoría > otros
+      const query = `
+        SELECT 
+          vi.id,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.condition_state,
+          vi.features,
+          vi.online_price,
+          vi.weight_grams,
+          vi.images,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location,
+          CASE 
+            WHEN vi.subcategory_id = $2 THEN 1
+            WHEN vi.category_id = $3 THEN 2
+            ELSE 3
+          END as relevance
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE vi.id != $1
+        AND vi.online_store_ready = true
+        AND i.quantity > 0
+        ORDER BY relevance, RANDOM()
+        LIMIT $4
+      `;
+      
+      const result = await dbClient.query(query, [productId, subcategory_id, category_id, limit]);
+      
+      return result.rows.map(row => ({
+        ...row,
+        quantity: parseInt(row.quantity),
+        online_price: parseFloat(row.online_price),
+        weight_grams: parseInt(row.weight_grams || 0),
+        images: row.images || []
+      }));
+    } catch (error) {
+      console.error('Error al obtener productos relacionados:', error);
+      return [];
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
   async getProductForPreparation(inventoryId: string) {
     let dbClient: PoolClient | undefined;
     try {

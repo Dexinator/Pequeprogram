@@ -6,6 +6,7 @@ export interface ClothingPrice {
   garment_type: string;
   quality_level: string;
   purchase_price: number;
+  sale_price: number;
   is_active: boolean;
 }
 
@@ -169,7 +170,7 @@ export class ClothingService {
         throw new Error('Invalid clothing subcategory');
       }
 
-      // Get fixed purchase price
+      // Get fixed purchase and sale prices
       const clothingPrice = await this.getClothingPriceByType(
         categoryGroup,
         garmentType,
@@ -181,57 +182,9 @@ export class ClothingService {
       }
 
       const purchasePrice = clothingPrice.purchase_price;
+      const suggestedSalePrice = clothingPrice.sale_price; // Now using predefined sale price
 
-      // For sale price, we still use the regular valuation logic
-      // Get subcategory info for GAP values
-      const subcategoryQuery = `
-        SELECT gap_new, gap_used, margin_new, margin_used 
-        FROM subcategories 
-        WHERE id = $1
-      `;
-      const subcategoryResult = await pool.query(subcategoryQuery, [subcategoryId]);
-      const subcategory = subcategoryResult.rows[0];
-
-      // Get valuation factors
-      const factorsQuery = `
-        SELECT factor_type, score 
-        FROM valuation_factors 
-        WHERE subcategory_id = $1 
-        AND factor_value = $2
-      `;
-
-      const [stateResult, demandResult, cleanResult] = await Promise.all([
-        pool.query(factorsQuery, [subcategoryId, conditionState]),
-        pool.query(factorsQuery, [subcategoryId, demand]),
-        pool.query(factorsQuery, [subcategoryId, cleanliness])
-      ]);
-
-      const stateScore = stateResult.rows[0]?.score || 0;
-      const demandScore = demandResult.rows[0]?.score || 0;
-      const cleanScore = cleanResult.rows[0]?.score || 0;
-
-      // Calculate sale score (estado + demanda)
-      const saleScore = stateScore + demandScore;
-
-      // Determine if new or used
-      const isNew = status === 'Nuevo';
-      const gap = isNew ? parseFloat(subcategory.gap_new) : parseFloat(subcategory.gap_used);
-
-      // For clothing, we need to estimate a "new price" for sale calculation
-      // Using a multiplier based on quality level
-      const qualityMultipliers: { [key: string]: number } = {
-        'economico': 2.5,
-        'estandar': 3.0,
-        'alto': 3.5,
-        'premium': 4.0
-      };
-
-      const estimatedNewPrice = purchasePrice * (qualityMultipliers[qualityLevel] || 3.0);
-
-      // Calculate suggested sale price
-      const suggestedSalePrice = estimatedNewPrice * (1 - gap + saleScore / 100);
-
-      // Calculate store credit and consignment prices
+      // Calculate store credit and consignment prices based on purchase price
       const storeCreditPrice = purchasePrice * 1.1; // +10%
       const consignmentPrice = purchasePrice * 1.2; // +20%
 

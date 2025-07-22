@@ -4,6 +4,8 @@ import { uploadMultiple, handleMulterError } from '../utils/upload.middleware';
 import {
   getPendingProducts,
   getOnlineProducts,
+  getProductDetail,
+  getRelatedProducts,
   getProductForPreparation,
   prepareProductForStore,
   getStoreStats,
@@ -16,6 +18,14 @@ const router = express.Router();
 router
   .route('/products/ready')
   .get(getOnlineProducts);
+
+router
+  .route('/products/:id')
+  .get(getProductDetail);
+
+router
+  .route('/products/:id/related')
+  .get(getRelatedProducts);
 
 // Protected routes
 router.use(protect);
