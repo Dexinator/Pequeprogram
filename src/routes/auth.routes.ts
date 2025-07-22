@@ -8,10 +8,8 @@ const router = Router();
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.get('/me', authMiddleware, authController.getCurrentUser);
 
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.get('/admin', authMiddleware, roleMiddleware(['admin']), (req, res) => {
   res.json({
     success: true,

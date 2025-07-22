@@ -49,7 +49,6 @@ router.get('/:id', async (req, res) => {
 });
 
 // Crear un nuevo rol (solo admin)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.post('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -92,7 +91,6 @@ router.post('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => 
 });
 
 // Actualizar un rol (solo admin)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.put('/:id', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
   try {
     const roleId = parseInt(req.params.id);
@@ -140,7 +138,6 @@ router.put('/:id', authMiddleware, roleMiddleware(['admin']), async (req, res) =
 });
 
 // Eliminar un rol (solo admin)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
   try {
     const roleId = parseInt(req.params.id);

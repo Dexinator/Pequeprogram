@@ -5,7 +5,6 @@ import { authMiddleware, roleMiddleware } from '../utils/auth.middleware';
 const router = Router();
 
 // Obtener todos los usuarios (solo admin)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.get('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
   try {
     const users = await userService.findAll();
@@ -30,7 +29,6 @@ router.get('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
 });
 
 // Obtener un usuario por ID (solo admin o el propio usuario)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -70,7 +68,6 @@ router.get('/:id', authMiddleware, async (req, res) => {
 });
 
 // Crear un nuevo usuario (solo admin)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.post('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
   try {
     const { username, email, password, first_name, last_name, role_id, is_active } = req.body;
@@ -134,7 +131,6 @@ router.post('/', authMiddleware, roleMiddleware(['admin']), async (req, res) => 
 });
 
 // Actualizar un usuario (solo admin o el propio usuario)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -210,6 +206,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
     // Actualizar el usuario
     const updatedUser = await userService.update(userId, updateData);
     
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Error al actualizar el usuario'
+      });
+    }
+    
     // Eliminar datos sensibles
     const { password_hash, ...userWithoutPassword } = updatedUser;
     
@@ -228,7 +231,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
 });
 
 // Eliminar un usuario (solo admin)
-// @ts-expect-error: Ignorar error de tipado en ruta con middleware
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
