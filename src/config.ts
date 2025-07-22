@@ -19,7 +19,25 @@ const config: Config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/entrepeques_dev',
   jwtSecret: process.env.JWT_SECRET || 'entrepeques_development_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
-  corsOrigin: process.env.CORS_ORIGIN || ['https://valuador-entrepeques.vercel.app', 'http://localhost:4321'],
+  corsOrigin: process.env.CORS_ORIGIN || [
+    // Producción - Apps en Vercel
+    'https://valuador-entrepeques.vercel.app',
+    'https://admin-entrepeques.vercel.app',
+    'https://tienda-entrepeques.vercel.app',
+    'https://pos-entrepeques.vercel.app',
+    // Producción - Dominios finales (cuando los configures)
+    'https://valuador.entrepeques.com',
+    'https://admin.entrepeques.com',
+    'https://tienda.entrepeques.com',
+    'https://pos.entrepeques.com',
+    'https://entrepeques.com',
+    'https://www.entrepeques.com',
+    // Desarrollo local
+    'http://localhost:4321', // valuador
+    'http://localhost:4322', // admin
+    'http://localhost:4323', // tienda
+    'http://localhost:4324'  // pos
+  ],
 };
 
 // En producción con Heroku, modificar la URL de la base de datos si es necesario
