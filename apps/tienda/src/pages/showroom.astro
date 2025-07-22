@@ -1,0 +1,404 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// For dark mode toggle
+const darkModeScript = `
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+`;
+---
+
+<Layout title="Showroom - Guía de Identidad Visual | Entrepeques">
+  <script is:inline set:html={darkModeScript}></script>
+  
+  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors">
+    <!-- Header with Dark Mode Toggle -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-neutral-900 shadow-md">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-brand-azul dark:text-brand-azul-light">
+          Entrepeques - Guía Visual
+        </h1>
+        <button
+          id="theme-toggle"
+          type="button"
+          class="p-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"
+          aria-label="Toggle dark mode"
+        >
+          <svg class="w-6 h-6 hidden dark:block text-brand-amarillo" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+          </svg>
+          <svg class="w-6 h-6 block dark:hidden text-neutral-700" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 space-y-12">
+      
+      <!-- Brand Introduction -->
+      <section class="text-center py-12">
+        <h1 class="font-display text-5xl text-brand-rosa dark:text-brand-rosa-bright mb-4">
+          Entrepeques
+        </h1>
+        <p class="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          Marca dedicada a la compra-venta y reutilización de productos de maternidad e infantiles. 
+          Fomentamos un consumo más responsable, económico y accesible.
+        </p>
+      </section>
+
+      <!-- Color Palette -->
+      <section>
+        <h2 class="text-3xl font-bold mb-8 text-neutral-900 dark:text-neutral-100">
+          Paleta de Colores
+        </h2>
+        
+        <!-- Primary Colors -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
+            Colores Primarios
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <div class="w-full h-24 bg-brand-azul rounded-md mb-4"></div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">Azul Claro</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Pantone 299 C</p>
+              <p class="text-xs font-mono mt-2">RGB(0, 160, 221)</p>
+              <p class="text-sm mt-2">Fondo de logo, botones principales, títulos, CTA</p>
+            </div>
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <div class="w-full h-24 bg-brand-verde-lima rounded-md mb-4"></div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">Verde Lima</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Pantone 361 C</p>
+              <p class="text-xs font-mono mt-2">RGB(63, 174, 73)</p>
+              <p class="text-sm mt-2">Elementos decorativos, íconos, lo ecológico</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Colors -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
+            Colores Secundarios
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <div class="w-full h-24 bg-brand-rosa rounded-md mb-4"></div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">Rosa Brillante</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Pantone 225 C</p>
+              <p class="text-xs font-mono mt-2">RGB(227, 35, 143)</p>
+              <p class="text-sm mt-2">Acentos juguetones, promociones</p>
+            </div>
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <div class="w-full h-24 bg-brand-amarillo rounded-md mb-4"></div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">Amarillo</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Pantone 115 C</p>
+              <p class="text-xs font-mono mt-2">RGB(225, 213, 30)</p>
+              <p class="text-sm mt-2">Elementos alegres, íconos</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Support Colors -->
+        <div>
+          <h3 class="text-xl font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
+            Colores de Apoyo
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <div class="w-full h-24 bg-brand-verde-oscuro rounded-md mb-4"></div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">Verde Oscuro</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Pantone 356 C</p>
+              <p class="text-xs font-mono mt-2">RGB(0, 121, 64)</p>
+            </div>
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <div class="w-full h-24 bg-brand-azul-profundo rounded-md mb-4"></div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">Azul Profundo</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Pantone 285 C</p>
+              <p class="text-xs font-mono mt-2">RGB(0, 112, 185)</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typography -->
+      <section>
+        <h2 class="text-3xl font-bold mb-8 text-neutral-900 dark:text-neutral-100">
+          Tipografía
+        </h2>
+        
+        <div class="space-y-8">
+          <!-- Display Font -->
+          <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+            <h3 class="font-display text-4xl mb-4 text-brand-rosa dark:text-brand-rosa-bright">
+              Fredoka One - Display
+            </h3>
+            <p class="text-neutral-600 dark:text-neutral-400">
+              Utilizada para elementos lúdicos y llamativos
+            </p>
+            <div class="mt-4 space-y-2">
+              <p class="font-display text-5xl">Aa Bb Cc Dd Ee Ff</p>
+              <p class="font-display text-3xl">1234567890</p>
+            </div>
+          </div>
+
+          <!-- Heading Font -->
+          <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+            <h3 class="text-2xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
+              Poppins - Títulos
+            </h3>
+            <p class="text-neutral-600 dark:text-neutral-400">
+              Font weights: Bold (700), SemiBold (600), Medium (500)
+            </p>
+            <div class="mt-4 space-y-2">
+              <p class="text-4xl font-bold">Aa Bb Cc Dd Ee Ff</p>
+              <p class="text-3xl font-semibold">1234567890</p>
+              <p class="text-2xl font-medium">¡Hola! ¿Cómo estás?</p>
+            </div>
+          </div>
+
+          <!-- Body Font -->
+          <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+            <h3 class="text-2xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
+              Muli (Inter) - Cuerpo de texto
+            </h3>
+            <p class="text-neutral-600 dark:text-neutral-400">
+              Font weights: Regular (400), Light (300)
+            </p>
+            <div class="mt-4 space-y-2">
+              <p class="text-lg">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <p class="text-base font-light">
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- UI Components -->
+      <section>
+        <h2 class="text-3xl font-bold mb-8 text-neutral-900 dark:text-neutral-100">
+          Componentes UI
+        </h2>
+
+        <!-- Buttons -->
+        <div class="mb-12">
+          <h3 class="text-xl font-semibold mb-6 text-neutral-800 dark:text-neutral-200">
+            Botones
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Primary Button -->
+            <div class="space-y-4">
+              <button class="w-full px-6 py-3 bg-brand-azul hover:bg-brand-azul-profundo text-white font-semibold rounded-lg transition-colors shadow-md">
+                Botón Primario
+              </button>
+              <button class="w-full px-6 py-3 bg-brand-azul hover:bg-brand-azul-profundo text-white font-semibold rounded-lg transition-colors shadow-md opacity-50 cursor-not-allowed" disabled>
+                Deshabilitado
+              </button>
+            </div>
+
+            <!-- Secondary Button -->
+            <div class="space-y-4">
+              <button class="w-full px-6 py-3 bg-brand-verde-lima hover:bg-brand-verde-oscuro text-white font-semibold rounded-lg transition-colors shadow-md">
+                Botón Secundario
+              </button>
+              <button class="w-full px-6 py-3 border-2 border-brand-verde-lima text-brand-verde-lima hover:bg-brand-verde-lima hover:text-white font-semibold rounded-lg transition-colors">
+                Botón Outline
+              </button>
+            </div>
+
+            <!-- Accent Buttons -->
+            <div class="space-y-4">
+              <button class="w-full px-6 py-3 bg-brand-rosa hover:bg-brand-rosa-dark text-white font-semibold rounded-lg transition-colors shadow-md">
+                Botón Acento
+              </button>
+              <button class="w-full px-6 py-3 bg-brand-amarillo hover:bg-brand-amarillo-dark text-neutral-900 font-semibold rounded-lg transition-colors shadow-md">
+                Botón Alerta
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="mb-12">
+          <h3 class="text-xl font-semibold mb-6 text-neutral-800 dark:text-neutral-200">
+            Tarjetas
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Basic Card -->
+            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-md overflow-hidden">
+              <div class="h-48 bg-gradient-to-br from-brand-azul to-brand-verde-lima"></div>
+              <div class="p-6">
+                <h4 class="text-xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">
+                  Tarjeta Básica
+                </h4>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                  Descripción del contenido de la tarjeta con los estilos aplicados.
+                </p>
+              </div>
+            </div>
+
+            <!-- Interactive Card -->
+            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
+              <div class="h-48 bg-gradient-to-br from-brand-rosa to-brand-amarillo"></div>
+              <div class="p-6">
+                <h4 class="text-xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">
+                  Tarjeta Interactiva
+                </h4>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                  Hover para ver el efecto de sombra aumentada.
+                </p>
+                <button class="mt-4 text-brand-azul hover:text-brand-azul-profundo font-semibold">
+                  Ver más →
+                </button>
+              </div>
+            </div>
+
+            <!-- Product Card -->
+            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-md overflow-hidden">
+              <div class="h-48 bg-gradient-to-br from-brand-verde-lima to-brand-verde-oscuro relative">
+                <span class="absolute top-4 right-4 bg-brand-rosa text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  Oferta
+                </span>
+              </div>
+              <div class="p-6">
+                <h4 class="text-xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">
+                  Producto
+                </h4>
+                <p class="text-2xl font-bold text-brand-verde-lima">$299</p>
+                <p class="text-sm text-neutral-500 line-through">$399</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Elements -->
+        <div class="mb-12">
+          <h3 class="text-xl font-semibold mb-6 text-neutral-800 dark:text-neutral-200">
+            Elementos de Formulario
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                Campo de texto
+              </label>
+              <input
+                type="text"
+                placeholder="Escribe aquí..."
+                class="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-brand-azul focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
+              />
+            </div>
+
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+              <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                Selector
+              </label>
+              <select class="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-brand-azul focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100">
+                <option>Opción 1</option>
+                <option>Opción 2</option>
+                <option>Opción 3</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Badges -->
+        <div>
+          <h3 class="text-xl font-semibold mb-6 text-neutral-800 dark:text-neutral-200">
+            Badges y Etiquetas
+          </h3>
+          <div class="flex flex-wrap gap-4">
+            <span class="px-3 py-1 bg-brand-azul text-white rounded-full text-sm font-semibold">
+              Nuevo
+            </span>
+            <span class="px-3 py-1 bg-brand-verde-lima text-white rounded-full text-sm font-semibold">
+              Disponible
+            </span>
+            <span class="px-3 py-1 bg-brand-rosa text-white rounded-full text-sm font-semibold">
+              Oferta
+            </span>
+            <span class="px-3 py-1 bg-brand-amarillo text-neutral-900 rounded-full text-sm font-semibold">
+              Destacado
+            </span>
+            <span class="px-3 py-1 bg-neutral-500 text-white rounded-full text-sm font-semibold">
+              Agotado
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Responsive Grid Examples -->
+      <section>
+        <h2 class="text-3xl font-bold mb-8 text-neutral-900 dark:text-neutral-100">
+          Grid Responsivo
+        </h2>
+        <p class="text-neutral-600 dark:text-neutral-400 mb-6">
+          Ejemplo de grid que se adapta según el tamaño de pantalla
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div class="bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-md text-center">
+              <div class="w-full h-24 bg-gradient-to-br from-brand-azul to-brand-verde-lima rounded mb-2"></div>
+              <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Item {i}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Color Proportions Guide -->
+      <section>
+        <h2 class="text-3xl font-bold mb-8 text-neutral-900 dark:text-neutral-100">
+          Proporciones de Color
+        </h2>
+        <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 shadow-md">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-20 h-20 bg-brand-azul rounded"></div>
+            <div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">80% - Colores Primarios</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Azul claro y Verde lima</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-16 h-16 bg-brand-rosa rounded"></div>
+            <div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">15% - Colores Secundarios</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Rosa brillante y Amarillo</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-brand-verde-oscuro rounded"></div>
+            <div>
+              <h4 class="font-semibold text-neutral-900 dark:text-neutral-100">5% - Colores de Apoyo</h4>
+              <p class="text-sm text-neutral-600 dark:text-neutral-400">Verde oscuro y Azul profundo</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Dark mode toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    themeToggle?.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+      }
+    });
+  </script>
+</Layout>

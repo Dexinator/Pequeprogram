@@ -1,0 +1,8 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AllProductsWithProviders from '../components/shop/AllProductsWithProviders';
+---
+
+<Layout title="Todos los Productos - Entrepeques">
+  <AllProductsWithProviders client:only="react" />
+</Layout>

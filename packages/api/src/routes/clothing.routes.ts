@@ -13,6 +13,9 @@ router.use(protect);
 // Get all clothing prices (optional filter by category group)
 router.get('/prices', clothingController.getClothingPrices);
 
+// Get specific price for a combination
+router.get('/price', clothingController.getSpecificPrice);
+
 // Get garment types for a specific category group
 router.get('/garment-types/:categoryGroup', clothingController.getGarmentTypes);
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import LoginContainer from './auth/LoginContainer';
+import Cart from './shop/Cart';
 
 // Componente de menú de usuario
 const UserMenu = () => {
@@ -65,12 +66,13 @@ const UserMenu = () => {
   );
 };
 
-// Componente principal de la tienda
+// Componente principal de la tienda (providers ya están en Layout)
 const StoreApp = () => {
   return (
-    <AuthProvider>
+    <div className="flex items-center gap-4">
+      <Cart />
       <UserMenu />
-    </AuthProvider>
+    </div>
   );
 };
 

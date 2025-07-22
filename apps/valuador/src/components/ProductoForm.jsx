@@ -451,25 +451,26 @@ export function ProductoForm({
     );
   };
   
-  // Si es categoría de ropa y ya se seleccionó subcategoría, mostrar formulario especial
+  // Si es categoría de ropa y ya se seleccionó subcategoría, mostrar mensaje
   if (isClothingCategory && formData.subcategory_id && clothingCategoryGroup) {
-    const selectedSubcategory = subcategories.find(s => s.id === Number(formData.subcategory_id));
-    
     return (
-      <div className={`producto-form ${className}`} data-index={index}>
-        <ClothingProductForm
-          subcategoryId={Number(formData.subcategory_id)}
-          categoryGroup={clothingCategoryGroup}
-          subcategoryName={selectedSubcategory?.name || ''}
-          initialData={formData.clothingFormData || {}}
-          onSubmit={handleClothingSubmit}
-          onCancel={() => {
-            // Resetear subcategoría para volver al formulario normal
-            setFormData(prev => ({ ...prev, subcategory_id: '' }));
-            setIsClothingCategory(false);
-            setClothingCategoryGroup(null);
-          }}
-        />
+      <div className={`producto-form ${className} bg-yellow-50 border-2 border-yellow-300 p-6 rounded-lg`} data-index={index}>
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+            Categoría de Ropa Detectada
+          </h3>
+          <p className="text-gray-700 mb-4">
+            Para agregar prendas de ropa, por favor use el botón <strong>"Agregar Ropa (Masivo)"</strong> 
+            que permite ingresar múltiples prendas de forma eficiente.
+          </p>
+          <button
+            type="button"
+            onClick={onRemove}
+            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+          >
+            Eliminar este formulario
+          </button>
+        </div>
       </div>
     );
   }

@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductDetailWithProviders from '../../components/shop/ProductDetailWithProviders';
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/productos');
+}
+---
+
+<Layout title="Detalle del Producto - Entrepeques">
+  <ProductDetailWithProviders client:only="react" productId={id} />
+</Layout>

@@ -1,5 +1,4 @@
-import { httpService } from './http.service';
-import { authService } from './auth.service';
+import { HttpService } from './http.service';
 
 export interface ClothingPrice {
   id: number;
@@ -7,6 +6,7 @@ export interface ClothingPrice {
   garment_type: string;
   quality_level: string;
   purchase_price: number;
+  sale_price: number;
   is_active: boolean;
 }
 
@@ -17,68 +17,111 @@ export interface ClothingSize {
   display_order: number;
 }
 
-export interface ClothingCheckResponse {
-  isClothing: boolean;
-  categoryGroup: string | null;
-}
-
-export interface ClothingValuationResult {
-  purchasePrice: number;
-  suggestedSalePrice: number;
-  storeCreditPrice: number;
-  consignmentPrice: number;
-}
-
 class ClothingService {
+  private http: HttpService;
+  private initialized = false;
+
   constructor() {
-    // No inicializar el token aquí para evitar errores de importación circular
+    this.http = new HttpService();
+    this.initializeIfBrowser();
   }
 
-  // Actualizar el token de autenticación en las cabeceras HTTP
-  private refreshAuthToken() {
-    const token = authService.getToken();
-    if (token) {
-      httpService.setAuthToken(token);
+  private initializeIfBrowser(): void {
+    if (typeof window !== 'undefined' && !this.initialized) {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
+      this.initialized = true;
     }
   }
 
-  // Asegurar que el usuario esté autenticado antes de hacer peticiones
-  private ensureAuthenticated() {
-    this.refreshAuthToken();
-    if (!authService.isAuthenticated()) {
-      throw new Error('Usuario no autenticado');
+  private refreshToken(): void {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
     }
   }
-  async checkIfClothingCategory(subcategoryId: number): Promise<ClothingCheckResponse> {
+
+  private handleAuthError(): void {
+    if (typeof window !== 'undefined') {
+      console.error('Token inválido detectado, limpiando almacenamiento local...');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('entrepeques_auth_token');
+      localStorage.removeItem('entrepeques_user');
+      // Recargar la página para forzar nuevo login
+      window.location.reload();
+    }
+  }
+  async checkIsClothingCategory(subcategoryId: number): Promise<boolean> {
+    this.refreshToken();
     try {
-      this.ensureAuthenticated();
-      const response = await httpService.get(`/clothing/check-category/${subcategoryId}`);
-      return response.data;
-    } catch (error) {
+      const response = await this.http.get(`/clothing/check-category/${subcategoryId}`);
+      return response.isClothing;
+    } catch (error: any) {
       console.error('Error checking clothing category:', error);
-      throw error;
+      // Si es un error 401, limpiar el token inválido
+      if (error.status === 401) {
+        this.handleAuthError();
+      }
+      return false;
     }
   }
 
   async getGarmentTypes(categoryGroup: string): Promise<string[]> {
+    this.refreshToken();
     try {
-      this.ensureAuthenticated();
-      const response = await httpService.get(`/clothing/garment-types/${categoryGroup}`);
-      return response.data;
-    } catch (error) {
+      const response = await this.http.get<any>(`/clothing/garment-types/${categoryGroup}`);
+      // El API devuelve { status: 'success', data: [...] }
+      return response.data || [];
+    } catch (error: any) {
       console.error('Error getting garment types:', error);
-      throw error;
+      if (error.status === 401) {
+        this.handleAuthError();
+      }
+      return [];
     }
   }
 
-  async getClothingSizes(categoryGroup: string): Promise<ClothingSize[]> {
+  async getSizes(categoryGroup: string): Promise<ClothingSize[]> {
+    this.refreshToken();
     try {
-      this.ensureAuthenticated();
-      const response = await httpService.get(`/clothing/sizes/${categoryGroup}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error getting clothing sizes:', error);
-      throw error;
+      const response = await this.http.get<any>(`/clothing/sizes/${categoryGroup}`);
+      // El API devuelve { status: 'success', data: [...] }
+      return response.data || [];
+    } catch (error: any) {
+      console.error('Error getting sizes:', error);
+      if (error.status === 401) {
+        this.handleAuthError();
+      }
+      return [];
+    }
+  }
+
+  async getClothingPrice(
+    categoryGroup: string,
+    garmentType: string,
+    qualityLevel: string
+  ): Promise<ClothingPrice | null> {
+    this.refreshToken();
+    try {
+      const params = new URLSearchParams({
+        categoryGroup,
+        garmentType,
+        qualityLevel
+      });
+      const response = await this.http.get<any>(`/clothing/price?${params}`);
+      // El API devuelve { status: 'success', data: {...} }
+      return response.data || null;
+    } catch (error: any) {
+      console.error('Error getting clothing price:', error);
+      if (error.status === 401) {
+        this.handleAuthError();
+      }
+      return null;
     }
   }
 
@@ -90,13 +133,21 @@ class ClothingService {
     conditionState: string;
     demand: string;
     cleanliness: string;
-  }): Promise<ClothingValuationResult> {
+  }): Promise<{
+    purchasePrice: number;
+    suggestedSalePrice: number;
+    storeCreditPrice: number;
+    consignmentPrice: number;
+  }> {
+    this.refreshToken();
     try {
-      this.ensureAuthenticated();
-      const response = await httpService.post('/clothing/calculate', data);
-      return response.data;
-    } catch (error) {
+      const response = await this.http.post('/clothing/calculate', data);
+      return response;
+    } catch (error: any) {
       console.error('Error calculating clothing valuation:', error);
+      if (error.status === 401) {
+        this.handleAuthError();
+      }
       throw error;
     }
   }

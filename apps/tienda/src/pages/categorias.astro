@@ -1,0 +1,167 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { httpService } from '../services/http.service';
+
+// Obtener categorías desde la API (build time)
+let categories = [];
+let error = null;
+
+try {
+  const response = await httpService.get('/categories');
+  categories = response.data || [];
+} catch (e) {
+  error = 'Error al cargar categorías';
+  console.error('Error fetching categories:', e);
+}
+
+// Iconos para cada categoría (mapeo manual por ahora)
+const categoryIcons = {
+  'Ropa': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+  </svg>`,
+  'Juguetes': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path>
+  </svg>`,
+  'Accesorios': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+  </svg>`,
+  'Mobiliario': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+  </svg>`,
+  'Electrónica': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+  </svg>`,
+  'Libros': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+  </svg>`,
+  'Deportes': `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  </svg>`
+};
+
+// Color de fondo para cada categoría
+const categoryColors = {
+  'Ropa': 'bg-pink-100 text-pink-600 group-hover:bg-pink-200',
+  'Juguetes': 'bg-blue-100 text-blue-600 group-hover:bg-blue-200',
+  'Accesorios': 'bg-yellow-100 text-yellow-600 group-hover:bg-yellow-200',
+  'Mobiliario': 'bg-green-100 text-green-600 group-hover:bg-green-200',
+  'Electrónica': 'bg-purple-100 text-purple-600 group-hover:bg-purple-200',
+  'Libros': 'bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200',
+  'Deportes': 'bg-orange-100 text-orange-600 group-hover:bg-orange-200'
+};
+
+// Función para obtener slug de categoría
+function getCategorySlug(name: string): string {
+  return name.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
+---
+
+<Layout title="Todas las Categorías">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-pink-50 to-blue-50 py-12">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+            Explora nuestras categorías
+          </h1>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Encuentra todo lo que necesitas para tus pequeños. Desde ropa hasta juguetes, 
+            todos nuestros productos están cuidadosamente seleccionados.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categorías -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        {error ? (
+          <div class="text-center py-12">
+            <p class="text-red-600">{error}</p>
+          </div>
+        ) : categories.length === 0 ? (
+          <div class="text-center py-12">
+            <p class="text-gray-500">No hay categorías disponibles</p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {categories.map((category: any) => {
+              const slug = getCategorySlug(category.name);
+              const icon = categoryIcons[category.name] || categoryIcons['Accesorios'];
+              const colorClass = categoryColors[category.name] || categoryColors['Accesorios'];
+              
+              return (
+                <a 
+                  href={`/categoria/${slug}`} 
+                  class="group relative overflow-hidden rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div class="p-6">
+                    <div class={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center transition-colors ${colorClass}`}>
+                      <Fragment set:html={icon} />
+                    </div>
+                    <h3 class="text-lg font-semibold text-center text-gray-800 group-hover:text-pink-600 transition-colors">
+                      {category.name}
+                    </h3>
+                    {category.description && (
+                      <p class="text-sm text-gray-500 text-center mt-2 line-clamp-2">
+                        {category.description}
+                      </p>
+                    )}
+                    {category.product_count !== undefined && (
+                      <p class="text-xs text-gray-400 text-center mt-3">
+                        {category.product_count} productos
+                      </p>
+                    )}
+                  </div>
+                  
+                  <!-- Hover effect -->
+                  <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform"></div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-12 bg-white">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          ¿No encuentras lo que buscas?
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Nuestro inventario se actualiza constantemente. Contáctanos para solicitudes especiales.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a 
+            href="/buscar" 
+            class="inline-block bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors"
+          >
+            Buscar productos
+          </a>
+          <a 
+            href="/contacto" 
+            class="inline-block bg-white text-pink-600 border-2 border-pink-600 px-6 py-3 rounded-lg hover:bg-pink-50 transition-colors"
+          >
+            Contáctanos
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+</style>

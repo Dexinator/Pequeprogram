@@ -18,6 +18,13 @@ export class HttpService {
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
       }
+      
+      // Verificar si hay un token almacenado
+      const storedToken = localStorage.getItem('entrepeques_auth_token');
+      if (storedToken) {
+        console.log('🔑 Token encontrado en localStorage, configurando...');
+        this.setAuthToken(storedToken);
+      }
     }
 
     console.log('API URL:', baseUrl); // Para depuración
@@ -140,9 +147,11 @@ export class HttpService {
       }
       
       console.error(`❌ Error en petición GET:`, {
+        url: fullUrl,
         status: response.status,
         statusText: response.statusText,
-        body: errorBody
+        body: errorBody,
+        headers: Object.fromEntries([...response.headers.entries()])
       });
       
       // Crear error con información adicional
@@ -153,6 +162,7 @@ export class HttpService {
       
       // Si es un error 401, redirigir a login
       if (response.status === 401) {
+        console.error('🚫 Error 401 detectado, iniciando redirección a login...');
         this.handleUnauthorized();
       }
       

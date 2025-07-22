@@ -1,1 +1,294 @@
 @import "tailwindcss";
+
+/* Font Face Definitions */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Muli';
+  src: url('/fonts/Muli.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Muli';
+  src: url('/fonts/Muli-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fredoka One';
+  src: url('/fonts/FredokaOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tailwind CSS v4 Theme Configuration */
+@theme {
+  /* Brand Colors - Entrepeques */
+  --color-brand-rosa: rgb(227 35 143);
+  --color-brand-rosa-bright: rgb(255 107 157);
+  --color-brand-amarillo: rgb(225 213 30);
+  --color-brand-amarillo-bright: rgb(254 202 87);
+  --color-brand-azul: rgb(0 160 221);
+  --color-brand-azul-light: rgb(116 185 255);
+  --color-brand-verde-lima: rgb(63 174 73);
+  --color-brand-verde-lima-bright: rgb(108 92 231);
+  --color-brand-verde-oscuro: rgb(0 121 64);
+  --color-brand-verde-bright: rgb(0 184 148);
+  --color-brand-azul-profundo: rgb(0 112 185);
+  --color-brand-azul-deep: rgb(45 52 54);
+
+  /* Extended Color Palette for Dark Mode */
+  --color-brand-rosa-dark: rgb(180 28 113);
+  --color-brand-amarillo-dark: rgb(180 170 24);
+  --color-brand-azul-dark: rgb(0 128 177);
+  --color-brand-verde-lima-dark: rgb(50 139 58);
+  --color-brand-verde-oscuro-dark: rgb(0 97 51);
+  --color-brand-azul-profundo-dark: rgb(0 90 148);
+
+  /* Neutral Colors */
+  --color-neutral-50: rgb(248 250 252);
+  --color-neutral-100: rgb(241 245 249);
+  --color-neutral-200: rgb(226 232 240);
+  --color-neutral-300: rgb(203 213 225);
+  --color-neutral-400: rgb(148 163 184);
+  --color-neutral-500: rgb(100 116 139);
+  --color-neutral-600: rgb(71 85 105);
+  --color-neutral-700: rgb(51 65 85);
+  --color-neutral-800: rgb(30 41 59);
+  --color-neutral-900: rgb(15 23 42);
+  --color-neutral-950: rgb(2 6 23);
+
+  /* Font Families */
+  --font-family-display: 'Fredoka One', system-ui, sans-serif;
+  --font-family-heading: 'Poppins', system-ui, sans-serif;
+  --font-family-body: 'Muli', Inter, system-ui, sans-serif;
+
+  /* Font Sizes - Using Tailwind's type scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Base Styles */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: theme(--font-family-body);
+    color: theme(--color-neutral-900);
+    background-color: theme(--color-neutral-50);
+  }
+
+  .dark body {
+    color: theme(--color-neutral-100);
+    background-color: theme(--color-neutral-950);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: theme(--font-family-heading);
+  }
+
+  .font-display {
+    font-family: theme(--font-family-display);
+  }
+}
+
+/* Utility Classes */
+@layer utilities {
+  /* Text Colors */
+  .text-brand-rosa { color: theme(--color-brand-rosa); }
+  .text-brand-rosa-bright { color: theme(--color-brand-rosa-bright); }
+  .text-brand-amarillo { color: theme(--color-brand-amarillo); }
+  .text-brand-amarillo-bright { color: theme(--color-brand-amarillo-bright); }
+  .text-brand-azul { color: theme(--color-brand-azul); }
+  .text-brand-azul-light { color: theme(--color-brand-azul-light); }
+  .text-brand-verde-lima { color: theme(--color-brand-verde-lima); }
+  .text-brand-verde-lima-bright { color: theme(--color-brand-verde-lima-bright); }
+  .text-brand-verde-oscuro { color: theme(--color-brand-verde-oscuro); }
+  .text-brand-verde-bright { color: theme(--color-brand-verde-bright); }
+  .text-brand-azul-profundo { color: theme(--color-brand-azul-profundo); }
+  .text-brand-azul-deep { color: theme(--color-brand-azul-deep); }
+
+  /* Background Colors */
+  .bg-brand-rosa { background-color: theme(--color-brand-rosa); }
+  .bg-brand-rosa-bright { background-color: theme(--color-brand-rosa-bright); }
+  .bg-brand-amarillo { background-color: theme(--color-brand-amarillo); }
+  .bg-brand-amarillo-bright { background-color: theme(--color-brand-amarillo-bright); }
+  .bg-brand-azul { background-color: theme(--color-brand-azul); }
+  .bg-brand-azul-light { background-color: theme(--color-brand-azul-light); }
+  .bg-brand-verde-lima { background-color: theme(--color-brand-verde-lima); }
+  .bg-brand-verde-lima-bright { background-color: theme(--color-brand-verde-lima-bright); }
+  .bg-brand-verde-oscuro { background-color: theme(--color-brand-verde-oscuro); }
+  .bg-brand-verde-bright { background-color: theme(--color-brand-verde-bright); }
+  .bg-brand-azul-profundo { background-color: theme(--color-brand-azul-profundo); }
+  .bg-brand-azul-deep { background-color: theme(--color-brand-azul-deep); }
+
+  /* Border Colors */
+  .border-brand-rosa { border-color: theme(--color-brand-rosa); }
+  .border-brand-amarillo { border-color: theme(--color-brand-amarillo); }
+  .border-brand-azul { border-color: theme(--color-brand-azul); }
+  .border-brand-verde-lima { border-color: theme(--color-brand-verde-lima); }
+  .border-brand-verde-oscuro { border-color: theme(--color-brand-verde-oscuro); }
+  .border-brand-azul-profundo { border-color: theme(--color-brand-azul-profundo); }
+
+  /* Dark Mode Variants */
+  .dark .text-brand-rosa-dark { color: theme(--color-brand-rosa-dark); }
+  .dark .text-brand-amarillo-dark { color: theme(--color-brand-amarillo-dark); }
+  .dark .text-brand-azul-dark { color: theme(--color-brand-azul-dark); }
+  .dark .text-brand-verde-lima-dark { color: theme(--color-brand-verde-lima-dark); }
+  .dark .text-brand-verde-oscuro-dark { color: theme(--color-brand-verde-oscuro-dark); }
+  .dark .text-brand-azul-profundo-dark { color: theme(--color-brand-azul-profundo-dark); }
+
+  .dark .bg-brand-rosa-dark { background-color: theme(--color-brand-rosa-dark); }
+  .dark .bg-brand-amarillo-dark { background-color: theme(--color-brand-amarillo-dark); }
+  .dark .bg-brand-azul-dark { background-color: theme(--color-brand-azul-dark); }
+  .dark .bg-brand-verde-lima-dark { background-color: theme(--color-brand-verde-lima-dark); }
+  .dark .bg-brand-verde-oscuro-dark { background-color: theme(--color-brand-verde-oscuro-dark); }
+  .dark .bg-brand-azul-profundo-dark { background-color: theme(--color-brand-azul-profundo-dark); }
+
+  /* Hover States */
+  .hover\:bg-brand-rosa-dark:hover { background-color: theme(--color-brand-rosa-dark); }
+  .hover\:bg-brand-amarillo-dark:hover { background-color: theme(--color-brand-amarillo-dark); }
+  .hover\:bg-brand-azul-dark:hover { background-color: theme(--color-brand-azul-dark); }
+  .hover\:bg-brand-verde-lima-dark:hover { background-color: theme(--color-brand-verde-lima-dark); }
+  .hover\:bg-brand-verde-oscuro:hover { background-color: theme(--color-brand-verde-oscuro); }
+  .hover\:bg-brand-azul-profundo:hover { background-color: theme(--color-brand-azul-profundo); }
+
+  .hover\:text-brand-azul-profundo:hover { color: theme(--color-brand-azul-profundo); }
+
+  /* Neutral Colors */
+  .text-neutral-50 { color: theme(--color-neutral-50); }
+  .text-neutral-100 { color: theme(--color-neutral-100); }
+  .text-neutral-200 { color: theme(--color-neutral-200); }
+  .text-neutral-300 { color: theme(--color-neutral-300); }
+  .text-neutral-400 { color: theme(--color-neutral-400); }
+  .text-neutral-500 { color: theme(--color-neutral-500); }
+  .text-neutral-600 { color: theme(--color-neutral-600); }
+  .text-neutral-700 { color: theme(--color-neutral-700); }
+  .text-neutral-800 { color: theme(--color-neutral-800); }
+  .text-neutral-900 { color: theme(--color-neutral-900); }
+  .text-neutral-950 { color: theme(--color-neutral-950); }
+
+  .bg-neutral-50 { background-color: theme(--color-neutral-50); }
+  .bg-neutral-100 { background-color: theme(--color-neutral-100); }
+  .bg-neutral-200 { background-color: theme(--color-neutral-200); }
+  .bg-neutral-300 { background-color: theme(--color-neutral-300); }
+  .bg-neutral-400 { background-color: theme(--color-neutral-400); }
+  .bg-neutral-500 { background-color: theme(--color-neutral-500); }
+  .bg-neutral-600 { background-color: theme(--color-neutral-600); }
+  .bg-neutral-700 { background-color: theme(--color-neutral-700); }
+  .bg-neutral-800 { background-color: theme(--color-neutral-800); }
+  .bg-neutral-900 { background-color: theme(--color-neutral-900); }
+  .bg-neutral-950 { background-color: theme(--color-neutral-950); }
+
+  .border-neutral-300 { border-color: theme(--color-neutral-300); }
+  .border-neutral-600 { border-color: theme(--color-neutral-600); }
+
+  /* Shadows */
+  .shadow-sm { box-shadow: theme(--shadow-sm); }
+  .shadow-md { box-shadow: theme(--shadow-md); }
+  .shadow-lg { box-shadow: theme(--shadow-lg); }
+  .shadow-xl { box-shadow: theme(--shadow-xl); }
+
+  /* Border Radius */
+  .rounded-sm { border-radius: theme(--radius-sm); }
+  .rounded-md { border-radius: theme(--radius-md); }
+  .rounded-lg { border-radius: theme(--radius-lg); }
+  .rounded-xl { border-radius: theme(--radius-xl); }
+  .rounded-full { border-radius: theme(--radius-full); }
+}
+
+/* Animación para mensaje de agregado al carrito */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 2s ease-in-out forwards;
+}

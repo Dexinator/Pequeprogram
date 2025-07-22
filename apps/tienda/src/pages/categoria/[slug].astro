@@ -1,0 +1,38 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CategoryProducts from '../../components/shop/CategoryProducts';
+import PageWrapper from '../../components/PageWrapper';
+
+// Obtener el slug de la categoría
+const { slug } = Astro.params;
+
+// Mapeo de slugs a IDs de categoría (temporalmente hasta tener slugs en BD)
+const categoryMap: Record<string, { id: number; name: string }> = {
+  'ropa': { id: 1, name: 'Ropa' },
+  'juguetes': { id: 2, name: 'Juguetes' },
+  'accesorios': { id: 3, name: 'Accesorios' },
+  'mobiliario': { id: 4, name: 'Mobiliario' },
+  'electronica': { id: 5, name: 'Electrónica' },
+  'libros': { id: 6, name: 'Libros' },
+  'deportes': { id: 7, name: 'Deportes' }
+};
+
+const category = categoryMap[slug || ''];
+
+if (!category) {
+  return Astro.redirect('/categorias');
+}
+
+// Para SSR, necesitamos pasar la categoría como prop
+const categoryData = {
+  id: category.id,
+  name: category.name,
+  slug: slug
+};
+---
+
+<Layout title={`${category.name} - Entrepeques`}>
+  <PageWrapper client:only="react">
+    <CategoryProducts category={categoryData} />
+  </PageWrapper>
+</Layout>

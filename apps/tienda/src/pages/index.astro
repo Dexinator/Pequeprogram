@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import FeaturedProducts from '../components/shop/FeaturedProducts';
+import PageWrapper from '../components/PageWrapper';
 ---
 
 <Layout title="Inicio">
@@ -88,37 +90,9 @@ import Layout from '../layouts/Layout.astro';
   <section class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center mb-12">Productos destacados</h2>
-      <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Los productos se cargarán dinámicamente aquí -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="aspect-square bg-gray-200 animate-pulse"></div>
-          <div class="p-4">
-            <div class="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-            <div class="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="aspect-square bg-gray-200 animate-pulse"></div>
-          <div class="p-4">
-            <div class="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-            <div class="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="aspect-square bg-gray-200 animate-pulse"></div>
-          <div class="p-4">
-            <div class="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-            <div class="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="aspect-square bg-gray-200 animate-pulse"></div>
-          <div class="p-4">
-            <div class="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-            <div class="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-          </div>
-        </div>
-      </div>
+      <PageWrapper client:only="react">
+        <FeaturedProducts />
+      </PageWrapper>
     </div>
   </section>
 

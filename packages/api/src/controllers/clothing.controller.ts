@@ -84,6 +84,37 @@ export class ClothingController {
     });
   });
 
+  getSpecificPrice = asyncHandler(async (req: Request, res: Response) => {
+    const { categoryGroup, garmentType, qualityLevel } = req.query;
+
+    if (!categoryGroup || !garmentType || !qualityLevel) {
+      res.status(400).json({
+        status: 'error',
+        message: 'categoryGroup, garmentType, and qualityLevel are required'
+      });
+      return;
+    }
+
+    const price = await this.clothingService.getClothingPriceByType(
+      categoryGroup as string,
+      garmentType as string,
+      qualityLevel as string
+    );
+
+    if (!price) {
+      res.status(404).json({
+        status: 'error',
+        message: 'Price not found for the specified combination'
+      });
+      return;
+    }
+
+    res.json({
+      status: 'success',
+      data: price
+    });
+  });
+
   calculateClothingValuation = asyncHandler(async (req: Request, res: Response) => {
     const {
       subcategoryId,

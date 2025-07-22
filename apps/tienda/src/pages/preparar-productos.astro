@@ -1,11 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProductPreparation from '../components/ProductPreparation.jsx';
+import PageWrapper from '../components/PageWrapper';
 ---
 
 <Layout title="Preparar Productos - Entrepeques">
   <main>
-    <ProductPreparation client:only="react" />
+    <PageWrapper client:only="react">
+      <ProductPreparation />
+    </PageWrapper>
   </main>
 </Layout>
 

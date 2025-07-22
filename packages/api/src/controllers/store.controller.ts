@@ -67,6 +67,40 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
   });
 });
 
+// @desc    Get public product detail by inventory ID
+// @route   GET /api/store/products/:id
+// @access  Public
+export const getProductDetail = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const product = await storeService.getOnlineProductDetail(id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error('Producto no encontrado');
+  }
+
+  res.json({
+    success: true,
+    data: product
+  });
+});
+
+// @desc    Get related products for a product
+// @route   GET /api/store/products/:id/related
+// @access  Public
+export const getRelatedProducts = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const limit = parseInt(req.query.limit as string) || 8;
+
+  const products = await storeService.getRelatedProducts(parseInt(id), limit);
+
+  res.json({
+    success: true,
+    data: products
+  });
+});
+
 // @desc    Get product details for preparation
 // @route   GET /api/store/products/:id/prepare
 // @access  Private (admin, manager, sales)

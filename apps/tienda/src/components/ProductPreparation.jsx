@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { storeService } from '../services/store.service';
 import OptionalAuthGuard from './auth/OptionalAuthGuard';
 import { EMPLOYEE_ROLES } from '../config/routes.config';
@@ -432,14 +432,12 @@ const ProductPreparationContent = () => {
   );
 };
 
-// Componente con provider y guardia de autenticación
+// Componente con guardia de autenticación (providers ya están en Layout)
 const ProductPreparation = () => {
   return (
-    <AuthProvider>
-      <OptionalAuthGuard requireAuth={true} allowedRoles={EMPLOYEE_ROLES}>
-        <ProductPreparationContent />
-      </OptionalAuthGuard>
-    </AuthProvider>
+    <OptionalAuthGuard requireAuth={true} allowedRoles={EMPLOYEE_ROLES}>
+      <ProductPreparationContent />
+    </OptionalAuthGuard>
   );
 };
 

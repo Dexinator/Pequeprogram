@@ -7,6 +7,8 @@ export interface Props {
 const { title, description = 'Entrepeques - Tienda de artículos infantiles de segunda mano' } = Astro.props;
 import '../styles/global.css';
 import NavBar from '../components/layout/NavBar.jsx';
+import AppProviders from '../components/AppProviders.jsx';
+import ClearAuth from '../components/ClearAuth.jsx';
 ---
 
 <!doctype html>
@@ -25,6 +27,7 @@ import NavBar from '../components/layout/NavBar.jsx';
     <title>{title} | Entrepeques</title>
   </head>
   <body>
+    <ClearAuth client:only="react" />
     <NavBar client:only="react" />
     <main>
       <slot />

@@ -246,6 +246,7 @@ export class ValuationService {
 
   // Calcular precios para un producto individual
   async calculateValuation(data: CalculateValuationDto): Promise<ValuationCalculationResult> {
+    this.ensureAuthenticated();
     return this.http.post<ValuationCalculationResult>(`${this.baseEndpoint}/calculate`, data);
   }
 

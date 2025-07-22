@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ProductoForm } from './ProductoForm';
 import { ClienteForm } from './ClienteForm';
 import OfertaDocument from './OfertaDocument';
 import { ValuationService } from '../services';
-import { useAuth, AuthProvider } from '../context/AuthContext';
+import { useAuth, AuthProvider, AuthContext } from '../context/AuthContext';
+import ClothingBulkForm from './ClothingBulkForm';
+import ClothingBulkProductDisplay from './ClothingBulkProductDisplay';
 
 // En un proyecto Astro puedes importar el layout directamente o usar un componente Layout React
 // Para este ejemplo, asumimos que estamos usando la integración de React en Astro
@@ -89,6 +91,10 @@ function NuevaValuacionContent() {
 
   // Estado para mostrar documento de oferta
   const [showOfferDocument, setShowOfferDocument] = useState(false);
+  
+  // Estado para mostrar formulario masivo de ropa
+  const [showClothingBulkForm, setShowClothingBulkForm] = useState(false);
+  const [selectedClothingCategory, setSelectedClothingCategory] = useState(null);
 
   // Estado para error
   const [error, setError] = useState(null);
@@ -432,6 +438,68 @@ function NuevaValuacionContent() {
           : product
       )
     );
+  };
+
+  // Manejar productos masivos de ropa
+  const handleBulkClothingProducts = (clothingProducts) => {
+    // Crear un producto para cada combinación de calidad-talla
+    const newProducts = clothingProducts.map((product, index) => ({
+      id: Date.now() + index,
+      data: {
+        ...product,
+        category_id: selectedClothingCategory?.categoryId,
+        subcategory_id: product.subcategory_id,
+        status: product.status || 'Usado como nuevo',
+        brand_id: null,
+        brand_renown: product.brand_renown || 'Normal',
+        modality: product.modality || 'compra directa',
+        condition_state: product.condition_state || 'Bueno',
+        demand: product.demand || 'Media',
+        cleanliness: product.cleanliness || 'Buena',
+        new_price: product.suggested_sale_price, // Usar precio de venta como referencia
+        quantity: product.quantity,
+        features: {
+          tipo: product.garmentType,
+          talla: product.size,
+          marca: product.brand || 'ropa',
+          color: product.color || 'NA',
+          calidad: product.qualityLevel
+        },
+        notes: `Prenda: ${product.garmentType}, Calidad: ${product.qualityLevel}, Talla: ${product.size}`,
+        isClothing: true,
+        // Precios ya calculados
+        suggested_purchase_price: product.purchase_price,
+        suggested_sale_price: product.suggested_sale_price,
+        store_credit_price: product.store_credit_price,
+        consignment_price: product.consignment_price
+      },
+      prices: {
+        suggested_purchase_price: product.purchase_price,
+        suggested_sale_price: product.suggested_sale_price,
+        store_credit_price: product.store_credit_price,
+        consignment_price: product.consignment_price,
+        final_purchase_price: product.purchase_price,
+        final_sale_price: product.suggested_sale_price
+      },
+      // Marcar como producto de ropa para manejo especial
+      isClothingBulk: true
+    }));
+
+    // Agregar todos los productos al estado
+    setProducts(prev => [...prev, ...newProducts]);
+    
+    // Cerrar el formulario masivo
+    setShowClothingBulkForm(false);
+    setSelectedClothingCategory(null);
+    
+    // Mostrar notificación
+    setNotification({
+      type: 'success',
+      message: `Se agregaron ${newProducts.length} prendas de ropa exitosamente`
+    });
+    
+    // Limpiar notificación después de 3 segundos
+    setTimeout(() => setNotification(null), 3000);
   };
 
   // Crear valuación en el servidor
@@ -1261,6 +1329,17 @@ AuthContext loading: ${authLoading}
     );
   }
 
+  console.log('🔍 Estado de renderizado:', {
+    showSummary,
+    showClothingBulkForm,
+    selectedClothingCategory: selectedClothingCategory?.id,
+    productsCount: products.length,
+    isAuthenticated,
+    authLoading,
+    user: user?.username,
+    error
+  });
+
   return (
     <div className="space-y-6 pb-10">
       <div className="flex justify-between items-center">
@@ -1303,25 +1382,44 @@ AuthContext loading: ${authLoading}
 
           {/* Sección de Productos */}
           {products.map((product, index) => (
-            <ProductoForm
-              key={product.id}
-              id={`producto-${product.id}`}
-              index={index}
-              initialData={product.data}
-              onRemove={() => removeProduct(product.id)}
-              onChange={(data) => updateProductData(product.id, data)}
-            />
+            product.isClothingBulk ? (
+              <ClothingBulkProductDisplay
+                key={product.id}
+                product={product}
+                index={index}
+                onRemove={() => removeProduct(product.id)}
+              />
+            ) : (
+              <ProductoForm
+                key={product.id}
+                id={`producto-${product.id}`}
+                index={index}
+                initialData={product.data}
+                onRemove={() => removeProduct(product.id)}
+                onChange={(data) => updateProductData(product.id, data)}
+              />
+            )
           ))}
 
           {/* Botones de acción */}
           <div className="flex flex-wrap gap-4 justify-between">
-            <button
-              type="button"
-              className="px-5 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-claro/80 transition-colors"
-              onClick={addProduct}
-            >
-              + Agregar Producto
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="px-5 py-2 bg-azul-claro text-white rounded-md hover:bg-azul-claro/80 transition-colors"
+                onClick={addProduct}
+              >
+                + Agregar Producto
+              </button>
+              
+              <button
+                type="button"
+                className="px-5 py-2 bg-rosa text-white rounded-md hover:bg-rosa/80 transition-colors"
+                onClick={() => setShowClothingBulkForm(true)}
+              >
+                + Agregar Ropa (Masivo)
+              </button>
+            </div>
 
             <button
               type="button"
@@ -1333,7 +1431,7 @@ AuthContext loading: ${authLoading}
                 <span className="flex items-center gap-2">
                   <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 814 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   Procesando...
                 </span>
@@ -1345,6 +1443,66 @@ AuthContext loading: ${authLoading}
         </>
       ) : (
         renderSummary()
+      )}
+
+      {/* Modal para selección de categoría de ropa */}
+      {showClothingBulkForm && !selectedClothingCategory && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-4">Seleccione la categoría de ropa</h3>
+                
+                <div className="space-y-3">
+                  <div className="text-sm text-gray-600 mb-2">Seleccione el tipo de prenda a valorar:</div>
+                  {[
+                    { id: 36, name: 'Niña - Cuerpo completo', categoryId: 5, categoryGroup: 'cuerpo_completo' },
+                    { id: 37, name: 'Niña - Arriba de cintura', categoryId: 5, categoryGroup: 'arriba_cintura' },
+                    { id: 38, name: 'Niña - Abajo de cintura', categoryId: 5, categoryGroup: 'abajo_cintura' },
+                    { id: 39, name: 'Niño - Cuerpo completo', categoryId: 5, categoryGroup: 'cuerpo_completo' },
+                    { id: 40, name: 'Niño - Arriba de cintura', categoryId: 5, categoryGroup: 'arriba_cintura' },
+                    { id: 41, name: 'Niño - Abajo de cintura', categoryId: 5, categoryGroup: 'abajo_cintura' },
+                    { id: 42, name: 'Calzado Niña', categoryId: 5, categoryGroup: 'calzado' },
+                    { id: 43, name: 'Calzado Niño', categoryId: 5, categoryGroup: 'calzado' },
+                    { id: 45, name: 'Ropa de Dama y Maternidad', categoryId: 5, categoryGroup: 'dama_maternidad' }
+                  ].map(category => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedClothingCategory(category)}
+                      className="w-full text-left p-3 border rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => setShowClothingBulkForm(false)}
+                  className="mt-4 w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para formulario masivo de ropa */}
+      {showClothingBulkForm && selectedClothingCategory && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <ClothingBulkForm
+              subcategoryId={selectedClothingCategory.id}
+              categoryGroup={selectedClothingCategory.categoryGroup}
+              onAddProducts={handleBulkClothingProducts}
+              onCancel={() => {
+                setShowClothingBulkForm(false);
+                setSelectedClothingCategory(null);
+              }}
+            />
+          </div>
+        </div>
       )}
 
       {/* Modal del documento de oferta */}
@@ -1386,6 +1544,15 @@ AuthContext loading: ${authLoading}
 }
 
 export default function NuevaValuacion() {
+  // Verificar si ya estamos dentro de un AuthProvider
+  const existingAuth = useContext(AuthContext);
+  
+  if (existingAuth !== undefined) {
+    // Ya estamos dentro de un AuthProvider, no crear otro
+    return <NuevaValuacionContent />;
+  }
+  
+  // No hay AuthProvider, crear uno
   return (
     <AuthProvider>
       <NuevaValuacionContent />
