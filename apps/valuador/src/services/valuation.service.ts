@@ -194,6 +194,17 @@ export class ValuationService {
     }
   }
 
+  // Obtener características para ofertas
+  async getOfferFeatures(subcategoryId: number): Promise<any> {
+    try {
+      const response = await this.http.get<{success: boolean, data: FeatureDefinition[]}>(`/categories/subcategories/${subcategoryId}/offer-features`);
+      return { ok: true, json: async () => ({ data: response.data || [] }) };
+    } catch (error) {
+      console.error('Error al obtener características de oferta:', error);
+      return { ok: false, json: async () => ({ data: [] }) };
+    }
+  }
+
   // Crear una nueva marca
   async createBrand(brandData: { name: string, subcategory_id: number, renown: string }): Promise<Brand> {
     try {

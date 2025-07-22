@@ -319,7 +319,7 @@ function NuevaValuacionContent() {
     }
 
     try {
-      const response = await fetch(`${valuationService.baseURL}/api/categories/subcategories/${subcategoryId}/offer-features`);
+      const response = await valuationService.getOfferFeatures(subcategoryId);
       if (response.ok) {
         const result = await response.json();
         const features = result.data || [];
