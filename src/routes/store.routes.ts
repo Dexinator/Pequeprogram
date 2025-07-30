@@ -19,14 +19,6 @@ router
   .route('/products/ready')
   .get(getOnlineProducts);
 
-router
-  .route('/products/:id')
-  .get(getProductDetail);
-
-router
-  .route('/products/:id/related')
-  .get(getRelatedProducts);
-
 // Protected routes
 router.use(protect);
 
@@ -34,6 +26,15 @@ router.use(protect);
 router
   .route('/products/pending')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getPendingProducts);
+
+// Specific product routes (must be after /pending to avoid conflicts)
+router
+  .route('/products/:id')
+  .get(getProductDetail);
+
+router
+  .route('/products/:id/related')
+  .get(getRelatedProducts);
 
 router
   .route('/products/:id/prepare')

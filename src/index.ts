@@ -8,6 +8,9 @@ import config from './config';
 const app = express();
 const port = config.port;
 
+// Log para depuración de CORS
+console.log('CORS configurado con orígenes:', config.corsOrigin);
+
 // Configuración de CORS
 app.use(cors({
   origin: config.corsOrigin,
