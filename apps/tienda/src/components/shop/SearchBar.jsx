@@ -108,7 +108,7 @@ const SearchBar = () => {
   };
   
   return (
-    <div ref={searchRef} className="relative w-full max-w-2xl mx-auto">
+    <div ref={searchRef} className="relative w-full max-w-full sm:max-w-2xl mx-auto">
       <form onSubmit={handleSearch} className="relative">
         <input
           type="text"

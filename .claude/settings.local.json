@@ -10,7 +10,10 @@
       "Bash(docker-compose:*)",
       "Bash(docker volume rm:*)",
       "Bash(docker logs:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:tailwindcss.com)",
+      "Bash(rm:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

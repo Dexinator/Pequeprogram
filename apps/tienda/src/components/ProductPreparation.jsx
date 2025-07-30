@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import { CartProvider } from '../context/CartContext';
 import { storeService } from '../services/store.service';
 import OptionalAuthGuard from './auth/OptionalAuthGuard';
 import { EMPLOYEE_ROLES } from '../config/routes.config';
@@ -132,7 +133,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4">Preparar producto para tienda online</h2>
           
@@ -432,12 +433,23 @@ const ProductPreparationContent = () => {
   );
 };
 
-// Componente con guardia de autenticación (providers ya están en Layout)
-const ProductPreparation = () => {
+// Componente con guardia de autenticación
+const ProductPreparationWithAuth = () => {
   return (
     <OptionalAuthGuard requireAuth={true} allowedRoles={EMPLOYEE_ROLES}>
       <ProductPreparationContent />
     </OptionalAuthGuard>
+  );
+};
+
+// Componente principal que incluye los providers
+const ProductPreparation = () => {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <ProductPreparationWithAuth />
+      </CartProvider>
+    </AuthProvider>
   );
 };
 

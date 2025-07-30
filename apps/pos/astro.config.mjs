@@ -2,13 +2,20 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from "@tailwindcss/vite";
 import react from '@astrojs/react';
-import vercel from '@astrojs/vercel';
+
+// Conditionally import vercel adapter only in production
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+let vercelAdapter;
+if (isProduction) {
+  const vercel = await import('@astrojs/vercel');
+  vercelAdapter = vercel.default;
+}
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
   output: 'server',
-  adapter: vercel(),
+  adapter: isProduction ? vercelAdapter() : undefined,
   base: '/',
   server: {
     port: 4324,

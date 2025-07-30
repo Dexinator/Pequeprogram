@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Dark mode configuration for Tailwind CSS v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Font Face Definitions */
 @font-face {
   font-family: 'Poppins';
@@ -94,6 +97,19 @@
   --color-neutral-900: rgb(15 23 42);
   --color-neutral-950: rgb(2 6 23);
 
+  /* Gray Colors (same as neutral for compatibility) */
+  --color-gray-50: rgb(248 250 252);
+  --color-gray-100: rgb(241 245 249);
+  --color-gray-200: rgb(226 232 240);
+  --color-gray-300: rgb(203 213 225);
+  --color-gray-400: rgb(148 163 184);
+  --color-gray-500: rgb(100 116 139);
+  --color-gray-600: rgb(71 85 105);
+  --color-gray-700: rgb(51 65 85);
+  --color-gray-800: rgb(30 41 59);
+  --color-gray-900: rgb(15 23 42);
+  --color-gray-950: rgb(2 6 23);
+
   /* Font Families */
   --font-family-display: 'Fredoka One', system-ui, sans-serif;
   --font-family-heading: 'Poppins', system-ui, sans-serif;
@@ -140,19 +156,12 @@
     color-scheme: light;
   }
 
-  :root.dark {
+  html.dark {
     color-scheme: dark;
   }
 
   body {
     font-family: theme(--font-family-body);
-    color: theme(--color-neutral-900);
-    background-color: theme(--color-neutral-50);
-  }
-
-  .dark body {
-    color: theme(--color-neutral-100);
-    background-color: theme(--color-neutral-950);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -202,20 +211,6 @@
   .border-brand-verde-oscuro { border-color: theme(--color-brand-verde-oscuro); }
   .border-brand-azul-profundo { border-color: theme(--color-brand-azul-profundo); }
 
-  /* Dark Mode Variants */
-  .dark .text-brand-rosa-dark { color: theme(--color-brand-rosa-dark); }
-  .dark .text-brand-amarillo-dark { color: theme(--color-brand-amarillo-dark); }
-  .dark .text-brand-azul-dark { color: theme(--color-brand-azul-dark); }
-  .dark .text-brand-verde-lima-dark { color: theme(--color-brand-verde-lima-dark); }
-  .dark .text-brand-verde-oscuro-dark { color: theme(--color-brand-verde-oscuro-dark); }
-  .dark .text-brand-azul-profundo-dark { color: theme(--color-brand-azul-profundo-dark); }
-
-  .dark .bg-brand-rosa-dark { background-color: theme(--color-brand-rosa-dark); }
-  .dark .bg-brand-amarillo-dark { background-color: theme(--color-brand-amarillo-dark); }
-  .dark .bg-brand-azul-dark { background-color: theme(--color-brand-azul-dark); }
-  .dark .bg-brand-verde-lima-dark { background-color: theme(--color-brand-verde-lima-dark); }
-  .dark .bg-brand-verde-oscuro-dark { background-color: theme(--color-brand-verde-oscuro-dark); }
-  .dark .bg-brand-azul-profundo-dark { background-color: theme(--color-brand-azul-profundo-dark); }
 
   /* Hover States */
   .hover\:bg-brand-rosa-dark:hover { background-color: theme(--color-brand-rosa-dark); }
@@ -227,33 +222,6 @@
 
   .hover\:text-brand-azul-profundo:hover { color: theme(--color-brand-azul-profundo); }
 
-  /* Neutral Colors */
-  .text-neutral-50 { color: theme(--color-neutral-50); }
-  .text-neutral-100 { color: theme(--color-neutral-100); }
-  .text-neutral-200 { color: theme(--color-neutral-200); }
-  .text-neutral-300 { color: theme(--color-neutral-300); }
-  .text-neutral-400 { color: theme(--color-neutral-400); }
-  .text-neutral-500 { color: theme(--color-neutral-500); }
-  .text-neutral-600 { color: theme(--color-neutral-600); }
-  .text-neutral-700 { color: theme(--color-neutral-700); }
-  .text-neutral-800 { color: theme(--color-neutral-800); }
-  .text-neutral-900 { color: theme(--color-neutral-900); }
-  .text-neutral-950 { color: theme(--color-neutral-950); }
-
-  .bg-neutral-50 { background-color: theme(--color-neutral-50); }
-  .bg-neutral-100 { background-color: theme(--color-neutral-100); }
-  .bg-neutral-200 { background-color: theme(--color-neutral-200); }
-  .bg-neutral-300 { background-color: theme(--color-neutral-300); }
-  .bg-neutral-400 { background-color: theme(--color-neutral-400); }
-  .bg-neutral-500 { background-color: theme(--color-neutral-500); }
-  .bg-neutral-600 { background-color: theme(--color-neutral-600); }
-  .bg-neutral-700 { background-color: theme(--color-neutral-700); }
-  .bg-neutral-800 { background-color: theme(--color-neutral-800); }
-  .bg-neutral-900 { background-color: theme(--color-neutral-900); }
-  .bg-neutral-950 { background-color: theme(--color-neutral-950); }
-
-  .border-neutral-300 { border-color: theme(--color-neutral-300); }
-  .border-neutral-600 { border-color: theme(--color-neutral-600); }
 
   /* Shadows */
   .shadow-sm { box-shadow: theme(--shadow-sm); }
@@ -273,22 +241,39 @@
 @keyframes fadeInOut {
   0% {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translate(-50%, -50%) scale(0.8);
   }
   20% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%) scale(1);
   }
   80% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translate(-50%, -50%) scale(0.8);
   }
 }
 
 .animate-fade-in-out {
   animation: fadeInOut 2s ease-in-out forwards;
+}
+
+/* Animación flotante suave */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

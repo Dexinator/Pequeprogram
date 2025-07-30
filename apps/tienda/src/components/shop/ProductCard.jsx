@@ -15,12 +15,12 @@ const ProductCard = ({ product }) => {
     }).format(price);
   };
   
-  // Obtener estado del producto con colores
+  // Obtener estado del producto con colores del design system
   const getConditionBadge = (condition) => {
     const conditions = {
-      'excelente': { text: 'Excelente', class: 'bg-green-100 text-green-800' },
-      'bueno': { text: 'Bueno', class: 'bg-blue-100 text-blue-800' },
-      'regular': { text: 'Regular', class: 'bg-yellow-100 text-yellow-800' }
+      'excelente': { text: 'Excelente', class: 'bg-brand-verde-lima text-white' },
+      'bueno': { text: 'Bueno', class: 'bg-brand-azul text-white' },
+      'regular': { text: 'Regular', class: 'bg-brand-amarillo text-gray-900' }
     };
     return conditions[condition] || conditions['regular'];
   };
@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
   // Obtener imagen principal
   const getMainImage = () => {
     if (!product.images || product.images.length === 0 || imageError) {
-      return 'https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=Sin+imagen';
+      return 'https://via.placeholder.com/400x400/00A0DD/FFFFFF?text=Sin+imagen';
     }
     return product.images[currentImageIndex];
   };
@@ -44,34 +44,61 @@ const ProductCard = ({ product }) => {
     ? product.online_price / (1 - product.discount_percentage / 100)
     : product.online_price;
   
+  // Obtener color de categoría
+  const getCategoryColor = (categoryName) => {
+    const categoryColors = {
+      'A pasear': 'from-brand-rosa/20 to-brand-rosa/5',
+      'A dormir': 'from-brand-azul/20 to-brand-azul/5',
+      'A comer': 'from-brand-verde-lima/20 to-brand-verde-lima/5',
+      'A jugar': 'from-brand-amarillo/20 to-brand-amarillo/5',
+      'Para mamá': 'from-brand-rosa/20 to-brand-amarillo/5',
+      'Ropa y calzado': 'from-brand-azul/20 to-brand-verde-lima/5'
+    };
+    return categoryColors[categoryName] || 'from-gray-100 to-gray-50';
+  };
+  
+  // Obtener emoji de categoría
+  const getCategoryEmoji = (categoryName) => {
+    const categoryEmojis = {
+      'A pasear': '🚼',
+      'A dormir': '🛏️',
+      'A comer': '🍼',
+      'A jugar': '🎮',
+      'Para mamá': '🤱',
+      'Ropa y calzado': '👕'
+    };
+    return categoryEmojis[categoryName] || '🎁';
+  };
+  
   return (
-    <div className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1 overflow-hidden">
       {/* Badge de descuento */}
       {hasDiscount && (
-        <div className="absolute top-2 left-2 z-10 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-semibold">
+        <div className="absolute top-3 left-3 z-10 bg-brand-rosa text-white px-3 py-1 rounded-full text-sm font-semibold shadow-md">
           -{product.discount_percentage}%
         </div>
       )}
       
       {/* Badge de stock */}
       {product.quantity === 1 && (
-        <div className="absolute top-2 right-2 z-10 bg-pink-500 text-white px-2 py-1 rounded-md text-xs">
+        <div className="absolute top-3 right-3 z-10 bg-brand-amarillo text-gray-900 px-3 py-1 rounded-full text-xs font-semibold shadow-md">
           Pieza única
         </div>
       )}
       {product.quantity > 1 && product.quantity <= 3 && (
-        <div className="absolute top-2 right-2 z-10 bg-orange-500 text-white px-2 py-1 rounded-md text-xs">
+        <div className="absolute top-3 right-3 z-10 bg-brand-amarillo text-gray-900 px-3 py-1 rounded-full text-xs font-semibold shadow-md">
           Últimas {product.quantity} piezas
         </div>
       )}
       
-      {/* Imagen del producto */}
-      <a href={`/producto/${product.inventory_id}`} className="block aspect-square overflow-hidden bg-gray-100">
+      {/* Imagen del producto con gradiente de categoría */}
+      <a href={`/producto/${product.inventory_id}`} className="block relative aspect-square overflow-hidden">
+        <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryColor(product.category_name)} dark:opacity-50`}></div>
         <img
           src={getMainImage()}
           alt={product.subcategory_name}
           onError={handleImageError}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           loading="lazy"
         />
         
@@ -80,43 +107,51 @@ const ProductCard = ({ product }) => {
           <img
             src={product.images[1]}
             alt={`${product.subcategory_name} - vista 2`}
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             loading="lazy"
           />
         )}
       </a>
       
       {/* Información del producto */}
-      <div className="p-4">
+      <div className="p-6">
         <a href={`/producto/${product.inventory_id}`} className="block">
-          {/* Categoría y subcategoría */}
-          <p className="text-xs text-gray-500 mb-1">
-            {product.category_name} • {product.subcategory_name}
-          </p>
+          {/* Categoría con emoji */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-2xl">{getCategoryEmoji(product.category_name)}</span>
+            <p className="font-body text-sm text-gray-600 dark:text-gray-400">
+              {product.category_name} • {product.subcategory_name}
+            </p>
+          </div>
           
           {/* Marca */}
-          <h3 className="font-semibold text-gray-900 group-hover:text-pink-600 transition-colors line-clamp-2 mb-2">
+          <h3 className="font-heading text-lg font-bold text-brand-azul dark:text-brand-azul-light group-hover:text-brand-azul-profundo transition-colors line-clamp-2 mb-3">
             {product.brand_name}
           </h3>
           
-          {/* Características destacadas */}
+          {/* Características destacadas con mejor diseño */}
           {product.features && (
-            <div className="text-xs text-gray-600 mb-2 space-y-1">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg p-3 mb-4">
               {Object.entries(product.features)
                 .slice(0, 2)
                 .map(([key, value]) => (
-                  <p key={key} className="truncate">
-                    {key}: {value}
+                  <p key={key} className="font-body text-xs text-gray-700 dark:text-gray-300 truncate">
+                    <span className="font-semibold">{key}:</span> {value}
                   </p>
                 ))}
             </div>
           )}
           
-          {/* Estado */}
-          <div className="flex items-center gap-2 mb-3">
-            <span className={`inline-block px-2 py-1 text-xs rounded ${getConditionBadge(product.condition_state).class}`}>
+          {/* Estado con mejor diseño */}
+          <div className="flex items-center gap-2 mb-4">
+            <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${getConditionBadge(product.condition_state).class}`}>
               {getConditionBadge(product.condition_state).text}
             </span>
+            {product.modality === 'consignación' && (
+              <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-brand-rosa text-white shadow-sm">
+                Consignación
+              </span>
+            )}
           </div>
           
           {/* Precios */}
@@ -124,21 +159,21 @@ const ProductCard = ({ product }) => {
             <div>
               {hasDiscount ? (
                 <>
-                  <p className="text-lg font-bold text-pink-600">
+                  <p className="font-heading text-2xl font-bold text-brand-rosa">
                     {formatPrice(product.online_price)}
                   </p>
-                  <p className="text-sm text-gray-500 line-through">
+                  <p className="font-body text-sm text-gray-500 dark:text-gray-400 line-through">
                     {formatPrice(originalPrice)}
                   </p>
                 </>
               ) : (
-                <p className="text-lg font-bold text-gray-900">
+                <p className="font-heading text-2xl font-bold text-brand-azul-profundo dark:text-brand-azul">
                   {formatPrice(product.online_price)}
                 </p>
               )}
             </div>
             
-            {/* Botón de agregar al carrito */}
+            {/* Botón de agregar al carrito mejorado */}
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -147,12 +182,12 @@ const ProductCard = ({ product }) => {
                 setTimeout(() => setShowAddedMessage(false), 2000);
               }}
               disabled={product.quantity === 0}
-              className={`p-2 rounded-lg transition-all ${
+              className={`p-3 rounded-xl transition-all transform hover:scale-110 shadow-md ${
                 product.quantity === 0
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : isItemInCart(product.inventory_id)
-                    ? 'bg-green-600 text-white hover:bg-green-700'
-                    : 'bg-pink-600 text-white hover:bg-pink-700'
+                    ? 'bg-brand-verde-lima hover:bg-brand-verde-oscuro text-white'
+                    : 'bg-brand-azul hover:bg-brand-azul-profundo text-white'
               }`}
               aria-label="Agregar al carrito"
             >
@@ -172,8 +207,8 @@ const ProductCard = ({ product }) => {
       
       {/* Mensaje de agregado al carrito */}
       {showAddedMessage && (
-        <div className="absolute top-2 left-2 right-2 bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-lg animate-fade-in-out">
-          ¡Agregado al carrito!
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brand-verde-lima text-white text-sm px-4 py-2 rounded-full shadow-lg animate-fade-in-out font-semibold">
+          ✓ ¡Agregado al carrito!
         </div>
       )}
     </div>

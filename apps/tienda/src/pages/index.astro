@@ -1,147 +1,69 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import HeroSection from '../components/shop/HeroSection.jsx';
+import Categories from '../components/shop/Categories.jsx';
+import CategoriesSimple from '../components/shop/CategoriesSimple.jsx';
+import CategoriesStandalone from '../components/shop/CategoriesStandalone.jsx';
+import WhyChooseUs from '../components/shop/WhyChooseUs.jsx';
 import FeaturedProducts from '../components/shop/FeaturedProducts';
+import Testimonials from '../components/shop/Testimonials.jsx';
+import CTASection from '../components/shop/CTASection.jsx';
 import PageWrapper from '../components/PageWrapper';
 ---
 
-<Layout title="Inicio">
-
+<Layout title="Inicio - Entrepeques | Artículos infantiles de segunda mano">
   <!-- Hero Section -->
-  <section class="bg-gradient-to-r from-pink-50 to-blue-50 py-16">
-    <div class="container mx-auto px-4">
-      <div class="grid md:grid-cols-2 gap-8 items-center">
-        <div>
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Artículos infantiles de segunda mano
-          </h1>
-          <p class="text-lg text-gray-600 mb-8">
-            Encuentra todo lo que necesitas para tus pequeños a precios increíbles. 
-            Ropa, juguetes, accesorios y mucho más.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <a href="/productos" class="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors text-center">
-              Ver productos
-            </a>
-            <a href="/vender" class="bg-white text-pink-600 border-2 border-pink-600 px-6 py-3 rounded-lg hover:bg-pink-50 transition-colors text-center">
-              Vender artículos
-            </a>
-          </div>
-        </div>
-        <div class="hidden md:block">
-          <img src="/hero-image.jpg" alt="Niños felices" class="rounded-lg shadow-xl" />
-        </div>
-      </div>
-    </div>
-  </section>
+  <PageWrapper client:only="react">
+    <HeroSection />
+  </PageWrapper>
 
   <!-- Categorías destacadas -->
-  <section class="py-16">
+  <section class="py-20 bg-white dark:bg-gray-900">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12">Categorías populares</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <a href="/categoria/ropa" class="group">
-          <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
-            <div class="w-16 h-16 mx-auto mb-4 bg-pink-100 rounded-full flex items-center justify-center group-hover:bg-pink-200 transition-colors">
-              <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold">Ropa</h3>
-          </div>
-        </a>
-
-        <a href="/categoria/juguetes" class="group">
-          <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
-            <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold">Juguetes</h3>
-          </div>
-        </a>
-
-        <a href="/categoria/accesorios" class="group">
-          <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
-            <div class="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
-              <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold">Accesorios</h3>
-          </div>
-        </a>
-
-        <a href="/categoria/mobiliario" class="group">
-          <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition-shadow">
-            <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold">Mobiliario</h3>
-          </div>
-        </a>
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
+          Explora nuestras categorías
+        </h2>
+        <p class="font-body text-lg text-gray-600 dark:text-gray-400">
+          Todo lo que necesitas para tus pequeños, organizado para ti
+        </p>
       </div>
+      
+      <!-- Categorías sin PageWrapper -->
+      <CategoriesStandalone client:only="react" />
     </div>
   </section>
 
+  <!-- Why Choose Us -->
+  <PageWrapper client:only="react">
+    <WhyChooseUs />
+  </PageWrapper>
+
   <!-- Productos destacados -->
-  <section class="py-16 bg-gray-50">
+  <section class="py-20 bg-gray-50 dark:bg-gray-800">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12">Productos destacados</h2>
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
+          Productos destacados
+        </h2>
+        <p class="font-body text-lg text-gray-600 dark:text-gray-400">
+          Los favoritos de nuestros clientes
+        </p>
+      </div>
       <PageWrapper client:only="react">
         <FeaturedProducts />
       </PageWrapper>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-12">
-    <div class="container mx-auto px-4">
-      <div class="grid md:grid-cols-4 gap-8">
-        <div>
-          <h3 class="text-xl font-bold mb-4">Entrepeques</h3>
-          <p class="text-gray-400">
-            Tu tienda de confianza para artículos infantiles de segunda mano.
-          </p>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-4">Navegación</h4>
-          <ul class="space-y-2 text-gray-400">
-            <li><a href="/productos" class="hover:text-white transition-colors">Productos</a></li>
-            <li><a href="/categorias" class="hover:text-white transition-colors">Categorías</a></li>
-            <li><a href="/vender" class="hover:text-white transition-colors">Vender</a></li>
-            <li><a href="/contacto" class="hover:text-white transition-colors">Contacto</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-4">Legal</h4>
-          <ul class="space-y-2 text-gray-400">
-            <li><a href="/terminos" class="hover:text-white transition-colors">Términos y condiciones</a></li>
-            <li><a href="/privacidad" class="hover:text-white transition-colors">Política de privacidad</a></li>
-            <li><a href="/cookies" class="hover:text-white transition-colors">Política de cookies</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-4">Síguenos</h4>
-          <div class="flex space-x-4">
-            <a href="#" class="text-gray-400 hover:text-white transition-colors">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </a>
-            <a href="#" class="text-gray-400 hover:text-white transition-colors">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-        <p>&copy; 2025 Entrepeques. Todos los derechos reservados.</p>
-      </div>
-    </div>
-  </footer>
+  <!-- Testimonials -->
+  <PageWrapper client:only="react">
+    <Testimonials />
+  </PageWrapper>
+
+  <!-- CTA Section -->
+  <PageWrapper client:only="react">
+    <CTASection />
+  </PageWrapper>
+
 </Layout>

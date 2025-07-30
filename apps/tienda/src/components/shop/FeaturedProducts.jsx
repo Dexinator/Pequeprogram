@@ -36,10 +36,10 @@ const FeaturedProducts = () => {
       />
       
       {!loading && products.length > 0 && (
-        <div className="text-center mt-8">
+        <div className="text-center mt-12">
           <a 
             href="/productos" 
-            className="inline-block bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors"
+            className="inline-block bg-brand-azul hover:bg-brand-azul-profundo text-white px-8 py-4 rounded-xl font-heading font-semibold transition-all transform hover:scale-105 shadow-lg"
           >
             Ver todos los productos
           </a>

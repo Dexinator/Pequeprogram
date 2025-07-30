@@ -34,7 +34,7 @@ services:
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET:-your-development-secret-key}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4321}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4321,http://localhost:4322,http://localhost:4323,http://localhost:4324}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-AKIA6ODU4K4PJ7R44ZGR}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-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}
       AWS_REGION: ${AWS_REGION:-us-east-2}

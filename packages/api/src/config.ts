@@ -19,7 +19,7 @@ const config: Config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/entrepeques_dev',
   jwtSecret: process.env.JWT_SECRET || 'entrepeques_development_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
-  corsOrigin: process.env.CORS_ORIGIN || [
+  corsOrigin: [
     // Producción - Apps en Vercel
     'https://valuador-entrepeques.vercel.app',
     'https://admin-entrepeques.vercel.app',
@@ -46,9 +46,19 @@ if (config.nodeEnv === 'production' && config.databaseUrl.startsWith('postgres:/
   config.databaseUrl = config.databaseUrl.replace('postgres://', 'postgresql://');
 }
 
-// Procesar CORS_ORIGIN si viene como string separado por comas
-if (typeof config.corsOrigin === 'string' && config.corsOrigin.includes(',')) {
-  config.corsOrigin = config.corsOrigin.split(',').map(origin => origin.trim());
+// Log para depuración
+console.log('process.env.CORS_ORIGIN:', process.env.CORS_ORIGIN);
+console.log('config.corsOrigin antes de procesar:', config.corsOrigin);
+
+// Procesar CORS_ORIGIN si viene como string desde variable de entorno
+if (process.env.CORS_ORIGIN) {
+  if (process.env.CORS_ORIGIN.includes(',')) {
+    config.corsOrigin = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
+  } else {
+    config.corsOrigin = process.env.CORS_ORIGIN;
+  }
 }
+
+console.log('config.corsOrigin después de procesar:', config.corsOrigin);
 
 export default config; 

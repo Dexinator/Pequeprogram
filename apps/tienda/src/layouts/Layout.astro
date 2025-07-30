@@ -7,6 +7,7 @@ export interface Props {
 const { title, description = 'Entrepeques - Tienda de artículos infantiles de segunda mano' } = Astro.props;
 import '../styles/global.css';
 import NavBar from '../components/layout/NavBar.jsx';
+import Footer from '../components/layout/Footer.astro';
 import AppProviders from '../components/AppProviders.jsx';
 import ClearAuth from '../components/ClearAuth.jsx';
 ---
@@ -22,28 +23,44 @@ import ClearAuth from '../components/ClearAuth.jsx';
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;500;600;700;800&family=Muli:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     
     <title>{title} | Entrepeques</title>
+    
+    <script is:inline>
+      // Apply dark mode class before page renders
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
   </head>
   <body>
     <ClearAuth client:only="react" />
     <NavBar client:only="react" />
-    <main>
+    <main class="min-h-screen">
       <slot />
     </main>
+    <Footer />
   </body>
 </html>
 
 <style is:global>
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Muli', 'Inter', system-ui, sans-serif;
   }
   
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #fafafa;
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-900);
+  }
+  
+  html.dark body {
+    background-color: var(--color-gray-950);
+    color: var(--color-gray-100);
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -52,5 +69,39 @@ import ClearAuth from '../components/ClearAuth.jsx';
   
   * {
     box-sizing: border-box;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Better focus styles */
+  :focus {
+    outline: 2px solid var(--color-brand-azul);
+    outline-offset: 2px;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+  }
+  
+  html.dark ::-webkit-scrollbar-track {
+    background: var(--color-gray-800);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-brand-azul);
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-azul-profundo);
   }
 </style>

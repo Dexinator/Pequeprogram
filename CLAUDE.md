@@ -411,6 +411,8 @@ Multi-step valuation process:
 - **SQL Parameter Indexing**: Careful management of parameterized query indexes
 - **Inventory ID Generation**: SKU-based automatic ID generation for product tracking
 - **Store Credit Display**: parseFloat conversion to handle database numeric types in frontend
+- **Astro React Components Not Loading Data**: Use `client:only="react"` for components with browser APIs, avoid AuthProvider in public pages
+- **Tailwind Dynamic Classes**: Use complete class names instead of template literals for dynamic styling
 
 ## Important Implementation Details
 
