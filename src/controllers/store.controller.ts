@@ -90,10 +90,10 @@ export const getProductDetail = asyncHandler(async (req: Request, res: Response)
 // @route   GET /api/store/products/:id/related
 // @access  Public
 export const getRelatedProducts = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params; // This is inventory_id (e.g., "CARP001")
   const limit = parseInt(req.query.limit as string) || 8;
 
-  const products = await storeService.getRelatedProducts(parseInt(id), limit);
+  const products = await storeService.getRelatedProductsByInventoryId(id, limit);
 
   res.json({
     success: true,
@@ -164,6 +164,20 @@ export const prepareProductForStore = asyncHandler(async (req: Request, res: Res
     success: true,
     data: result,
     message: 'Producto preparado para la tienda en línea'
+  });
+});
+
+// @desc    Get featured products
+// @route   GET /api/store/products/featured
+// @access  Public
+export const getFeaturedProducts = asyncHandler(async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 8;
+  
+  const products = await storeService.getFeaturedProducts(limit);
+  
+  res.json({
+    success: true,
+    data: products
   });
 });
 
