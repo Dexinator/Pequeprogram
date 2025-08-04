@@ -13,11 +13,9 @@ const FeaturedProducts = () => {
   const loadFeaturedProducts = async () => {
     try {
       setLoading(true);
-      // Por ahora, usar productos normales como destacados
-      const response = await productsService.getOnlineProducts({
-        limit: 8
-      });
-      setProducts(response.products);
+      // Cargar productos marcados como destacados
+      const products = await productsService.getFeaturedProducts(8);
+      setProducts(products);
     } catch (error) {
       console.error('Error al cargar productos destacados:', error);
       setProducts([]);

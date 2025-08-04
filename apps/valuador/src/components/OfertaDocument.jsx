@@ -231,16 +231,21 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
           Términos y Condiciones
         </h3>
         <div className="text-sm text-gray-700 space-y-2">
-          <p>• Esta oferta es válida por <strong>7 días</strong> a partir de la fecha de emisión.</p>
-          <p>• Los precios están sujetos a la verificación física final del estado de los productos.</p>
-          <p>• Los productos deben estar en las condiciones descritas en el momento de la entrega.</p>
-          <p>• <strong>Modalidades de pago:</strong></p>
-          <div className="ml-4 space-y-1">
-            <p>◦ <strong>Efectivo:</strong> Pago inmediato en dinero en efectivo</p>
-            <p>◦ <strong>Crédito en tienda:</strong> Pago mediante vales/créditos canjeables únicamente en productos de nuestra tienda (no reembolsables en efectivo)</p>
+          <p>Al firmar indica que recibe efectivo o crédito para comprar en la tienda como pago por los artículos listados. Los cuales declara haber adquirido legítimamente y ser el legítimo propietario.</p>
+        </div>
+        
+        {/* Espacio para firma */}
+        <div className="signature-section mt-8">
+          <div className="flex justify-between items-end">
+            <div className="w-5/12">
+              <div className="border-b-2 border-gray-400 h-12"></div>
+              <p className="text-xs text-center mt-2 text-gray-600">Firma del Cliente</p>
+            </div>
+            <div className="w-5/12">
+              <div className="border-b-2 border-gray-400 h-12"></div>
+              <p className="text-xs text-center mt-2 text-gray-600">Fecha</p>
+            </div>
           </div>
-          <p>• Entrepeques se reserva el derecho de ajustar los precios si el estado real del producto difiere significativamente de lo descrito.</p>
-          <p>• Para hacer efectiva esta oferta, favor de contactar al teléfono indicado en el encabezado.</p>
         </div>
       </div>
 

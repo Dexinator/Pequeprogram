@@ -122,7 +122,7 @@ export class ProductsService {
   async getProductDetail(inventoryId: string): Promise<Product> {
     console.log('🔍 ProductsService.getProductDetail llamado para:', inventoryId);
     try {
-      const response = await this.http.get(`/store/products/${inventoryId}`);
+      const response = await this.http.get(`/store/products/${inventoryId}/detail`);
       console.log('✅ Detalle del producto recibido:', response);
       return response.data;
     } catch (error) {
@@ -188,9 +188,9 @@ export class ProductsService {
   }
 
   // Obtener productos relacionados
-  async getRelatedProducts(productId: number, limit: number = 8): Promise<Product[]> {
+  async getRelatedProducts(inventoryId: string, limit: number = 8): Promise<Product[]> {
     try {
-      const response = await this.http.get(`/store/products/${productId}/related`, { limit });
+      const response = await this.http.get(`/store/products/${inventoryId}/related`, { limit });
       return response.data || [];
     } catch (error) {
       console.error('Error al obtener productos relacionados:', error);

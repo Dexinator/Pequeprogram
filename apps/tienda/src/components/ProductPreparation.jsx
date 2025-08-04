@@ -53,6 +53,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState(product.suggested_online_price || '');
   const [images, setImages] = useState([]);
+  const [featured, setFeatured] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
@@ -119,7 +120,8 @@ const PreparationModal = ({ product, onClose, onSave }) => {
       const data = {
         weight_grams: parseInt(weight),
         images: images,
-        online_price: parseFloat(price)
+        online_price: parseFloat(price),
+        online_featured: featured
       };
 
       await storeService.prepareProductForStore(product.inventory_id, data);
@@ -133,7 +135,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-full sm:max-w-3xl md:max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4">Preparar producto para tienda online</h2>
           
@@ -248,6 +250,24 @@ const PreparationModal = ({ product, onClose, onSave }) => {
             {errors.images && (
               <p className="text-red-500 text-sm mt-1">{errors.images}</p>
             )}
+          </div>
+
+          {/* Producto destacado */}
+          <div className="mb-6 bg-brand-amarillo/10 p-4 rounded-lg border border-brand-amarillo/30">
+            <label className="flex items-start space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={featured}
+                onChange={(e) => setFeatured(e.target.checked)}
+                className="mt-1 h-5 w-5 text-brand-rosa focus:ring-brand-rosa border-gray-300 rounded"
+              />
+              <div>
+                <span className="font-medium text-gray-900">⭐ Marcar como producto destacado</span>
+                <p className="text-sm text-gray-600 mt-1">
+                  Los productos destacados aparecerán en la sección principal de la tienda online
+                </p>
+              </div>
+            </label>
           </div>
 
           {/* Botones */}

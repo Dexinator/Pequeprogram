@@ -23,6 +23,7 @@ export interface PrepareProductData {
   weight_grams: number;
   images: string[];
   online_price: number;
+  online_featured?: boolean;
 }
 
 export class StoreService {
@@ -300,6 +301,83 @@ export class StoreService {
           i.quantity,
           i.location,
           CASE 
+            WHEN vi.subcategory_id = $2 THEN 3
+            WHEN vi.category_id = $3 THEN 2
+            ELSE 1
+          END as relevance
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE vi.id != $1
+        AND vi.online_store_ready = true
+        AND i.quantity > 0
+        ORDER BY relevance, RANDOM()
+        LIMIT $4
+      `;
+      
+      const result = await dbClient.query(query, [productId, subcategory_id, category_id, limit]);
+      
+      return result.rows.map(row => ({
+        ...row,
+        quantity: parseInt(row.quantity),
+        online_price: parseFloat(row.online_price),
+        weight_grams: parseInt(row.weight_grams || 0),
+        images: row.images || []
+      }));
+    } catch (error) {
+      console.error('Error al obtener productos relacionados:', error);
+      return [];
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async getRelatedProductsByInventoryId(inventoryId: string, limit: number = 8) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      
+      // Primero obtener información del producto actual usando inventory_id
+      const productQuery = `
+        SELECT vi.category_id, vi.subcategory_id, vi.brand_id, vi.id as valuation_item_id
+        FROM valuation_items vi
+        JOIN inventario i ON i.valuation_item_id = vi.id
+        WHERE i.id = $1
+      `;
+      
+      const productResult = await dbClient.query(productQuery, [inventoryId]);
+      
+      if (productResult.rows.length === 0) {
+        return [];
+      }
+      
+      const { category_id, subcategory_id, brand_id, valuation_item_id } = productResult.rows[0];
+      
+      // Buscar productos relacionados
+      // Prioridad: misma subcategoría > misma categoría > otros
+      const query = `
+        SELECT 
+          vi.id,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.condition_state,
+          vi.features,
+          vi.online_price,
+          vi.weight_grams,
+          vi.images,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location,
+          CASE 
             WHEN vi.subcategory_id = $2 THEN 1
             WHEN vi.category_id = $3 THEN 2
             ELSE 3
@@ -316,7 +394,7 @@ export class StoreService {
         LIMIT $4
       `;
       
-      const result = await dbClient.query(query, [productId, subcategory_id, category_id, limit]);
+      const result = await dbClient.query(query, [valuation_item_id, subcategory_id, category_id, limit]);
       
       return result.rows.map(row => ({
         ...row,
@@ -412,10 +490,11 @@ export class StoreService {
           images = $2,
           online_price = $3,
           online_store_ready = true,
-          online_prepared_by = $4,
+          online_featured = $4,
+          online_prepared_by = $5,
           online_prepared_at = NOW(),
           updated_at = NOW()
-        WHERE id = $5
+        WHERE id = $6
         RETURNING *
       `;
       
@@ -423,6 +502,7 @@ export class StoreService {
         data.weight_grams,
         JSON.stringify(data.images),
         data.online_price,
+        data.online_featured || false,
         userId,
         valuationItemId
       ]);
@@ -435,6 +515,61 @@ export class StoreService {
       if (dbClient) {
         await dbClient.query('ROLLBACK');
       }
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async getFeaturedProducts(limit: number = 8) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      
+      const query = `
+        SELECT 
+          vi.id,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.condition_state,
+          vi.features,
+          vi.online_price,
+          vi.weight_grams,
+          vi.images,
+          vi.online_featured,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE vi.online_store_ready = true
+        AND vi.online_featured = true
+        AND i.quantity > 0
+        ORDER BY vi.online_prepared_at DESC
+        LIMIT $1
+      `;
+      
+      const result = await dbClient.query(query, [limit]);
+      
+      return result.rows.map(row => ({
+        ...row,
+        quantity: parseInt(row.quantity),
+        online_price: parseFloat(row.online_price),
+        weight_grams: parseInt(row.weight_grams || 0),
+        images: row.images || []
+      }));
+    } catch (error) {
+      console.error('Error al obtener productos destacados:', error);
       throw error;
     } finally {
       if (dbClient) {

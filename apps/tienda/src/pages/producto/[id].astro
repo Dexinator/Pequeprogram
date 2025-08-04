@@ -1,14 +1,70 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import ProductDetailWithProviders from '../../components/shop/ProductDetailWithProviders';
+import ProductDetailRedesigned from '../../components/shop/ProductDetailRedesigned';
+import { productsService } from '../../services/products.service';
 
 const { id } = Astro.params;
 
 if (!id) {
   return Astro.redirect('/productos');
 }
+
+// Fetch product data server-side for better SEO
+let product = null;
+let relatedProducts = [];
+let error = null;
+
+try {
+  // Use the internal Docker network URL for server-side requests
+  const isServer = typeof window === 'undefined';
+  const apiUrl = isServer 
+    ? 'http://entrepeques-api-dev:3001' 
+    : (import.meta.env.PUBLIC_API_URL || 'http://localhost:3001');
+  
+  // Fetch product details
+  const productResponse = await fetch(`${apiUrl}/api/store/products/${id}/detail`);
+  if (productResponse.ok) {
+    const productData = await productResponse.json();
+    product = productData.data;
+    
+    // Fetch related products
+    if (product) {
+      try {
+        const relatedResponse = await fetch(`${apiUrl}/api/store/products/${id}/related`);
+        if (relatedResponse.ok) {
+          const relatedData = await relatedResponse.json();
+          relatedProducts = relatedData.data || [];
+        }
+      } catch (e) {
+        // Related products are not critical
+        console.error('Error fetching related products:', e);
+      }
+    }
+  } else {
+    error = 'Producto no encontrado';
+  }
+} catch (e) {
+  console.error('Error fetching product:', e);
+  error = 'Error al cargar el producto';
+}
+
+const pageTitle = product 
+  ? `${product.brand_name} - ${product.subcategory_name}` 
+  : 'Producto';
+
+const pageDescription = product
+  ? `${product.subcategory_name} de ${product.brand_name} en excelente estado. Compra artículos infantiles de segunda mano en Entrepeques.`
+  : 'Encuentra productos infantiles de segunda mano en Entrepeques';
 ---
 
-<Layout title="Detalle del Producto - Entrepeques">
-  <ProductDetailWithProviders client:only="react" productId={id} />
+<Layout title={pageTitle} description={pageDescription}>
+  <div>
+    <ProductDetailRedesigned 
+      client:only="react" 
+      productId={id} 
+      initialProduct={product}
+      initialRelatedProducts={relatedProducts}
+      initialError={error}
+    />
+  </div>
 </Layout>

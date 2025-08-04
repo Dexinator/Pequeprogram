@@ -22,7 +22,9 @@ const ProductCard = ({ product }) => {
       'bueno': { text: 'Bueno', class: 'bg-brand-azul text-white' },
       'regular': { text: 'Regular', class: 'bg-brand-amarillo text-gray-900' }
     };
-    return conditions[condition] || conditions['regular'];
+    // Normalizar a minúsculas para comparar
+    const normalizedCondition = condition?.toLowerCase() || 'regular';
+    return conditions[normalizedCondition] || conditions['regular'];
   };
   
   // Manejar error de imagen
