@@ -7,6 +7,13 @@ const ProductCard = ({ product }) => {
   const [showAddedMessage, setShowAddedMessage] = useState(false);
   const { addItem, isItemInCart } = useCart();
   
+  // Verificar que el producto existe
+  if (!product) {
+    console.error('ProductCard: No se recibió producto');
+    return null;
+  }
+  
+  
   // Formatear precio
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-MX', {
@@ -41,10 +48,10 @@ const ProductCard = ({ product }) => {
   };
   
   // Calcular descuento si existe
-  const hasDiscount = product.discount_percentage > 0;
-  const originalPrice = hasDiscount 
+  const hasDiscount = product.discount_percentage && product.discount_percentage > 0;
+  const originalPrice = hasDiscount && product.online_price
     ? product.online_price / (1 - product.discount_percentage / 100)
-    : product.online_price;
+    : product.online_price || 0;
   
   // Obtener color de categoría
   const getCategoryColor = (categoryName) => {
