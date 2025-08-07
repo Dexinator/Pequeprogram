@@ -15,7 +15,9 @@
       "Bash(rm:*)",
       "Bash(sed:*)",
       "Bash(ls:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(docker run:*)",
+      "Bash(heroku config:*)"
     ],
     "deny": []
   }
