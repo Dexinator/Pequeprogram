@@ -9,8 +9,38 @@ interface Config {
   databaseUrl: string;
   jwtSecret: string;
   jwtExpiresIn: string;
-  corsOrigin: string | string[] | RegExp;
+  corsOrigin: string | string[] | RegExp | boolean;
 }
+
+// Lista base de orígenes permitidos
+const baseOrigins = [
+  // Producción - Apps en Vercel (pequeprogram)
+  'https://pequeprogram-valuador.vercel.app',
+  'https://pequeprogram-admin.vercel.app',
+  'https://pequeprogram-tienda.vercel.app',
+  'https://pequeprogram-pos.vercel.app',
+  // Producción - Apps en Vercel (entrepeques - legacy)
+  'https://valuador-entrepeques.vercel.app',
+  'https://admin-entrepeques.vercel.app',
+  'https://tienda-entrepeques.vercel.app',
+  'https://pos-entrepeques.vercel.app',
+  // Producción - Dominios finales (cuando los configures)
+  'https://valuador.entrepeques.com',
+  'https://admin.entrepeques.com',
+  'https://tienda.entrepeques.com',
+  'https://pos.entrepeques.com',
+  'https://entrepeques.com',
+  'https://www.entrepeques.com',
+  // Desarrollo local
+  'http://localhost:4321', // valuador
+  'http://localhost:4322', // admin
+  'http://localhost:4323', // tienda
+  'http://localhost:4324', // pos
+  'http://127.0.0.1:4321',
+  'http://127.0.0.1:4322',
+  'http://127.0.0.1:4323',
+  'http://127.0.0.1:4324'
+];
 
 // Configuración por defecto
 const config: Config = {
@@ -19,25 +49,7 @@ const config: Config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/entrepeques_dev',
   jwtSecret: process.env.JWT_SECRET || 'entrepeques_development_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
-  corsOrigin: [
-    // Producción - Apps en Vercel
-    'https://valuador-entrepeques.vercel.app',
-    'https://admin-entrepeques.vercel.app',
-    'https://tienda-entrepeques.vercel.app',
-    'https://pos-entrepeques.vercel.app',
-    // Producción - Dominios finales (cuando los configures)
-    'https://valuador.entrepeques.com',
-    'https://admin.entrepeques.com',
-    'https://tienda.entrepeques.com',
-    'https://pos.entrepeques.com',
-    'https://entrepeques.com',
-    'https://www.entrepeques.com',
-    // Desarrollo local
-    'http://localhost:4321', // valuador
-    'http://localhost:4322', // admin
-    'http://localhost:4323', // tienda
-    'http://localhost:4324'  // pos
-  ],
+  corsOrigin: baseOrigins,
 };
 
 // En producción con Heroku, modificar la URL de la base de datos si es necesario
@@ -46,19 +58,51 @@ if (config.nodeEnv === 'production' && config.databaseUrl.startsWith('postgres:/
   config.databaseUrl = config.databaseUrl.replace('postgres://', 'postgresql://');
 }
 
-// Log para depuración
-console.log('process.env.CORS_ORIGIN:', process.env.CORS_ORIGIN);
-console.log('config.corsOrigin antes de procesar:', config.corsOrigin);
-
-// Procesar CORS_ORIGIN si viene como string desde variable de entorno
+// Procesar CORS_ORIGIN si viene desde variable de entorno
+// Si se proporciona CORS_ORIGIN, agregarlo a la lista base en lugar de reemplazarla
 if (process.env.CORS_ORIGIN) {
-  if (process.env.CORS_ORIGIN.includes(',')) {
-    config.corsOrigin = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
-  } else {
-    config.corsOrigin = process.env.CORS_ORIGIN;
-  }
+  const additionalOrigins = process.env.CORS_ORIGIN.includes(',') 
+    ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+    : [process.env.CORS_ORIGIN];
+  
+  // Combinar orígenes base con adicionales, eliminando duplicados
+  const allOrigins = [...new Set([...baseOrigins, ...additionalOrigins])];
+  config.corsOrigin = allOrigins;
 }
 
-console.log('config.corsOrigin después de procesar:', config.corsOrigin);
+// Función para validar origen dinámicamente
+config.corsOrigin = function(origin: any, callback: any) {
+  // Permitir requests sin origen (Postman, curl, etc.)
+  if (!origin) return callback(null, true);
+  
+  // Lista de orígenes permitidos (incluye los de las variables de entorno si existen)
+  const allowedOrigins = [...baseOrigins];
+  
+  // En desarrollo, permitir cualquier localhost
+  if (config.nodeEnv === 'development' && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+    return callback(null, true);
+  }
+  
+  // Permitir orígenes de Vercel (pequeprogram-*.vercel.app)
+  if (origin.includes('pequeprogram') && origin.includes('vercel.app')) {
+    return callback(null, true);
+  }
+  
+  // Verificar si el origen está en la lista permitida
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+  
+  // Log para debug
+  console.log('CORS: Origen no permitido:', origin);
+  callback(new Error('Not allowed by CORS'));
+};
+
+// Log para depuración
+console.log('Configuración CORS:', {
+  nodeEnv: config.nodeEnv,
+  corsOriginType: typeof config.corsOrigin,
+  corsOriginValue: typeof config.corsOrigin === 'function' ? 'dynamic function' : config.corsOrigin
+});
 
 export default config; 
