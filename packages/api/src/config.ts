@@ -9,7 +9,7 @@ interface Config {
   databaseUrl: string;
   jwtSecret: string;
   jwtExpiresIn: string;
-  corsOrigin: string | string[] | RegExp | boolean;
+  corsOrigin: string | string[] | RegExp | boolean | ((origin: any, callback: any) => void);
 }
 
 // Lista base de orígenes permitidos
