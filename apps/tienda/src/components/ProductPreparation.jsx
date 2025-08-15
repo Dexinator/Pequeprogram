@@ -118,7 +118,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
     setSaving(true);
     try {
       const data = {
-        weight_grams: parseInt(weight),
+        weight_grams: Math.round(parseFloat(weight) * 1000), // Convertir kg a gramos
         images: images,
         online_price: parseFloat(price),
         online_featured: featured
@@ -155,7 +155,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
           {/* Peso */}
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Peso (gramos) *
+              Peso (kilogramos) *
             </label>
             <input
               type="number"
@@ -164,11 +164,16 @@ const PreparationModal = ({ product, onClose, onSave }) => {
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 ${
                 errors.weight ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Ej: 500"
+              placeholder="Ej: 0.5"
+              step="0.01"
+              min="0.01"
             />
             {errors.weight && (
               <p className="text-red-500 text-sm mt-1">{errors.weight}</p>
             )}
+            <p className="text-sm text-gray-500 mt-1">
+              Ingrese el peso en kilogramos (ej: 0.5 para 500 gramos)
+            </p>
           </div>
 
           {/* Precio */}

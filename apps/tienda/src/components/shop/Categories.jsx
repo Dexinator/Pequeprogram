@@ -101,10 +101,20 @@ function Categories() {
         const categoryColorClasses = colorClasses[category.name] || 'hover:border-brand-azul bg-brand-azul/20 group-hover:bg-brand-azul/30';
         const [hoverBorder, bgColor] = categoryColorClasses.split(' ').slice(0, 2);
         
+        // Función para generar slug
+        const generateSlug = (name) => {
+          return name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+            .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
+            .replace(/^-+|-+$/g, ''); // Eliminar guiones al inicio y final
+        };
+        
         return (
           <a
             key={category.id}
-            href={`/categoria/${category.id}`}
+            href={`/categoria/${generateSlug(category.name)}`}
             className="group"
           >
             <div className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6 text-center hover:shadow-2xl transform hover:-translate-y-2 transition-all border-2 border-transparent ${hoverBorder}`}>

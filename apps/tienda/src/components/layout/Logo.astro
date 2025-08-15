@@ -1,0 +1,34 @@
+---
+export interface Props {
+  className?: string;
+  width?: string;
+  height?: string;
+}
+
+const { 
+  className = "h-16 md:h-20 w-auto", 
+  width,
+  height 
+} = Astro.props;
+
+// Use optimized SVG from public folder
+const logoUrl = "/logo-entrepeques-optimized.svg";
+---
+
+<img 
+  src={logoUrl}
+  alt="Entrepeques"
+  class={className}
+  width={width}
+  height={height}
+  loading="eager"
+  decoding="async"
+/>
+
+<style>
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+</style>

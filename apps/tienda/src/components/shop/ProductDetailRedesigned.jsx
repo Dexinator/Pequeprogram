@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productsService } from '../../services/products.service';
-import { CartProvider, useCart } from '../../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import ImageGalleryRedesigned from './ImageGalleryRedesigned';
 import ProductCard from './ProductCard';
 
@@ -540,11 +540,7 @@ const ProductDetailRedesigned = (props) => {
     );
   }
   
-  return (
-    <CartProvider>
-      <ProductDetailContent {...props} />
-    </CartProvider>
-  );
+  return <ProductDetailContent {...props} />;
 };
 
 export default ProductDetailRedesigned;

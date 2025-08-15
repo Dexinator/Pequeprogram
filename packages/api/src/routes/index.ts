@@ -13,6 +13,8 @@ import clientRoutes from './client.routes';
 import otherprodsRoutes from './otherprods.routes';
 import clothingRoutes from './clothing.routes';
 import storeRoutes from './store.routes';
+import onlinePaymentRoutes from './onlinePayment.routes';
+import shippingRoutes from './shipping.routes';
 
 const router = Router();
 
@@ -57,5 +59,11 @@ router.use('/clothing', clothingRoutes);
 
 // Rutas de tienda en línea
 router.use('/store', storeRoutes);
+
+// Rutas de pagos online
+router.use('/online-payments', onlinePaymentRoutes);
+
+// Rutas de envíos
+router.use('/shipping', shippingRoutes);
 
 export default router;

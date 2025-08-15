@@ -4,7 +4,7 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
 console.log('API URL configured:', API_URL);
 
 // Helper function for fetch requests
-async function fetchApi(endpoint, options = {}) {
+export async function fetchApi(endpoint, options = {}) {
   const url = `${API_URL}${endpoint}`;
   console.log('Fetching:', url);
   

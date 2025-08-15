@@ -1,0 +1,910 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Verificación básica si estamos en desarrollo o producción
+const isProduction = import.meta.env.PROD;
+// El PUBLIC_KEY de MercadoPago debería estar en variables de entorno
+const mercadoPagoPublicKey = import.meta.env.PUBLIC_MP_PUBLIC_KEY || "TEST-552b4b64-48f2-4316-9231-7b5cf3793e9e";
+
+// Usar variable de entorno para la URL de la API
+const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
+---
+
+<Layout title="Proceso de Pago">
+  <div class="bg-gray-50 dark:bg-gray-950 py-8 min-h-[calc(100vh-200px)]">
+    <div class="container mx-auto px-4 max-w-7xl">
+      <!-- Encabezado -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Finalizar Compra</h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          Completa tus datos para finalizar tu pedido
+        </p>
+      </div>
+      
+      <!-- Grid principal -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Formulario de checkout - 8 columnas -->
+        <div class="lg:col-span-8">
+          <div class="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Información de pago</h2>
+            
+            <form id="checkout-form" class="space-y-6">
+              <!-- Información personal -->
+              <div>
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Datos personales</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
+                    <input 
+                      type="text" 
+                      id="nombre" 
+                      name="nombre" 
+                      required 
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                  </div>
+                  <div>
+                    <label for="apellido" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Apellido</label>
+                    <input 
+                      type="text" 
+                      id="apellido" 
+                      name="apellido" 
+                      required 
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                    <input 
+                      type="email" 
+                      id="email" 
+                      name="email" 
+                      required 
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                  </div>
+                  
+                  <div>
+                    <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>
+                    <input 
+                      type="tel" 
+                      id="telefono" 
+                      name="telefono" 
+                      required 
+                      placeholder="10 dígitos" 
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información de envío -->
+              <div class="border-t pt-6">
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Dirección de envío</h3>
+                <div class="space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="calle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Calle y número</label>
+                      <input 
+                        type="text" 
+                        id="calle" 
+                        name="calle" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                    </div>
+                    <div>
+                      <label for="colonia" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Colonia</label>
+                      <input 
+                        type="text" 
+                        id="colonia" 
+                        name="colonia" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label for="codigoPostal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
+                      <input 
+                        type="text" 
+                        id="codigoPostal" 
+                        name="codigoPostal" 
+                        required 
+                        maxlength="5"
+                        pattern="[0-9]{5}"
+                        placeholder="12345"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                    </div>
+                    <div>
+                      <label for="ciudad" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
+                      <input 
+                        type="text" 
+                        id="ciudad" 
+                        name="ciudad" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                    </div>
+                    <div>
+                      <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado</label>
+                      <input 
+                        type="text" 
+                        id="estado" 
+                        name="estado" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="referencias" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Referencias (opcional)</label>
+                    <textarea 
+                      id="referencias" 
+                      name="referencias" 
+                      rows="2"
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      placeholder="Entre calles, color de la casa, etc."
+                    ></textarea>
+                  </div>
+                  
+                  <!-- Mensaje de costo de envío -->
+                  <div id="shipping-info" class="p-4 bg-blue-50 dark:bg-blue-900 rounded-lg hidden">
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                      <span class="font-medium">Costo de envío:</span> <span id="shipping-cost-display">Calculando...</span>
+                    </p>
+                    <p class="text-xs text-blue-600 dark:text-blue-300 mt-1" id="shipping-zone-display"></p>
+                  </div>
+                  
+                  <!-- Mensaje de error de envío -->
+                  <div id="shipping-error" class="p-4 bg-red-50 dark:bg-red-900 rounded-lg hidden">
+                    <p class="text-sm text-red-800 dark:text-red-200">
+                      No se pudo calcular el envío. Por favor verifica el código postal.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del pago con MercadoPago -->
+              <div class="border-t pt-6">
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Información de pago</h3>
+                
+                <!-- Campos de MercadoPago CardForm -->
+                <div id="form-checkout" class="space-y-4">
+                  <div>
+                    <label for="form-checkout__cardNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Número de tarjeta
+                    </label>
+                    <div id="form-checkout__cardNumber" class="mp-field-container"></div>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label for="form-checkout__expirationDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Fecha de vencimiento
+                      </label>
+                      <div id="form-checkout__expirationDate" class="mp-field-container"></div>
+                    </div>
+                    <div>
+                      <label for="form-checkout__securityCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Código de seguridad
+                      </label>
+                      <div id="form-checkout__securityCode" class="mp-field-container"></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="form-checkout__cardholderName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Titular de la tarjeta
+                    </label>
+                    <input 
+                      id="form-checkout__cardholderName" 
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      type="text" 
+                      required
+                    />
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="form-checkout__issuer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Banco emisor
+                      </label>
+                      <select 
+                        id="form-checkout__issuer" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                        <option value="" disabled selected>Selecciona el emisor</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label for="form-checkout__installments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Cuotas
+                      </label>
+                      <select 
+                        id="form-checkout__installments" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                        <option value="" disabled selected>Selecciona las cuotas</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <!-- Token de la tarjeta (campo oculto) -->
+                  <input type="hidden" id="card-token" name="token">
+                </div>
+              </div>
+              
+              <!-- Términos y condiciones -->
+              <div class="border-t pt-6">
+                <div class="flex items-start">
+                  <input 
+                    type="checkbox" 
+                    id="terminos" 
+                    name="terminos" 
+                    required 
+                    class="h-4 w-4 mt-1 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                  >
+                  <label for="terminos" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                    Acepto los <a href="/terminos" class="text-pink-600 hover:text-pink-700 underline">términos y condiciones</a> 
+                    y la <a href="/privacidad" class="text-pink-600 hover:text-pink-700 underline">política de privacidad</a>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Botones de acción -->
+              <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t">
+                <a href="/carrito" class="text-pink-600 hover:text-pink-700 font-medium">
+                  ← Volver al carrito
+                </a>
+                <button 
+                  type="submit" 
+                  id="checkout-btn" 
+                  class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-lg focus:outline-none focus:shadow-outline transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled
+                >
+                  Finalizar compra
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Resumen del carrito - 4 columnas -->
+        <div class="lg:col-span-4">
+          <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md lg:sticky lg:top-24">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Resumen de compra</h2>
+            
+            <div id="cart-summary" class="divide-y divide-gray-200 dark:divide-gray-700 mb-4">
+              <div class="text-center p-4 text-gray-500">
+                <div class="spinner"></div>
+                <p>Cargando resumen...</p>
+              </div>
+            </div>
+            
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Subtotal:</span>
+                  <span id="checkout-subtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Envío:</span>
+                  <span id="checkout-shipping">Calculando...</span>
+                </div>
+              </div>
+              
+              <div class="flex justify-between font-semibold text-lg">
+                <span class="text-gray-800 dark:text-gray-100">Total:</span>
+                <span id="checkout-total" class="text-pink-600">$0.00</span>
+              </div>
+            </div>
+            
+            <!-- Métodos de pago aceptados -->
+            <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Métodos de pago aceptados:</p>
+              <!-- Los iconos de tarjetas serán agregados posteriormente
+              <div class="flex gap-2">
+                <img src="/visa.svg" alt="Visa" class="h-6" />
+                <img src="/mastercard.svg" alt="Mastercard" class="h-6" />
+                <img src="/amex.svg" alt="American Express" class="h-6" />
+              </div>
+              -->
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Visa, Mastercard, American Express
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Pago seguro procesado por MercadoPago
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .spinner {
+    margin: 0 auto;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid #ff6b9d;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Estilos para los campos de MercadoPago */
+  .mp-field-container {
+    height: 42px;
+    border: 1px solid rgb(209, 213, 219);
+    border-radius: 6px;
+    padding: 0 12px;
+    background-color: white;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+  }
+  
+  :global(.dark) .mp-field-container {
+    background-color: rgb(31, 41, 55);
+    border-color: rgb(75, 85, 99);
+  }
+  
+  .mp-field-container:focus-within {
+    border-color: #ff6b9d;
+    box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+  }
+  
+  /* Ajustar los iframes de MercadoPago */
+  .mp-field-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
+
+<!-- Cargar SDK de MercadoPago México -->
+<script src="https://sdk.mercadopago.com/js/v2" is:inline></script>
+
+<script is:inline define:vars={{ apiBaseUrl, mercadoPagoPublicKey }}>
+  console.log('🛒 Checkout script iniciando...');
+  console.log('API URL configurada:', apiBaseUrl);
+  console.log('MP Public Key configurada:', mercadoPagoPublicKey);
+  
+  // Definir constante del carrito a nivel global del script
+  const CART_STORAGE_KEY = 'entrepeques_cart';
+  
+  // Verificar inmediatamente si MercadoPago se cargó
+  setTimeout(() => {
+    if (typeof window.MercadoPago !== 'undefined') {
+      console.log('✅ MercadoPago disponible inmediatamente');
+    } else {
+      console.log('⚠️ MercadoPago aún no disponible');
+    }
+  }, 100);
+  
+  // Variables globales para el envío
+  let shippingCost = 0;
+  let shippingZoneId = null;
+  let totalWeightGrams = 0;
+  
+  // Esperar a que el DOM y MercadoPago estén listos
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log('🛒 DOM cargado - iniciando checkout...');
+    
+    // Cargar el carrito primero
+    const cartData = loadAndDisplayCart();
+    
+    // Configurar el listener para el código postal
+    const codigoPostalInput = document.getElementById('codigoPostal');
+    if (codigoPostalInput) {
+      let debounceTimer;
+      codigoPostalInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const postalCode = e.target.value;
+        
+        if (postalCode.length === 5) {
+          debounceTimer = setTimeout(() => {
+            calculateShipping(postalCode, cartData);
+          }, 500);
+        } else {
+          // Ocultar información de envío si el código postal no es válido
+          document.getElementById('shipping-info').classList.add('hidden');
+          document.getElementById('shipping-error').classList.add('hidden');
+          document.getElementById('checkout-shipping').textContent = 'Ingresa código postal';
+          updateTotal(cartData);
+        }
+      });
+    }
+    
+    // Función para cargar el SDK dinámicamente como fallback
+    function loadMercadoPagoFallback() {
+      console.log('🔄 Intentando cargar MercadoPago dinámicamente...');
+      const script = document.createElement('script');
+      script.src = 'https://sdk.mercadopago.com/js/v2';
+      script.onload = () => {
+        console.log('✅ Script cargado dinámicamente');
+        setTimeout(() => {
+          if (typeof window.MercadoPago !== 'undefined') {
+            console.log('✅ MercadoPago disponible después de carga dinámica');
+            initMercadoPago(cartData);
+          } else {
+            console.error('❌ MercadoPago no se inicializó después de carga dinámica');
+            showPaymentError();
+          }
+        }, 500);
+      };
+      script.onerror = () => {
+        console.error('❌ Error al cargar script dinámicamente');
+        showPaymentError();
+      };
+      document.head.appendChild(script);
+    }
+    
+    // Verificar si MercadoPago está disponible
+    let attemptCount = 0;
+    const maxAttempts = 10; // 2 segundos para intentar normal
+    
+    function checkMercadoPago() {
+      attemptCount++;
+      console.log(`Intento ${attemptCount}: Verificando MercadoPago...`);
+      
+      if (typeof window.MercadoPago !== 'undefined') {
+        console.log('✅ MercadoPago SDK encontrado!');
+        try {
+          initMercadoPago(cartData);
+        } catch (error) {
+          console.error('Error al inicializar MercadoPago:', error);
+          showPaymentError();
+        }
+      } else if (attemptCount < maxAttempts) {
+        setTimeout(checkMercadoPago, 200);
+      } else {
+        console.log('⚠️ MercadoPago no se cargó de forma estática, intentando fallback...');
+        loadMercadoPagoFallback();
+      }
+    }
+    
+    // Iniciar verificación
+    checkMercadoPago();
+    
+    // Función para cargar y mostrar el carrito
+    function loadAndDisplayCart() {
+      const cartSummary = document.getElementById('cart-summary');
+      const checkoutSubtotal = document.getElementById('checkout-subtotal');
+      const checkoutTotal = document.getElementById('checkout-total');
+      const checkoutBtn = document.getElementById('checkout-btn');
+      
+      // Verificar elementos críticos
+      if (!cartSummary || !checkoutTotal) {
+        console.error('No se encontraron elementos críticos para el carrito');
+        return null;
+      }
+      
+      // Obtener items del carrito
+      const cartData = localStorage.getItem(CART_STORAGE_KEY);
+      console.log('Cart data from localStorage:', cartData);
+      
+      const cartItems = JSON.parse(cartData || '[]');
+      console.log('Parsed cart items:', cartItems);
+      
+      if (cartItems.length === 0) {
+        console.log('Cart is empty, redirecting to products...');
+        window.location.href = '/productos';
+        return null;
+      }
+      
+      // Calcular total - price ya es número en CartItem
+      const total = cartItems.reduce((sum, item) => {
+        const itemPrice = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+        console.log(`Item ${item.product_name}: price=${item.price}, quantity=${item.quantity}, itemPrice=${itemPrice}`);
+        return sum + (itemPrice * item.quantity);
+      }, 0);
+      const safeTotal = isNaN(total) ? 0 : total;
+      console.log('Calculated total:', total, 'Safe total:', safeTotal);
+      
+      // Actualizar UI
+      checkoutSubtotal.textContent = `$${safeTotal.toFixed(2)}`;
+      checkoutTotal.textContent = `$${safeTotal.toFixed(2)}`;
+      
+      // Mostrar resumen de productos
+      let summaryHTML = '';
+      cartItems.forEach((item) => {
+        const itemPrice = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+        const itemTotal = itemPrice * item.quantity;
+        summaryHTML += `
+          <div class="py-3">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-800 dark:text-gray-100">${item.product_name || 'Producto'}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Cantidad: ${item.quantity}</p>
+              </div>
+              <div class="text-right">
+                <span class="font-medium text-gray-800 dark:text-gray-100">$${itemTotal.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      cartSummary.innerHTML = summaryHTML;
+      
+      // Habilitar botón de checkout si existe
+      if (checkoutBtn) {
+        checkoutBtn.disabled = false;
+      }
+      
+      return { cartItems, safeTotal };
+    }
+    
+    // Función para calcular el envío
+    async function calculateShipping(postalCode, cartData) {
+      if (!cartData || !cartData.cartItems) return;
+      
+      try {
+        // Mostrar estado de cálculo
+        document.getElementById('checkout-shipping').textContent = 'Calculando...';
+        
+        // Calcular peso total en gramos
+        totalWeightGrams = 0;
+        cartData.cartItems.forEach(item => {
+          // Asumimos 500g (0.5kg) por producto si no hay peso específico
+          const itemWeight = item.weight_grams || 500;
+          totalWeightGrams += itemWeight * item.quantity;
+        });
+        
+        // Llamar al API para calcular envío
+        const response = await fetch(`${apiBaseUrl}/shipping/calculate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            postal_code: postalCode,
+            weight_grams: totalWeightGrams,
+            items: cartData.cartItems.map(item => ({
+              valuation_item_id: item.valuation_item_id,
+              quantity: item.quantity
+            }))
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && !data.error) {
+          // Guardar información de envío
+          shippingCost = data.shipping_cost;
+          shippingZoneId = data.zone.id;
+          
+          // Actualizar UI
+          document.getElementById('shipping-info').classList.remove('hidden');
+          document.getElementById('shipping-error').classList.add('hidden');
+          document.getElementById('shipping-cost-display').textContent = `$${shippingCost.toFixed(2)} MXN`;
+          document.getElementById('shipping-zone-display').textContent = `Zona: ${data.zone.name} (${data.weight.kg.toFixed(2)} kg)`;
+          document.getElementById('checkout-shipping').textContent = `$${shippingCost.toFixed(2)}`;
+          
+          // Actualizar total
+          updateTotal(cartData);
+        } else {
+          // Mostrar error
+          shippingCost = 0;
+          shippingZoneId = null;
+          document.getElementById('shipping-info').classList.add('hidden');
+          document.getElementById('shipping-error').classList.remove('hidden');
+          document.getElementById('checkout-shipping').textContent = 'No disponible';
+          updateTotal(cartData);
+        }
+      } catch (error) {
+        console.error('Error calculando envío:', error);
+        shippingCost = 0;
+        shippingZoneId = null;
+        document.getElementById('shipping-info').classList.add('hidden');
+        document.getElementById('shipping-error').classList.remove('hidden');
+        document.getElementById('checkout-shipping').textContent = 'Error';
+        updateTotal(cartData);
+      }
+    }
+    
+    // Función para actualizar el total
+    function updateTotal(cartData) {
+      if (!cartData) return;
+      
+      const subtotal = cartData.safeTotal || 0;
+      const total = subtotal + shippingCost;
+      
+      document.getElementById('checkout-total').textContent = `$${total.toFixed(2)}`;
+      
+      // Actualizar el monto para MercadoPago si ya está inicializado
+      if (window.mpCardForm) {
+        window.mpCardForm.update({ amount: total.toString() });
+      }
+    }
+    
+    // Función para mostrar error de pago
+    function showPaymentError() {
+      console.error('No se pudo cargar el sistema de pagos');
+      const cardNumberDiv = document.getElementById('form-checkout__cardNumber');
+      const expirationDiv = document.getElementById('form-checkout__expirationDate');
+      const securityDiv = document.getElementById('form-checkout__securityCode');
+      
+      const errorMsg = '<p class="text-red-500 text-sm py-2">No se pudo cargar MercadoPago. Recarga la página.</p>';
+      
+      if (cardNumberDiv) cardNumberDiv.innerHTML = errorMsg;
+      if (expirationDiv) expirationDiv.innerHTML = errorMsg;
+      if (securityDiv) securityDiv.innerHTML = errorMsg;
+      
+      const checkoutBtn = document.getElementById('checkout-btn');
+      if (checkoutBtn) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = 'Sistema de pagos no disponible';
+      }
+    }
+    
+    function initMercadoPago(cartData) {
+      try {
+        console.log('Iniciando MercadoPago...');
+        console.log('Public Key:', mercadoPagoPublicKey);
+        
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        if (!checkoutForm || !checkoutBtn || !cartData) {
+          console.error('No se pueden inicializar los pagos: faltan elementos o carrito vacío');
+          return;
+        }
+        
+        const { cartItems, safeTotal } = cartData;
+        const totalWithShipping = safeTotal + shippingCost;
+        console.log('Total para MercadoPago:', totalWithShipping);
+        
+        // Inicializar MercadoPago
+        const mp = new window.MercadoPago(mercadoPagoPublicKey, {
+          locale: 'es-MX',
+          advancedFraudPrevention: false // Desactivar para evitar problemas con crypto
+        });
+        
+        // Verificar que los contenedores existan
+        const cardNumberElement = document.getElementById('form-checkout__cardNumber');
+        const expirationDateElement = document.getElementById('form-checkout__expirationDate');
+        const securityCodeElement = document.getElementById('form-checkout__securityCode');
+        
+        if (!cardNumberElement || !expirationDateElement || !securityCodeElement) {
+          console.error('No se encontraron los contenedores para los campos de tarjeta');
+          console.log('cardNumber:', cardNumberElement);
+          console.log('expirationDate:', expirationDateElement);
+          console.log('securityCode:', securityCodeElement);
+          return;
+        }
+        
+        console.log('Contenedores de campos encontrados, inicializando CardForm...');
+        
+        // Inicializar CardForm y guardar referencia global
+        window.mpCardForm = mp.cardForm({
+          amount: totalWithShipping.toString(),
+          iframe: true,
+          form: {
+            id: "checkout-form",
+            cardNumber: {
+              id: "form-checkout__cardNumber",
+              placeholder: "Número de tarjeta",
+            },
+            expirationDate: {
+              id: "form-checkout__expirationDate",
+              placeholder: "MM/YY",
+            },
+            securityCode: {
+              id: "form-checkout__securityCode",
+              placeholder: "CVV",
+            },
+            cardholderName: {
+              id: "form-checkout__cardholderName",
+              placeholder: "Titular de la tarjeta",
+            },
+            issuer: {
+              id: "form-checkout__issuer",
+              placeholder: "Banco emisor",
+            },
+            installments: {
+              id: "form-checkout__installments",
+              placeholder: "Cuotas",
+            },
+          },
+          callbacks: {
+            onFormMounted: (error) => {
+              if (error) {
+                console.error("Error al montar el formulario de MercadoPago:");
+                console.error("Tipo de error:", error.type);
+                console.error("Mensaje:", error.message);
+                console.error("Causa:", error.cause);
+                console.error("Error completo:", error);
+                
+                // Intentar mostrar un mensaje al usuario
+                const cardNumberDiv = document.getElementById('form-checkout__cardNumber');
+                if (cardNumberDiv) {
+                  cardNumberDiv.innerHTML = '<p class="text-red-500 text-sm">Error al cargar formulario de pago. Recarga la página.</p>';
+                }
+                return;
+              }
+              console.log("✅ Formulario de MercadoPago montado correctamente");
+              console.log("Los campos de tarjeta deberían estar habilitados ahora");
+            },
+            onSubmit: async (event) => {
+              event.preventDefault();
+              
+              const emailElement = document.getElementById('email');
+              const telefonoElement = document.getElementById('telefono');
+              const nombreElement = document.getElementById('nombre');
+              const apellidoElement = document.getElementById('apellido');
+              const calleElement = document.getElementById('calle');
+              const coloniaElement = document.getElementById('colonia');
+              const codigoPostalElement = document.getElementById('codigoPostal');
+              const ciudadElement = document.getElementById('ciudad');
+              const estadoElement = document.getElementById('estado');
+              const referenciasElement = document.getElementById('referencias');
+              
+              if (!emailElement || !telefonoElement || !nombreElement || !apellidoElement ||
+                  !calleElement || !coloniaElement || !codigoPostalElement || !ciudadElement || !estadoElement) {
+                alert('Por favor completa todos los campos requeridos');
+                return;
+              }
+              
+              // Validar que se haya calculado el envío
+              if (!shippingCost || shippingCost === 0) {
+                alert('Por favor ingresa un código postal válido para calcular el envío');
+                codigoPostalElement.focus();
+                return;
+              }
+              
+              // Deshabilitar botón
+              checkoutBtn.disabled = true;
+              checkoutBtn.textContent = "Procesando...";
+              
+              try {
+                // Obtener datos del formulario
+                const cardFormData = cardForm.getCardFormData();
+                console.log('Datos de la tarjeta:', cardFormData);
+                
+                // Validar token
+                if (!cardFormData.token) {
+                  throw new Error('No se pudo obtener el token de la tarjeta');
+                }
+                
+                if (!cardFormData.paymentMethodId) {
+                  throw new Error('No se pudo obtener el método de pago');
+                }
+                
+                // Calcular total con envío
+                const totalWithShipping = safeTotal + shippingCost;
+                
+                // Preparar datos de pago
+                const paymentData = {
+                  transaction_amount: totalWithShipping.toString(),
+                  description: "Compra en Tienda Entrepeques",
+                  token: cardFormData.token,
+                  installments: parseInt(cardFormData.installments) || 1,
+                  issuer_id: cardFormData.issuerId,
+                  payment_method_id: cardFormData.paymentMethodId,
+                  payer: {
+                    email: emailElement.value,
+                    first_name: nombreElement.value,
+                    last_name: apellidoElement.value,
+                    phone: {
+                      area_code: "",
+                      number: telefonoElement.value
+                    }
+                  },
+                  shipping_address: {
+                    street: calleElement.value,
+                    neighborhood: coloniaElement.value,
+                    postal_code: codigoPostalElement.value,
+                    city: ciudadElement.value,
+                    state: estadoElement.value,
+                    references: referenciasElement.value || null
+                  },
+                  shipping_cost: shippingCost,
+                  shipping_zone_id: shippingZoneId,
+                  total_weight_grams: totalWeightGrams,
+                  items: cartItems.map(item => ({
+                    sku: item.inventory_id, // Enviar el SKU (inventory_id)
+                    valuation_item_id: item.valuation_item_id || null, // Opcional si ya lo tenemos
+                    title: item.product_name || 'Producto',
+                    quantity: item.quantity,
+                    unit_price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0
+                  }))
+                };
+                
+                // Crear ID único para idempotencia
+                const idempotencyKey = `payment-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+                
+                console.log('Enviando pago:', paymentData);
+                
+                // Enviar al backend
+                const response = await fetch(`${apiBaseUrl}/online-payments/process`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-idempotency-key': idempotencyKey
+                  },
+                  body: JSON.stringify(paymentData)
+                });
+                
+                const data = await response.json();
+                console.log('Respuesta del servidor:', data);
+                
+                if (data.status === 'approved') {
+                  alert('¡Pago aprobado! Gracias por tu compra.');
+                  localStorage.removeItem(CART_STORAGE_KEY);
+                  window.location.href = `/confirmacion?payment_id=${data.id}`;
+                } else if (data.status === 'pending') {
+                  alert('Tu pago está pendiente de aprobación.');
+                  window.location.href = `/confirmacion?payment_id=${data.id}&status=pending`;
+                } else {
+                  alert(`Pago ${data.status}: ${data.status_detail || 'Intenta con otra tarjeta'}`);
+                  checkoutBtn.disabled = false;
+                  checkoutBtn.textContent = "Finalizar compra";
+                }
+                
+              } catch (error) {
+                console.error('Error al procesar el pago:', error);
+                alert(`Error: ${error.message}`);
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = "Finalizar compra";
+              }
+            },
+            onFetching: (resource) => {
+              console.log("Cargando recurso:", resource);
+              checkoutBtn.disabled = true;
+              checkoutBtn.textContent = "Cargando...";
+              
+              return () => {
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = "Finalizar compra";
+              };
+            },
+            onError: (errors) => {
+              console.error("Errores en el formulario:", errors);
+              alert("Error al procesar el pago: " + JSON.stringify(errors));
+              checkoutBtn.disabled = false;
+              checkoutBtn.textContent = "Finalizar compra";
+            }
+          },
+        });
+      } catch (error) {
+        console.error('❌ Error crítico al inicializar MercadoPago:', error);
+        console.error('Stack trace:', error.stack);
+        
+        // Mostrar error en la UI
+        const cardNumberDiv = document.getElementById('form-checkout__cardNumber');
+        const expirationDiv = document.getElementById('form-checkout__expirationDate');
+        const securityDiv = document.getElementById('form-checkout__securityCode');
+        
+        const errorMsg = '<p class="text-red-500 text-sm py-2">Error al cargar MercadoPago</p>';
+        
+        if (cardNumberDiv) cardNumberDiv.innerHTML = errorMsg;
+        if (expirationDiv) expirationDiv.innerHTML = errorMsg;
+        if (securityDiv) securityDiv.innerHTML = errorMsg;
+        
+        // Deshabilitar el botón de pago
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+          checkoutBtn.disabled = true;
+          checkoutBtn.textContent = 'Error al cargar pagos';
+        }
+      }
+    }
+  });
+</script>

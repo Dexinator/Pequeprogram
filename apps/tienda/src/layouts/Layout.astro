@@ -2,14 +2,25 @@
 export interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
+  ogType?: string;
 }
 
-const { title, description = 'Entrepeques - Tienda de artículos infantiles de segunda mano' } = Astro.props;
+const { 
+  title, 
+  description = 'Entrepeques - Tienda de artículos infantiles de segunda mano de calidad. Compra, vende y reutiliza ropa, juguetes y accesorios para bebés y niños.',
+  ogImage = '/opengraph.png',
+  ogType = 'website'
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://tienda.entrepeques.com');
+const ogImageURL = new URL(ogImage, Astro.site || 'https://tienda.entrepeques.com');
 import '../styles/global.css';
 import NavBar from '../components/layout/NavBar.jsx';
 import Footer from '../components/layout/Footer.astro';
 import AppProviders from '../components/AppProviders.jsx';
 import ClearAuth from '../components/ClearAuth.jsx';
+import CartToast from '../components/CartToast.jsx';
 ---
 
 <!doctype html>
@@ -19,13 +30,41 @@ import ClearAuth from '../components/ClearAuth.jsx';
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Primary Meta Tags -->
+    <title>{title} | Entrepeques</title>
+    <meta name="title" content={`${title} | Entrepeques`} />
+    <meta name="description" content={description} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={`${title} | Entrepeques`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Entrepeques - Compra, Vende, Reutiliza artículos infantiles" />
+    <meta property="og:site_name" content="Entrepeques" />
+    <meta property="og:locale" content="es_MX" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={`${title} | Entrepeques`} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImageURL} />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Entrepeques" />
+    <meta name="keywords" content="ropa bebé segunda mano, juguetes niños usados, artículos infantiles, compra venta bebé, entrepeques, reutilizar, sostenible" />
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;500;600;700;800&family=Muli:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    
-    <title>{title} | Entrepeques</title>
     
     <script is:inline>
       // Apply dark mode class before page renders
@@ -39,6 +78,7 @@ import ClearAuth from '../components/ClearAuth.jsx';
   <body>
     <ClearAuth client:only="react" />
     <NavBar client:only="react" />
+    <CartToast client:only="react" />
     <main class="min-h-screen">
       <slot />
     </main>

@@ -187,6 +187,16 @@ const ProductCard = ({ product }) => {
               onClick={(e) => {
                 e.preventDefault();
                 addItem(product, 1);
+                
+                // Emitir evento para mostrar toast
+                const event = new CustomEvent('product_added_to_cart', {
+                  detail: {
+                    name: `${product.subcategory_name} ${product.brand_name}`,
+                    image: product.images?.[0]
+                  }
+                });
+                window.dispatchEvent(event);
+                
                 setShowAddedMessage(true);
                 setTimeout(() => setShowAddedMessage(false), 2000);
               }}

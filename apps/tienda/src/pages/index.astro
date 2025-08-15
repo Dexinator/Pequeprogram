@@ -5,17 +5,14 @@ import Categories from '../components/shop/Categories.jsx';
 import CategoriesSimple from '../components/shop/CategoriesSimple.jsx';
 import CategoriesStandalone from '../components/shop/CategoriesStandalone.jsx';
 import WhyChooseUs from '../components/shop/WhyChooseUs.jsx';
-import FeaturedProducts from '../components/shop/FeaturedProducts';
+import FeaturedProductsWrapper from '../components/FeaturedProductsWrapper';
 import Testimonials from '../components/shop/Testimonials.jsx';
 import CTASection from '../components/shop/CTASection.jsx';
-import PageWrapper from '../components/PageWrapper';
 ---
 
 <Layout title="Inicio - Entrepeques | Artículos infantiles de segunda mano">
   <!-- Hero Section -->
-  <PageWrapper client:only="react">
-    <HeroSection />
-  </PageWrapper>
+  <HeroSection client:only="react" />
 
   <!-- Categorías destacadas -->
   <section class="py-20 bg-white dark:bg-gray-900">
@@ -35,9 +32,7 @@ import PageWrapper from '../components/PageWrapper';
   </section>
 
   <!-- Why Choose Us -->
-  <PageWrapper client:only="react">
-    <WhyChooseUs />
-  </PageWrapper>
+  <WhyChooseUs client:only="react" />
 
   <!-- Productos destacados -->
   <section class="py-20 bg-gray-50 dark:bg-gray-800">
@@ -50,18 +45,14 @@ import PageWrapper from '../components/PageWrapper';
           Los favoritos de nuestros clientes
         </p>
       </div>
-      <FeaturedProducts client:only="react" />
+      <FeaturedProductsWrapper client:only="react" />
     </div>
   </section>
 
   <!-- Testimonials -->
-  <PageWrapper client:only="react">
-    <Testimonials />
-  </PageWrapper>
+  <Testimonials client:only="react" />
 
   <!-- CTA Section -->
-  <PageWrapper client:only="react">
-    <CTASection />
-  </PageWrapper>
+  <CTASection client:only="react" />
 
 </Layout>

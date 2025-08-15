@@ -5,17 +5,46 @@ import Pagination from './Pagination';
 import ProductFilters from './ProductFilters';
 
 const AllProducts = () => {
+  // Leer query parameters de la URL
+  const getInitialFilters = () => {
+    if (typeof window === 'undefined') return {};
+    
+    const params = new URLSearchParams(window.location.search);
+    const initialFilters = {};
+    
+    if (params.get('categoria')) {
+      initialFilters.category_id = parseInt(params.get('categoria'));
+    }
+    if (params.get('subcategoria')) {
+      initialFilters.subcategory_id = parseInt(params.get('subcategoria'));
+    }
+    
+    return initialFilters;
+  };
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState(getInitialFilters());
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [error, setError] = useState(null);
+  const [subcategoryName, setSubcategoryName] = useState('');
   
   const PRODUCTS_PER_PAGE = 20;
+  
+  // Leer el nombre de la subcategoría de la URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const nombre = params.get('nombre');
+      if (nombre) {
+        setSubcategoryName(decodeURIComponent(nombre));
+      }
+    }
+  }, []);
   
   // Cargar categorías al montar el componente
   useEffect(() => {
@@ -90,24 +119,58 @@ const AllProducts = () => {
       )}
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-50 to-blue-50 py-8">
+      <div className="bg-gradient-to-r from-brand-azul/10 to-brand-verde-lima/10 py-8">
         <div className="container mx-auto px-4">
           <nav className="text-sm mb-4">
             <ol className="flex items-center space-x-2">
               <li>
-                <a href="/" className="text-gray-500 hover:text-gray-700">Inicio</a>
+                <a href="/" className="text-brand-azul hover:text-brand-azul-profundo transition-colors">Inicio</a>
               </li>
               <li className="text-gray-400">/</li>
-              <li className="text-gray-900 font-medium">Todos los productos</li>
+              {subcategoryName ? (
+                <>
+                  <li>
+                    <a href="/categorias" className="text-brand-azul hover:text-brand-azul-profundo transition-colors">Categorías</a>
+                  </li>
+                  <li className="text-gray-400">/</li>
+                  <li>
+                    <button 
+                      onClick={() => window.history.back()}
+                      className="text-brand-azul hover:text-brand-azul-profundo transition-colors"
+                    >
+                      {categories.find(c => c.id === filters.category_id)?.name || 'Categoría'}
+                    </button>
+                  </li>
+                  <li className="text-gray-400">/</li>
+                  <li className="text-gray-900 dark:text-gray-100 font-medium">{subcategoryName}</li>
+                </>
+              ) : (
+                <li className="text-gray-900 dark:text-gray-100 font-medium">Todos los productos</li>
+              )}
             </ol>
           </nav>
           
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-            Todos los productos
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-brand-rosa mb-2">
+            {subcategoryName || 'Todos los productos'}
           </h1>
-          <p className="text-gray-600">
+          <p className="font-body text-gray-600 dark:text-gray-400">
             {total > 0 ? `${total} productos disponibles` : 'Cargando productos...'}
           </p>
+          
+          {/* Botón para limpiar filtro si hay subcategoría */}
+          {subcategoryName && (
+            <div className="mt-4">
+              <a 
+                href="/productos"
+                className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 text-brand-azul hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg shadow-sm transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Ver todos los productos
+              </a>
+            </div>
+          )}
         </div>
       </div>
       

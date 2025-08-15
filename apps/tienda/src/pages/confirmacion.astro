@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Obtener información de la URL si existe
+const { searchParams } = Astro.url;
+const paymentId = searchParams.get('payment_id');
+const status = searchParams.get('status') || 'approved';
+---
+
+<Layout title="Confirmación de Pago | Entrepeques">
+  <main class="min-h-screen bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+      <div class="bg-white p-8 rounded-lg shadow-md">
+        {status === 'approved' ? (
+          <div class="text-center">
+            <div class="mb-6">
+              <span class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              </span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">¡Pago confirmado!</h1>
+            <p class="text-lg text-gray-600 mb-6">
+              Gracias por tu compra. Tu pago ha sido procesado correctamente.
+            </p>
+            {paymentId && (
+              <p class="text-sm text-gray-500 mb-6">
+                ID de la transacción: <span class="font-mono">{paymentId}</span>
+              </p>
+            )}
+            <p class="mb-8">
+              Recibirás un correo electrónico con los detalles de tu compra.
+            </p>
+            <div class="space-y-4">
+              <a href="/" class="inline-block bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline transition-colors">
+                Volver a la tienda
+              </a>
+            </div>
+          </div>
+        ) : status === 'pending' ? (
+          <div class="text-center">
+            <div class="mb-6">
+              <span class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 text-yellow-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Pago en proceso</h1>
+            <p class="text-lg text-gray-600 mb-6">
+              Tu pago está siendo procesado. Te notificaremos cuando se complete.
+            </p>
+            {paymentId && (
+              <p class="text-sm text-gray-500 mb-6">
+                ID de la transacción: <span class="font-mono">{paymentId}</span>
+              </p>
+            )}
+            <p class="mb-8">
+              Recibirás un correo electrónico con los detalles una vez que el pago sea confirmado.
+            </p>
+            <div class="space-y-4">
+              <a href="/" class="inline-block bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline transition-colors">
+                Volver a la tienda
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div class="text-center">
+            <div class="mb-6">
+              <span class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-red-100 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Error en el pago</h1>
+            <p class="text-lg text-gray-600 mb-6">
+              Hubo un problema al procesar tu pago. Por favor, intenta nuevamente.
+            </p>
+            <div class="space-y-4">
+              <a href="/productos" class="inline-block bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline transition-colors">
+                Volver a la tienda
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Redirigir si no viene de checkout (validación básica)
+  document.addEventListener('DOMContentLoaded', () => {
+    const referrer = document.referrer;
+    if (!referrer.includes('/checkout')) {
+      // Solo redireccionar si no viene de la página de checkout y no hay datos de orden
+      if (!localStorage.getItem('orderCompleted')) {
+        // Si no hay payment_id en la URL, redirigir a inicio
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.get('payment_id')) {
+          window.location.href = '/';
+        }
+      }
+    } else {
+      // Marcar como orden completada
+      localStorage.setItem('orderCompleted', 'true');
+      // Limpiar después de 1 hora
+      setTimeout(() => {
+        localStorage.removeItem('orderCompleted');
+      }, 3600000);
+    }
+  });
+</script>

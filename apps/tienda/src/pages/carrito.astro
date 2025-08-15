@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import CartPage from '../components/shop/CartPage.jsx';
+---
+
+<Layout title="Carrito de Compras | Entrepeques">
+  <Header />
+  
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8">Carrito de Compras</h1>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <CartPage client:only="react" />
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>

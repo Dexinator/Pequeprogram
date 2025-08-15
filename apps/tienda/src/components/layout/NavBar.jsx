@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
 import { CartProvider } from '../../context/CartContext';
 import Cart from '../shop/Cart';
-import SearchBar from '../shop/SearchBar';
+import SearchOverlay from '../shop/SearchOverlay';
+import LogoReact from './LogoReact';
 
 const NavBarContent = () => {
   const { isAuthenticated, user, logout, isEmployee, isCustomer } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showSearchOverlay, setShowSearchOverlay] = useState(false);
 
   // Initialize dark mode state on component mount
   React.useEffect(() => {
@@ -47,10 +49,7 @@ const NavBarContent = () => {
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center">
                 <a href="/" className="flex items-center group">
-                  <span className="font-display text-3xl md:text-4xl text-brand-rosa group-hover:text-brand-azul transition-colors transform group-hover:scale-105 duration-300">
-                    Entrepeques
-                  </span>
-                  <span className="ml-2 text-2xl animate-float">🧸</span>
+                  <LogoReact className="h-20 md:h-24 w-auto group-hover:scale-105 transition-transform duration-300" />
                 </a>
               </div>
               
@@ -74,13 +73,32 @@ const NavBarContent = () => {
               </div>
             </div>
 
-            {/* Barra de búsqueda - Desktop */}
-            <div className="hidden md:flex flex-1 items-center justify-center px-8 max-w-md">
-              <SearchBar />
-            </div>
+            {/* Espacio flexible para centrar el logo */}
+            <div className="hidden md:flex flex-1"></div>
 
             {/* Menú de usuario y carrito */}
             <div className="hidden md:flex md:items-center md:space-x-4">
+              {/* Search button */}
+              <div className="relative group">
+                <button
+                  onClick={() => setShowSearchOverlay(true)}
+                  type="button"
+                  className="p-3 rounded-full bg-brand-verde-lima/10 hover:bg-brand-verde-lima/20 dark:bg-brand-verde-lima/20 dark:hover:bg-brand-verde-lima/30 text-brand-verde-lima dark:text-brand-verde-lima transition-all transform hover:scale-110 shadow-lg"
+                  aria-label="Buscar productos"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+                
+                {/* Tooltip */}
+                <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                  Buscar productos
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                    <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800 dark:border-t-gray-700"></div>
+                  </div>
+                </div>
+              </div>
               {/* Dark mode toggle */}
               <div className="relative group">
                 <button
@@ -205,6 +223,18 @@ const NavBarContent = () => {
 
             {/* Botón de menú móvil */}
             <div className="flex items-center md:hidden space-x-3">
+              {/* Search button - Mobile */}
+              <button
+                onClick={() => setShowSearchOverlay(true)}
+                type="button"
+                className="p-2 rounded-full bg-brand-verde-lima/10 hover:bg-brand-verde-lima/20 dark:bg-brand-verde-lima/20 dark:hover:bg-brand-verde-lima/30 text-brand-verde-lima transition-all"
+                aria-label="Buscar productos"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+              
               {/* Dark mode toggle - Mobile */}
               <button
                 onClick={toggleTheme}
@@ -237,10 +267,6 @@ const NavBarContent = () => {
         </div>
       </div>
 
-      {/* Barra de búsqueda - Móvil */}
-      <div className="md:hidden border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3">
-        <SearchBar />
-      </div>
 
       {/* Menú móvil */}
       {showMobileMenu && (
@@ -306,6 +332,12 @@ const NavBarContent = () => {
           </div>
         </div>
       )}
+      
+      {/* Search Overlay */}
+      <SearchOverlay 
+        isOpen={showSearchOverlay} 
+        onClose={() => setShowSearchOverlay(false)} 
+      />
     </nav>
   );
 };

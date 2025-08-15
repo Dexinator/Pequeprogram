@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import ProductDetailRedesigned from '../../components/shop/ProductDetailRedesigned';
+import ProductDetailWrapper from '../../components/ProductDetailWrapper';
 import { productsService } from '../../services/products.service';
 
 const { id } = Astro.params;
@@ -59,7 +59,7 @@ const pageDescription = product
 
 <Layout title={pageTitle} description={pageDescription}>
   <div>
-    <ProductDetailRedesigned 
+    <ProductDetailWrapper 
       client:only="react" 
       productId={id} 
       initialProduct={product}

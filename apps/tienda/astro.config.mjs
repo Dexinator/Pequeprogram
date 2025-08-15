@@ -2,7 +2,13 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from "@tailwindcss/vite";
-import vercel from '@astrojs/vercel/serverless';
+
+// Conditionally import Vercel adapter only in production/Vercel environment
+let adapter = undefined;
+if (process.env.VERCEL) {
+  const vercel = await import('@astrojs/vercel/serverless');
+  adapter = vercel.default();
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,5 +17,6 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   output: 'server',
-  adapter: vercel()
+  adapter: adapter,
+  site: 'https://tienda.entrepeques.com'
 });
