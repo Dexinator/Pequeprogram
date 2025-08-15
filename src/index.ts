@@ -15,7 +15,7 @@ console.log('CORS configurado con orígenes:', config.corsOrigin);
 app.use(cors({
   origin: config.corsOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-idempotency-key', 'Cache-Control', 'Pragma', 'Expires'],
   credentials: true
 }));
 
