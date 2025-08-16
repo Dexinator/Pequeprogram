@@ -1,21 +1,71 @@
 import React from 'react';
 
 const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModalities, getProductDescription }) => {
-  // Calcular totales de productos seleccionados (incluir cantidad)
+  // Calcular totales de productos seleccionados según modalidad
   const calculateOfferTotal = () => {
     return selectedProducts.reduce((sum, product) => {
+      const finalModality = editedModalities[product.id] || product.modality;
+      
+      // Si es consignación, no suma al total
+      if (finalModality === 'consignación') {
+        return sum;
+      }
+      
       const editedPrice = editedPrices[product.id];
-      const price = editedPrice?.purchase !== undefined 
+      const basePrice = editedPrice?.purchase !== undefined 
         ? Number(editedPrice.purchase)
         : (product.suggested_purchase_price ? Number(product.suggested_purchase_price) : 0);
+      
+      // Calcular precio según modalidad
+      let finalPrice = basePrice;
+      if (finalModality === 'crédito en tienda') {
+        finalPrice = basePrice * 1.1; // 10% más
+      }
+      
       const quantity = Number(product.quantity) || 1;
-      return sum + (isNaN(price) ? 0 : price * quantity);
+      return sum + (isNaN(finalPrice) ? 0 : finalPrice * quantity);
     }, 0);
   };
 
   const formatCurrency = (value) => {
     if (value === null || value === undefined || isNaN(value)) return '$0.00';
     return `$${parseFloat(value).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  // Obtener precio base (efectivo)
+  const getCashPrice = (product) => {
+    const editedPrice = editedPrices[product.id];
+    if (editedPrice?.purchase !== undefined) {
+      const numericPrice = Number(editedPrice.purchase);
+      return isNaN(numericPrice) ? 0 : numericPrice;
+    }
+    const basePrice = product.suggested_purchase_price || 0;
+    return Number(basePrice);
+  };
+
+  // Obtener precio de crédito (10% más)
+  const getCreditPrice = (product) => {
+    const cashPrice = getCashPrice(product);
+    return cashPrice * 1.1;
+  };
+
+  // Obtener precio total según modalidad seleccionada
+  const getTotalPriceForProduct = (product) => {
+    const finalModality = editedModalities[product.id] || product.modality;
+    const quantity = Number(product.quantity) || 1;
+    
+    // Si es consignación, el total es 0
+    if (finalModality === 'consignación') {
+      return 0;
+    }
+    
+    // Si es crédito en tienda, usar precio de crédito
+    if (finalModality === 'crédito en tienda') {
+      return getCreditPrice(product) * quantity;
+    }
+    
+    // Si es compra directa, usar precio de efectivo
+    return getCashPrice(product) * quantity;
   };
 
   const getFinalPurchasePrice = (product) => {
@@ -41,12 +91,6 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
     
     const numericPrice = Number(finalPrice);
     return isNaN(numericPrice) ? 0 : numericPrice;
-  };
-
-  const getTotalPriceForProduct = (product) => {
-    const unitPrice = getFinalPurchasePrice(product);
-    const quantity = Number(product.quantity) || 1;
-    return unitPrice * quantity;
   };
 
   const currentDate = new Date().toLocaleDateString('es-MX', {
@@ -149,10 +193,13 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                 Modalidad
               </th>
               <th className="border border-gray-300 px-2 py-2 text-center font-medium text-xs">
-                Cantidad
+                Cant.
               </th>
               <th className="border border-gray-300 px-2 py-2 text-right font-medium text-xs">
-                Precio Unitario
+                Efectivo
+              </th>
+              <th className="border border-gray-300 px-2 py-2 text-right font-medium text-xs">
+                Crédito
               </th>
               <th className="border border-gray-300 px-2 py-2 text-right font-medium text-xs">
                 Total
@@ -161,7 +208,8 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
           </thead>
           <tbody>
             {selectedProducts.map((product, index) => {
-              const finalPrice = getFinalPurchasePrice(product);
+              const cashPrice = getCashPrice(product);
+              const creditPrice = getCreditPrice(product);
               const quantity = Number(product.quantity) || 1;
               const totalPrice = getTotalPriceForProduct(product);
               const finalModality = editedModalities[product.id] || product.modality;
@@ -172,7 +220,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                   case 'compra directa':
                     return { text: 'Efectivo', style: 'text-green-700 bg-green-100' };
                   case 'crédito en tienda':
-                    return { text: 'Crédito Tienda', style: 'text-blue-700 bg-blue-100' };
+                    return { text: 'Crédito', style: 'text-blue-700 bg-blue-100' };
                   case 'consignación':
                     return { text: 'Consignación', style: 'text-orange-700 bg-orange-100' };
                   default:
@@ -203,10 +251,13 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                     {quantity}
                   </td>
                   <td className="border border-gray-300 px-2 py-2 text-right text-xs font-medium">
-                    {formatCurrency(finalPrice)}
+                    {formatCurrency(cashPrice)}
+                  </td>
+                  <td className="border border-gray-300 px-2 py-2 text-right text-xs font-medium">
+                    {formatCurrency(creditPrice)}
                   </td>
                   <td className="border border-gray-300 px-2 py-2 text-right text-xs font-bold">
-                    {formatCurrency(totalPrice)}
+                    {finalModality === 'consignación' ? '$0.00' : formatCurrency(totalPrice)}
                   </td>
                 </tr>
               );
@@ -214,7 +265,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
           </tbody>
           <tfoot>
             <tr className="print-total-row bg-azul-claro text-white" style={{ backgroundColor: '#00A0DD', color: 'white' }}>
-              <td className="border border-gray-300 px-2 py-2 font-bold text-center text-xs" colSpan="5">
+              <td className="border border-gray-300 px-2 py-2 font-bold text-center text-xs" colSpan="6">
                 TOTAL DE LA OFERTA
               </td>
               <td className="border border-gray-300 px-2 py-2 text-right font-bold text-sm">

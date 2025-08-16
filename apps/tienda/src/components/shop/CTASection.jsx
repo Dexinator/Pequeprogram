@@ -23,14 +23,14 @@ function CTASection() {
         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
           <a 
             href="/vender" 
-            className="inline-flex items-center justify-center px-8 py-4 bg-white text-brand-rosa hover:bg-gray-100 font-heading font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
+            className="inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-gray-800 text-brand-rosa dark:text-brand-rosa hover:bg-gray-100 dark:hover:bg-gray-700 font-heading font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
           >
             <span className="mr-2">🚀</span>
             Quiero vender ahora
           </a>
           <a 
             href="/como-funciona" 
-            className="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-brand-rosa font-heading font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
+            className="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white dark:hover:bg-gray-800 hover:text-brand-rosa dark:hover:text-brand-rosa font-heading font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
           >
             <span className="mr-2">📖</span>
             ¿Cómo funciona?

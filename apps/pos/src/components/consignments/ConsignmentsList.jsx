@@ -322,10 +322,7 @@ export default function ConsignmentsList() {
                       Cliente
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio Consignación
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio Venta
+                      Precio Venta / A Pagar
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Ubicación
@@ -356,11 +353,24 @@ export default function ConsignmentsList() {
                           <p className="text-gray-500 text-xs">{consignment.client_phone}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-pink-600">
-                        {consignmentService.formatCurrency(consignment.consignment_price)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                        {consignmentService.formatCurrency(consignment.final_sale_price)}
+                      <td className="px-6 py-4 text-sm">
+                        {consignment.status === 'available' ? (
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {consignmentService.formatCurrency(consignment.final_sale_price)}
+                            </p>
+                            <p className="text-xs text-gray-500">Recibirá 50% al venderse</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {consignmentService.formatCurrency(consignment.sale_price || consignment.final_sale_price)}
+                            </p>
+                            <p className="text-xs text-green-600 font-medium">
+                              A pagar: {consignmentService.formatCurrency((consignment.sale_price || consignment.final_sale_price) * 0.5)}
+                            </p>
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {consignment.location}

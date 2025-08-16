@@ -326,10 +326,7 @@ const ConsignmentsList = () => {
                       Cliente
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio Consignación
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio Venta
+                      Precio Venta / A Pagar
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Ubicación
@@ -360,11 +357,24 @@ const ConsignmentsList = () => {
                           <p className="text-gray-500 text-xs">{consignment.client_phone}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600">
-                        {consignmentService.formatCurrency(consignment.consignment_price)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                        {consignmentService.formatCurrency(consignment.final_sale_price)}
+                      <td className="px-6 py-4 text-sm">
+                        {consignment.status === 'available' ? (
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {consignmentService.formatCurrency(consignment.final_sale_price)}
+                            </p>
+                            <p className="text-xs text-gray-500">Recibirá 50% al venderse</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {consignmentService.formatCurrency(consignment.sale_price || consignment.final_sale_price)}
+                            </p>
+                            <p className="text-xs text-green-600 font-medium">
+                              A pagar: {consignmentService.formatCurrency((consignment.sale_price || consignment.final_sale_price) * 0.5)}
+                            </p>
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {consignment.location}
@@ -530,6 +540,7 @@ const ConsignmentsList = () => {
                     <p><span className="font-medium">Fecha de Venta:</span> {consignmentService.formatDate(selectedConsignment.sold_date)}</p>
                     <p><span className="font-medium">ID de Venta:</span> #{selectedConsignment.sale_id}</p>
                     <p><span className="font-medium">Precio de Venta Real:</span> {consignmentService.formatCurrency(selectedConsignment.sale_price)}</p>
+                    <p><span className="font-medium">Monto a Pagar (50%):</span> <span className="text-green-600 font-bold">{consignmentService.formatCurrency(selectedConsignment.sale_price * 0.5)}</span></p>
                   </div>
                 </div>
               )}
@@ -596,8 +607,11 @@ const ConsignmentsList = () => {
                 <p className="text-sm text-gray-600 mb-2">
                   <strong>Cliente:</strong> {selectedConsignment.client_name}
                 </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>Precio de Venta Real:</strong> {consignmentService.formatCurrency(selectedConsignment.sale_price)}
+                </p>
                 <p className="text-sm text-gray-600 mb-4">
-                  <strong>Precio Consignación:</strong> {consignmentService.formatCurrency(selectedConsignment.consignment_price)}
+                  <strong>Monto a Pagar (50%):</strong> <span className="text-green-600 font-bold">{consignmentService.formatCurrency(selectedConsignment.sale_price * 0.5)}</span>
                 </p>
               </div>
               
@@ -609,13 +623,13 @@ const ConsignmentsList = () => {
                   type="number"
                   step="0.01"
                   placeholder="Monto pagado"
-                  value={paymentFormData.paid_amount}
+                  value={paymentFormData.paid_amount || (selectedConsignment.sale_price * 0.5).toFixed(2)}
                   onChange={(e) => setPaymentFormData({ ...paymentFormData, paid_amount: e.target.value })}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Normalmente coincide con el precio de consignación
+                  Calculado automáticamente como 50% del precio de venta. Puede modificar si es necesario.
                 </p>
               </div>
               

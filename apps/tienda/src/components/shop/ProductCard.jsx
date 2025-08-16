@@ -53,18 +53,6 @@ const ProductCard = ({ product }) => {
     ? product.online_price / (1 - product.discount_percentage / 100)
     : product.online_price || 0;
   
-  // Obtener color de categoría
-  const getCategoryColor = (categoryName) => {
-    const categoryColors = {
-      'A pasear': 'from-brand-rosa/20 to-brand-rosa/5',
-      'A dormir': 'from-brand-azul/20 to-brand-azul/5',
-      'A comer': 'from-brand-verde-lima/20 to-brand-verde-lima/5',
-      'A jugar': 'from-brand-amarillo/20 to-brand-amarillo/5',
-      'Para mamá': 'from-brand-rosa/20 to-brand-amarillo/5',
-      'Ropa y calzado': 'from-brand-azul/20 to-brand-verde-lima/5'
-    };
-    return categoryColors[categoryName] || 'from-gray-100 to-gray-50';
-  };
   
   // Obtener emoji de categoría
   const getCategoryEmoji = (categoryName) => {
@@ -101,8 +89,7 @@ const ProductCard = ({ product }) => {
       )}
       
       {/* Imagen del producto con gradiente de categoría */}
-      <a href={`/producto/${product.inventory_id}`} className="block relative aspect-square overflow-hidden">
-        <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryColor(product.category_name)} dark:opacity-50`}></div>
+      <a href={`/producto/${product.inventory_id}`} className="block relative aspect-square overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800">
         <img
           src={getMainImage()}
           alt={product.subcategory_name}

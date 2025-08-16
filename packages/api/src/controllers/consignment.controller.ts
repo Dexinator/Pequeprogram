@@ -57,17 +57,12 @@ export const markConsignmentAsPaid = asyncHandler(async (req: Request, res: Resp
   const { id } = req.params;
   const { paid_amount, notes } = req.body;
   
-  if (!paid_amount) {
-    res.status(400).json({
-      success: false,
-      message: 'paid_amount es requerido'
-    });
-    return;
-  }
+  // paid_amount is now optional - if not provided, it will be calculated automatically as 50% of sale price
+  const paidAmountValue = paid_amount ? parseFloat(paid_amount) : null;
 
   const consignment = await consignmentService.markAsPaid(
     parseInt(id), 
-    parseFloat(paid_amount),
+    paidAmountValue,
     notes
   );
   

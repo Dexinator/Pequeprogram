@@ -22,6 +22,10 @@ export interface ConsignmentProduct {
   consignment_paid_date?: Date;
   consignment_paid_amount?: number;
   consignment_paid_notes?: string;
+  // New percentage-based fields
+  consignment_percentage?: number;
+  actual_sale_price?: number;
+  calculated_consignment_amount?: number;
   created_at: Date;
   updated_at: Date;
 }
@@ -102,6 +106,10 @@ export class ConsignmentService {
         vi.consignment_paid_date,
         vi.consignment_paid_amount,
         vi.consignment_paid_notes,
+        -- New percentage-based fields
+        COALESCE(vi.consignment_percentage, 50.00) as consignment_percentage,
+        vi.actual_sale_price,
+        vi.calculated_consignment_amount,
         -- Sale information if sold
         s.id as sale_id,
         s.sale_date as sold_date,
@@ -160,6 +168,10 @@ export class ConsignmentService {
           consignment_paid_date: row.consignment_paid_date,
           consignment_paid_amount: row.consignment_paid_amount ? parseFloat(row.consignment_paid_amount) : undefined,
           consignment_paid_notes: row.consignment_paid_notes,
+          // New percentage-based fields
+          consignment_percentage: parseFloat(row.consignment_percentage || 50),
+          actual_sale_price: row.actual_sale_price ? parseFloat(row.actual_sale_price) : undefined,
+          calculated_consignment_amount: row.calculated_consignment_amount ? parseFloat(row.calculated_consignment_amount) : undefined,
           created_at: row.created_at,
           updated_at: row.updated_at
         };
@@ -200,6 +212,10 @@ export class ConsignmentService {
         vi.consignment_paid_date,
         vi.consignment_paid_amount,
         vi.consignment_paid_notes,
+        -- New percentage-based fields
+        COALESCE(vi.consignment_percentage, 50.00) as consignment_percentage,
+        vi.actual_sale_price,
+        vi.calculated_consignment_amount,
         -- Sale information if sold
         s.id as sale_id,
         s.sale_date as sold_date,
@@ -252,6 +268,10 @@ export class ConsignmentService {
         consignment_paid_date: row.consignment_paid_date,
         consignment_paid_amount: row.consignment_paid_amount ? parseFloat(row.consignment_paid_amount) : undefined,
         consignment_paid_notes: row.consignment_paid_notes,
+        // New percentage-based fields
+        consignment_percentage: parseFloat(row.consignment_percentage || 50),
+        actual_sale_price: row.actual_sale_price ? parseFloat(row.actual_sale_price) : undefined,
+        calculated_consignment_amount: row.calculated_consignment_amount ? parseFloat(row.calculated_consignment_amount) : undefined,
         created_at: row.created_at,
         updated_at: row.updated_at
       };
@@ -261,18 +281,21 @@ export class ConsignmentService {
     }
   }
 
-  async markAsPaid(id: number, paidAmount: number, notes?: string): Promise<ConsignmentProduct | null> {
+  async markAsPaid(id: number, paidAmount: number | null, notes?: string): Promise<ConsignmentProduct | null> {
     const client = await pool.connect();
     
     try {
       await client.query('BEGIN');
 
-      // First, check if the consignment exists and is sold but not paid
+      // First, check if the consignment exists, is sold but not paid, and get the sale price
       const checkQuery = `
-        SELECT vi.id 
+        SELECT 
+          vi.id,
+          si.unit_price as sale_price,
+          COALESCE(vi.consignment_percentage, 50.00) as percentage
         FROM valuation_items vi
         LEFT JOIN inventario inv ON inv.valuation_item_id = vi.id
-      LEFT JOIN sale_items si ON si.inventario_id = inv.id
+        LEFT JOIN sale_items si ON si.inventario_id = inv.id
         WHERE vi.id = $1 AND vi.modality = 'consignación' AND si.id IS NOT NULL AND vi.consignment_paid = FALSE
       `;
       const checkResult = await client.query(checkQuery, [id]);
@@ -282,7 +305,15 @@ export class ConsignmentService {
         return null;
       }
 
-      // Update the valuation item with payment information
+      const row = checkResult.rows[0];
+      const salePrice = parseFloat(row.sale_price);
+      const percentage = parseFloat(row.percentage);
+      
+      // Calculate the payment amount if not provided (50% of sale price by default)
+      const calculatedAmount = salePrice * (percentage / 100);
+      const finalPaidAmount = paidAmount !== null ? paidAmount : calculatedAmount;
+
+      // Update the valuation item with payment information and actual sale price
       const updateQuery = `
         UPDATE valuation_items 
         SET 
@@ -290,12 +321,14 @@ export class ConsignmentService {
           consignment_paid_date = NOW(),
           consignment_paid_amount = $2,
           consignment_paid_notes = $3,
+          actual_sale_price = $4,
+          calculated_consignment_amount = $5,
           updated_at = NOW()
         WHERE id = $1
         RETURNING *
       `;
       
-      await client.query(updateQuery, [id, paidAmount, notes]);
+      await client.query(updateQuery, [id, finalPaidAmount, notes, salePrice, calculatedAmount]);
 
       await client.query('COMMIT');
       
@@ -318,7 +351,12 @@ export class ConsignmentService {
         COUNT(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = FALSE THEN 1 END) as sold_unpaid_items,
         COUNT(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = TRUE THEN 1 END) as sold_paid_items,
         SUM(CASE WHEN si.id IS NULL THEN vi.consignment_price ELSE 0 END) as total_available_value,
-        SUM(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = FALSE THEN vi.consignment_price ELSE 0 END) as total_unpaid_value,
+        -- For unpaid items, calculate 50% of the actual sale price
+        SUM(CASE 
+          WHEN si.id IS NOT NULL AND vi.consignment_paid = FALSE 
+          THEN si.unit_price * (COALESCE(vi.consignment_percentage, 50.00) / 100)
+          ELSE 0 
+        END) as total_unpaid_value,
         SUM(CASE WHEN si.id IS NOT NULL AND vi.consignment_paid = TRUE THEN vi.consignment_paid_amount ELSE 0 END) as total_paid_value,
         SUM(CASE WHEN si.id IS NOT NULL THEN si.unit_price ELSE 0 END) as total_sold_value
       FROM valuation_items vi

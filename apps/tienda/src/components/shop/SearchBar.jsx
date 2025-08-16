@@ -139,15 +139,15 @@ const SearchBar = () => {
       
       {/* Sugerencias */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
           <ul className="py-2">
             {suggestions.map((product, index) => (
               <li key={product.inventory_id}>
                 <button
                   onClick={() => handleSuggestionClick(product)}
                   onMouseEnter={() => setSelectedIndex(index)}
-                  className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors ${
-                    selectedIndex === index ? 'bg-gray-50' : ''
+                  className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                    selectedIndex === index ? 'bg-gray-50 dark:bg-gray-700' : ''
                   }`}
                 >
                   <img
@@ -156,7 +156,7 @@ const SearchBar = () => {
                     className="w-12 h-12 object-cover rounded"
                   />
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
                       {highlightMatch(`${product.subcategory_name} ${product.brand_name}`, query)}
                     </p>
                     <p className="text-sm text-gray-600">
@@ -183,7 +183,7 @@ const SearchBar = () => {
       
       {/* No hay resultados */}
       {showSuggestions && suggestions.length === 0 && !loading && query.length >= 2 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50 p-4">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 p-4">
           <p className="text-gray-500 text-center">
             No se encontraron productos para "{query}"
           </p>

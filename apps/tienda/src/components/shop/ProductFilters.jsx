@@ -100,11 +100,11 @@ const ProductFilters = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Filtros</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filtros</h3>
         {hasActiveFilters() && (
           <button
             onClick={clearFilters}
-            className="text-sm text-pink-600 hover:text-pink-700"
+            className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300"
           >
             Limpiar todo
           </button>
@@ -113,12 +113,12 @@ const ProductFilters = ({
       
       {/* Subcategorías */}
       {subcategories.length > 0 && (
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <h4 className="font-medium text-gray-900 mb-3">Subcategoría</h4>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Subcategoría</h4>
           <select
             value={currentFilters.subcategory_id || ''}
             onChange={(e) => handleSubcategoryChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500"
           >
             <option value="">Todas las subcategorías</option>
             {subcategories.map((sub) => (
@@ -140,17 +140,17 @@ const ProductFilters = ({
               placeholder="Min"
               value={priceRange.min}
               onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500"
               min="0"
               step="0.01"
             />
-            <span className="text-gray-500">-</span>
+            <span className="text-gray-500 dark:text-gray-400">-</span>
             <input
               type="number"
               placeholder="Max"
               value={priceRange.max}
               onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500"
               min="0"
               step="0.01"
             />
@@ -178,7 +178,7 @@ const ProductFilters = ({
                 onChange={(e) => handleConditionChange(e.target.value)}
                 className="mr-2 text-pink-600 focus:ring-pink-500"
               />
-              <span className="capitalize">{condition}</span>
+              <span className="capitalize text-gray-700 dark:text-gray-300">{condition}</span>
             </label>
           ))}
           <label className="flex items-center">
@@ -190,14 +190,14 @@ const ProductFilters = ({
               onChange={() => handleConditionChange('')}
               className="mr-2 text-pink-600 focus:ring-pink-500"
             />
-            <span>Todas</span>
+            <span className="text-gray-700 dark:text-gray-300">Todas</span>
           </label>
         </div>
       </div>
       
       {/* Ubicación */}
-      <div className="bg-white rounded-lg p-4 shadow-sm">
-        <h4 className="font-medium text-gray-900 mb-3">Ubicación</h4>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Ubicación</h4>
         <select
           value={currentFilters.location || ''}
           onChange={(e) => handleLocationChange(e.target.value)}
@@ -211,21 +211,21 @@ const ProductFilters = ({
       
       {/* Filtros dinámicos basados en features */}
       {featureDefinitions.length > 0 && (
-        <div className="bg-white rounded-lg p-4 shadow-sm">
-          <h4 className="font-medium text-gray-900 mb-3">Características</h4>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Características</h4>
           <div className="space-y-3">
             {featureDefinitions.map((feature) => {
               // Solo mostrar features que tengan opciones definidas
               if (feature.type === 'select' && feature.options) {
                 return (
                   <div key={feature.id}>
-                    <label className="block text-sm text-gray-700 mb-1">
+                    <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                       {feature.display_name}
                     </label>
                     <select
                       value={dynamicFilters[feature.name] || ''}
                       onChange={(e) => handleFeatureChange(feature.name, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500 text-sm"
                     >
                       <option value="">Todos</option>
                       {feature.options.map((option) => (
@@ -239,7 +239,7 @@ const ProductFilters = ({
               } else if (feature.type === 'text' || feature.type === 'number') {
                 return (
                   <div key={feature.id}>
-                    <label className="block text-sm text-gray-700 mb-1">
+                    <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                       {feature.display_name}
                     </label>
                     <input
@@ -247,7 +247,7 @@ const ProductFilters = ({
                       value={dynamicFilters[feature.name] || ''}
                       onChange={(e) => handleFeatureChange(feature.name, e.target.value)}
                       placeholder={`Buscar por ${feature.display_name.toLowerCase()}`}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500 text-sm"
                     />
                   </div>
                 );

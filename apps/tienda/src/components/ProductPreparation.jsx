@@ -8,7 +8,7 @@ import { EMPLOYEE_ROLES } from '../config/routes.config';
 // Componente de tarjeta de producto pendiente
 const ProductCard = ({ product, onPrepare }) => {
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-4">
       <div className="flex justify-between items-start mb-2">
         <div>
           <p className="text-sm text-gray-500">{product.inventory_id}</p>
@@ -135,7 +135,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-full sm:max-w-3xl md:max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-full sm:max-w-3xl md:max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4">Preparar producto para tienda online</h2>
           
@@ -182,13 +182,13 @@ const PreparationModal = ({ product, onClose, onSave }) => {
               Precio de venta online *
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500">$</span>
+              <span className="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
               <input
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 ${
-                  errors.price ? 'border-red-500' : 'border-gray-300'
+                className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                  errors.price ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0.00"
                 step="0.01"
@@ -365,32 +365,32 @@ const ProductPreparationContent = () => {
         
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Pendientes</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.pending_products}</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Pendientes</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.pending_products}</p>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">En línea</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">En línea</p>
               <p className="text-2xl font-bold text-green-600">{stats.online_products}</p>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Hoy</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Hoy</p>
               <p className="text-2xl font-bold text-blue-600">{stats.prepared_today}</p>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Esta semana</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Esta semana</p>
               <p className="text-2xl font-bold text-purple-600">{stats.prepared_week}</p>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Valor inventario</p>
-              <p className="text-xl font-bold text-gray-900">{formatCurrency(stats.total_inventory_value)}</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Valor inventario</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(stats.total_inventory_value)}</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
         <div className="flex flex-wrap gap-4">
           <select
             value={filters.location}

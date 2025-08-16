@@ -250,13 +250,15 @@ function NuevaValuacionContent() {
     const originalPrice = product.suggested_purchase_price || 0;
 
     if (newModality === 'consignación') {
-      // Al cambiar a consignación, aumentar precio de compra en 20%
-      const newPurchasePrice = originalPrice * 1.2;
+      // En consignación, el proveedor recibe 50% del precio de venta real
+      // No modificamos el precio aquí ya que se calculará al momento de la venta
+      // Solo mantenemos el precio sugerido de venta
       setEditedPrices(prev => ({
         ...prev,
         [productId]: {
           ...prev[productId],
-          purchase: newPurchasePrice
+          // Mantener el precio de venta sugerido sin cambios
+          purchase: product.suggested_sale_price || originalPrice
         }
       }));
     } else if (newModality === 'crédito en tienda') {
@@ -929,9 +931,10 @@ function NuevaValuacionContent() {
             <div className="flex-1">
               <p className="text-sm text-azul-profundo font-medium">Personalice su valuación final</p>
               <div className="text-xs text-gray-600 mt-1 space-y-1">
-                <p>• Seleccione los productos que desea incluir en la valuación final</p>
-                <p>• Use el botón ✏️ para editar precios de compra y venta individualmente</p>
-                <p>• Los precios editados se muestran en <span className="text-verde-oscuro font-bold">color verde</span> y se usan para los cálculos finales</p>
+                <p>• <strong>Compra directa:</strong> Pago inmediato en efectivo</p>
+                <p>• <strong>Crédito en tienda:</strong> Pago +10% en vales de tienda</p>
+                <p>• <strong>Consignación:</strong> El proveedor recibe 50% del precio de venta cuando se venda el producto</p>
+                <p>• Use el botón ✏️ para editar precios individualmente</p>
               </div>
             </div>
           </div>
@@ -987,7 +990,7 @@ function NuevaValuacionContent() {
                 <th className="p-2 text-right">Precio Unit. Compra</th>
                 <th className="p-2 text-right">Precio Unit. Venta</th>
                 <th className="p-2 text-right">Total Compra</th>
-                <th className="p-2 text-right">Consignación</th>
+                <th className="p-2 text-right">Consignación<br/><span className="text-xs font-normal">(50% venta)</span></th>
                 <th className="p-2 text-center w-24">Acciones</th>
               </tr>
             </thead>
@@ -1103,8 +1106,14 @@ function NuevaValuacionContent() {
                     
                     {/* Consignación */}
                     <td className="p-2 text-right border-b border-border font-medium">
-                      {getFinalModality(product) === 'consignación' && typeof product.consignment_price === 'number' && product.consignment_price > 0
-                        ? `$${(product.consignment_price * (product.quantity || 1)).toFixed(2)}`
+                      {getFinalModality(product) === 'consignación'
+                        ? (
+                          <div>
+                            <div className="text-xs text-gray-500">Precio sugerido:</div>
+                            <div>${(product.suggested_sale_price * (product.quantity || 1)).toFixed(2)}</div>
+                            <div className="text-xs text-verde-oscuro font-bold">Recibirá 50% al venderse</div>
+                          </div>
+                        )
                         : '-'
                       }
                     </td>

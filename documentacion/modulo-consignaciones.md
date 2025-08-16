@@ -2,15 +2,16 @@
 
 ## Descripción General
 
-El módulo de consignaciones permite gestionar productos que los proveedores dejan en la tienda bajo un modelo de consignación, donde el proveedor solo recibe pago cuando el producto se vende. El sistema maneja tres estados principales: disponible, vendido sin pagar, y vendido pagado.
+El módulo de consignaciones permite gestionar productos que los proveedores dejan en la tienda bajo un modelo de consignación, donde el proveedor recibe el 50% del precio de venta real cuando el producto se vende. El sistema maneja tres estados principales: disponible, vendido sin pagar, y vendido pagado.
 
 ## Modelo de Negocio
 
 En el modelo de consignación:
 - Los proveedores dejan sus productos en la tienda
 - Los productos permanecen en inventario hasta venderse
-- El proveedor solo recibe pago cuando el producto se vende
+- El proveedor recibe el 50% del precio de venta real cuando el producto se vende
 - La tienda puede gestionar cuándo pagar a cada proveedor
+- El porcentaje es configurable (por defecto 50%) para futuras modificaciones
 
 ## Arquitectura del Sistema
 
@@ -24,6 +25,10 @@ Los productos en consignación se almacenan en la tabla `valuation_items` con:
   - `consignment_paid_date`: TIMESTAMP WITHOUT TIME ZONE
   - `consignment_paid_amount`: NUMERIC(10,2)
   - `consignment_paid_notes`: TEXT
+- Campos del modelo de porcentaje agregados en migración 024:
+  - `consignment_percentage`: NUMERIC(5,2) DEFAULT 50.00 - Porcentaje del precio de venta para el proveedor
+  - `actual_sale_price`: NUMERIC(10,2) - Precio real de venta desde sale_items
+  - `calculated_consignment_amount`: NUMERIC(10,2) - Monto calculado (porcentaje del precio de venta)
 
 #### Relaciones Clave
 ```sql
@@ -79,9 +84,11 @@ Estadísticas del sistema de consignaciones:
 
 #### `PUT /api/consignments/:id/paid`
 Marca un producto como pagado al proveedor:
-- **Body**: `{ paid_amount: number, notes?: string }`
+- **Body**: `{ paid_amount?: number, notes?: string }`
+- **paid_amount**: Opcional - si no se proporciona, se calcula automáticamente como 50% del precio de venta
 - **Validación**: Solo productos en estado `sold_unpaid`
 - **Autorización**: admin, manager (solo roles con permisos de pago)
+- **Cálculo automático**: El sistema calcula el 50% del precio de venta real desde `sale_items.unit_price`
 
 ## Frontend - Interfaz de Usuario
 
@@ -168,16 +175,21 @@ Ejemplo: `Playera - Talla M - Rojo - Nike`
 ### 1. Registro de Consignación
 ```
 Valuación → Modalidad "Consignación" → Estado: available
+Precio sugerido de venta se muestra pero no afecta el pago
 ```
 
 ### 2. Venta de Producto
 ```
 Venta (sale_items) → Estado: sold_unpaid
+Se registra el precio de venta real
+Trigger automático calcula: calculated_consignment_amount = precio_venta * 0.50
 ```
 
 ### 3. Pago a Proveedor
 ```
 PUT /consignments/:id/paid → Estado: sold_paid
+Si no se especifica monto: paid_amount = calculated_consignment_amount
+Se puede override manual si es necesario
 ```
 
 ## Consultas SQL Importantes

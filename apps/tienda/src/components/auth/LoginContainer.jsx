@@ -68,24 +68,24 @@ const LoginContainer = ({ onSuccess, onClose }) => {
   const isLoading = authLoading || isSubmitting;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-blue-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div>
         {/* Logo y título */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
             Entrepeques
           </h1>
-          <p className="text-gray-600">Inicia sesión para continuar</p>
+          <p className="text-gray-600 dark:text-gray-400">Inicia sesión para continuar</p>
         </div>
 
         {/* Formulario */}
-        <div className="bg-white rounded-lg shadow-xl p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
           {/* Botón de cerrar si se proporciona onClose */}
           {onClose && (
             <div className="flex justify-end mb-4">
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 aria-label="Cerrar"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,14 +98,14 @@ const LoginContainer = ({ onSuccess, onClose }) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Mensaje de error */}
             {errorMessage && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <p className="text-sm text-red-600">{errorMessage}</p>
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3">
+                <p className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
               </div>
             )}
 
             {/* Campo de usuario */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Usuario
               </label>
               <input
@@ -116,14 +116,14 @@ const LoginContainer = ({ onSuccess, onClose }) => {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 placeholder="Ingresa tu usuario"
               />
             </div>
 
             {/* Campo de contraseña */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Contraseña
               </label>
               <input
@@ -134,7 +134,7 @@ const LoginContainer = ({ onSuccess, onClose }) => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 placeholder="Ingresa tu contraseña"
               />
             </div>
@@ -165,14 +165,14 @@ const LoginContainer = ({ onSuccess, onClose }) => {
 
           {/* Opciones adicionales */}
           <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               ¿No tienes cuenta?{' '}
-              <a href="/registro" className="text-pink-600 hover:text-pink-700 font-medium">
+              <a href="/registro" className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 font-medium">
                 Regístrate aquí
               </a>
             </p>
-            <p className="text-sm text-gray-600">
-              <a href="/recuperar-contraseña" className="text-pink-600 hover:text-pink-700 font-medium">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              <a href="/recuperar-contraseña" className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 font-medium">
                 ¿Olvidaste tu contraseña?
               </a>
             </p>

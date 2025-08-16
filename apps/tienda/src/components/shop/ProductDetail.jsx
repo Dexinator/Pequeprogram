@@ -118,27 +118,27 @@ const ProductDetail = ({ productId }) => {
     : product.online_price;
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Breadcrumb */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="container mx-auto px-4 py-4">
           <nav className="text-sm">
             <ol className="flex items-center space-x-2">
               <li>
-                <a href="/" className="text-gray-500 hover:text-gray-700">Inicio</a>
+                <a href="/" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">Inicio</a>
               </li>
-              <li className="text-gray-400">/</li>
+              <li className="text-gray-400 dark:text-gray-600">/</li>
               <li>
-                <a href="/productos" className="text-gray-500 hover:text-gray-700">Productos</a>
+                <a href="/productos" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">Productos</a>
               </li>
-              <li className="text-gray-400">/</li>
+              <li className="text-gray-400 dark:text-gray-600">/</li>
               <li>
-                <a href={`/categoria/${product.category_name.toLowerCase()}`} className="text-gray-500 hover:text-gray-700">
+                <a href={`/categoria/${product.category_name.toLowerCase()}`} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
                   {product.category_name}
                 </a>
               </li>
-              <li className="text-gray-400">/</li>
-              <li className="text-gray-900 font-medium truncate">
+              <li className="text-gray-400 dark:text-gray-600">/</li>
+              <li className="text-gray-900 dark:text-gray-100 font-medium truncate">
                 {product.brand_name}
               </li>
             </ol>
@@ -164,7 +164,7 @@ const ProductDetail = ({ productId }) => {
               <p className="text-sm text-gray-500 mb-2">
                 {product.category_name} • {product.subcategory_name}
               </p>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 {product.brand_name}
               </h1>
               <div className="flex items-center gap-3">
@@ -187,7 +187,7 @@ const ProductDetail = ({ productId }) => {
                     <span className="text-3xl font-bold text-pink-600">
                       {formatPrice(product.online_price)}
                     </span>
-                    <span className="text-xl text-gray-500 line-through">
+                    <span className="text-xl text-gray-500 dark:text-gray-400 line-through">
                       {formatPrice(originalPrice)}
                     </span>
                     <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
@@ -201,7 +201,7 @@ const ProductDetail = ({ productId }) => {
                   )}
                 </div>
               ) : (
-                <span className="text-3xl font-bold text-gray-900">
+                <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                   {formatPrice(product.online_price)}
                 </span>
               )}
@@ -210,8 +210,8 @@ const ProductDetail = ({ productId }) => {
             {/* Stock y cantidad */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-700">Disponibilidad:</span>
-                <span className={`font-medium ${product.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="text-gray-700 dark:text-gray-300">Disponibilidad:</span>
+                <span className={`font-medium ${product.quantity > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {product.quantity > 0 ? `${product.quantity} disponible(s)` : 'Agotado'}
                 </span>
               </div>
