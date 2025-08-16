@@ -253,7 +253,9 @@ export class ValuationService extends BaseService<Valuation> {
       const purchasePrice = salePrice * purchasePriceMultiplier;
       
       // 5. Calcular precios para diferentes modalidades
-      const consignmentPrice = purchasePrice * 1.2; // 20% más que compra directa
+      // NOTA: consignment_price ahora es solo el precio de venta sugerido
+      // El pago real al proveedor será 50% del precio de venta real
+      const consignmentPrice = salePrice; // Precio de venta sugerido para consignación
       const storeCreditPrice = purchasePrice * 1.1; // 10% más que compra directa
       
       return {
@@ -261,7 +263,7 @@ export class ValuationService extends BaseService<Valuation> {
         sale_score: saleScore,
         suggested_purchase_price: Math.round(purchasePrice * 100) / 100,
         suggested_sale_price: Math.round(salePrice * 100) / 100,
-        consignment_price: Math.round(consignmentPrice * 100) / 100,
+        consignment_price: Math.round(consignmentPrice * 100) / 100, // Ahora es precio de venta sugerido
         store_credit_price: Math.round(storeCreditPrice * 100) / 100
       };
     } catch (error) {

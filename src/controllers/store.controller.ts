@@ -135,7 +135,8 @@ export const prepareProductForStore = asyncHandler(async (req: Request, res: Res
   const {
     weight_grams,
     images,
-    online_price
+    online_price,
+    online_featured
   } = req.body;
 
   // Validations
@@ -157,7 +158,8 @@ export const prepareProductForStore = asyncHandler(async (req: Request, res: Res
   const result = await storeService.prepareProductForStore(id, userId, {
     weight_grams,
     images,
-    online_price
+    online_price,
+    online_featured
   });
 
   res.json({
