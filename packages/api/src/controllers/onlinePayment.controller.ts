@@ -313,6 +313,7 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
     if (error.apiResponse) {
       debugInfo = error.apiResponse;
       errorMessage = error.apiResponse.message || 'Error en la API de MercadoPago';
+      errorStatus = error.status || 500;
     } else if (error.cause && error.cause.length > 0) {
       errorMessage = error.cause[0]?.description || error.cause[0]?.message || error.message || 'Error desconocido al procesar el pago';
       errorStatus = error.status || 500;
@@ -360,7 +361,7 @@ export const handleWebhook = asyncHandler(async (req: Request, res: Response) =>
           [payment.status, payment.id.toString()]
         );
         
-        if (result.rowCount > 0) {
+        if (result.rowCount && result.rowCount > 0) {
           console.log(`Venta actualizada a estado: ${payment.status} para pago ID: ${payment.id}`);
         } else {
           console.log(`No se encontró venta asociada al pago ID: ${payment.id}`);
