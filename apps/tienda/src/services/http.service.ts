@@ -15,19 +15,30 @@ export class HttpService {
         // Intentar obtener la URL de la API desde las variables de entorno
         // @ts-ignore - Ignorar error de TypeScript
         const envUrl = import.meta?.env?.PUBLIC_API_URL;
+        console.log('🔍 PUBLIC_API_URL desde import.meta.env:', envUrl);
+        
         if (envUrl) {
           apiUrl = envUrl;
         } else if (!apiUrl) {
-          // Solo usar localhost como último recurso y solo en desarrollo
+          // Solo usar localhost en desarrollo
           // @ts-ignore
           const isDev = import.meta?.env?.DEV;
-          apiUrl = isDev ? 'http://localhost:3001/api' : '/api';
+          if (isDev) {
+            apiUrl = 'http://localhost:3001/api';
+          } else {
+            // En producción, la variable de entorno DEBE estar configurada
+            console.error('❌ PUBLIC_API_URL no está configurada en producción');
+            // Intentar usar la URL de Heroku conocida como fallback
+            apiUrl = 'https://entrepeques-api-19a57de16883.herokuapp.com/api';
+            console.warn('⚠️ Usando URL de API hardcodeada como fallback:', apiUrl);
+          }
         }
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
         if (!apiUrl) {
-          // Fallback seguro para producción
-          apiUrl = '/api';
+          // Fallback para producción con la URL conocida
+          apiUrl = 'https://entrepeques-api-19a57de16883.herokuapp.com/api';
+          console.warn('⚠️ Usando URL de API hardcodeada como fallback:', apiUrl);
         }
       }
       
@@ -42,7 +53,9 @@ export class HttpService {
     // Asegurar que apiUrl tiene un valor válido
     if (!apiUrl) {
       console.error('❌ No se pudo determinar la URL de la API');
-      apiUrl = '/api'; // Fallback final
+      // Usar la URL de Heroku conocida como último recurso
+      apiUrl = 'https://entrepeques-api-19a57de16883.herokuapp.com/api';
+      console.warn('⚠️ Usando URL de API hardcodeada como último recurso:', apiUrl);
     }
     
     console.log('API URL:', apiUrl); // Para depuración

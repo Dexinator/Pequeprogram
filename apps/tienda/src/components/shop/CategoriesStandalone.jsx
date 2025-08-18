@@ -9,7 +9,8 @@ function CategoriesStandalone() {
     const fetchCategories = async () => {
       try {
         console.log('CategoriesStandalone: Fetching categories...');
-        const API_URL = import.meta.env.PUBLIC_API_URL || (import.meta.env.DEV ? 'http://localhost:3001/api' : '/api');
+        const API_URL = import.meta.env.PUBLIC_API_URL || 
+          (import.meta.env.DEV ? 'http://localhost:3001/api' : 'https://entrepeques-api-19a57de16883.herokuapp.com/api');
         
         const response = await fetch(`${API_URL}/categories`);
         console.log('Response status:', response.status);
