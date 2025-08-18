@@ -9,7 +9,7 @@ function CategoriesStandalone() {
     const fetchCategories = async () => {
       try {
         console.log('CategoriesStandalone: Fetching categories...');
-        const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
+        const API_URL = import.meta.env.PUBLIC_API_URL || (import.meta.env.DEV ? 'http://localhost:3001/api' : '/api');
         
         const response = await fetch(`${API_URL}/categories`);
         console.log('Response status:', response.status);

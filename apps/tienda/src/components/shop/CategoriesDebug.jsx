@@ -9,7 +9,7 @@ function CategoriesDebug() {
     const testApi = async () => {
       try {
         setStatus('fetching');
-        const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
+        const API_URL = import.meta.env.PUBLIC_API_URL || (import.meta.env.DEV ? 'http://localhost:3001/api' : '/api');
         
         console.log('Debug - API URL:', API_URL);
         
@@ -47,7 +47,7 @@ function CategoriesDebug() {
     <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4">
       <h3 className="font-bold text-lg mb-2">API Debug Info:</h3>
       <p><strong>Status:</strong> {status}</p>
-      <p><strong>API URL:</strong> {import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'}</p>
+      <p><strong>API URL:</strong> {import.meta.env.PUBLIC_API_URL || (import.meta.env.DEV ? 'http://localhost:3001/api' : '/api')}</p>
       {error && (
         <div className="text-red-600 dark:text-red-400 mt-2">
           <strong>Error:</strong> {error}

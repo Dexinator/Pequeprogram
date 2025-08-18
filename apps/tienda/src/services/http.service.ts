@@ -5,18 +5,30 @@ export class HttpService {
     'Content-Type': 'application/json',
   };
 
-  constructor(baseUrl = 'http://localhost:3001/api') {
-    // Intentar obtener la URL de la API desde las variables de entorno
+  constructor(baseUrl?: string) {
+    // Determinar la URL base de la API
+    let apiUrl = baseUrl;
+    
     // Solo si estamos en un entorno de navegador
     if (typeof window !== 'undefined') {
       try {
+        // Intentar obtener la URL de la API desde las variables de entorno
         // @ts-ignore - Ignorar error de TypeScript
         const envUrl = import.meta?.env?.PUBLIC_API_URL;
         if (envUrl) {
-          baseUrl = envUrl;
+          apiUrl = envUrl;
+        } else if (!apiUrl) {
+          // Solo usar localhost como último recurso y solo en desarrollo
+          // @ts-ignore
+          const isDev = import.meta?.env?.DEV;
+          apiUrl = isDev ? 'http://localhost:3001/api' : '/api';
         }
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
+        if (!apiUrl) {
+          // Fallback seguro para producción
+          apiUrl = '/api';
+        }
       }
       
       // Verificar si hay un token almacenado
@@ -27,8 +39,14 @@ export class HttpService {
       }
     }
 
-    console.log('API URL:', baseUrl); // Para depuración
-    this.baseUrl = baseUrl;
+    // Asegurar que apiUrl tiene un valor válido
+    if (!apiUrl) {
+      console.error('❌ No se pudo determinar la URL de la API');
+      apiUrl = '/api'; // Fallback final
+    }
+    
+    console.log('API URL:', apiUrl); // Para depuración
+    this.baseUrl = apiUrl;
   }
 
   // Configurar el token de autenticación
