@@ -33,13 +33,14 @@ function Testimonials() {
   ];
 
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
+    <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-r from-brand-rosa/10 to-brand-amarillo/10 dark:from-brand-rosa/5 dark:to-brand-amarillo/5">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
+          <h2 className="font-heading text-4xl md:text-5xl font-bold text-brand-azul-profundo dark:text-brand-azul-light mb-8 flex items-center justify-center">
+            <span className="bg-brand-amarillo text-gray-900 rounded-full w-12 h-12 flex items-center justify-center mr-4 text-2xl">🌟</span>
             Lo que dicen nuestros clientes
           </h2>
-          <p className="font-body text-lg text-gray-600 dark:text-gray-400">
+          <p className="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-4xl mx-auto">
             Miles de familias felices confían en Entrepeques
           </p>
         </div>
@@ -48,17 +49,17 @@ function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all border-l-4 border-brand-rosa"
             >
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-brand-rosa/20 rounded-full flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-rosa/20 to-brand-amarillo/20 dark:from-brand-rosa/10 dark:to-brand-amarillo/10 rounded-full flex items-center justify-center mr-3">
                   <span className="text-2xl">{testimonial.avatar}</span>
                 </div>
                 <div>
-                  <h4 className="font-heading font-semibold text-gray-900 dark:text-gray-100">
+                  <h4 className="font-heading font-bold text-brand-azul dark:text-brand-azul-light">
                     {testimonial.name}
                   </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                     {testimonial.role}
                   </p>
                 </div>
@@ -78,20 +79,20 @@ function Testimonials() {
         </div>
 
         <div className="text-center mt-12">
-          <div className="inline-flex items-center gap-6 bg-brand-verde-lima/10 dark:bg-brand-verde-lima/5 px-8 py-4 rounded-full">
+          <div className="inline-flex flex-wrap items-center gap-8 bg-white dark:bg-gray-800 px-12 py-6 rounded-3xl shadow-xl">
             <div className="text-center">
-              <p className="font-display text-3xl text-brand-verde-lima">2,500+</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Familias felices</p>
+              <p className="font-display text-4xl text-brand-verde-lima">2,500+</p>
+              <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Familias felices</p>
             </div>
-            <div className="w-px h-12 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="w-px h-12 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
             <div className="text-center">
-              <p className="font-display text-3xl text-brand-verde-lima">15,000+</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Productos vendidos</p>
+              <p className="font-display text-4xl text-brand-rosa">15,000+</p>
+              <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Productos vendidos</p>
             </div>
-            <div className="w-px h-12 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="w-px h-12 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
             <div className="text-center">
-              <p className="font-display text-3xl text-brand-verde-lima">4.9/5</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Calificación</p>
+              <p className="font-display text-4xl text-brand-amarillo-dark dark:text-brand-amarillo">4.9/5</p>
+              <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Calificación</p>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { ProductoForm } from './ProductoForm';
 import { ClienteForm } from './ClienteForm';
 import OfertaDocument from './OfertaDocument';
+import ContratoConsignacion from './ContratoConsignacion';
 import { ValuationService } from '../services';
 import { useAuth, AuthProvider, AuthContext } from '../context/AuthContext';
 import ClothingBulkForm from './ClothingBulkForm';
@@ -91,6 +92,9 @@ function NuevaValuacionContent() {
 
   // Estado para mostrar documento de oferta
   const [showOfferDocument, setShowOfferDocument] = useState(false);
+  
+  // Estado para mostrar contrato de consignación
+  const [showConsignmentContract, setShowConsignmentContract] = useState(false);
   
   // Estado para mostrar formulario masivo de ropa
   const [showClothingBulkForm, setShowClothingBulkForm] = useState(false);
@@ -776,6 +780,35 @@ function NuevaValuacionContent() {
     setError(null);
   };
 
+  // Imprimir contrato de consignación
+  const printConsignmentContract = () => {
+    // Filtrar solo productos en consignación que estén seleccionados
+    const consignmentProducts = summary.productDetails.filter(product => 
+      selectedProducts.has(product.id) && 
+      getFinalModality(product) === 'consignación'
+    );
+    
+    // Validar que haya productos en consignación
+    if (consignmentProducts.length === 0) {
+      setError('No hay productos en consignación para generar el contrato');
+      showNotification('No hay productos en consignación', 'error');
+      return;
+    }
+    
+    // Validar datos del cliente
+    if (!client.name || !client.phone) {
+      setError('Debe completar al menos el nombre y teléfono del cliente para generar el contrato');
+      showNotification('Complete los datos del cliente', 'error');
+      return;
+    }
+    
+    // Mostrar el contrato de consignación
+    setShowConsignmentContract(true);
+    
+    // Limpiar errores
+    setError(null);
+  };
+
   // Finalizar valuación
   const finalizeValuation = async (e) => {
     e.preventDefault();
@@ -1229,6 +1262,25 @@ function NuevaValuacionContent() {
               Imprimir Oferta
             </button>
 
+            {/* Botón para imprimir contrato de consignación */}
+            {summary.productDetails.some(p => 
+              selectedProducts.has(p.id) && 
+              (editedModalities[p.id] === 'consignación' || (!editedModalities[p.id] && p.modality === 'consignación'))
+            ) && (
+              <button
+                type="button"
+                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2 transition-colors"
+                onClick={printConsignmentContract}
+                disabled={!client.name || !client.phone}
+                title={!client.name || !client.phone ? 'Complete los datos del cliente' : 'Imprimir contrato de consignación'}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Contrato Consignación
+              </button>
+            )}
+
             <button
               type="button"
               className={`px-4 py-2 rounded-md transition-colors ${
@@ -1542,6 +1594,54 @@ AuthContext loading: ${authLoading}
                   editedPrices={editedPrices}
                   editedModalities={editedModalities}
                   getProductDescription={getProductDescription}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal del contrato de consignación */}
+      {showConsignmentContract && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-azul-profundo">Contrato de Consignación - Entrepeques</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      window.print();
+                    }}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                    </svg>
+                    Imprimir
+                  </button>
+                  <button
+                    onClick={() => setShowConsignmentContract(false)}
+                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                    data-modal-close
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-4">
+                <ContratoConsignacion
+                  client={client}
+                  consignmentProducts={summary.productDetails.filter(product => 
+                    selectedProducts.has(product.id) && 
+                    getFinalModality(product) === 'consignación'
+                  )}
+                  valuationDate={new Date()}
+                  getProductDescription={getProductDescription}
+                  editedPrices={editedPrices}
                 />
               </div>
             </div>

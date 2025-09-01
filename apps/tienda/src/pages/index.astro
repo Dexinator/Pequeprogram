@@ -8,6 +8,9 @@ import WhyChooseUs from '../components/shop/WhyChooseUs.jsx';
 import FeaturedProductsWrapper from '../components/FeaturedProductsWrapper';
 import Testimonials from '../components/shop/Testimonials.jsx';
 import CTASection from '../components/shop/CTASection.jsx';
+import RentalSection from '../components/shop/RentalSection.jsx';
+import GiftRegistrySection from '../components/shop/GiftRegistrySection.jsx';
+import VisitUsSection from '../components/shop/VisitUsSection.jsx';
 ---
 
 <Layout title="Inicio - Entrepeques | Artículos infantiles de segunda mano">
@@ -15,13 +18,14 @@ import CTASection from '../components/shop/CTASection.jsx';
   <HeroSection client:only="react" />
 
   <!-- Categorías destacadas -->
-  <section class="py-20 bg-white dark:bg-gray-900">
+  <section class="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-verde-lima/10 to-brand-azul/10 dark:from-brand-verde-lima/5 dark:to-brand-azul/5">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
-        <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
+        <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul dark:text-brand-azul-light mb-8 flex items-center justify-center">
+          <span class="bg-brand-verde-lima text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-2xl">📦</span>
           Explora nuestras categorías
         </h2>
-        <p class="font-body text-lg text-gray-600 dark:text-gray-400">
+        <p class="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-4xl mx-auto">
           Todo lo que necesitas para tus pequeños, organizado para ti
         </p>
       </div>
@@ -31,17 +35,15 @@ import CTASection from '../components/shop/CTASection.jsx';
     </div>
   </section>
 
-  <!-- Why Choose Us -->
-  <WhyChooseUs client:only="react" />
-
   <!-- Productos destacados -->
-  <section class="py-20 bg-gray-50 dark:bg-gray-800">
+  <section class="py-16 md:py-20 lg:py-24 bg-white dark:bg-gray-900">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
-        <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
+        <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul-profundo dark:text-brand-azul-light mb-8 flex items-center justify-center">
+          <span class="bg-brand-rosa text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-2xl">⭐</span>
           Productos destacados
         </h2>
-        <p class="font-body text-lg text-gray-600 dark:text-gray-400">
+        <p class="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-4xl mx-auto">
           Los favoritos de nuestros clientes
         </p>
       </div>
@@ -49,8 +51,20 @@ import CTASection from '../components/shop/CTASection.jsx';
     </div>
   </section>
 
+  <!-- Why Choose Us -->
+  <WhyChooseUs client:only="react" />
+
+  <!-- Rental Section -->
+  <RentalSection client:only="react" />
+
+  <!-- Gift Registry Section -->
+  <GiftRegistrySection client:only="react" />
+
   <!-- Testimonials -->
   <Testimonials client:only="react" />
+
+  <!-- Visit Us Section -->
+  <VisitUsSection client:only="react" />
 
   <!-- CTA Section -->
   <CTASection client:only="react" />

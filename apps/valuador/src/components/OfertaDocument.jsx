@@ -68,6 +68,24 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
     return getCashPrice(product) * quantity;
   };
 
+  // Calcular totales por método de pago
+  const calculateTotalsByMethod = () => {
+    let cashTotal = 0;
+    let creditTotal = 0;
+
+    selectedProducts.forEach(product => {
+      const quantity = Number(product.quantity) || 1;
+      const cashPrice = getCashPrice(product);
+      const creditPrice = getCreditPrice(product);
+      
+      // Siempre sumamos a ambos totales para mostrar ambas opciones
+      cashTotal += cashPrice * quantity;
+      creditTotal += creditPrice * quantity;
+    });
+
+    return { cashTotal, creditTotal };
+  };
+
   const getFinalPurchasePrice = (product) => {
     const editedPrice = editedPrices[product.id];
     const finalModality = editedModalities[product.id] || product.modality;
@@ -100,6 +118,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
   });
 
   const offerTotal = calculateOfferTotal();
+  const { cashTotal, creditTotal } = calculateTotalsByMethod();
 
   return (
     <div className="oferta-document bg-white text-gray-800 max-w-4xl mx-auto p-8 font-sans print:p-5 print:max-w-none print:mx-0">
@@ -123,17 +142,17 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       <div className="print-header mb-8">
         <div className="flex justify-between items-start">
           <div className="company-info">
-            <h1 className="text-2xl font-bold text-azul-claro mb-1" style={{ color: '#00A0DD' }}>
+            <h1 className="text-2xl font-bold text-gray-800 mb-1">
               Entrepeques
             </h1>
-            <p className="text-xs text-gray-600 mb-1">Compra y venta de artículos infantiles</p>
+            <p className="text-xs text-gray-600 mb-1">Recicla, Recupera y Ahorra</p>
             <p className="text-xs text-gray-600 mb-1">📍 Av. Homero 1616, Polanco, Miguel Hidalgo, CDMX 11510</p>
-            <p className="text-xs text-gray-600 mb-1">📞 55 6588 3245</p>
+            <p className="text-xs text-gray-600 mb-1">📞 55 6588 3245 | WhatsApp: 55 2363 2389</p>
             <p className="text-xs text-gray-600">✉️ contacto@entrepeques.mx</p>
           </div>
           
           <div className="document-info text-right">
-            <h2 className="text-lg font-bold text-azul-profundo mb-1" style={{ color: '#0070B9' }}>
+            <h2 className="text-lg font-bold text-gray-800 mb-1">
               OFERTA DE COMPRA
             </h2>
             <p className="text-xs text-gray-600 mb-1">Fecha: {currentDate}</p>
@@ -143,8 +162,8 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       </div>
 
       {/* Información del proveedor */}
-      <div className="provider-info mb-4 p-3 bg-gray-50 rounded">
-        <h3 className="text-sm font-bold text-azul-profundo mb-2" style={{ color: '#0070B9' }}>
+      <div className="provider-info mb-4 p-3 border border-gray-400 rounded">
+        <h3 className="text-sm font-bold text-gray-800 mb-2">
           Datos del Proveedor
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
@@ -173,16 +192,13 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
 
       {/* Tabla de productos */}
       <div className="products-section mb-6">
-        <h3 className="text-sm font-bold text-azul-profundo mb-2" style={{ color: '#0070B9' }}>
+        <h3 className="text-sm font-bold text-gray-800 mb-2">
           Productos Incluidos en la Oferta
         </h3>
-        <p className="text-xs text-gray-600 mb-2">
-          * Productos "Crédito en tienda" se pagan con vales canjeables únicamente en nuestra tienda
-        </p>
         
         <table className="print-table w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-azul-claro text-white" style={{ backgroundColor: '#00A0DD', color: 'white' }}>
+            <tr className="bg-gray-300 text-black border-2 border-gray-600">
               <th className="border border-gray-300 px-2 py-2 text-left font-medium text-xs">
                 #
               </th>
@@ -218,11 +234,11 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
               const getModalityDisplay = (modality) => {
                 switch(modality) {
                   case 'compra directa':
-                    return { text: 'Efectivo', style: 'text-green-700 bg-green-100' };
+                    return { text: 'Efectivo', style: 'font-bold border border-gray-600' };
                   case 'crédito en tienda':
-                    return { text: 'Crédito', style: 'text-blue-700 bg-blue-100' };
+                    return { text: 'Crédito', style: 'font-bold border border-gray-600' };
                   case 'consignación':
-                    return { text: 'Consignación', style: 'text-orange-700 bg-orange-100' };
+                    return { text: 'Consignación', style: 'font-bold border border-gray-600' };
                   default:
                     return { text: modality, style: 'text-gray-700 bg-gray-100' };
                 }
@@ -264,7 +280,25 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
             })}
           </tbody>
           <tfoot>
-            <tr className="print-total-row bg-azul-claro text-white" style={{ backgroundColor: '#00A0DD', color: 'white' }}>
+            <tr className="border-t-2 border-gray-400">
+              <td className="border border-gray-300 px-2 py-2 font-bold text-xs" colSpan="4">
+                TOTAL EFECTIVO
+              </td>
+              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-xs">
+                {formatCurrency(cashTotal)}
+              </td>
+              <td className="border border-gray-300 px-2 py-2" colSpan="2"></td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 px-2 py-2 font-bold text-xs" colSpan="5">
+                TOTAL CRÉDITO EN TIENDA
+              </td>
+              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-xs">
+                {formatCurrency(creditTotal)}
+              </td>
+              <td className="border border-gray-300 px-2 py-2"></td>
+            </tr>
+            <tr className="print-total-row bg-gray-200">
               <td className="border border-gray-300 px-2 py-2 font-bold text-center text-xs" colSpan="6">
                 TOTAL DE LA OFERTA
               </td>
@@ -277,12 +311,13 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       </div>
 
       {/* Términos y condiciones */}
-      <div className="terms-section mb-8 p-4 bg-gray-50 rounded-lg">
-        <h3 className="text-lg font-bold text-azul-profundo mb-3" style={{ color: '#0070B9' }}>
+      <div className="terms-section mb-8 p-4 border border-gray-400 rounded">
+        <h3 className="text-lg font-bold text-gray-800 mb-3">
           Términos y Condiciones
         </h3>
         <div className="text-sm text-gray-700 space-y-2">
           <p>Al firmar indica que recibe efectivo o crédito para comprar en la tienda como pago por los artículos listados. Los cuales declara haber adquirido legítimamente y ser el legítimo propietario.</p>
+          <p className="text-xs italic mt-2">* Productos "Crédito en tienda" se pagan con vales canjeables únicamente en nuestra tienda</p>
         </div>
         
         {/* Espacio para firma */}
@@ -304,7 +339,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       <div className="footer-section border-t border-gray-300 pt-4">
         <div className="text-center text-sm text-gray-600">
           <p className="mb-2">
-            <strong>Entrepeques</strong> - Facilitando el consumo responsable de productos infantiles
+            <strong>Entrepeques</strong> - Promoviendo el consumo responsable de productos infantiles
           </p>
           <p className="italic">
             "Dando nueva vida a los productos para nuestros pequeños"
@@ -404,10 +439,11 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       }
                       
                       .print-table th {
-                        background-color: #f5f5f5 !important;
+                        background-color: #e5e5e5 !important;
                         font-weight: bold;
                         font-size: 9px;
                         page-break-after: avoid;
+                        border: 2px solid #333 !important;
                       }
                       
                       .print-table tbody tr {
@@ -416,9 +452,10 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       }
                       
                       .print-total-row td {
-                        background-color: #f0f0f0 !important;
+                        background-color: #d0d0d0 !important;
                         font-weight: bold;
                         page-break-before: avoid;
+                        border: 2px solid #333 !important;
                       }
                       
                       .print-table thead {
