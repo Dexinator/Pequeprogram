@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 // Conditionally import Vercel adapter only in production/Vercel environment
 let adapter = undefined;
 if (process.env.VERCEL) {
-  const vercel = await import('@astrojs/vercel/serverless');
+  const vercel = await import('@astrojs/vercel');
   adapter = vercel.default();
 }
 
