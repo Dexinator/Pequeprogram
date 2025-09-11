@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import forbesImg from '../../assets/press/forbes.jpg';
+import entrepreneurImg from '../../assets/press/entrepreneur.png';
+import abcRadioImg from '../../assets/press/abcradio.png';
+import onImg from '../../assets/press/on.jpg';
+
+const pressItems = [
+  {
+    image: forbesImg,
+    alt: 'Forbes México',
+    title: 'Forbes México',
+    description: 'Emprendimiento sostenible que transforma el consumo infantil',
+    link: 'https://www.forbes.com.mx/entre-peques-reutiliza-ahorra-y-gana/'
+  },
+  {
+    image: entrepreneurImg,
+    alt: 'Entrepreneur',
+    title: 'Entrepreneur',
+    description: 'Innovación en el mercado de segunda mano para familias',
+    link: 'https://www.entrepreneur.com/article/302588'
+  },
+  {
+    image: abcRadioImg,
+    alt: 'ABC Radio',
+    title: 'ABC Radio',
+    description: 'Entrevista sobre economía circular y consumo responsable',
+    link: 'https://mx.ivoox.com/es/entrepeques-radio-audios-mp3_rf_50999498_1.html'
+  },
+  {
+    image: onImg,
+    alt: 'ON Media',
+    title: 'ON Media',
+    description: 'Historia de éxito: 11 años revolucionando el sector infantil',
+    link: 'https://www.facebook.com/108310300571675/videos/1014634635548686/?v=1014634635548686'
+  }
+];
+---
+
+<section class="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-azul/5 to-brand-rosa/5 dark:from-brand-azul/10 dark:to-brand-rosa/10">
+  <div class="container mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h2 class="font-heading text-4xl md:text-5xl font-bold text-brand-azul-profundo dark:text-brand-azul-light mb-8 flex items-center justify-center">
+        <span class="bg-brand-azul text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-2xl">📰</span>
+        Entrepeques en los medios
+      </h2>
+      <p class="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-4xl mx-auto">
+        Nuestro compromiso con el consumo sostenible ha sido reconocido por importantes medios de comunicación
+      </p>
+    </div>
+
+    <!-- Press Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+      {pressItems.map((item) => (
+        <a 
+          href={item.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group relative block"
+          aria-label={`Ver artículo de ${item.title}`}
+        >
+          <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-full">
+            <!-- Image Container -->
+            <div class="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-6">
+              <Image 
+                src={item.image}
+                alt={item.alt}
+                class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                loading="lazy"
+                quality={85}
+              />
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6">
+              <h3 class="font-heading text-lg font-bold text-brand-azul dark:text-brand-azul-light mb-2 group-hover:text-brand-rosa transition-colors">
+                {item.title}
+              </h3>
+              <p class="font-body text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                {item.description}
+              </p>
+              <span class="inline-flex items-center text-brand-azul dark:text-brand-azul-light text-sm font-semibold group-hover:text-brand-rosa transition-colors">
+                Ver artículo
+                <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+              </span>
+            </div>
+            
+            <!-- Decorative accent -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-rosa to-brand-azul opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Bottom accent -->
+    <div class="mt-12 text-center">
+      <div class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-md">
+        <span class="text-brand-verde-lima text-xl">✨</span>
+        <p class="font-heading font-semibold text-gray-700 dark:text-gray-300">
+          11 años siendo líderes en consumo sostenible infantil
+        </p>
+        <span class="text-brand-verde-lima text-xl">✨</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+</style>
