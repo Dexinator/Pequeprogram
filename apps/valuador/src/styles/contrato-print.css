@@ -1,28 +1,39 @@
 /* Estilos para imprimir solo el contrato de consignación */
 @media print {
-  /* Ocultar todo excepto el contrato */
-  body * {
+  /* Cuando está imprimiendo el contrato */
+  body.printing-contract * {
     visibility: hidden !important;
   }
   
-  /* Mostrar solo el contrato y sus hijos */
-  #contrato-consignacion,
-  #contrato-consignacion * {
+  /* Mostrar solo el contrato y sus elementos hijos */
+  body.printing-contract #contrato-consignacion,
+  body.printing-contract #contrato-consignacion * {
     visibility: visible !important;
+    display: block !important;
   }
   
-  /* Posicionar el contrato en la parte superior de la página */
-  #contrato-consignacion {
-    position: absolute !important;
+  /* Posicionar el contrato correctamente para impresión */
+  body.printing-contract #contrato-consignacion {
+    position: fixed !important;
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
+    height: auto !important;
     margin: 0 !important;
-    padding: 20px !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    background: white !important;
   }
   
-  /* Ocultar elementos del modal */
-  .fixed.inset-0 {
+  /* Ocultar completamente el modal y sus overlays */
+  body.printing-contract .fixed.inset-0.z-50 {
+    position: absolute !important;
+    visibility: hidden !important;
+    display: none !important;
+  }
+  
+  /* Ocultar los botones del modal */
+  body.printing-contract .sticky.top-0 {
     display: none !important;
   }
   

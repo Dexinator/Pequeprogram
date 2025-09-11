@@ -1,21 +1,25 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Subcategories from '../../components/shop/Subcategories';
+import categoryGroupsComplete from '../../data/categoryGroupsComplete.js';
 
 // Obtener el slug de la categoría
 const { slug } = Astro.params;
 
-// Mapeo de slugs a IDs de categoría basado en las categorías reales de la BD
-const categoryMap: Record<string, { id: number; name: string }> = {
-  'a-pasear': { id: 1, name: 'A pasear' },
-  'a-dormir': { id: 2, name: 'A dormir' },
-  'en-casa': { id: 3, name: 'En Casa' },
-  'a-comer': { id: 4, name: 'A comer' },
-  'ropa': { id: 5, name: 'Ropa' },
-  'a-jugar': { id: 6, name: 'A jugar' }
-};
-
-const category = categoryMap[slug || ''];
+// Buscar la categoría en la estructura completa
+let category = null;
+for (const [name, data] of Object.entries(categoryGroupsComplete)) {
+  if (data.slug === slug) {
+    category = {
+      id: data.id,
+      name,
+      slug: data.slug,
+      icon: data.icon,
+      groups: data.groups
+    };
+    break;
+  }
+}
 
 if (!category) {
   return Astro.redirect('/categorias');
@@ -25,7 +29,9 @@ if (!category) {
 <Layout title={`${category.name} - Entrepeques`}>
   <Subcategories 
     categoryId={category.id} 
-    categoryName={category.name} 
+    categoryName={category.name}
+    categoryIcon={category.icon}
+    categoryGroups={category.groups}
     client:only="react" 
   />
 </Layout>

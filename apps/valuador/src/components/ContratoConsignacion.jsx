@@ -228,7 +228,7 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
       </div>
 
       {/* Estilos CSS para impresión */}
-      <style jsx>{`
+      <style>{`
         .contrato-container {
           font-family: Arial, sans-serif;
           font-size: 11pt;
@@ -436,36 +436,73 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
         }
 
         @media print {
-          .contrato-container {
-            padding: 0;
-            margin: 0;
-            font-size: 10pt;
+          body.printing-contract .contrato-container {
+            display: block !important;
+            visibility: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 10pt !important;
+            width: 100% !important;
+            max-width: none !important;
           }
 
-          .contrato-header {
-            page-break-after: avoid;
+          body.printing-contract .contrato-header {
+            page-break-after: avoid !important;
+            display: flex !important;
+            visibility: visible !important;
           }
 
-          .contrato-section {
-            page-break-inside: avoid;
+          body.printing-contract .contrato-section {
+            page-break-inside: avoid !important;
+            display: block !important;
+            visibility: visible !important;
           }
 
-          .terms {
-            page-break-before: always;
+          body.printing-contract .terms {
+            page-break-before: always !important;
           }
 
-          .signatures {
-            page-break-inside: avoid;
+          body.printing-contract .signatures {
+            page-break-inside: avoid !important;
+            display: block !important;
+            visibility: visible !important;
           }
 
-          .logo {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
+          body.printing-contract .logo {
+            print-color-adjust: exact !important;
+            -webkit-print-color-adjust: exact !important;
+            display: block !important;
+            visibility: visible !important;
           }
 
-          .contrato-section h3 {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
+          body.printing-contract .contrato-section h3 {
+            print-color-adjust: exact !important;
+            -webkit-print-color-adjust: exact !important;
+            display: block !important;
+            visibility: visible !important;
+          }
+          
+          /* Asegurar que todos los elementos del contrato sean visibles */
+          body.printing-contract .info-row,
+          body.printing-contract .products-table,
+          body.printing-contract .legal-text,
+          body.printing-contract .payment-options,
+          body.printing-contract .signature-blocks {
+            display: block !important;
+            visibility: visible !important;
+          }
+          
+          /* Asegurar que la tabla se muestre correctamente */
+          body.printing-contract .products-table tr,
+          body.printing-contract .products-table td,
+          body.printing-contract .products-table th {
+            display: table-row !important;
+            visibility: visible !important;
+          }
+          
+          body.printing-contract .products-table td,
+          body.printing-contract .products-table th {
+            display: table-cell !important;
           }
         }
 

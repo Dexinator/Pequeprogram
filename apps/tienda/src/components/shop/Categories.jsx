@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { categoryService } from '../../services/api';
 
-// Category icons mapping
-const categoryIcons = {
+// Category icons mapping to SVG files
+const categoryIconMapping = {
+  'A pasear': 'strollers',
+  'A dormir': 'cribs',
+  'En Casa': 'safety',
+  'A comer': 'high-chairs',
+  'Ropa': 'women-clothing',
+  'A jugar': 'toys',
+};
+
+// Emoji fallbacks if needed
+const categoryEmojis = {
   'A pasear': '🚗',
   'A dormir': '🛏️',
   'En Casa': '🏠',
@@ -86,7 +96,8 @@ function Categories() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
       {categories.map((category) => {
-        const icon = categoryIcons[category.name] || '📦';
+        const iconName = categoryIconMapping[category.name] || 'toys';
+        const emoji = categoryEmojis[category.name] || '📦';
         
         // Create complete class names for Tailwind
         const colorClasses = {
@@ -119,7 +130,12 @@ function Categories() {
           >
             <div className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6 text-center hover:shadow-2xl transform hover:-translate-y-2 transition-all border-2 border-transparent ${hoverBorder}`}>
               <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-colors ${bgColor} ${categoryColorClasses.split(' ')[2]}`}>
-                <span className="text-3xl">{icon}</span>
+                <img 
+                  src={`/icons/ep-${iconName}.svg`}
+                  alt={category.name}
+                  className="w-10 h-10"
+                  loading="lazy"
+                />
               </div>
               <h3 className="font-heading text-lg font-semibold text-gray-800 dark:text-gray-200">
                 {category.name}

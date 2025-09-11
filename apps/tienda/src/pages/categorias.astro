@@ -1,61 +1,52 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import categoryGroupsComplete from '../data/categoryGroupsComplete.js';
 
-// Obtener categorías desde la API usando fetch nativo
-let categories = [];
-let error = null;
+// Usar la estructura de categorías con grupos en lugar de la API directamente
+// Esto nos permite mostrar la estructura real del sitio con agrupaciones
+const categoriesWithGroups = Object.entries(categoryGroupsComplete).map(([name, data]) => ({
+  id: data.id,
+  name,
+  slug: data.slug,
+  icon: data.icon,
+  groupCount: data.groups.length,
+  hasGroupedItems: data.groups.some(g => g.type === 'grouped')
+}));
 
-try {
-  // Configuración de URL para diferentes entornos
-  let apiUrl;
+// Mapeo de categorías a los nuevos íconos SVG extraídos  
+const categoryIconMapping: Record<string, string> = {
+  'A pasear': 'strollers',      // Carriolas
+  'A dormir': 'cribs',           // Cunas
+  'En Casa': 'safety',           // Seguridad/Casa
+  'A comer': 'high-chairs',      // Sillas para comer
+  'Ropa': 'women-clothing',      // Ropa
+  'A jugar': 'toys',             // Juguetes
   
-  if (import.meta.env.SSR) {
-    // En el servidor
-    if (import.meta.env.PROD) {
-      // Producción: usar variable de entorno
-      apiUrl = import.meta.env.INTERNAL_API_URL || import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
-    } else {
-      // Desarrollo: usar nombre del servicio Docker
-      apiUrl = 'http://api:3001/api';
-    }
-  } else {
-    // En el cliente: siempre usar la URL pública
-    apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
-  }
-    
-  const response = await fetch(`${apiUrl}/categories`);
-  
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
-  }
-  
-  const data = await response.json();
-  categories = data.data || [];
-} catch (e) {
-  error = 'Error al cargar categorías';
-  console.error('Error fetching categories:', e);
-}
-
-// Iconos para cada categoría con estilo lúdico y amigable
-const categoryIcons = {
-  'A pasear': `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-  </svg>`,
-  'A dormir': `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-  </svg>`,
-  'En Casa': `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-  </svg>`,
-  'A comer': `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-  </svg>`,
-  'Ropa': `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-  </svg>`,
-  'A jugar': `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path>
-  </svg>`
+  // Mapeos adicionales por si hay más categorías
+  'Juguetes': 'toys',
+  'Carriolas': 'strollers',
+  'Cunas': 'cribs',
+  'Autoasientos': 'car-seat',
+  'Sillas para Comer': 'high-chairs',
+  'Mecedoras': 'rocking-chair',
+  'Procesador de Alimentos': 'food-processor',
+  'Lactancia': 'breastfeeding',
+  'Baño': 'bathroom',
+  'Seguridad': 'safety',
+  'Libros': 'books',
+  'Accesorios Cunas': 'crib-accessories',
+  'Correpasillos': 'ride-on',
+  'Sobre Ruedas': 'wheels',
+  'Otros Paseo': 'other-travel',
+  'Disfraces': 'costume',
+  'Juegos Grandes': 'large-toys',
+  'Ropa Niña': 'girl',
+  'Ropa Niño': 'boy',
+  'Ropa Dama': 'women-clothing',
+  'Calzado Niño': 'boys-footwear',
+  'Calzado Niña': 'girls-footwear',
+  'Accesorios Dama': 'women-accessories',
+  'Andaderas': 'walker',
 };
 
 // Emojis divertidos para cada categoría
@@ -102,25 +93,20 @@ function getCategorySlug(name: string): string {
       </div>
 
       <!-- Categorías Grid -->
-      {error ? (
-        <div class="text-center py-12 bg-red-50 dark:bg-red-900/20 rounded-2xl">
-          <p class="text-red-600 dark:text-red-400 font-semibold text-lg">{error}</p>
-        </div>
-      ) : categories.length === 0 ? (
+      {categoriesWithGroups.length === 0 ? (
         <div class="text-center py-12 bg-gray-100 dark:bg-gray-800 rounded-2xl">
           <p class="text-gray-500 dark:text-gray-400 text-lg">No hay categorías disponibles en este momento</p>
         </div>
       ) : (
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category: any) => {
-            const slug = getCategorySlug(category.name);
-            const icon = categoryIcons[category.name] || categoryIcons['En Casa'];
+          {categoriesWithGroups.map((category) => {
+            const iconName = category.icon;
             const emoji = categoryEmojis[category.name] || '🛍️';
             const colorClass = categoryColors[category.name] || 'bg-brand-azul hover:bg-brand-azul-profundo text-white';
             
             return (
               <a 
-                href={`/categoria/${slug}`} 
+                href={`/categoria/${category.slug}`} 
                 class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden"
               >
                 <div class="p-6">
@@ -129,17 +115,21 @@ function getCategorySlug(name: string): string {
                     <div class="flex items-center justify-between">
                       <div class="flex items-center space-x-4">
                         <div class="bg-white/20 rounded-xl p-3">
-                          <Fragment set:html={icon} />
+                          <img 
+                            src={`/icons/ep-${iconName}.svg`}
+                            alt={category.name}
+                            class="w-12 h-12 filter brightness-0 invert"
+                            loading="lazy"
+                          />
                         </div>
                         <div>
                           <h3 class="font-heading text-xl font-bold">
                             {category.name}
                           </h3>
-                          {category.description && (
-                            <p class="text-sm opacity-90 mt-1">
-                              {category.description}
-                            </p>
-                          )}
+                          <p class="text-sm opacity-90 mt-1">
+                            {category.groupCount} {category.groupCount === 1 ? 'subcategoría' : 'subcategorías'}
+                            {category.hasGroupedItems && ' (agrupadas)'}
+                          </p>
                         </div>
                       </div>
                       <span class="text-3xl">{emoji}</span>

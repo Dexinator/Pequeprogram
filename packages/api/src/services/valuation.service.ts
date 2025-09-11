@@ -256,7 +256,7 @@ export class ValuationService extends BaseService<Valuation> {
       // NOTA: consignment_price ahora es solo el precio de venta sugerido
       // El pago real al proveedor será 50% del precio de venta real
       const consignmentPrice = salePrice; // Precio de venta sugerido para consignación
-      const storeCreditPrice = purchasePrice * 1.1; // 10% más que compra directa
+      const storeCreditPrice = purchasePrice * 1.2; // 20% más que compra directa
       
       return {
         purchase_score: purchaseScore,

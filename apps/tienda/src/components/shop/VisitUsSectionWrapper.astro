@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import VisitUsSection from './VisitUsSection.jsx';
+import storeImage1 from '../../assets/store/IMG_1030-scaled.jpg';
+import storeImage2 from '../../assets/store/IMG_1086-scaled.jpg';
+import storeImage3 from '../../assets/store/IMG_1148-scaled.jpg';
+import storeImage4 from '../../assets/store/IMG_1153-scaled.jpg';
+
+// Optimize images for web
+const optimizedImages = await Promise.all([
+  { 
+    src: storeImage1, 
+    alt: "Interior de nuestra tienda Entrepeques en Polanco",
+    widths: [400, 800, 1200],
+    sizes: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  },
+  { 
+    src: storeImage2, 
+    alt: "Área de productos para bebé en Entrepeques",
+    widths: [400, 800, 1200],
+    sizes: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  },
+  { 
+    src: storeImage3, 
+    alt: "Sección de ropa y accesorios infantiles",
+    widths: [400, 800, 1200],
+    sizes: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  },
+  { 
+    src: storeImage4, 
+    alt: "Espacio acogedor para familias en nuestra tienda",
+    widths: [400, 800, 1200],
+    sizes: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  }
+].map(async (img) => {
+  // Generate optimized version at 1200px width for the slider
+  const optimized = await getImage({ 
+    src: img.src, 
+    width: 1200,
+    format: 'webp',
+    quality: 85
+  });
+  
+  return {
+    src: optimized.src,
+    alt: img.alt,
+    width: optimized.attributes.width,
+    height: optimized.attributes.height
+  };
+}));
+
+import { getImage } from 'astro:assets';
+---
+
+<VisitUsSection client:visible optimizedImages={optimizedImages} />

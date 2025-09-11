@@ -10,7 +10,7 @@ import Testimonials from '../components/shop/Testimonials.jsx';
 import CTASection from '../components/shop/CTASection.jsx';
 import RentalSection from '../components/shop/RentalSection.jsx';
 import GiftRegistrySection from '../components/shop/GiftRegistrySection.jsx';
-import VisitUsSection from '../components/shop/VisitUsSection.jsx';
+import VisitUsSectionWrapper from '../components/shop/VisitUsSectionWrapper.astro';
 ---
 
 <Layout title="Inicio - Entrepeques | Artículos infantiles de segunda mano">
@@ -64,7 +64,7 @@ import VisitUsSection from '../components/shop/VisitUsSection.jsx';
   <Testimonials client:only="react" />
 
   <!-- Visit Us Section -->
-  <VisitUsSection client:only="react" />
+  <VisitUsSectionWrapper />
 
   <!-- CTA Section -->
   <CTASection client:only="react" />

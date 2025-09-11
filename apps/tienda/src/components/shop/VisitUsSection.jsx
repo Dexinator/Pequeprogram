@@ -1,6 +1,14 @@
 import React from 'react';
+import StoreImageSlider from './StoreImageSlider';
 
-const VisitUsSection = () => {
+const VisitUsSection = ({ optimizedImages }) => {
+  // Use optimized images if provided, otherwise use default placeholder
+  const storeImages = optimizedImages || [
+    { src: '/placeholder-product.svg', alt: "Interior de nuestra tienda" },
+    { src: '/placeholder-product.svg', alt: "Área de productos" },
+    { src: '/placeholder-product.svg', alt: "Sección infantil" },
+    { src: '/placeholder-product.svg', alt: "Espacio familiar" }
+  ];
   const schedule = [
     { day: "Lunes - Viernes", hours: "11:00 am - 7:30 pm" },
     { day: "Sábados", hours: "11:00 am - 6:30 pm" },
@@ -26,6 +34,11 @@ const VisitUsSection = () => {
             Visítanos en nuestra tienda en Polanco. Te esperamos con los mejores productos 
             y la mejor atención para ti y tu bebé.
           </p>
+        </div>
+
+        {/* Image Slider Section */}
+        <div className="mb-12">
+          <StoreImageSlider images={storeImages} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -114,42 +127,9 @@ const VisitUsSection = () => {
             {/* Additional Info */}
             <div className="bg-brand-amarillo/10 dark:bg-brand-amarillo/5 rounded-lg p-4 border border-brand-amarillo/30">
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                <span className="font-semibold">💡 Tip:</span> Contamos con estacionamiento 
-                gratuito para nuestros clientes. Pregunta en recepción por tu boleto de validación.
+                <span className="font-semibold">💡 Tip:</span>Estacionamiento con parquímetro (Llámanos al llegar y te ayudamos)
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Bottom Features */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-brand-rosa/20 dark:bg-brand-rosa/10 rounded-xl mb-3 group-hover:scale-110 transition-transform">
-              <span className="text-2xl">🚗</span>
-            </div>
-            <h4 className="font-heading font-bold text-brand-azul dark:text-brand-azul-light text-sm">Estacionamiento</h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Gratuito para clientes</p>
-          </div>
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-brand-azul/20 dark:bg-brand-azul/10 rounded-xl mb-3 group-hover:scale-110 transition-transform">
-              <span className="text-2xl">♿</span>
-            </div>
-            <h4 className="font-heading font-bold text-brand-azul dark:text-brand-azul-light text-sm">Accesible</h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Entrada sin escalones</p>
-          </div>
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-brand-verde-lima/20 dark:bg-brand-verde-lima/10 rounded-xl mb-3 group-hover:scale-110 transition-transform">
-              <span className="text-2xl">👶</span>
-            </div>
-            <h4 className="font-heading font-bold text-brand-azul dark:text-brand-azul-light text-sm">Área de Prueba</h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Prueba los productos</p>
-          </div>
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-brand-amarillo/20 dark:bg-brand-amarillo/10 rounded-xl mb-3 group-hover:scale-110 transition-transform">
-              <span className="text-2xl">☕</span>
-            </div>
-            <h4 className="font-heading font-bold text-brand-azul dark:text-brand-azul-light text-sm">Área de Descanso</h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Cómoda para padres</p>
           </div>
         </div>
       </div>

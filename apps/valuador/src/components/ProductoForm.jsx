@@ -19,13 +19,13 @@ export function ProductoForm({
   const [formData, setFormData] = useState({
     category_id: initialData.category_id || "",
     subcategory_id: initialData.subcategory_id || "",
-    status: initialData.status || "",
+    status: initialData.status || "Usado como nuevo",
     brand_id: initialData.brand_id || "",
     brand_renown: initialData.brand_renown || "",
     modality: initialData.modality || "compra directa",
-    condition_state: initialData.condition_state || "",
-    demand: initialData.demand || "media", // Valor predeterminado
-    cleanliness: initialData.cleanliness || "buena", // Valor predeterminado
+    condition_state: initialData.condition_state || "Excelente",
+    demand: initialData.demand || "Media", // Valor predeterminado
+    cleanliness: initialData.cleanliness || "Buena", // Valor predeterminado
     new_price: initialData.new_price || "",
     quantity: initialData.quantity || 1, // Valor predeterminado
     features: initialData.features || {},
@@ -66,13 +66,13 @@ export function ProductoForm({
       setFormData({
         category_id: initialData.category_id || "",
         subcategory_id: initialData.subcategory_id || "",
-        status: initialData.status || "",
+        status: initialData.status || "Usado como nuevo",
         brand_id: initialData.brand_id || "",
         brand_renown: initialData.brand_renown || "",
         modality: initialData.modality || "compra directa",
-        condition_state: initialData.condition_state || "",
-        demand: initialData.demand || "media",
-        cleanliness: initialData.cleanliness || "buena",
+        condition_state: initialData.condition_state || "Excelente",
+        demand: initialData.demand || "Media",
+        cleanliness: initialData.cleanliness || "Buena",
         new_price: initialData.new_price || "",
         quantity: initialData.quantity || 1,
         features: initialData.features || {},

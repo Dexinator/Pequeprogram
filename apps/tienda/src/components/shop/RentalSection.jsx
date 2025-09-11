@@ -30,7 +30,7 @@ const RentalSection = () => {
     "Cunas de viaje",
     "Sillas altas",
     "Corrales",
-    "Andaderas"
+    "Montables"
   ];
 
   return (

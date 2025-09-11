@@ -1,0 +1,117 @@
+@font-face {
+  font-family: 'catsandsubsEP';
+  src:  url('fonts/catsandsubsEP.eot?jfrfzt');
+  src:  url('fonts/catsandsubsEP.eot?jfrfzt#iefix') format('embedded-opentype'),
+    url('fonts/catsandsubsEP.ttf?jfrfzt') format('truetype'),
+    url('fonts/catsandsubsEP.woff?jfrfzt') format('woff'),
+    url('fonts/catsandsubsEP.svg?jfrfzt#catsandsubsEP') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="ep-"], [class*=" ep-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'catsandsubsEP' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ep-juguetes:before {
+  content: "\e900";
+}
+.ep-accesorios-dama:before {
+  content: "\e901";
+}
+.ep-calzado-nino:before {
+  content: "\e902";
+}
+.ep-procesador-alimentos:before {
+  content: "\e903";
+}
+.ep-sillas-comer:before {
+  content: "\e904";
+}
+.ep-lactancia:before {
+  content: "\e905";
+}
+.ep-andadera:before {
+  content: "\e906";
+}
+.ep-cunas:before {
+  content: "\e907";
+}
+.ep-sobre-ruedas:before {
+  content: "\e908";
+}
+.ep-carriolas:before {
+  content: "\e909";
+}
+.ep-nina:before {
+  content: "\e90a";
+}
+.ep-autoasiento:before {
+  content: "\e90b";
+}
+.ep-mecedora:before {
+  content: "\e90c";
+}
+.ep-libros:before {
+  content: "\e90d";
+}
+.ep-accesorios-cunas:before {
+  content: "\e90e";
+}
+.ep-seguridad:before {
+  content: "\e910";
+}
+.ep-ropa-dama:before {
+  content: "\e911";
+}
+.ep-correpasillos:before {
+  content: "\e912";
+}
+.ep-otros-paseo:before {
+  content: "\e913";
+}
+.ep-nino:before {
+  content: "\e914";
+}
+.ep-calzado-nina:before {
+  content: "\e915";
+}
+.ep-bano:before {
+  content: "\e916";
+}
+.ep-disfraz:before {
+  content: "\e917";
+}
+.ep-juegos-grandes:before {
+  content: "\e90f";
+}
+.ep-TRAINTHIN:before {
+  content: "\e001";
+}
+.ep-Stroller-EP:before {
+  content: "\e002";
+}
+.ep-Cradle-EP:before {
+  content: "\e003";
+}
+.ep-Food-EP:before {
+  content: "\e004";
+}
+.ep-Bath-EP:before {
+  content: "\e005";
+}
+.ep-Dress-EP:before {
+  content: "\e006";
+}

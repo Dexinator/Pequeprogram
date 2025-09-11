@@ -1,12 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { fetchApi } from '../../services/api';
 
-const Subcategories = ({ categoryId, categoryName }) => {
+// Mapeo de subcategorías a íconos SVG
+const subcategoryIconMapping = {
+  // A pasear
+  'Carriolas': 'strollers',
+  'Autoasientos': 'car-seat',
+  'Correpasillos': 'ride-on',
+  'Andaderas': 'walker',
+  'Otros Paseo': 'other-travel',
+  
+  // A dormir
+  'Cunas': 'cribs',
+  'Accesorios Cunas': 'crib-accessories',
+  'Mecedoras': 'rocking-chair',
+  
+  // En Casa
+  'Seguridad': 'safety',
+  'Baño': 'bathroom',
+  
+  // A comer
+  'Sillas para Comer': 'high-chairs',
+  'Procesador de Alimentos': 'food-processor',
+  'Lactancia': 'breastfeeding',
+  
+  // Ropa
+  'Ropa Niña': 'girl',
+  'Ropa Niño': 'boy',
+  'Ropa Dama': 'women-clothing',
+  'Calzado Niño': 'boys-footwear',
+  'Calzado Niña': 'girls-footwear',
+  'Accesorios Dama': 'women-accessories',
+  'Disfraces': 'costume',
+  
+  // A jugar
+  'Juguetes': 'toys',
+  'Libros': 'books',
+  'Juegos Grandes': 'large-toys',
+  'Sobre Ruedas': 'wheels',
+};
+
+// Mapeo de categorías a íconos principales
+const categoryIconMapping = {
+  'A pasear': 'strollers',
+  'A dormir': 'cribs',
+  'En Casa': 'safety',
+  'A comer': 'high-chairs',
+  'Ropa': 'women-clothing',
+  'A jugar': 'toys',
+};
+
+const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups }) => {
   const [subcategories, setSubcategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Si tenemos grupos pasados como prop, usarlos directamente
+    if (categoryGroups && categoryGroups.length > 0) {
+      setSubcategories(categoryGroups);
+      setLoading(false);
+      return;
+    }
+
+    // Si no hay grupos, intentar cargar desde la API (fallback)
     const loadSubcategories = async () => {
       if (!categoryId) {
         setError('No se especificó una categoría');
@@ -38,7 +95,7 @@ const Subcategories = ({ categoryId, categoryName }) => {
     };
 
     loadSubcategories();
-  }, [categoryId]);
+  }, [categoryId, categoryGroups]);
 
   // Colores temáticos por categoría
   const getCategoryColors = (categoryName) => {
@@ -172,15 +229,22 @@ const Subcategories = ({ categoryId, categoryName }) => {
         {/* Header Section */}
         <section className={`bg-gradient-to-br ${colors.gradient} ${colors.dark} rounded-3xl p-8 md:p-12 mb-12`}>
           <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-6">
+              <img 
+                src={`/icons/ep-${categoryIcon || categoryIconMapping[categoryName] || 'toys'}.svg`}
+                alt={categoryName}
+                className="w-24 h-24 mx-auto opacity-80"
+              />
+            </div>
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl text-brand-rosa mb-4 animate-float">
               {categoryName}
             </h1>
             <p className="font-body text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6">
-              Explora todas nuestras subcategorías de {categoryName.toLowerCase()}
+              Explora todas nuestras opciones de {categoryName.toLowerCase()}
             </p>
             <div className="flex justify-center gap-3">
               <span className={`px-4 py-2 ${colors.badge} text-white rounded-full font-semibold text-sm`}>
-                {subcategories.length} subcategorías
+                {subcategories.length} {subcategories.length === 1 ? 'grupo' : 'grupos'}
               </span>
               <span className="px-4 py-2 bg-brand-verde-lima text-white rounded-full font-semibold text-sm">
                 ♻️ Segunda mano
@@ -191,41 +255,65 @@ const Subcategories = ({ categoryId, categoryName }) => {
 
         {/* Subcategories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {subcategories.map((subcategory) => (
-            <a
-              key={subcategory.id}
-              href={`/productos?categoria=${categoryId}&subcategoria=${subcategory.id}&nombre=${encodeURIComponent(subcategory.name)}`}
-              className={`group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${colors.border} border-opacity-20`}
-            >
-              {/* Imagen placeholder con gradiente */}
-              <div className={`w-full h-48 bg-gradient-to-br ${colors.gradient} rounded-xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform`}>
-                <div className="text-6xl opacity-50">
-                  {/* Icono según categoría */}
-                  {categoryName === 'A pasear' && '🚗'}
-                  {categoryName === 'A dormir' && '🛏️'}
-                  {categoryName === 'En Casa' && '🏠'}
-                  {categoryName === 'A comer' && '🍼'}
-                  {categoryName === 'Ropa' && '👕'}
-                  {categoryName === 'A jugar' && '🧸'}
+          {subcategories.map((group, index) => {
+            // Verificar si es un grupo de la nueva estructura o una subcategoría de la API
+            const isGroup = group.type !== undefined;
+            const groupIcon = isGroup ? group.icon : (subcategoryIconMapping[group.name] || categoryIconMapping[categoryName] || 'toys');
+            const groupSlug = isGroup ? group.slug : generateSlug(group.name);
+            const groupName = isGroup ? group.name : group.name;
+            const hasSubcategories = isGroup && group.type === 'grouped' && group.subcategories;
+            
+            return (
+              <a
+                key={group.id || index}
+                href={`/productos?categoria=${categoryId}&grupo=${groupSlug}`}
+                className={`group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${colors.border} border-opacity-20`}
+              >
+                {/* Imagen con ícono SVG */}
+                <div className={`w-full h-48 bg-gradient-to-br ${colors.gradient} rounded-xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform`}>
+                  <img 
+                    src={`/icons/ep-${groupIcon}.svg`}
+                    alt={groupName}
+                    className="w-20 h-20 opacity-60 group-hover:opacity-80 transition-opacity"
+                    loading="lazy"
+                  />
                 </div>
-              </div>
 
-              {/* Contenido */}
-              <h3 className="font-heading text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-brand-azul transition-colors">
-                {subcategory.name}
-              </h3>
-              
-              {/* Badge con SKU */}
-              <div className="flex items-center justify-between mt-4">
-                <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
-                  SKU: {subcategory.sku}
-                </span>
-                <span className={`px-3 py-1 ${colors.accent} text-white rounded-full text-xs font-semibold transition-colors`}>
-                  Ver productos →
-                </span>
-              </div>
-            </a>
-          ))}
+                {/* Contenido */}
+                <h3 className="font-heading text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-brand-azul transition-colors">
+                  {groupName}
+                </h3>
+                
+                {/* Mostrar subcategorías si es un grupo agrupado */}
+                {hasSubcategories && (
+                  <ul className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {group.subcategories.slice(0, 3).map((sub, idx) => (
+                      <li key={idx} className="truncate">• {sub}</li>
+                    ))}
+                    {group.subcategories.length > 3 && (
+                      <li className="text-brand-azul">+{group.subcategories.length - 3} más...</li>
+                    )}
+                  </ul>
+                )}
+                
+                {/* Badge */}
+                <div className="flex items-center justify-between mt-4">
+                  {isGroup && group.type === 'grouped' ? (
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {group.subcategories.length} categorías
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                      {group.sku ? `SKU: ${group.sku}` : 'Ver productos'}
+                    </span>
+                  )}
+                  <span className={`px-3 py-1 ${colors.accent} text-white rounded-full text-xs font-semibold transition-colors`}>
+                    Ver →
+                  </span>
+                </div>
+              </a>
+            );
+          })}
         </div>
 
         {/* CTA Section */}

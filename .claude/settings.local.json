@@ -18,7 +18,8 @@
       "Bash(curl:*)",
       "Bash(docker run:*)",
       "Bash(heroku config:*)",
-      "Bash(docker restart:*)"
+      "Bash(docker restart:*)",
+      "WebFetch(domain:entrepeques.mx)"
     ],
     "deny": []
   }

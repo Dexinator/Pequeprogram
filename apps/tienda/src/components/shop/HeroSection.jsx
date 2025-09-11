@@ -33,8 +33,8 @@ Dale una segunda vida a lo que usaron poco los peques, ahorra y súmate a la con
             {/* Value props */}
             <div className="mt-10 flex flex-wrap gap-4">
               <a href="#renta" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">♻️ Renta</a>
-              <a href="#mesa-regalos" className="px-4 py-2 bg-brand-rosa text-white rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">💸 Mesa de regalos</a>
-              <a href="#tienda" className="px-4 py-2 bg-brand-verde-lima text-white rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">✅ Tienda (Ven y conócenos)</a>
+              <a href="#mesa-regalos" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">💸 Mesa de regalos</a>
+              <a href="#tienda" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">✅ Tienda (Ven y conócenos)</a>
             </div>
           </div>
           

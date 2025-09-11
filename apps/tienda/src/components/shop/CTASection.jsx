@@ -43,21 +43,21 @@ function CTASection() {
               <span className="text-3xl">📸</span>
             </div>
             <h3 className="font-heading text-xl font-bold text-brand-azul dark:text-brand-azul-light mb-2">1. Trae tus artículos</h3>
-            <p className="text-gray-600 dark:text-gray-400">Visítanos con los productos que quieres vender</p>
+            <p className="text-gray-600 dark:text-gray-400">Visítanos con los productos que quieres vender o intercambiar</p>
           </div>
           <div className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
             <div className="w-16 h-16 mx-auto mb-4 bg-brand-amarillo/20 dark:bg-brand-amarillo/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <span className="text-3xl">💎</span>
             </div>
             <h3 className="font-heading text-xl font-bold text-brand-azul dark:text-brand-azul-light mb-2">2. Valuación justa</h3>
-            <p className="text-gray-600 dark:text-gray-400">Nuestros expertos evalúan y te ofrecen el mejor precio</p>
+            <p className="text-gray-600 dark:text-gray-400">Nuestros expertos evalúan y te ofrecen precios justos</p>
           </div>
           <div className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
             <div className="w-16 h-16 mx-auto mb-4 bg-brand-verde-lima/20 dark:bg-brand-verde-lima/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <span className="text-3xl">💰</span>
             </div>
             <h3 className="font-heading text-xl font-bold text-brand-azul dark:text-brand-azul-light mb-2">3. Recibe tu pago</h3>
-            <p className="text-gray-600 dark:text-gray-400">Efectivo al instante o crédito con 10% extra</p>
+            <p className="text-gray-600 dark:text-gray-400">Efectivo al instante o crédito con 20% extra</p>
           </div>
         </div>
       </div>

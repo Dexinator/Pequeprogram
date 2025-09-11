@@ -266,8 +266,8 @@ function NuevaValuacionContent() {
         }
       }));
     } else if (newModality === 'crédito en tienda') {
-      // Al cambiar a crédito en tienda, aumentar precio de compra en 10%
-      const newPurchasePrice = originalPrice * 1.1;
+      // Al cambiar a crédito en tienda, aumentar precio de compra en 20%
+      const newPurchasePrice = originalPrice * 1.2;
       setEditedPrices(prev => ({
         ...prev,
         [productId]: {
@@ -965,7 +965,7 @@ function NuevaValuacionContent() {
               <p className="text-sm text-azul-profundo font-medium">Personalice su valuación final</p>
               <div className="text-xs text-gray-600 mt-1 space-y-1">
                 <p>• <strong>Compra directa:</strong> Pago inmediato en efectivo</p>
-                <p>• <strong>Crédito en tienda:</strong> Pago +10% en vales de tienda</p>
+                <p>• <strong>Crédito en tienda:</strong> Pago +20% en vales de tienda</p>
                 <p>• <strong>Consignación:</strong> El proveedor recibe 50% del precio de venta cuando se venda el producto</p>
                 <p>• Use el botón ✏️ para editar precios individualmente</p>
               </div>
@@ -1611,7 +1611,18 @@ AuthContext loading: ${authLoading}
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
-                      window.print();
+                      // Agregar clase especial para impresión
+                      document.body.classList.add('printing-contract');
+                      
+                      // Pequeño delay para asegurar que los estilos se apliquen
+                      setTimeout(() => {
+                        window.print();
+                        
+                        // Remover la clase después de imprimir
+                        setTimeout(() => {
+                          document.body.classList.remove('printing-contract');
+                        }, 100);
+                      }, 100);
                     }}
                     className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2 transition-colors"
                   >
