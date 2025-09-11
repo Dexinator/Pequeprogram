@@ -185,7 +185,7 @@ export class ClothingService {
       const suggestedSalePrice = clothingPrice.sale_price; // Now using predefined sale price
 
       // Calculate store credit and consignment prices based on purchase price
-      const storeCreditPrice = purchasePrice * 1.1; // +10%
+      const storeCreditPrice = purchasePrice * 1.2; // +20%
       const consignmentPrice = purchasePrice * 1.2; // +20%
 
       return {
