@@ -183,9 +183,30 @@ export const getAvailableInventory = asyncHandler(async (req: Request, res: Resp
 // @access  Private
 export const getSalesStats = asyncHandler(async (req: Request, res: Response) => {
   const stats = await salesService.getSalesStats();
-  
+
   res.json({
     success: true,
     data: stats
+  });
+});
+
+// @desc    Update inventory quantity
+// @route   PUT /api/inventory/:id/quantity
+// @access  Private (admin, manager)
+export const updateInventoryQuantity = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { quantity, reason } = req.body;
+  const userId = (req as any).user.id;
+
+  if (quantity === undefined || quantity < 0) {
+    res.status(400);
+    throw new Error('La cantidad debe ser un número válido mayor o igual a 0');
+  }
+
+  const result = await salesService.updateInventoryQuantity(id, quantity, userId, reason);
+
+  res.json({
+    success: true,
+    data: result
   });
 });

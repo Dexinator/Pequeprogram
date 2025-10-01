@@ -7,22 +7,15 @@ WORKDIR /app
 # Instalar dependencias nativas necesarias para paquetes como bcrypt y netcat para verificación de redes
 RUN apk add --no-cache python3 make g++ netcat-openbsd
 
-# Copiar package.json y tsconfig.json
-COPY package.json .
-COPY tsconfig.json .
-
-# Crear directorio de src para evitar error en postinstall
-RUN mkdir -p src
-
-# Copiar el script de inicialización
+# Copiar el script de inicialización primero
 COPY init-db.sh /usr/local/bin/init-db.sh
 RUN chmod +x /usr/local/bin/init-db.sh
 
-# Copiar el código fuente
-COPY src ./src
+# Copiar todos los archivos del proyecto (incluye package.json, tsconfig.json y src/)
+COPY . .
 
-# Instalar dependencias ignorando scripts para evitar el error de build
-RUN npm install --ignore-scripts && npm rebuild bcrypt --build-from-source
+# Instalar dependencias - npm install normal funcionará porque src/ ya existe
+RUN npm install
 
 # Usar el script de inicialización como punto de entrada
 ENTRYPOINT ["/usr/local/bin/init-db.sh"]
