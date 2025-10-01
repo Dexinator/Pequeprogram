@@ -2,7 +2,8 @@ import express from 'express';
 import { protect, authorize } from '../utils/auth.middleware';
 import {
   searchInventory,
-  getAvailableInventory
+  getAvailableInventory,
+  updateInventoryQuantity
 } from '../controllers/sales.controller';
 
 const router = express.Router();
@@ -18,5 +19,10 @@ router
 router
   .route('/available')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getAvailableInventory);
+
+// Update inventory quantity - only admin and manager roles
+router
+  .route('/:id/quantity')
+  .put(authorize(['superadmin', 'admin', 'manager', 'gerente']), updateInventoryQuantity);
 
 export default router;

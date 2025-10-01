@@ -1,0 +1,21 @@
+{
+  "name": "entrepeques-migration-scripts",
+  "version": "1.0.0",
+  "description": "Scripts de migración para productos de WooCommerce a Entrepeques",
+  "scripts": {
+    "migrate:products": "node migrate-old-store-products.js",
+    "migrate:images": "node migrate-images-to-s3.js",
+    "migrate:images:verify": "node migrate-images-to-s3.js --verify",
+    "migrate:all": "npm run migrate:products && npm run migrate:images"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "csv-parse": "^5.5.3",
+    "aws-sdk": "^2.1507.0",
+    "sharp": "^0.33.1",
+    "axios": "^1.6.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

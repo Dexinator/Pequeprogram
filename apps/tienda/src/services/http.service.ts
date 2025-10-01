@@ -20,25 +20,16 @@ export class HttpService {
         if (envUrl) {
           apiUrl = envUrl;
         } else if (!apiUrl) {
-          // Solo usar localhost en desarrollo
-          // @ts-ignore
-          const isDev = import.meta?.env?.DEV;
-          if (isDev) {
-            apiUrl = 'http://localhost:3001/api';
-          } else {
-            // En producción, la variable de entorno DEBE estar configurada
-            console.error('❌ PUBLIC_API_URL no está configurada en producción');
-            // Intentar usar la URL de Heroku conocida como fallback
-            apiUrl = 'https://entrepeques-api-19a57de16883.herokuapp.com/api';
-            console.warn('⚠️ Usando URL de API hardcodeada como fallback:', apiUrl);
-          }
+          // Forzar uso de API local para desarrollo
+          apiUrl = 'http://localhost:3001/api';
+          console.log('📍 Usando API local:', apiUrl);
         }
       } catch (error) {
         console.warn('Error al obtener la URL de la API desde las variables de entorno:', error);
         if (!apiUrl) {
-          // Fallback para producción con la URL conocida
-          apiUrl = 'https://entrepeques-api-19a57de16883.herokuapp.com/api';
-          console.warn('⚠️ Usando URL de API hardcodeada como fallback:', apiUrl);
+          // Usar API local como fallback
+          apiUrl = 'http://localhost:3001/api';
+          console.log('📍 Usando API local como fallback:', apiUrl);
         }
       }
       

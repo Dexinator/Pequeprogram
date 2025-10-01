@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { inventoryService } from '../../services/inventory.service';
 import ProductDetailModal from './ProductDetailModal';
+import StockUpdateModal from './StockUpdateModal';
+import { useAuth } from '../../context/AuthContext';
 
 export default function InventoryList() {
+  const authContext = useAuth();
+  console.log('🔍 InventoryList - AuthContext completo:', authContext);
+  const { user } = authContext;
+  console.log('👤 InventoryList - Usuario extraído:', user);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -15,6 +21,8 @@ export default function InventoryList() {
   const [pagination, setPagination] = useState({ total: 0, pages: 0 });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showStockModal, setShowStockModal] = useState(false);
+  const [stockProduct, setStockProduct] = useState(null);
   const [stats, setStats] = useState({
     total_items: 0,
     total_quantity: 0,
@@ -22,6 +30,28 @@ export default function InventoryList() {
     by_location: [],
     by_category: []
   });
+
+  // Check if user can edit stock (admin or manager)
+  // El rol puede venir como string o como objeto con propiedad 'name'
+  const userRole = typeof user?.role === 'string' ? user.role : user?.role?.name || '';
+  const allowedRoles = ['superadmin', 'admin', 'manager', 'gerente'];
+  const canEditStock = user && allowedRoles.includes(userRole);
+
+  console.log('🎯 InventoryList - Verificación de permisos:', {
+    user: user,
+    userRole: userRole,
+    allowedRoles: allowedRoles,
+    roleIncluded: allowedRoles.includes(userRole),
+    canEditStock: canEditStock
+  });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('📊 InventoryList useEffect - User:', user);
+    console.log('📊 InventoryList useEffect - User role object:', user?.role);
+    console.log('📊 InventoryList useEffect - User role string:', userRole);
+    console.log('📊 InventoryList useEffect - Can edit stock:', canEditStock);
+  }, [user, userRole, canEditStock]);
 
   // Cargar productos
   const loadProducts = async () => {
@@ -74,6 +104,65 @@ export default function InventoryList() {
     setShowDetailModal(true);
   };
 
+  // Abrir modal de actualización de stock
+  const openStockModal = (product) => {
+    setStockProduct(product);
+    setShowStockModal(true);
+  };
+
+  // Actualizar stock del producto
+  const handleStockUpdate = async (newQuantity, reason) => {
+    if (!stockProduct) return;
+
+    console.log('🔄 Iniciando actualización de stock:', {
+      product: stockProduct.id,
+      oldQuantity: stockProduct.quantity,
+      newQuantity
+    });
+
+    try {
+      const updatedProduct = await inventoryService.updateQuantity(
+        stockProduct.id,
+        newQuantity,
+        reason
+      );
+
+      console.log('✅ Producto actualizado recibido:', updatedProduct);
+
+      if (updatedProduct) {
+        // Actualizar el producto en la lista con todos los datos actualizados
+        setProducts(prevProducts => {
+          const newProducts = prevProducts.map(p =>
+            p.id === stockProduct.id
+              ? { ...p, quantity: newQuantity } // Usar directamente newQuantity
+              : p
+          );
+          console.log('📋 Lista de productos actualizada');
+          return newProducts;
+        });
+
+        // Recargar estadísticas
+        loadStats();
+
+        // Cerrar modal y limpiar
+        setShowStockModal(false);
+        setStockProduct(null);
+
+        // Mostrar mensaje de éxito
+        setTimeout(() => {
+          alert(`Stock actualizado: ${stockProduct.id} ahora tiene ${newQuantity} unidades`);
+        }, 100);
+      } else {
+        console.error('⚠️ No se recibió producto actualizado del servidor');
+        alert('Error: No se recibió confirmación del servidor');
+      }
+    } catch (error) {
+      console.error('❌ Error al actualizar stock:', error);
+      alert('Error al actualizar el stock. Por favor, intente nuevamente.');
+      throw error;
+    }
+  };
+
   // Limpiar filtros
   const clearFilters = () => {
     setFilters({
@@ -89,6 +178,12 @@ export default function InventoryList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Inventario</h2>
+        {/* Debug info */}
+        <div className="text-sm text-gray-600">
+          Usuario: {user?.username || 'No autenticado'} |
+          Rol: {userRole || 'Sin rol'} |
+          Puede editar: {canEditStock ? 'Sí' : 'No'}
+        </div>
       </div>
 
       {/* Estadísticas */}
@@ -218,7 +313,7 @@ export default function InventoryList() {
                       Categoría
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stock
+                      Stock {canEditStock && <span className="text-pink-600">(Editable)</span>}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Precio
@@ -259,11 +354,42 @@ export default function InventoryList() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`text-sm font-medium ${
-                          product.quantity > 0 ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {product.quantity}
-                        </span>
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-sm font-medium ${
+                            product.quantity > 0 ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {product.quantity}
+                          </span>
+                          {/* Botón de edición - TEMPORAL SIEMPRE VISIBLE PARA DEBUG */}
+                          <button
+                            onClick={() => {
+                              console.log('🔴 BOTÓN CLICKEADO - Producto:', product);
+                              console.log('🔴 BOTÓN CLICKEADO - Usuario:', user);
+                              console.log('🔴 BOTÓN CLICKEADO - canEditStock:', canEditStock);
+                              if (!user) {
+                                alert('No hay usuario autenticado');
+                                return;
+                              }
+                              if (!canEditStock) {
+                                alert(`Tu rol (${userRole}) no tiene permisos para editar stock`);
+                                return;
+                              }
+                              openStockModal(product);
+                            }}
+                            className={canEditStock
+                              ? "px-2 py-1 bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors rounded flex items-center space-x-1"
+                              : "px-2 py-1 bg-gray-100 text-gray-400 transition-colors rounded flex items-center space-x-1"
+                            }
+                            title={canEditStock ? "Editar stock" : `Sin permisos (rol: ${userRole || 'no autenticado'})`}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                            <span className="text-xs">
+                              {canEditStock ? 'Editar' : 'Sin permisos'}
+                            </span>
+                          </button>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         {inventoryService.formatCurrency(product.final_sale_price)}
@@ -337,6 +463,19 @@ export default function InventoryList() {
         <ProductDetailModal
           product={selectedProduct}
           onClose={() => setShowDetailModal(false)}
+        />
+      )}
+
+      {/* Modal de Actualización de Stock */}
+      {showStockModal && stockProduct && (
+        <StockUpdateModal
+          product={stockProduct}
+          currentQuantity={stockProduct.quantity}
+          onConfirm={handleStockUpdate}
+          onClose={() => {
+            setShowStockModal(false);
+            setStockProduct(null);
+          }}
         />
       )}
     </div>

@@ -97,6 +97,7 @@ export interface InventoryItem {
   location: string;
   created_at: Date;
   updated_at: Date;
+  valuation_item_id?: number;
   // Información del producto relacionado
   valuation_item?: {
     category_id: number;

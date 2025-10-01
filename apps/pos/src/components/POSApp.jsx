@@ -89,7 +89,7 @@ export default function POSApp() {
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-700">
                 <span className="font-medium">{user?.first_name} {user?.last_name}</span>
-                <span className="text-gray-500 ml-2">({user?.role?.name})</span>
+                <span className="text-gray-500 ml-2">({user?.role?.name || user?.role || 'Sin rol'})</span>
               </div>
               <button
                 onClick={handleLogout}

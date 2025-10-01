@@ -19,7 +19,12 @@
       "Bash(docker run:*)",
       "Bash(heroku config:*)",
       "Bash(docker restart:*)",
-      "WebFetch(domain:entrepeques.mx)"
+      "WebFetch(domain:entrepeques.mx)",
+      "Bash(python3:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Testing port $port:\")",
+      "Bash(done)",
+      "Read(//mnt/c/Coding/ProdsIMGS/**)"
     ],
     "deny": []
   }

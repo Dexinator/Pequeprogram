@@ -615,4 +615,107 @@ export class SalesService extends BaseService<Sale> {
       averageSale: parseFloat(avgResult.rows[0].average)
     };
   }
+
+  async updateInventoryQuantity(
+    inventoryId: string,
+    newQuantity: number,
+    userId: number,
+    reason?: string
+  ): Promise<InventoryItem> {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      // Iniciar transacción
+      await dbClient.query('BEGIN');
+
+      // Verificar que el producto existe
+      const checkQuery = 'SELECT * FROM inventario WHERE id = $1';
+      const checkResult = await dbClient.query(checkQuery, [inventoryId]);
+
+      if (checkResult.rows.length === 0) {
+        throw new Error('Producto no encontrado en inventario');
+      }
+
+      const oldQuantity = checkResult.rows[0].quantity;
+
+      // Actualizar la cantidad
+      const updateQuery = `
+        UPDATE inventario
+        SET quantity = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+        RETURNING *
+      `;
+      const updateResult = await dbClient.query(updateQuery, [newQuantity, inventoryId]);
+
+      // Registrar el cambio en una tabla de auditoría (opcional, para futuro)
+      // Por ahora solo lo logueamos
+      console.log(`Inventory update: Product ${inventoryId} quantity changed from ${oldQuantity} to ${newQuantity} by user ${userId}. Reason: ${reason || 'No especificado'}`);
+
+      // Commit de la transacción
+      await dbClient.query('COMMIT');
+
+      // Obtener información completa del producto actualizado
+      const fullQuery = `
+        SELECT DISTINCT
+          i.*,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.features,
+          vi.final_sale_price,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          oi.product_name as otr_product_name,
+          oi.sale_unit_price as otr_sale_price
+        FROM inventario i
+        LEFT JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        LEFT JOIN otherprods_items oi ON i.id = oi.sku
+        WHERE i.id = $1
+      `;
+
+      const fullResult = await dbClient.query(fullQuery, [inventoryId]);
+
+      if (fullResult.rows.length === 0) {
+        throw new Error('Error al obtener información actualizada del producto');
+      }
+
+      const item = fullResult.rows[0];
+
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        location: item.location,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        valuation_item_id: item.valuation_item_id,
+        valuation_item: item.valuation_item_id ? {
+          category_id: item.category_id,
+          subcategory_id: item.subcategory_id,
+          brand_id: item.brand_id,
+          status: item.status,
+          features: item.features,
+          final_sale_price: parseFloat(item.final_sale_price || 0),
+          category_name: item.category_name,
+          subcategory_name: item.subcategory_name || item.otr_product_name,
+          brand_name: item.brand_name
+        } : undefined
+      };
+
+    } catch (error) {
+      if (dbClient) {
+        await dbClient.query('ROLLBACK');
+      }
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
 }

@@ -45,6 +45,7 @@ services:
     volumes:
       - ./packages/api:/app # Mapear código fuente para live reload
       - api_node_modules:/app/node_modules # Evitar sobreescribir node_modules del contenedor
+      - /mnt/c/Coding/ProdsIMGS:/images:ro # Montar directorio de imágenes como solo lectura
     depends_on:
       db:
         condition: service_healthy

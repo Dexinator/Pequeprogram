@@ -307,6 +307,47 @@ export class InventoryService {
     };
     return modalities[modality] || modality;
   }
+
+  // Actualizar cantidad en inventario
+  async updateQuantity(id: string, quantity: number, reason?: string): Promise<InventoryProduct | null> {
+    try {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
+
+      console.log('📦 Actualizando inventario:', { id, quantity, reason });
+
+      const response = await this.http.put<any>(`/inventory/${id}/quantity`, {
+        quantity,
+        reason
+      });
+
+      console.log('📦 Respuesta del servidor:', response);
+
+      // La respuesta puede venir en response.data
+      const data = response?.data || response;
+
+      if (data) {
+        // Aplanar estructura y agregar descripción
+        const flatItem: InventoryProduct = {
+          ...data,
+          category_name: data.valuation_item?.category_name,
+          subcategory_name: data.valuation_item?.subcategory_name,
+          brand_name: data.valuation_item?.brand_name,
+          final_sale_price: data.valuation_item?.final_sale_price,
+          description: this.generateDescription(data)
+        };
+        console.log('📦 Item procesado:', flatItem);
+        return flatItem;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error al actualizar cantidad:', error);
+      throw error;
+    }
+  }
 }
 
 export const inventoryService = new InventoryService();
