@@ -5,7 +5,7 @@ const RentalSection = () => {
     {
       icon: '📅',
       title: "Renta por días",
-      description: "Desde 1 día hasta el tiempo que necesites"
+      description: "Desde 1 día hasta 45 días"
     },
     {
       icon: '💰',
@@ -15,22 +15,19 @@ const RentalSection = () => {
     {
       icon: '✅',
       title: "Productos de calidad",
-      description: "Todos nuestros artículos están sanitizados y revisados"
+      description: "Todos nuestros artículos están sanitizados y revisados para asegurar su correcto funcionamiento"
     },
     {
       icon: '✈️',
       title: "Ideal para viajeros",
-      description: "Perfecto si estás de visita y necesitas carriolas o autoasientos"
+      description: "Familias que están de visita o que desean probar antes de comprar"
     }
   ];
 
   const popularItems = [
     "Carriolas",
     "Autoasientos",
-    "Cunas de viaje",
-    "Sillas altas",
-    "Corrales",
-    "Montables"
+    "algún otro artíuclo"
   ];
 
   return (

@@ -37,7 +37,7 @@ const GiftRegistrySection = () => {
     { number: "1", text: "Visítanos o contáctanos para crear tu mesa" },
     { number: "2", text: "Elige los artículos que te gustaría recibir" },
     { number: "3", text: "Comparte tu código con los invitados" },
-    { number: "4", text: "¡Recibe exactamente lo que necesitas!" }
+    { number: "4", text: "¡Recibe lo que necesitas!" }
   ];
 
   return (
