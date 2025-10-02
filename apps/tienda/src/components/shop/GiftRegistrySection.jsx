@@ -142,15 +142,8 @@ const GiftRegistrySection = () => {
             También puedes visitarnos en tienda para ver todos los productos disponibles.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={() => window.location.href = '/contacto'}
-              className="bg-white text-brand-rosa px-8 py-3 rounded-lg font-heading font-semibold hover:bg-gray-100 shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all inline-flex items-center justify-center"
-            >
-              Agenda tu cita
-              <span className="ml-2">→</span>
-            </button>
             <a 
-              href="https://wa.me/526641234567?text=Hola,%20me%20interesa%20crear%20una%20mesa%20de%20regalos" 
+              href="https://wa.me/525523632389?text=Hola,%20me%20interesa%20crear%20una%20mesa%20de%20regalos" 
               className="bg-brand-verde-lima hover:bg-brand-verde-oscuro text-white px-8 py-3 rounded-lg font-heading font-semibold shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all inline-flex items-center justify-center"
             >
               <span className="mr-2">💬</span>

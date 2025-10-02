@@ -439,7 +439,7 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
                 </h3>
                 <div className="bg-gradient-to-r from-brand-azul/10 to-brand-verde-lima/10 p-6 rounded-xl">
                   <p className="font-heading text-brand-azul-profundo text-lg">
-                    <strong>🎁 Envío gratis</strong> en compras mayores a $899
+                    <strong>🎁 Envío gratis</strong> en compras mayores a $895<br>*aplican restricciones</br>
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

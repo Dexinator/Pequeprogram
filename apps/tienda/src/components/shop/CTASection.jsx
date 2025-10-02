@@ -2,7 +2,7 @@ import React from 'react';
 
 function CTASection() {
   return (
-    <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-rosa/10 to-brand-amarillo/10 dark:from-brand-rosa/5 dark:to-brand-amarillo/5 relative overflow-hidden">
+    <section id="tienes-articulos" className="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-rosa/10 to-brand-amarillo/10 dark:from-brand-rosa/5 dark:to-brand-amarillo/5 relative overflow-hidden">
       {/* Decorative pattern */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-40 h-40 bg-brand-rosa/10 dark:bg-brand-rosa/5 rounded-full blur-3xl transform -translate-x-20 -translate-y-20"></div>

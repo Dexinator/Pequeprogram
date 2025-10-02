@@ -17,7 +17,7 @@ const VisitUsSection = ({ optimizedImages }) => {
 
   const contactInfo = [
     { icon: "📍", label: "Dirección", value: "Av. Homero 1616, Polanco I Secc, Miguel Hidalgo, 11510 CDMX" },
-    { icon: "📞", label: "Teléfono", value: "(55) 6588 3245", link: "tel:+525565883245" },
+    { icon: "📞", label: "Teléfono", value: "(55) 6588 3245", link: "tel:+525523632389" },
     { icon: "💬", label: "WhatsApp", value: "(55) 2363 2389", link: "https://wa.me/525523632389" }
   ];
 

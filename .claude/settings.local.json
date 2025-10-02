@@ -24,7 +24,12 @@
       "Bash(for:*)",
       "Bash(do echo \"Testing port $port:\")",
       "Bash(done)",
-      "Read(//mnt/c/Coding/ProdsIMGS/**)"
+      "Read(//mnt/c/Coding/ProdsIMGS/**)",
+      "Bash(PGPASSWORD=password psql:*)",
+      "Read(//tmp/**)",
+      "Bash(while read sku)",
+      "Bash(do grep -q \"^$sku$\" /tmp/local_migration_skus.txt)",
+      "Bash(echo \"$sku\")"
     ],
     "deny": []
   }

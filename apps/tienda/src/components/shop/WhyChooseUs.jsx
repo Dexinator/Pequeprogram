@@ -23,13 +23,13 @@ function WhyChooseUs() {
     {
       icon: '🚚',
       title: 'Envío Seguro',
-      description: 'Entrega a domicilio gratis en compras mayores a $895 en CDMX. Envíos a toda la república.',
+      description: 'Entrega a domicilio gratis en compras mayores a *$895 en CDMX. Envíos a toda la república.',
       color: 'amarillo'
     },
     {
       icon: '🤝',
-      title: 'Comunidad Solidaria',
-      description: 'Comprometidos con el ahorro y el consumo sostenible y solidarios con la comunidad. Realizamos donaciones a asociaciones de beneficencia y personas vulnerables.',
+      title: 'En Comunidad Solidaria',
+      description: 'Comprometidos con el ahorro y el consumo sostenible. Puedes donar a través de nosotros a beneficencia y personas vulnerables.',
       color: 'verde-lima'
     },
     {

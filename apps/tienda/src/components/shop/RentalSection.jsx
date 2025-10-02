@@ -124,7 +124,7 @@ const RentalSection = () => {
               Llámanos
             </a>
             <a 
-              href="https://wa.me/526641234567?text=Hola,%20me%20interesa%20rentar%20un%20artículo" 
+              href="https://wa.me/525523632389?text=Hola,%20me%20interesa%20rentar%20un%20artículo" 
               className="inline-flex items-center justify-center px-6 py-3 bg-brand-verde-lima hover:bg-brand-verde-oscuro text-white rounded-lg font-heading font-semibold shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all"
             >
               <span className="mr-2">💬</span>

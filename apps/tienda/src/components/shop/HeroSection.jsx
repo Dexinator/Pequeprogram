@@ -24,14 +24,14 @@ Dale una segunda vida a lo que usaron poco los peques, ahorra y súmate a la con
                 <span className="mr-2">🛍️</span>
                 Ver productos
               </a>
-              <a href="/vender" className="inline-flex items-center justify-center px-8 py-4 bg-brand-verde-lima hover:bg-brand-verde-oscuro text-white font-heading font-semibold rounded-lg shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all">
+              <a href="#tienes-articulos" className="inline-flex items-center justify-center px-8 py-4 bg-brand-verde-lima hover:bg-brand-verde-oscuro text-white font-heading font-semibold rounded-lg shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all">
                 <span className="mr-2">💰</span>
                 Quiero vender
               </a>
             </div>
             
             {/* Value props */}
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-10 flex flex-wrap gap-4 justify-center md:justify-start">
               <a href="#renta" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">♻️ Renta</a>
               <a href="#mesa-regalos" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">💸 Mesa de regalos</a>
               <a href="#tienda" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">✅ Tienda (Ven y conócenos)</a>

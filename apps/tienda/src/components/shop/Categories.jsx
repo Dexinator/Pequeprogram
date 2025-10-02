@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { categoryService } from '../../services/api';
 
-// Category icons mapping to SVG files
+// Category icons mapping to SVG files (from extracted Entrepeques icon font)
 const categoryIconMapping = {
-  'A pasear': 'strollers',
-  'A dormir': 'cribs',
+  'A pasear': 'stroller-main', // Using the main stroller icon
+  'A dormir': 'cradle-main',   // Using the main cradle icon
   'En Casa': 'safety',
-  'A comer': 'high-chairs',
-  'Ropa': 'women-clothing',
+  'A comer': 'food-main',      // Using the main food icon
+  'Ropa': 'dress-main',        // Using the main dress icon
   'A jugar': 'toys',
 };
 

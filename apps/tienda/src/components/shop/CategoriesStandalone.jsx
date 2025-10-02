@@ -25,7 +25,7 @@ function CategoriesStandalone() {
         // Extract categories from response
         const categoriesData = data.data || data || [];
         
-        // Add product counts
+        // Add product counts and icon mapping
         const categoriesWithCounts = categoriesData.map(cat => ({
           ...cat,
           productCount: {
@@ -36,14 +36,14 @@ function CategoriesStandalone() {
             'Ropa': 6,
             'A jugar': 0,
           }[cat.name] || 0,
-          icon: {
-            'A pasear': '🚗',
-            'A dormir': '🛏️',
-            'En Casa': '🏠',
-            'A comer': '🍼',
-            'Ropa': '👕',
-            'A jugar': '🎮',
-          }[cat.name] || '📦'
+          iconSvg: {
+            'A pasear': 'stroller-main',
+            'A dormir': 'cradle-main',
+            'En Casa': 'safety',
+            'A comer': 'food-main',
+            'Ropa': 'dress-main',
+            'A jugar': 'toys',
+          }[cat.name] || 'toys'
         }));
         
         setCategories(categoriesWithCounts);
@@ -97,8 +97,13 @@ function CategoriesStandalone() {
           className="group"
         >
           <div className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-tr from-brand-azul/20 to-brand-verde-lima/20 dark:from-brand-azul/10 dark:to-brand-verde-lima/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-              <span className="text-3xl">{category.icon}</span>
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-tr from-brand-verde-lima/20 to-brand-verde-oscuro/20 dark:from-brand-verde-lima/10 dark:to-brand-verde-oscuro/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <img
+                src={`/icons/green-ep-${category.iconSvg}.svg`}
+                alt={category.name}
+                className="w-10 h-10"
+                loading="lazy"
+              />
             </div>
             <h3 className="font-heading text-lg font-bold text-brand-azul dark:text-brand-azul-light group-hover:text-brand-azul-profundo transition-colors">
               {category.name}

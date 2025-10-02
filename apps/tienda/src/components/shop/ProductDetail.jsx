@@ -399,7 +399,7 @@ const ProductDetail = ({ productId }) => {
                 <h3 className="text-lg font-semibold mb-3">Información de envío</h3>
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="text-blue-800">
-                    <strong>Envío gratis</strong> en compras mayores a $899
+                    <strong>Envío gratis</strong> en compras mayores a $895<br>*aplican restricciones</br>
                   </p>
                 </div>
                 <ul className="space-y-2 text-gray-600">
