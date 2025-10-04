@@ -16,7 +16,7 @@ function HeroSection() {
             <p className="font-heading text-2xl md:text-3xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
               Reutiliza, Recupera y Ahorra
             </p>
-            <p className="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 mb-8 leading-relaxed max-w-4xl">
+            <p className="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 mb-8 leading-relaxed max-w-4xl text-justify">
 Dale una segunda vida a lo que usaron poco los peques, ahorra y súmate a la conservación del medio ambiente. Compra en línea y también compra, vende e intercambia en nuestra sucursal CDMX.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">

@@ -8,6 +8,7 @@ const router = Router();
 
 // Rutas públicas (no requieren autenticación)
 router.get('/', asyncHandler(categoryController.getAll));
+router.get('/with-counts', asyncHandler(categoryController.getCategoriesWithProductCount));
 router.get('/:id', asyncHandler(categoryController.getById));
 router.get('/:categoryId/subcategories', asyncHandler(categoryController.getSubcategoriesByCategory));
 router.get('/subcategories', asyncHandler(categoryController.getAllSubcategories));

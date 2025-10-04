@@ -159,12 +159,14 @@ const NavBarContent = () => {
                     <div className="py-1">
                       {!isAuthenticated ? (
                         <>
+                          {/* Funcionalidad de login temporalmente deshabilitada
                           <a href="/login" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                             Iniciar sesión
                           </a>
                           <a href="/registro" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                             Registrarse
                           </a>
+                          */}
                         </>
                       ) : (
                         <>
@@ -288,12 +290,14 @@ const NavBarContent = () => {
             <div className="border-t border-gray-200 dark:border-gray-700 mt-3 pt-3">
               {!isAuthenticated ? (
                 <>
+                  {/* Funcionalidad de login temporalmente deshabilitada
                   <a href="/login" className="block px-3 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-brand-azul hover:bg-brand-azul/10 font-medium transition-all">
                     🔑 Iniciar sesión
                   </a>
                   <a href="/registro" className="block px-3 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-brand-verde-lima hover:bg-brand-verde-lima/10 font-medium transition-all">
                     ✨ Registrarse
                   </a>
+                  */}
                 </>
               ) : (
                 <>

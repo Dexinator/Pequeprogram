@@ -233,6 +233,24 @@ export const categoryGroupsComplete = {
           'Juegos de mesa',
           'Rompecabezas'
         ]
+      },
+      {
+        name: 'Juegos Grandes',
+        type: 'single',
+        icon: 'playground',
+        slug: 'juegos-grandes'
+      },
+      {
+        name: 'Sobre Ruedas',
+        type: 'grouped',
+        icon: 'bicycle',
+        slug: 'sobre-ruedas-jugar',
+        subcategories: [
+          'Sobre ruedas',
+          'Montables de exterior',
+          'Triciclos y bicicletas',
+          'Sillas para bicicleta'
+        ]
       }
     ]
   }

@@ -25,10 +25,13 @@ const iconMapping = {
   'Libros': 'books',
   'Accesorios Cunas': 'crib-accessories',
   'Correpasillos': 'ride-on',
-  'Sobre Ruedas': 'wheels',
+  'Sobre Ruedas': 'bicycle',
   'Otros Paseo': 'other-travel',
   'Disfraces': 'costume',
-  'Juegos Grandes': 'large-toys',
+  'Juegos Grandes': 'playground',
+  'Montables de exterior': 'ride-on',
+  'Triciclos y bicicletas': 'bicycle',
+  'Sillas para bicicleta': 'car-seat',
 };
 
 // Component to display category icon

@@ -27,7 +27,10 @@ const RentalSection = () => {
   const popularItems = [
     "Carriolas",
     "Autoasientos",
-    "algún otro artíuclo"
+    "Cunas de viaje",
+    "Sillas altas",
+    "Corrales",
+    "Montables"
   ];
 
   return (

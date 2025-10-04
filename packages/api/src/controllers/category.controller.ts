@@ -297,28 +297,28 @@ export class CategoryController {
     try {
       const { subcategoryId } = req.params;
       const client = await pool.connect();
-      
+
       try {
         // Verificar que la subcategoría existe
         const subcategoryCheck = await client.query(
           'SELECT id FROM subcategories WHERE id = $1',
           [subcategoryId]
         );
-        
+
         if (subcategoryCheck.rows.length === 0) {
           return res.status(404).json({
             success: false,
             message: 'Subcategoría no encontrada'
           });
         }
-        
+
         // Obtener solo las definiciones de características marcadas para ofertas
         const result = await client.query(`
           SELECT * FROM feature_definitions
           WHERE subcategory_id = $1 AND offer_print = TRUE
           ORDER BY order_index
         `, [subcategoryId]);
-        
+
         // Procesar las opciones de selección (convertir de JSONB a array)
         const features = result.rows.map(feature => {
           if (feature.type === 'seleccion' && feature.options) {
@@ -329,7 +329,7 @@ export class CategoryController {
           }
           return feature;
         });
-        
+
         res.status(200).json({
           success: true,
           data: features
@@ -342,6 +342,48 @@ export class CategoryController {
       res.status(500).json({
         success: false,
         message: 'Error al obtener definiciones de características para oferta'
+      });
+    }
+  }
+
+  /**
+   * Obtener categorías con conteo de productos disponibles en tienda en línea
+   */
+  getCategoriesWithProductCount = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const client = await pool.connect();
+      try {
+        const result = await client.query(`
+          SELECT
+            c.id,
+            c.name,
+            c.description,
+            COUNT(DISTINCT inv.id) as product_count
+          FROM categories c
+          LEFT JOIN valuation_items vi ON c.id = vi.category_id AND vi.online_store_ready = true
+          LEFT JOIN inventario inv ON vi.id = inv.valuation_item_id AND inv.quantity > 0
+          WHERE c.is_active = true
+          GROUP BY c.id, c.name, c.description
+          ORDER BY c.name
+        `);
+
+        res.status(200).json({
+          success: true,
+          data: result.rows.map(row => ({
+            id: row.id,
+            name: row.name,
+            description: row.description,
+            product_count: parseInt(row.product_count) || 0
+          }))
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('Error al obtener categorías con conteo de productos:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al obtener categorías con conteo de productos'
       });
     }
   }

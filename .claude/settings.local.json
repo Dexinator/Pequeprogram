@@ -29,7 +29,8 @@
       "Read(//tmp/**)",
       "Bash(while read sku)",
       "Bash(do grep -q \"^$sku$\" /tmp/local_migration_skus.txt)",
-      "Bash(echo \"$sku\")"
+      "Bash(echo \"$sku\")",
+      "Bash(docker ps:*)"
     ],
     "deny": []
   }

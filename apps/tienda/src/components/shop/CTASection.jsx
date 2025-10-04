@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import VideoModal from './VideoModal';
 
 function CTASection() {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
   return (
     <section id="tienes-articulos" className="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-rosa/10 to-brand-amarillo/10 dark:from-brand-rosa/5 dark:to-brand-amarillo/5 relative overflow-hidden">
       {/* Decorative pattern */}
@@ -22,19 +25,19 @@ function CTASection() {
         
         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
           <a 
-            href="/vender" 
+            href="https://citas.entrepeques.mx/" 
             className="inline-flex items-center justify-center px-8 py-4 bg-brand-rosa hover:bg-brand-rosa-dark text-white font-heading font-semibold rounded-lg shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all"
           >
             <span className="mr-2">🚀</span>
             Quiero vender ahora
           </a>
-          <a 
-            href="/como-funciona" 
+          <button
+            onClick={() => setIsVideoModalOpen(true)}
             className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-rosa text-brand-rosa hover:bg-brand-rosa hover:text-white font-heading font-semibold rounded-lg transition-all"
           >
             <span className="mr-2">📖</span>
             ¿Cómo funciona?
-          </a>
+          </button>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -43,7 +46,7 @@ function CTASection() {
               <span className="text-3xl">📸</span>
             </div>
             <h3 className="font-heading text-xl font-bold text-brand-azul dark:text-brand-azul-light mb-2">1. Trae tus artículos</h3>
-            <p className="text-gray-600 dark:text-gray-400">Visítanos con los productos que quieres vender o intercambiar</p>
+            <p className="text-gray-600 dark:text-gray-400">Visítanos con los productos que quieres vender o intercambiar en los días y horarios asignados.</p>
           </div>
           <div className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
             <div className="w-16 h-16 mx-auto mb-4 bg-brand-amarillo/20 dark:bg-brand-amarillo/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -61,6 +64,14 @@ function CTASection() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Video */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        videoId="tw2yvkna2ww"
+        title="¿Cómo funciona Entrepeques?"
+      />
     </section>
   );
 }

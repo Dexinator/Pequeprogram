@@ -36,8 +36,11 @@ const subcategoryIconMapping = {
   // A jugar
   'Juguetes': 'toys',
   'Libros': 'books',
-  'Juegos Grandes': 'large-toys',
-  'Sobre Ruedas': 'wheels',
+  'Juegos Grandes': 'playground',
+  'Sobre Ruedas': 'bicycle',
+  'Montables de exterior': 'ride-on',
+  'Triciclos y bicicletas': 'bicycle',
+  'Sillas para bicicleta': 'car-seat',
 };
 
 // Mapeo de categorías a íconos principales
@@ -318,7 +321,7 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
 
         {/* CTA Section */}
         <section className="mt-16 bg-gradient-to-r from-brand-verde-lima to-brand-verde-oscuro rounded-3xl p-8 md:p-12 text-white">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-2xl mx-auto text-center">
             <h2 className="font-display text-3xl md:text-4xl mb-4">
               ¿No encuentras lo que buscas?
             </h2>
