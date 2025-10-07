@@ -269,7 +269,7 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
             return (
               <a
                 key={group.id || index}
-                href={`/productos?categoria=${categoryId}&grupo=${groupSlug}`}
+                href={`/productos?categoria=${categoryId}&search=${encodeURIComponent(groupName)}&nombre=${encodeURIComponent(groupName)}`}
                 className={`group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${colors.border} border-opacity-20`}
               >
                 {/* Imagen con ícono SVG */}
@@ -321,7 +321,7 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
 
         {/* CTA Section */}
         <section className="mt-16 bg-gradient-to-r from-brand-verde-lima to-brand-verde-oscuro rounded-3xl p-8 md:p-12 text-white">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="mx-auto text-center">
             <h2 className="font-display text-3xl md:text-4xl mb-4">
               ¿No encuentras lo que buscas?
             </h2>
@@ -330,16 +330,16 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="/contacto"
+                href="tel:5565883245"
                 className="px-8 py-3 bg-white text-brand-verde-oscuro hover:bg-gray-100 font-semibold rounded-lg transition-colors shadow-lg"
               >
                 Contáctanos
               </a>
-              <a 
-                href="/tiendas"
+              <a
+                href="/#tienda"
                 className="px-8 py-3 bg-brand-azul hover:bg-brand-azul-profundo text-white font-semibold rounded-lg transition-colors shadow-lg"
               >
-                Visita nuestras tiendas
+                Visita nuestras tienda
               </a>
             </div>
           </div>

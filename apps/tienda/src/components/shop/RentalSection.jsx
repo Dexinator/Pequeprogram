@@ -117,7 +117,7 @@ const RentalSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
-              href="tel:+526641234567" 
+              href="tel:5565883245" 
               className="inline-flex items-center justify-center px-6 py-3 border-2 border-brand-rosa text-brand-rosa hover:bg-brand-rosa hover:text-white rounded-lg font-heading font-semibold transition-all"
             >
               <span className="mr-2">📞</span>

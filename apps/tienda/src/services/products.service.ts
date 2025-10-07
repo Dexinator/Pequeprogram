@@ -169,10 +169,11 @@ export class ProductsService {
   async getSubcategories(categoryId: number): Promise<Subcategory[]> {
     try {
       const response = await this.http.get(`/categories/${categoryId}/subcategories`);
-      return response.data || [];
+      // El endpoint devuelve el array directamente, no en response.data
+      return Array.isArray(response) ? response : (response.data || []);
     } catch (error) {
       console.error('Error al obtener subcategorías:', error);
-      throw error;
+      return [];
     }
   }
 

@@ -112,27 +112,32 @@ const ProductFilters = ({
       </div>
       
       {/* Subcategorías */}
-      {subcategories.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Subcategoría</h4>
-          <select
-            value={currentFilters.subcategory_id || ''}
-            onChange={(e) => handleSubcategoryChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500"
-          >
-            <option value="">Todas las subcategorías</option>
-            {subcategories.map((sub) => (
-              <option key={sub.id} value={sub.id}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Subcategoría</h4>
+        <select
+          value={currentFilters.subcategory_id || ''}
+          onChange={(e) => handleSubcategoryChange(e.target.value)}
+          disabled={!categoryId && subcategories.length === 0}
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {!categoryId && subcategories.length === 0 ? (
+            <option value="">Selecciona una categoría primero</option>
+          ) : (
+            <>
+              <option value="">Todas las subcategorías</option>
+              {subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.name}
+                </option>
+              ))}
+            </>
+          )}
+        </select>
+      </div>
       
       {/* Precio */}
-      <div className="bg-white rounded-lg p-4 shadow-sm">
-        <h4 className="font-medium text-gray-900 mb-3">Precio</h4>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Precio</h4>
         <form onSubmit={handlePriceSubmit} className="space-y-3">
           <div className="flex gap-2 items-center">
             <input
@@ -163,10 +168,10 @@ const ProductFilters = ({
           </button>
         </form>
       </div>
-      
+
       {/* Estado/Condición */}
-      <div className="bg-white rounded-lg p-4 shadow-sm">
-        <h4 className="font-medium text-gray-900 mb-3">Condición</h4>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Condición</h4>
         <div className="space-y-2">
           {['excelente', 'bueno', 'regular'].map((condition) => (
             <label key={condition} className="flex items-center">
@@ -201,7 +206,7 @@ const ProductFilters = ({
         <select
           value={currentFilters.location || ''}
           onChange={(e) => handleLocationChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500"
         >
           <option value="">Todas las tiendas</option>
           <option value="Polanco">Polanco</option>

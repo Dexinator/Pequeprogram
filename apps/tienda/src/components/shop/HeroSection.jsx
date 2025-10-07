@@ -1,4 +1,5 @@
 import React from 'react';
+import LogoReact from '../layout/LogoReact';
 
 function HeroSection() {
   return (
@@ -9,17 +10,17 @@ function HeroSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-brand-rosa mb-8 tracking-tight animate-float">
-              Entrepeques
-            </h1>
-            <p className="font-heading text-2xl md:text-3xl font-bold text-brand-azul dark:text-brand-azul-light mb-4">
+          <div className="text-center">
+            <div className="mb-10 animate-float">
+              <LogoReact className="h-48 md:h-56 lg:h-64 xl:h-80 w-auto mx-auto" />
+            </div>
+            <p className="font-heading text-2xl md:text-3xl font-bold text-brand-azul dark:text-brand-azul-light mb-4 text-center">
               Reutiliza, Recupera y Ahorra
             </p>
-            <p className="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 mb-8 leading-relaxed max-w-4xl text-justify">
+            <p className="font-body text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 mb-8 leading-relaxed max-w-4xl mx-auto text-center">
 Dale una segunda vida a lo que usaron poco los peques, ahorra y súmate a la conservación del medio ambiente. Compra en línea y también compra, vende e intercambia en nuestra sucursal CDMX.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="/productos" className="inline-flex items-center justify-center px-8 py-4 bg-brand-azul hover:bg-brand-azul-profundo text-white font-heading font-semibold rounded-lg shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all">
                 <span className="mr-2">🛍️</span>
                 Ver productos
@@ -31,7 +32,7 @@ Dale una segunda vida a lo que usaron poco los peques, ahorra y súmate a la con
             </div>
             
             {/* Value props */}
-            <div className="mt-10 flex flex-wrap gap-4 justify-center md:justify-start">
+            <div className="mt-10 flex flex-wrap gap-4 justify-center">
               <a href="#renta" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">♻️ Renta</a>
               <a href="#mesa-regalos" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">💸 Mesa de regalos</a>
               <a href="#tienda" className="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">✅ Tienda (Ven y conócenos)</a>

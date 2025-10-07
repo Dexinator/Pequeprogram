@@ -8,17 +8,20 @@ const AllProducts = () => {
   // Leer query parameters de la URL
   const getInitialFilters = () => {
     if (typeof window === 'undefined') return {};
-    
+
     const params = new URLSearchParams(window.location.search);
     const initialFilters = {};
-    
+
     if (params.get('categoria')) {
       initialFilters.category_id = parseInt(params.get('categoria'));
     }
     if (params.get('subcategoria')) {
       initialFilters.subcategory_id = parseInt(params.get('subcategoria'));
     }
-    
+    if (params.get('search')) {
+      initialFilters.search = params.get('search');
+    }
+
     return initialFilters;
   };
 
@@ -29,10 +32,11 @@ const AllProducts = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [error, setError] = useState(null);
   const [subcategoryName, setSubcategoryName] = useState('');
-  
+
   const PRODUCTS_PER_PAGE = 20;
   
   // Leer el nombre de la subcategoría de la URL
@@ -50,7 +54,16 @@ const AllProducts = () => {
   useEffect(() => {
     loadCategories();
   }, []);
-  
+
+  // Cargar subcategorías cuando cambia la categoría
+  useEffect(() => {
+    if (filters.category_id) {
+      loadSubcategories(filters.category_id);
+    } else {
+      setSubcategories([]);
+    }
+  }, [filters.category_id]);
+
   // Cargar productos cuando cambian los filtros o la página
   useEffect(() => {
     loadProducts();
@@ -64,7 +77,17 @@ const AllProducts = () => {
       console.error('Error al cargar categorías:', error);
     }
   };
-  
+
+  const loadSubcategories = async (categoryId) => {
+    try {
+      const subs = await productsService.getSubcategories(categoryId);
+      setSubcategories(subs);
+    } catch (error) {
+      console.error('Error al cargar subcategorías:', error);
+      setSubcategories([]);
+    }
+  };
+
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -151,14 +174,14 @@ const AllProducts = () => {
           </nav>
           
           <h1 className="font-display text-4xl md:text-5xl font-bold text-brand-rosa mb-2">
-            {subcategoryName || 'Todos los productos'}
+            {subcategoryName || (filters.search ? `Búsqueda: ${filters.search}` : 'Todos los productos')}
           </h1>
           <p className="font-body text-gray-600 dark:text-gray-400">
             {total > 0 ? `${total} productos disponibles` : 'Cargando productos...'}
           </p>
-          
-          {/* Botón para limpiar filtro si hay subcategoría */}
-          {subcategoryName && (
+
+          {/* Botón para limpiar filtro si hay subcategoría o búsqueda */}
+          {(subcategoryName || filters.search) && (
             <div className="mt-4">
               <a 
                 href="/productos"
@@ -204,7 +227,7 @@ const AllProducts = () => {
               
               <ProductFilters
                 categoryId={filters.category_id}
-                subcategories={[]}
+                subcategories={subcategories}
                 onFilterChange={handleFilterChange}
                 currentFilters={filters}
               />
@@ -314,7 +337,7 @@ const AllProducts = () => {
               
               <ProductFilters
                 categoryId={filters.category_id}
-                subcategories={[]}
+                subcategories={subcategories}
                 onFilterChange={(newFilters) => {
                   handleFilterChange(newFilters);
                   setShowFilters(false);
