@@ -1,0 +1,267 @@
+---
+import Layout from "../layouts/Layout.astro";
+import promo1 from "../assets/promos/PP_COLECHOSWEB-01.jpg";
+import promo2 from "../assets/promos/PP_CARRIOLAS-04.jpg";
+
+const promos = [
+  {
+    id: 1,
+    image: promo1,
+    alt: "Promoción Colchones",
+    title: "Colchones",
+    link: "" // Por el momento vacío
+  },
+  {
+    id: 2,
+    image: promo2,
+    alt: "Promoción Carriolas",
+    title: "Carriolas",
+    link: "" // Por el momento vacío
+  }
+];
+---
+
+<Layout title="Ofertas Especiales | Entrepeques">
+  <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-950 dark:to-gray-900 transition-colors">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-brand-rosa/10 via-brand-amarillo/10 to-brand-verde-lima/10 dark:from-brand-rosa/5 dark:via-brand-amarillo/5 dark:to-brand-verde-lima/5 py-16 px-4">
+      <div class="container mx-auto text-center">
+        <h1 class="font-display text-5xl md:text-6xl lg:text-7xl text-brand-rosa mb-6 tracking-tight">
+          ¡Ofertas Especiales!
+        </h1>
+        <p class="font-body text-xl md:text-2xl text-gray-700 dark:text-gray-300 mx-auto leading-relaxed">
+          Descubre nuestras promociones exclusivas en productos seleccionados
+        </p>
+        <div class="mt-6 flex justify-center gap-3">
+          <span class="px-4 py-2 bg-brand-amarillo text-gray-900 rounded-full font-semibold text-sm md:text-base">
+            🎉 Promociones
+          </span>
+          <span class="px-4 py-2 bg-brand-verde-lima text-white rounded-full font-semibold text-sm md:text-base">
+            💰 Ahorro
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carousel Section -->
+    <div class="container mx-auto px-4 py-12 md:py-16">
+      <div class="max-w-6xl mx-auto">
+        <!-- Carousel Container -->
+        <div class="relative">
+          <!-- Carousel Wrapper -->
+          <div class="overflow-hidden rounded-3xl shadow-2xl">
+            <div id="carousel-track" class="flex transition-transform duration-500 ease-in-out">
+              {promos.map((promo) => (
+                <div class="min-w-full px-4 md:px-8">
+                  <div class="flex justify-center">
+                    <a
+                      href={promo.link || "#"}
+                      class={`block group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 ${promo.link ? 'cursor-pointer' : 'cursor-default'}`}
+                      style="max-width: 500px; width: 100%;"
+                    >
+                      <!-- Image Container with 9:16 aspect ratio -->
+                      <div class="relative w-full" style="aspect-ratio: 9/16;">
+                        <img
+                          src={promo.image.src}
+                          alt={promo.alt}
+                          class="w-full h-full object-cover"
+                        />
+
+                        <!-- Hover Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                            <p class="font-heading text-xl md:text-2xl font-bold">
+                              {promo.title}
+                            </p>
+                            {promo.link && (
+                              <p class="text-sm mt-2">
+                                Ver productos →
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          {promos.length > 1 && (
+            <>
+              <button
+                id="prev-btn"
+                class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 bg-white dark:bg-gray-800 text-brand-azul dark:text-brand-azul-light rounded-full p-3 md:p-4 shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 z-10"
+                aria-label="Anterior"
+              >
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <button
+                id="next-btn"
+                class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 bg-white dark:bg-gray-800 text-brand-azul dark:text-brand-azul-light rounded-full p-3 md:p-4 shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 z-10"
+                aria-label="Siguiente"
+              >
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+        </div>
+
+        <!-- Carousel Indicators -->
+        {promos.length > 1 && (
+          <div class="flex justify-center gap-3 mt-8">
+            {promos.map((_, index) => (
+              <button
+                class="carousel-indicator w-3 h-3 rounded-full transition-all duration-300"
+                data-index={index}
+                aria-label={`Ir a promoción ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+        <!-- Info Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow text-center">
+            <div class="w-16 h-16 bg-brand-azul/10 dark:bg-brand-azul/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-3xl">🎁</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              Promociones Exclusivas
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Descuentos especiales en productos seleccionados
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow text-center">
+            <div class="w-16 h-16 bg-brand-verde-lima/10 dark:bg-brand-verde-lima/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-3xl">♻️</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              Segunda Vida
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Productos de calidad a precios accesibles
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow text-center">
+            <div class="w-16 h-16 bg-brand-rosa/10 dark:bg-brand-rosa/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-3xl">💝</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              Variedad
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Amplio catálogo de productos infantiles
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Carousel functionality
+    let currentSlide = 0;
+    const track = document.getElementById('carousel-track');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const totalSlides = indicators.length;
+
+    function updateCarousel() {
+      if (!track) return;
+
+      // Update track position
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+      // Update indicators
+      indicators.forEach((indicator, index) => {
+        if (index === currentSlide) {
+          indicator.classList.add('bg-brand-azul', 'w-8');
+          indicator.classList.remove('bg-gray-300', 'dark:bg-gray-600');
+        } else {
+          indicator.classList.add('bg-gray-300', 'dark:bg-gray-600');
+          indicator.classList.remove('bg-brand-azul', 'w-8');
+        }
+      });
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    // Event listeners
+    nextBtn?.addEventListener('click', nextSlide);
+    prevBtn?.addEventListener('click', prevSlide);
+
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        currentSlide = index;
+        updateCarousel();
+      });
+    });
+
+    // Auto-play (optional)
+    let autoPlayInterval = setInterval(nextSlide, 5000);
+
+    // Pause auto-play on hover
+    track?.addEventListener('mouseenter', () => {
+      clearInterval(autoPlayInterval);
+    });
+
+    track?.addEventListener('mouseleave', () => {
+      autoPlayInterval = setInterval(nextSlide, 5000);
+    });
+
+    // Initialize
+    updateCarousel();
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    track?.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    track?.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    }
+  </script>
+</Layout>
