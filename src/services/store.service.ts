@@ -17,6 +17,11 @@ export interface OnlineProductsParams {
   min_price?: number;
   max_price?: number;
   search?: string;
+  condition_state?: string;
+  location?: string;
+  brand_id?: number;
+  sort?: string;
+  features?: Record<string, any>;
 }
 
 export interface PrepareProductData {
@@ -112,9 +117,9 @@ export class StoreService {
     let dbClient: PoolClient | undefined;
     try {
       dbClient = await pool.connect();
-      
+
       let query = `
-        SELECT 
+        SELECT
           vi.id,
           vi.category_id,
           vi.subcategory_id,
@@ -139,53 +144,99 @@ export class StoreService {
         WHERE vi.online_store_ready = true
         AND i.quantity > 0
       `;
-      
+
       const queryParams: any[] = [];
       let paramIndex = 1;
-      
+
       if (params.category_id) {
         query += ` AND vi.category_id = $${paramIndex++}`;
         queryParams.push(params.category_id);
       }
-      
+
       if (params.subcategory_id) {
         query += ` AND vi.subcategory_id = $${paramIndex++}`;
         queryParams.push(params.subcategory_id);
       }
-      
+
       if (params.min_price !== undefined) {
         query += ` AND vi.online_price >= $${paramIndex++}`;
         queryParams.push(params.min_price);
       }
-      
+
       if (params.max_price !== undefined) {
         query += ` AND vi.online_price <= $${paramIndex++}`;
         queryParams.push(params.max_price);
       }
-      
+
+      if (params.condition_state) {
+        query += ` AND vi.condition_state = $${paramIndex++}`;
+        queryParams.push(params.condition_state);
+      }
+
+      if (params.location) {
+        query += ` AND i.location = $${paramIndex++}`;
+        queryParams.push(params.location);
+      }
+
+      if (params.brand_id) {
+        query += ` AND vi.brand_id = $${paramIndex++}`;
+        queryParams.push(params.brand_id);
+      }
+
       if (params.search) {
         query += ` AND (
-          s.name ILIKE $${paramIndex} OR 
+          s.name ILIKE $${paramIndex} OR
           b.name ILIKE $${paramIndex} OR
           vi.features::text ILIKE $${paramIndex}
         )`;
         queryParams.push(`%${params.search}%`);
         paramIndex++;
       }
-      
+
+      // Filtros dinámicos por features (JSONB)
+      if (params.features && Object.keys(params.features).length > 0) {
+        Object.entries(params.features).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            query += ` AND vi.features->>'${key}' ILIKE $${paramIndex++}`;
+            queryParams.push(`%${value}%`);
+          }
+        });
+      }
+
       // Count total
       const countQuery = `SELECT COUNT(*) as total FROM (${query}) as subquery`;
       const countResult = await dbClient.query(countQuery, queryParams);
       const total = parseInt(countResult.rows[0].total);
-      
+
+      // Ordenamiento
+      let orderBy = 'vi.online_prepared_at DESC'; // Default: más recientes
+      if (params.sort) {
+        switch (params.sort) {
+          case 'price_asc':
+            orderBy = 'vi.online_price ASC';
+            break;
+          case 'price_desc':
+            orderBy = 'vi.online_price DESC';
+            break;
+          case 'name_asc':
+            orderBy = 's.name ASC, b.name ASC';
+            break;
+          case 'name_desc':
+            orderBy = 's.name DESC, b.name DESC';
+            break;
+          default:
+            orderBy = 'vi.online_prepared_at DESC';
+        }
+      }
+
       // Add pagination
-      query += ` ORDER BY vi.online_prepared_at DESC`;
+      query += ` ORDER BY ${orderBy}`;
       query += ` LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
       queryParams.push(params.limit);
       queryParams.push((params.page - 1) * params.limit);
-      
+
       const result = await dbClient.query(query, queryParams);
-      
+
       return {
         products: result.rows.map(row => ({
           ...row,

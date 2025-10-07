@@ -45,6 +45,19 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
   const min_price = req.query.min_price ? parseFloat(req.query.min_price as string) : undefined;
   const max_price = req.query.max_price ? parseFloat(req.query.max_price as string) : undefined;
   const search = req.query.search as string;
+  const condition_state = req.query.condition_state as string;
+  const location = req.query.location as string;
+  const brand_id = req.query.brand_id ? parseInt(req.query.brand_id as string) : undefined;
+  const sort = req.query.sort as string;
+
+  // Extraer filtros de features dinámicas (feature_*)
+  const features: Record<string, any> = {};
+  Object.keys(req.query).forEach(key => {
+    if (key.startsWith('feature_')) {
+      const featureName = key.replace('feature_', '');
+      features[featureName] = req.query[key];
+    }
+  });
 
   const result = await storeService.getOnlineProducts({
     page,
@@ -53,7 +66,12 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
     subcategory_id,
     min_price,
     max_price,
-    search
+    search,
+    condition_state,
+    location,
+    brand_id,
+    sort,
+    features: Object.keys(features).length > 0 ? features : undefined
   });
 
   res.json({
