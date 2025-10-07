@@ -1,0 +1,678 @@
+codigo_producto,subcategoria,categoria,marca,modelo,cantidad_bodega,condicion,precio_online,precio_sugerido_original,peso_kg,num_fotos,ubicacion,modalidad,fecha_valuacion,fecha_publicacion,notas,estado
+ADAP001,Accesorios de alimentación,A comer,Pigeon,Red papillas,1,Excelente,250.00,225.00,2.00,1,Polanco,compra directa,16/08/2025,16/08/2025,"",BAJO STOCK
+CDBP001,Calentador de biberones,A comer,Evenflo,"",1,bueno,594.00,594.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSCDBP4 - Evenflo Calentador Eléctrico,BAJO STOCK
+CDBP002,Calentador de biberones,A comer,Tomme,"",1,bueno,539.00,539.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSCDBP7 - Tomme Tippe Eléctrico,BAJO STOCK
+CDBP003,Calentador de biberones,A comer,Chicco,"",1,bueno,495.00,495.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSCDBP8 - Chicco Eléctrico,BAJO STOCK
+CDBP004,Calentador de biberones,A comer,Tommee,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCDBP11 - Tommee Tippee Eléctrico,BAJO STOCK
+CDBP005,Calentador de biberones,A comer,Chicco,"",1,bueno,605.00,605.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDBP15 - Chicco Eléctrico,BAJO STOCK
+CDBP006,Calentador de biberones,A comer,Nevi,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDBP19 - Nevi Eléctrico,BAJO STOCK
+CDBP007,Calentador de biberones,A comer,Evenflo,"",1,bueno,467.50,467.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: CDBP12 - Evenflo Eléctrico,BAJO STOCK
+CDBP008,Calentador de biberones,A comer,Tommee,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDBP23 - Tommee Tippee Eléctrico,BAJO STOCK
+CDBP009,Calentador de biberones,A comer,Dr.,"",1,bueno,935.00,935.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDBP24 - Dr. Browns Eléctrico,BAJO STOCK
+LACP001,Lactancia,A comer,Medela,"",2,bueno,654.50,654.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSLACP9 - Medela Biberón,BAJO STOCK
+LACP002,Lactancia,A comer,Tommee,"",1,bueno,429.00,429.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSLACP15 - Tommee Tippee Biberón,BAJO STOCK
+LACP003,Lactancia,A comer,Tommee,"",1,bueno,357.50,357.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSLACP16 - Tommee Tippee Bolsas recolectoras,BAJO STOCK
+LACP004,Lactancia,A comer,Squezze,"",2,bueno,290.00,290.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSLACP17 - Squezze para bolsas,BAJO STOCK
+LACP005,Lactancia,A comer,Medela,"",1,bueno,209.00,209.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSLACP18 - Medela Protector de senos,BAJO STOCK
+LACP006,Lactancia,A comer,General,"",1,bueno,1128.60,1128.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSLACP19 - General Biberón,BAJO STOCK
+LACP007,Lactancia,A comer,Chicco,"",1,bueno,137.50,137.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: LACP20 - Chicco Biberon,BAJO STOCK
+LACP008,Lactancia,A comer,Medela,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: LACP21 - Medela Otro,BAJO STOCK
+AYDP001,Almohadas y donas,A dormir,Dona,"",1,bueno,217.80,217.80,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSAYDP6 - Dona Amamantar,BAJO STOCK
+AYDP002,Almohadas y donas,A dormir,Dona,"",1,bueno,431.20,431.20,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSAYDP9 - Dona Amamantar,BAJO STOCK
+AYDP003,Almohadas y donas,A dormir,Almohada,"",1,bueno,275.00,275.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSAYDP21 - Almohada porta biberón,BAJO STOCK
+AYDP004,Almohadas y donas,A dormir,General,"",1,bueno,104.50,104.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSAYDP23 - General Para bebé,BAJO STOCK
+AYDP005,Almohadas y donas,A dormir,Chicco,"",1,bueno,385.00,385.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSAYDP25 - Chicco Para bebé,BAJO STOCK
+AYDP006,Almohadas y donas,A dormir,Boppy,"",1,bueno,385.00,385.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: AYDP27 - Boppy Amamantar,BAJO STOCK
+AYDP007,Almohadas y donas,A dormir,Nido,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: AYDP29 - Nido Para bebé,BAJO STOCK
+AYDP008,Almohadas y donas,A dormir,Bompy,"",1,bueno,319.00,319.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: AYDP26 - Bompy Para bebé,BAJO STOCK
+AYDP009,Almohadas y donas,A dormir,Holo,"",1,bueno,874.50,874.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: AYDP31 - Holo Embarazo,BAJO STOCK
+AYDP010,Almohadas y donas,A dormir,Chicco,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: AYDP33 - Chicco Amamantar,BAJO STOCK
+AYDP011,Almohadas y donas,A dormir,Mon,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AYDP34 - Mon Caramel  Para bebé,BAJO STOCK
+AYDP012,Almohadas y donas,A dormir,Babymoon,"",1,bueno,214.50,214.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: AYDP35 - Babymoon Embarazo,BAJO STOCK
+BPCP001,Barandal para cama,A dormir,North States,180 cm,1,Bueno,105.00,90.00,4.00,1,Polanco,compra directa,21/07/2025,15/08/2025,"",BAJO STOCK
+CDMP002,Cunas de madera,A dormir,Step2,"",1,bueno,4957.20,4957.20,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACRP4 - Step2 Otro,BAJO STOCK
+CDMP003,Cunas de madera,A dormir,Step2,"",1,bueno,4957.20,4957.20,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACRP4 - Step2 Otro,BAJO STOCK
+CDMP004,Cunas de madera,A dormir,Mon,"",1,bueno,6950.00,6950.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCDMP11 - Mon Caramel Más de 36 meses,BAJO STOCK
+CDMP005,Cunas de madera,A dormir,Pottery,"",1,bueno,15930.00,15930.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSCDMP13 - Pottery Barn Más de 36 meses,BAJO STOCK
+CDMP006,Cunas de madera,A dormir,Camita,"",1,bueno,1590.00,1590.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDMP21 - Camita Junior,BAJO STOCK
+CDMP007,Cunas de madera,A dormir,Grand,"",1,bueno,13500.00,13500.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDMP14 - Grand home Más de 36 meses,BAJO STOCK
+CDMP008,Cunas de madera,A dormir,Baby&amp;Kids,"",1,bueno,7995.00,7995.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDMP24 - Baby&amp;Kids Más de 36 meses,BAJO STOCK
+CDMP009,Cunas de madera,A dormir,General,"",1,bueno,2970.00,2970.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDMP26 - General Más de 36 meses,BAJO STOCK
+CDMP010,Cunas de madera,A dormir,Cuna,"",1,bueno,2495.00,2495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDMP29 - Cuna corral 36 meses,BAJO STOCK
+CDMP011,Cunas de madera,A dormir,General,"",1,bueno,4309.20,4309.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDMP28 - General Más de 36 meses,BAJO STOCK
+CDMP012,Cunas de madera,A dormir,Babys,"",1,bueno,10495.00,10495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDMP30 - Babys and Kids Más de 36 meses,BAJO STOCK
+CDMP013,Cunas de madera,A dormir,Hamaca,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACRP31 - Hamaca para cuna Masho,BAJO STOCK
+CDMP014,Cunas de madera,A dormir,Babyletto,"",1,bueno,7980.00,7980.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDMP32 - Babyletto Más de 36 meses,BAJO STOCK
+CDVP001,Cunas de viaje,A dormir,Phil&Teds,"",1,bueno,1825.20,1825.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCDVP9 - Phil&Teds Corral,BAJO STOCK
+CDVP002,Cunas de viaje,A dormir,Evenflo,"",1,bueno,1560.00,1560.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCDVP19 - Evenflo Completa,BAJO STOCK
+CDVP003,Cunas de viaje,A dormir,Chicco,"",2,bueno,2008.80,2008.80,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCDVP20 - Chicco Segundo piso,BAJO STOCK
+CDVP004,Cunas de viaje,A dormir,Baby,"",1,bueno,1825.20,1825.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCDVP32 - Baby Trend Completa,BAJO STOCK
+CDVP005,Cunas de viaje,A dormir,Chicco,"",1,bueno,3234.60,3234.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSPROVISIONAL005 - Chicco Completa,BAJO STOCK
+CDVP006,Cunas de viaje,A dormir,Prinsel,"",1,bueno,1808.55,1808.55,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDVP51 - Prinsel Completa,BAJO STOCK
+CDVP007,Cunas de viaje,A dormir,Safety,"",1,bueno,1701.00,1701.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDVP53 - Safety 1st Completa,BAJO STOCK
+CDVP008,Cunas de viaje,A dormir,Chicco,"",1,bueno,4314.60,4314.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDVP54 - Chicco Completa,BAJO STOCK
+CDVP009,Cunas de viaje,A dormir,BabyMoov,"",1,bueno,654.50,654.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDVP59 - BabyMoov Corral,BAJO STOCK
+CDVP010,Cunas de viaje,A dormir,Tuc,"",1,bueno,1074.60,1074.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDVP65 - Tuc Tuc Segundo piso,BAJO STOCK
+CDVP011,Cunas de viaje,A dormir,Mon,"",1,bueno,2430.00,2430.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDVP67 - Mon Caramel Completa,BAJO STOCK
+CDVP012,Cunas de viaje,A dormir,Babybjorn,"",1,bueno,2694.60,2694.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CDVP68 - Babybjorn Corral,BAJO STOCK
+CDVP013,Cunas de viaje,A dormir,Mini,"",1,bueno,1134.00,1134.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CDVP71 - Mini cuna Portátil,BAJO STOCK
+MDRP001,Muebles de recámara,A dormir,Tete,"",1,bueno,4539.56,4539.56,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMDRP7 - Tete Ropero/Closet,BAJO STOCK
+MDRP002,Muebles de recámara,A dormir,Pottery,"",1,bueno,9174.60,9174.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MDRP15 - Pottery Barn Cómoda/cajonera,BAJO STOCK
+GYTP001,Gimnasios y tapetes,A jugar,Perrito,"",1,bueno,140.00,140.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSGYTP10 - Perrito Gimnasio,BAJO STOCK
+GYTP002,Gimnasios y tapetes,A jugar,Skip,"",1,bueno,645.00,645.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSGYTP12 - Skip Hop Gimnasio,BAJO STOCK
+GYTP003,Gimnasios y tapetes,A jugar,Chico,"",1,bueno,295.00,295.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSGYTP19 - Chico Tapete,BAJO STOCK
+GYTP004,Gimnasios y tapetes,A jugar,Fisher,"",1,bueno,625.00,625.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSGYTP23 - Fisher Price Juego Bebé,BAJO STOCK
+GYTP005,Gimnasios y tapetes,A jugar,MOncaramel,"",1,bueno,357.50,357.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSGYTP29 - MOncaramel Tapete,BAJO STOCK
+GYTP006,Gimnasios y tapetes,A jugar,Skip,"",1,bueno,1242.00,1242.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: GYTP37 - Skip hop 2 en 1,BAJO STOCK
+GYTP007,Gimnasios y tapetes,A jugar,Bright,"",1,bueno,388.08,388.08,0.50,3,Polanco,compra directa,25/09/2025,,SKU: GYTP41 - Bright Starts Gimnasio,BAJO STOCK
+GYTP008,Gimnasios y tapetes,A jugar,Chiquimundo,"",1,bueno,418.00,418.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: GYTP44 - Chiquimundo Gimnasio,BAJO STOCK
+GYTP009,Gimnasios y tapetes,A jugar,Fisher,"",1,bueno,209.00,209.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: GYTP49 - Fisher Price Gimnasio Musical,BAJO STOCK
+GYTP010,Gimnasios y tapetes,A jugar,Fisher,"",1,bueno,275.00,275.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: GYTP50 - Fisher Price Musical para cuna,BAJO STOCK
+GYTP011,Gimnasios y tapetes,A jugar,General,"",1,bueno,418.00,418.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: GYTP53 - General Gimnasio,BAJO STOCK
+GYTP012,Gimnasios y tapetes,A jugar,Biyu,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: GYTP51 - Biyu Gimnasio Musical,BAJO STOCK
+GYTP013,Gimnasios y tapetes,A jugar,Melissa&Dough,"",1,bueno,930.05,930.05,0.50,4,Polanco,compra directa,25/09/2025,,SKU: GYTP54 - Melissa&Dough Tapete,BAJO STOCK
+GYTP014,Gimnasios y tapetes,A jugar,Tiny,"",1,bueno,984.50,984.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: GYTP63 - Tiny Love 2 en 1,BAJO STOCK
+GYTP015,Gimnasios y tapetes,A jugar,Fisher,"",1,bueno,544.50,544.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: GYTP65 - Fisher Price Gimnasio Musical,BAJO STOCK
+JGGP001,Juegos grandes,A jugar,SmartTrike,"",2,bueno,1998.00,1998.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJGGP21 - SmartTrike Trampolines,BAJO STOCK
+JGGP002,Juegos grandes,A jugar,PlegableCasitas,"",1,bueno,319.00,319.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJGGP22 - PlegableCasitas,BAJO STOCK
+JGGP003,Juegos grandes,A jugar,Tipee,"",1,bueno,825.00,825.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJGGP42 - Tipee con almohada,BAJO STOCK
+JGGP004,Juegos grandes,A jugar,General,"",1,bueno,484.00,484.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJGGP45 - General Puff,BAJO STOCK
+JGGP005,Juegos grandes,A jugar,Melissa&,"",1,bueno,1609.20,1609.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJGGP47 - Melissa& Doug Mesa,BAJO STOCK
+JGGP006,Juegos grandes,A jugar,Vtech,"",1,bueno,1069.20,1069.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSJGGP59 - Vtech Escritorios,BAJO STOCK
+JGGP007,Juegos grandes,A jugar,Castillo,"",1,bueno,5394.60,5394.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJGGP65 - Castillo Inflable,BAJO STOCK
+JGGP008,Juegos grandes,A jugar,Baby,"",1,bueno,1282.50,1282.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSJGGP69 - Baby Einstein,BAJO STOCK
+JGGP009,Juegos grandes,A jugar,Step2,"",1,bueno,2586.60,2586.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JGGP94 - Step2 Cocinita,BAJO STOCK
+JGGP010,Juegos grandes,A jugar,Feber,"",1,bueno,695.00,695.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JGGP103 - Feber Resbaladillas,BAJO STOCK
+JGGP011,Juegos grandes,A jugar,Step2,"",1,bueno,1895.00,1895.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JGGP82 - Step2 Juegos integrados,BAJO STOCK
+JGGP012,Juegos grandes,A jugar,Step2,"",1,bueno,2754.00,2754.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JGGP130 - Step2 Cocinita,BAJO STOCK
+JGGP013,Juegos grandes,A jugar,Ikea,"",1,bueno,764.50,764.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JGGP142 - Ikea Juegos integrados,BAJO STOCK
+JGGP014,Juegos grandes,A jugar,Its,"",1,bueno,1566.00,1566.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JGGP145 - Its Imagical Piano,BAJO STOCK
+JGGP015,Juegos grandes,A jugar,Joy&Fun,"",1,bueno,324.50,324.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JGGP151 - Joy&Fun Muebles de juguete,BAJO STOCK
+JUGP001,Juguetes,A jugar,Fisher,"",2,bueno,324.50,324.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP13 - Fisher Price 2 años,BAJO STOCK
+JUGP002,Juguetes,A jugar,Fisher,"",2,bueno,324.50,324.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP13 - Fisher Price 2 años,BAJO STOCK
+JUGP003,Juguetes,A jugar,Fisher,"",1,bueno,132.00,132.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP62 - Fisher Price 0-1 año,BAJO STOCK
+JUGP004,Juguetes,A jugar,Patines,"",1,bueno,1242.00,1242.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP88 - Patines Hielo Talla 22.5,BAJO STOCK
+JUGP005,Juguetes,A jugar,Hot,"",1,bueno,1701.00,1701.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMDEP11 - Hot wheels Eléctrico,BAJO STOCK
+JUGP006,Juguetes,A jugar,General,"",1,bueno,742.50,742.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP5 - General Bolsa,BAJO STOCK
+JUGP007,Juguetes,A jugar,General,"",1,bueno,539.00,539.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP6 - General Bolsa,BAJO STOCK
+JUGP008,Juguetes,A jugar,General,"",1,bueno,539.00,539.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP7 - General Bolsa,BAJO STOCK
+JUGP009,Juguetes,A jugar,General,"",1,bueno,550.00,550.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP8 - General Bolsa,BAJO STOCK
+JUGP010,Juguetes,A jugar,General,"",1,bueno,407.00,407.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP9 - General Bolsa,BAJO STOCK
+JUGP011,Juguetes,A jugar,Kipling,"",1,bueno,1998.00,1998.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP10 - Kipling Bolsa,BAJO STOCK
+JUGP012,Juguetes,A jugar,General,"",1,bueno,659.99,659.99,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP11 - General Bolsa,BAJO STOCK
+JUGP013,Juguetes,A jugar,General,"",1,bueno,429.00,429.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP12 - General Bolsa,BAJO STOCK
+JUGP014,Juguetes,A jugar,Tous,"",1,bueno,1890.00,1890.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP13 - Tous Bolsa,BAJO STOCK
+JUGP015,Juguetes,A jugar,General,"",1,bueno,654.50,654.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP14 - General Bolsa,BAJO STOCK
+JUGP016,Juguetes,A jugar,Tous,"",1,bueno,1242.00,1242.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP15 - Tous Bolsa,BAJO STOCK
+JUGP017,Juguetes,A jugar,General,"",1,bueno,1458.00,1458.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP16 - General Bolsa,BAJO STOCK
+JUGP018,Juguetes,A jugar,General,"",1,bueno,324.50,324.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP17 - General Bolsa,BAJO STOCK
+JUGP019,Juguetes,A jugar,General,"",1,bueno,484.00,484.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP20 - General Bolsa,BAJO STOCK
+JUGP020,Juguetes,A jugar,General,"",1,bueno,231.00,231.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP21 - General Bolsa,BAJO STOCK
+JUGP021,Juguetes,A jugar,General,"",1,bueno,324.50,324.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP22 - General Bolsa,BAJO STOCK
+JUGP022,Juguetes,A jugar,General,"",1,bueno,654.50,654.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP25 - General Bolsa,BAJO STOCK
+JUGP023,Juguetes,A jugar,General,"",1,bueno,352.00,352.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP26 - General Bolsa,BAJO STOCK
+JUGP024,Juguetes,A jugar,General,"",1,bueno,495.00,495.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP27 - General Bolsa,BAJO STOCK
+JUGP025,Juguetes,A jugar,General,"",1,bueno,616.00,616.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP28 - General Bolsa,BAJO STOCK
+JUGP026,Juguetes,A jugar,General,"",1,bueno,880.00,880.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP29 - General Bolsa,BAJO STOCK
+JUGP027,Juguetes,A jugar,General,"",1,bueno,1393.20,1393.20,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP30 - General Bolsa,BAJO STOCK
+JUGP028,Juguetes,A jugar,General,"",1,bueno,643.50,643.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP31 - General Bolsa,BAJO STOCK
+JUGP029,Juguetes,A jugar,General,"",1,bueno,429.00,429.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP32 - General Bolsa,BAJO STOCK
+JUGP030,Juguetes,A jugar,General,"",1,bueno,506.00,506.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP36 - General Bolsa,BAJO STOCK
+JUGP031,Juguetes,A jugar,Pañalera,"",1,bueno,748.00,748.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSABDP40 - Pañalera JJ Cole,BAJO STOCK
+JUGP032,Juguetes,A jugar,Nature,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP6 - Nature Bond Manual Sencillo,BAJO STOCK
+JUGP033,Juguetes,A jugar,Lansinoh,"",1,bueno,2189.00,2189.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSEDLP8 - Lansinoh Sencillo,BAJO STOCK
+JUGP034,Juguetes,A jugar,Evenflo,"",1,bueno,247.50,247.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSEDLP9 - Evenflo Sencillo,BAJO STOCK
+JUGP035,Juguetes,A jugar,Lansinoh,"",1,bueno,2189.00,2189.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSEDLP11 - Lansinoh Doble,BAJO STOCK
+JUGP036,Juguetes,A jugar,Ameda,"",1,bueno,2322.00,2322.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSEDLP14 - Ameda Doble,BAJO STOCK
+JUGP037,Juguetes,A jugar,Medela,"",2,bueno,3186.00,3186.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSEDLP18 - Medela Doble,BAJO STOCK
+JUGP038,Juguetes,A jugar,Avent,"",1,bueno,1296.00,1296.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSEDLP19 - Avent Sencillo,BAJO STOCK
+JUGP039,Juguetes,A jugar,Free,"",1,bueno,6990.00,6990.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP20 - Free Style Nuevo Medela Doble,BAJO STOCK
+JUGP040,Juguetes,A jugar,Avent,"",1,bueno,1296.00,1296.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP21 - Avent Sencillo,BAJO STOCK
+JUGP041,Juguetes,A jugar,Chicco,"",1,bueno,1069.20,1069.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP22 - Chicco Sencillo,BAJO STOCK
+JUGP042,Juguetes,A jugar,Medela,"",1,bueno,4212.00,4212.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP24 - Medela Doble,BAJO STOCK
+JUGP043,Juguetes,A jugar,Avent,"",1,bueno,1296.00,1296.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP25 - Avent Sencillo,BAJO STOCK
+JUGP044,Juguetes,A jugar,Medela,"",1,bueno,3186.00,3186.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSEDLP26 - Medela Doble,BAJO STOCK
+JUGP045,Juguetes,A jugar,Mochila,"",1,bueno,346.50,346.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSABDP44 - Mochila Escolar SkipHop Detalle,BAJO STOCK
+JUGP046,Juguetes,A jugar,Mesa,"",1,bueno,1350.00,1350.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMDAP9 - Mesa de madera  Sencilla,BAJO STOCK
+JUGP047,Juguetes,A jugar,Maya,"",1,bueno,879.98,879.98,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJUGP105 - Maya group  5 años y más,BAJO STOCK
+JUGP049,Juguetes,A jugar,Fisher,"",1,bueno,495.00,495.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP111 - Fisher Price 3 años,BAJO STOCK
+JUGP050,Juguetes,A jugar,DC,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP114 - DC Comics set de linterna verde,BAJO STOCK
+JUGP051,Juguetes,A jugar,Cuadros,"",1,bueno,907.50,907.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSACRP8 - Cuadros  Otro,BAJO STOCK
+JUGP052,Juguetes,A jugar,Rocky,"",2,bueno,825.00,825.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJUGP129 - Rocky Fisher Price 2 años,BAJO STOCK
+JUGP053,Juguetes,A jugar,Mattel,"",2,bueno,99.00,99.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP138 - Mattel 5 años y más,BAJO STOCK
+JUGP054,Juguetes,A jugar,Rompe,"",1,bueno,605.00,605.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJDMP5 - Rompe cabezas faro Completo,BAJO STOCK
+JUGP055,Juguetes,A jugar,Rompe,"",1,bueno,275.00,275.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJDMP6 - Rompe cabezas flamenco Completo,BAJO STOCK
+JUGP056,Juguetes,A jugar,Rompe,"",1,bueno,429.00,429.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJDMP7 - Rompe cabezas america cars Completo,BAJO STOCK
+JUGP057,Juguetes,A jugar,Fisher,"",1,bueno,203.50,203.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP148 - Fisher Price 2 años,BAJO STOCK
+JUGP058,Juguetes,A jugar,Marvel,"",1,bueno,99.00,99.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP154 - Marvel  5 años y más,BAJO STOCK
+JUGP059,Juguetes,A jugar,Rick,"",1,bueno,605.00,605.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP160 - Rick  5 años y más,BAJO STOCK
+JUGP061,Juguetes,A jugar,Ruz,"",1,bueno,495.00,495.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSDISP4 - Ruz  4-5 años,BAJO STOCK
+JUGP062,Juguetes,A jugar,Rompe,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJDMP18 - Rompe cabezas fantasia  Completo,BAJO STOCK
+JUGP063,Juguetes,A jugar,Rompe,"",1,bueno,99.00,99.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJDMP25 - Rompe cabezas barbie  Completo,BAJO STOCK
+JUGP064,Juguetes,A jugar,joovy,"",1,bueno,1069.20,1069.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSANDP17 - joovy Plegable,BAJO STOCK
+JUGP065,Juguetes,A jugar,Fisher,"",1,bueno,198.00,198.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMDCP6 - Fisher Price Sonido y movimiento,BAJO STOCK
+JUGP066,Juguetes,A jugar,Tiny,"",1,bueno,385.00,385.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMDCP9 - Tiny Love Sonido y movimiento,BAJO STOCK
+JUGP067,Juguetes,A jugar,Tiny,"",1,bueno,165.00,165.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMDCP10 - Tiny Love Sonido y movimiento,BAJO STOCK
+JUGP068,Juguetes,A jugar,Taf,"",1,bueno,346.50,346.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMDCP11 - Taf toy  Sonido y movimiento,BAJO STOCK
+JUGP069,Juguetes,A jugar,Chicco,"",1,bueno,715.00,715.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSCAPP27 - Chicco Cangurera,BAJO STOCK
+JUGP070,Juguetes,A jugar,BabyBjorn,"",1,bueno,2149.20,2149.20,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSCAPP28 - BabyBjorn Cangurera,BAJO STOCK
+JUGP071,Juguetes,A jugar,Baby,"",2,bueno,550.00,550.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSACAP6 - Baby jogger Adaptador para Portabebé,BAJO STOCK
+JUGP072,Juguetes,A jugar,Tiny,"",1,bueno,275.00,275.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP156 - Tiny Love 0-1 año,BAJO STOCK
+JUGP073,Juguetes,A jugar,Fisher,"",2,bueno,209.00,209.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP157 - Fisher Price 0-1 año,BAJO STOCK
+JUGP074,Juguetes,A jugar,ItsIMagical,"",1,bueno,275.00,275.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP158 - ItsIMagical 0-1 año,BAJO STOCK
+JUGP075,Juguetes,A jugar,Marvel,"",1,bueno,242.00,242.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACRP11 - Marvel Saco de dormir,BAJO STOCK
+JUGP076,Juguetes,A jugar,General,"",1,bueno,175.00,175.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACAP9 - General Funda reductora,BAJO STOCK
+JUGP077,Juguetes,A jugar,Disfraces,"",1,bueno,165.00,165.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP5 - Disfraces  2 años,BAJO STOCK
+JUGP078,Juguetes,A jugar,Disfraces,"",1,bueno,165.00,165.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMCCP6 - Disfraces  4 años,BAJO STOCK
+JUGP079,Juguetes,A jugar,Disfraces,"",1,bueno,104.50,104.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP8 - Disfraces  6 meses,BAJO STOCK
+JUGP080,Juguetes,A jugar,Disfraces,"",1,bueno,165.00,165.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP12 - Disfraces  2 años,BAJO STOCK
+JUGP081,Juguetes,A jugar,Disfraces,"",1,bueno,181.50,181.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP13 - Disfraces  2 años,BAJO STOCK
+JUGP082,Juguetes,A jugar,Disfraces,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP14 - Disfraces  2 años,BAJO STOCK
+JUGP083,Juguetes,A jugar,Disfraces,"",1,bueno,110.00,110.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP15 - Disfraces  2 años,BAJO STOCK
+JUGP084,Juguetes,A jugar,Disfraces,"",1,bueno,176.00,176.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSHCCP3 - Disfraces  2 años,BAJO STOCK
+JUGP085,Juguetes,A jugar,Disfraces,"",1,bueno,242.00,242.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCCP19 - Disfraces  4 años,BAJO STOCK
+JUGP086,Juguetes,A jugar,Disfraces,"",1,bueno,121.00,121.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP20 - Disfraces  3 años,BAJO STOCK
+JUGP087,Juguetes,A jugar,Disfraces,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP21 - Disfraces  2 años,BAJO STOCK
+JUGP088,Juguetes,A jugar,Disfraces,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSHCCP5 - Disfraces  6 meses,BAJO STOCK
+JUGP089,Juguetes,A jugar,Disfraces,"",1,bueno,302.50,302.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSHCCP9 - Disfraces  3 años,BAJO STOCK
+JUGP090,Juguetes,A jugar,Disfraces,"",1,bueno,302.50,302.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSHCCP10 - Disfraces  4 años,BAJO STOCK
+JUGP091,Juguetes,A jugar,Disfraces,"",1,bueno,99.00,99.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP22 - Disfraces  4 años,BAJO STOCK
+JUGP092,Juguetes,A jugar,Disfraces,"",1,bueno,187.00,187.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP26 - Disfraces  5 años,BAJO STOCK
+JUGP093,Juguetes,A jugar,Disfraces,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCCP27 - Disfraces  5 años,BAJO STOCK
+JUGP094,Juguetes,A jugar,Disfraces,"",1,bueno,187.00,187.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMCCP29 - Disfraces  5 años,BAJO STOCK
+JUGP095,Juguetes,A jugar,Disfraces,"",1,bueno,165.00,165.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSMCCP32 - Disfraces  4 años,BAJO STOCK
+JUGP096,Juguetes,A jugar,Stokke,"",1,bueno,1933.20,1933.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSACAP11 - Stokke Funda de carriola,BAJO STOCK
+JUGP097,Juguetes,A jugar,Beaba,"",1,bueno,1506.60,1506.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCBP40 - Beaba  Silla Mecedora,BAJO STOCK
+JUGP098,Juguetes,A jugar,Pimpones,"",1,bueno,330.00,330.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJDMP31 - Pimpones Completo,BAJO STOCK
+JUGP099,Juguetes,A jugar,Rompecabezas,"",1,bueno,99.00,99.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSLYRP18 - Rompecabezas 500pz Adultos,BAJO STOCK
+JUGP100,Juguetes,A jugar,Mattel,"",1,bueno,121.00,121.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP171 - Mattel 5 años y más,BAJO STOCK
+JUGP101,Juguetes,A jugar,Infanti,"",1,bueno,385.00,385.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSBPCP6 - Infanti 100 cm,BAJO STOCK
+JUGP102,Juguetes,A jugar,Prinsel,"",1,bueno,4050.00,4050.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMDEP19 - Prinsel Eléctrico,BAJO STOCK
+JUGP103,Juguetes,A jugar,Prinsel,"",1,bueno,995.00,995.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSANDP20 - Prinsel Plegable,BAJO STOCK
+JUGP104,Juguetes,A jugar,Prinsel,"",2,bueno,1074.60,1074.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSANDP21 - Prinsel Plegable,BAJO STOCK
+JUGP105,Juguetes,A jugar,Magistronic,"",1,bueno,1890.00,1890.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSTYBP34 - Magistronic R-16 / 3-5a,BAJO STOCK
+JUGP106,Juguetes,A jugar,Prinsel,"",1,bueno,643.00,643.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCBP46 - Prinsel Mecedora Rosa/azul,BAJO STOCK
+JUGP107,Juguetes,A jugar,Juguete,"",1,bueno,192.50,192.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP175 - Juguete 5 años y más,BAJO STOCK
+JUGP108,Juguetes,A jugar,General,"",1,bueno,88.00,88.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSLYRP20 - General Niños,BAJO STOCK
+JUGP109,Juguetes,A jugar,Libro,"",1,bueno,88.00,88.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSLYRP21 - Libro Niños,BAJO STOCK
+JUGP110,Juguetes,A jugar,General,"",1,bueno,99.00,99.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSLYRP22 - General Bebés,BAJO STOCK
+JUGP111,Juguetes,A jugar,General,"",1,bueno,110.00,110.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSLYRP23 - General Bebés,BAJO STOCK
+JUGP112,Juguetes,A jugar,General,"",1,bueno,99.00,99.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSLYRP24 - General Niños,BAJO STOCK
+JUGP113,Juguetes,A jugar,baby,"",1,bueno,880.00,880.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSPDAP3 - baby Bullet Eléctrico,BAJO STOCK
+JUGP114,Juguetes,A jugar,Libro,"",1,bueno,66.00,66.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSLYRP26 - Libro Niños,BAJO STOCK
+JUGP115,Juguetes,A jugar,General,"",1,bueno,181.50,181.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSLYRP34 - General Bebés,BAJO STOCK
+JUGP116,Juguetes,A jugar,Fisher,"",2,bueno,209.00,209.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP182 - Fisher Price 2 años,BAJO STOCK
+JUGP117,Juguetes,A jugar,Mega,"",1,bueno,209.00,209.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJUGP194 - Mega Bloks 5 años y más,BAJO STOCK
+JUGP118,Juguetes,A jugar,Mega,"",2,bueno,539.00,539.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP197 - Mega Bloks 4 años,BAJO STOCK
+JUGP119,Juguetes,A jugar,Cars,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP199 - Cars 5 años y más,BAJO STOCK
+JUGP120,Juguetes,A jugar,Nerf,"",1,bueno,1296.00,1296.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJUGP201 - Nerf 5 años y más,BAJO STOCK
+JUGP121,Juguetes,A jugar,Fisher,"",2,bueno,154.00,154.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP203 - Fisher Price 2 años,BAJO STOCK
+JUGP122,Juguetes,A jugar,Safety,"",2,bueno,1058.40,1058.40,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSBPCP8 - Safety 1st 120 cm,BAJO STOCK
+JUGP123,Juguetes,A jugar,Chicco,"",1,bueno,3750.00,3750.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCYMP17 - Chicco Colecho Magic,BAJO STOCK
+JUGP124,Juguetes,A jugar,Avent,"",1,bueno,1620.00,1620.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP29 - Avent Sencillo,BAJO STOCK
+JUGP125,Juguetes,A jugar,Spectra,"",1,bueno,2802.60,2802.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSEDLP30 - Spectra Doble,BAJO STOCK
+JUGP126,Juguetes,A jugar,Prinsel,"",1,bueno,2700.00,2700.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSMDEP22 - Prinsel Eléctrico,BAJO STOCK
+JUGP127,Juguetes,A jugar,Cuadros,"",1,bueno,444.41,444.41,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACRP12 - Cuadros,BAJO STOCK
+JUGP128,Juguetes,A jugar,Cuadros,"",1,bueno,444.41,444.41,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACRP13 - Cuadros,BAJO STOCK
+JUGP129,Juguetes,A jugar,Cuadros,"",1,bueno,412.66,412.66,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSACRP14 - Cuadros,BAJO STOCK
+JUGP130,Juguetes,A jugar,Tippi,"",1,bueno,539.00,539.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSBANP24 - Tippi Tina,BAJO STOCK
+JUGP131,Juguetes,A jugar,Cybex,"",1,bueno,2694.60,2694.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCAPP34 - Cybex Cangurera,BAJO STOCK
+JUGP132,Juguetes,A jugar,Fisher,"",2,bueno,693.00,693.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMDCP13 - Fisher Price Sonido y movimiento,BAJO STOCK
+JUGP133,Juguetes,A jugar,Fisher,"",1,bueno,319.00,319.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMDCP15 - Fisher Price Sonido y movimiento,BAJO STOCK
+JUGP134,Juguetes,A jugar,Mega,"",1,bueno,352.00,352.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP218 - Mega Bloks 2 años,BAJO STOCK
+JUGP135,Juguetes,A jugar,Apache,"",2,bueno,1501.20,1501.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSMDEP23 - Apache Empuje,BAJO STOCK
+JUGP136,Juguetes,A jugar,Prinsel,"",1,bueno,533.50,533.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSANDP22 - Prinsel Fija,BAJO STOCK
+JUGP137,Juguetes,A jugar,Firestat,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSORP18 - Firestat Patines,BAJO STOCK
+JUGP138,Juguetes,A jugar,Baby,"",1,bueno,275.00,275.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSJUGP226 - Baby Alive 3 años,BAJO STOCK
+JUGP139,Juguetes,A jugar,Paris,"",1,bueno,1250.00,1250.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSTYBP48 - Paris R-12 / 2-3a,BAJO STOCK
+JUGP140,Juguetes,A jugar,Mattel,"",1,bueno,654.50,654.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP228 - Mattel 5 años y más,BAJO STOCK
+JUGP141,Juguetes,A jugar,Chicco,"",2,bueno,1350.00,1350.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSANDP23 - Chicco Plegable,BAJO STOCK
+JUGP142,Juguetes,A jugar,Apache,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSSORP20 - Apache Scooter Grande,BAJO STOCK
+JUGP143,Juguetes,A jugar,Banana,"",1,bueno,984.50,984.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSTYBP50 - Banana Bicicleta de Equilibrio,BAJO STOCK
+JUGP144,Juguetes,A jugar,Lego,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP240 - Lego 5 años y más,BAJO STOCK
+JUGP145,Juguetes,A jugar,Juego,"",2,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSPROVISIONAL014 - Juego Platos y cubiertos,BAJO STOCK
+JUGP146,Juguetes,A jugar,Disney,"",1,bueno,385.00,385.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: DISP20 - Disney 6-7 años,BAJO STOCK
+JUGP147,Juguetes,A jugar,Paw,"",1,bueno,814.00,814.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSJUGP89-1 - Paw Patrol 3 años,BAJO STOCK
+JUGP148,Juguetes,A jugar,Disney,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP23 - Disney 6-7 años,BAJO STOCK
+JUGP149,Juguetes,A jugar,General,"",1,bueno,418.00,418.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SORP25 - General Scooter pequeño,BAJO STOCK
+JUGP150,Juguetes,A jugar,Cuna,"",1,bueno,605.00,605.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: COLP27 - Cuna estándar,BAJO STOCK
+JUGP151,Juguetes,A jugar,Britax,"",1,bueno,1830.60,1830.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP48 - Britax Cangurera,BAJO STOCK
+JUGP152,Juguetes,A jugar,Distroller,"",1,bueno,247.50,247.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JUGP269 - Distroller 5 años y más,BAJO STOCK
+JUGP153,Juguetes,A jugar,Apache,"",1,bueno,605.00,605.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP30 - Apache Scooter Grande,BAJO STOCK
+JUGP154,Juguetes,A jugar,Mon,"",1,bueno,1285.20,1285.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP50 - Mon Caramel Bambineto,BAJO STOCK
+JUGP155,Juguetes,A jugar,Fisher,"",1,bueno,66.00,66.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JUGP272 - Fisher Price 0-1 año,BAJO STOCK
+JUGP156,Juguetes,A jugar,Radio,"",1,bueno,874.50,874.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP64 - Radio Flyer Triciclo Pequeño,BAJO STOCK
+JUGP157,Juguetes,A jugar,Prinsel,"",1,bueno,1069.20,1069.20,0.50,1,Polanco,compra directa,25/09/2025,,SKU: BANP36 - Prinsel Con base y cambiador,BAJO STOCK
+JUGP158,Juguetes,A jugar,Play-Doh,"",1,bueno,643.50,643.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JUGP284 - Play-Doh 3 años,BAJO STOCK
+JUGP159,Juguetes,A jugar,General,"",2,bueno,27.50,27.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HCCP15 - General 18 meses,BAJO STOCK
+JUGP160,Juguetes,A jugar,General,"",1,bueno,27.50,27.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HCCP16 - General 6 meses,BAJO STOCK
+JUGP161,Juguetes,A jugar,General,"",1,bueno,214.50,214.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: CHNP10 - General 7-8a 19.5-20cm,BAJO STOCK
+JUGP162,Juguetes,A jugar,General,"",1,bueno,181.50,181.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: MCCP37 - General 7 años,BAJO STOCK
+JUGP163,Juguetes,A jugar,Disney,"",1,bueno,434.50,434.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: DISP24 - Disney 4-5 años,BAJO STOCK
+JUGP164,Juguetes,A jugar,Fisher,"",1,bueno,357.50,357.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP285 - Fisher Price 3 años,BAJO STOCK
+JUGP165,Juguetes,A jugar,Ingenuity,"",1,bueno,2154.60,2154.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCBP64 - Ingenuity Columpio mecedora,BAJO STOCK
+JUGP166,Juguetes,A jugar,Polo,"",1,bueno,649.00,649.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP40 - Polo Ralph Lauren 4 años,BAJO STOCK
+JUGP167,Juguetes,A jugar,Tous,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP41 - Tous 0-3 meses,BAJO STOCK
+JUGP168,Juguetes,A jugar,Mayoral,"",2,bueno,577.50,577.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCCP43 - Mayoral 3 años,BAJO STOCK
+JUGP169,Juguetes,A jugar,Mayoral,"",1,bueno,577.50,577.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP44 - Mayoral 6 meses,BAJO STOCK
+JUGP170,Juguetes,A jugar,Foque,"",1,bueno,649.00,649.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCCP47 - Foque 18 meses,BAJO STOCK
+JUGP171,Juguetes,A jugar,Primmi,"",1,bueno,649.00,649.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP48 - Primmi 12 meses,BAJO STOCK
+JUGP172,Juguetes,A jugar,Fiorella,"",2,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP45 - Fiorella 12 meses,BAJO STOCK
+JUGP173,Juguetes,A jugar,Little,"",1,bueno,385.00,385.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HCCP18 - Little Me 9 meses,BAJO STOCK
+JUGP174,Juguetes,A jugar,Babuu,"",1,bueno,797.50,797.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP54 - Babuu Bambineto,BAJO STOCK
+JUGP175,Juguetes,A jugar,Chicco,"",1,bueno,715.00,715.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP53 - Chicco Cangurera,BAJO STOCK
+JUGP176,Juguetes,A jugar,Vtech,"",1,bueno,539.00,539.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP295 - Vtech 3 años,BAJO STOCK
+JUGP177,Juguetes,A jugar,babymoov,"",1,bueno,2149.20,2149.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: PDAP6 - babymoov Eléctrico,BAJO STOCK
+JUGP178,Juguetes,A jugar,Black&Decker,"",1,bueno,1009.80,1009.80,0.50,4,Polanco,compra directa,25/09/2025,,SKU: PDAP7 - Black&Decker Eléctrico,BAJO STOCK
+JUGP179,Juguetes,A jugar,Dr.,"",2,bueno,247.50,247.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDBP6 - Dr. Browns Microondas,BAJO STOCK
+JUGP180,Juguetes,A jugar,Tommee,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDBP7 - Tommee Tippee Microondas,BAJO STOCK
+JUGP181,Juguetes,A jugar,Tommee,"",1,bueno,544.50,544.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDBP8 - Tommee Tippee Microondas,BAJO STOCK
+JUGP182,Juguetes,A jugar,Chicco,"",1,bueno,302.50,302.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDBP9 - Chicco Microondas,BAJO STOCK
+JUGP183,Juguetes,A jugar,Munchkin,"",1,bueno,385.00,385.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDBP12 - Munchkin Microondas,BAJO STOCK
+JUGP184,Juguetes,A jugar,Medela,"",1,bueno,2154.60,2154.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: EDLP32 - Medela Sencillo,BAJO STOCK
+JUGP185,Juguetes,A jugar,Medela,"",1,bueno,2154.60,2154.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP33 - Medela Sencillo,BAJO STOCK
+JUGP186,Juguetes,A jugar,Chicco,"",1,bueno,1069.20,1069.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDLP35 - Chicco Sencillo,BAJO STOCK
+JUGP187,Juguetes,A jugar,Evenflo,"",1,bueno,814.00,814.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP37 - Evenflo Sencillo,BAJO STOCK
+JUGP188,Juguetes,A jugar,Dr.,"",1,bueno,434.50,434.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: EDLP38 - Dr. Brown Sencillo,BAJO STOCK
+JUGP189,Juguetes,A jugar,Spectra,"",1,bueno,2802.60,2802.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP40 - Spectra Doble,BAJO STOCK
+JUGP190,Juguetes,A jugar,Chicco,"",1,bueno,1609.20,1609.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP41 - Chicco Sencillo,BAJO STOCK
+JUGP191,Juguetes,A jugar,Tommee,"",1,bueno,1069.20,1069.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDLP42 - Tommee Tippee Sencillo,BAJO STOCK
+JUGP192,Juguetes,A jugar,Spectra,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ADAP14 - Spectra Accesorios de extractor,BAJO STOCK
+JUGP193,Juguetes,A jugar,Medela,"",1,bueno,132.00,132.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: ADAP15 - Medela Accesorios de extractor,BAJO STOCK
+JUGP194,Juguetes,A jugar,Medela,"",1,bueno,715.00,715.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ADAP16 - Medela Biberon,BAJO STOCK
+JUGP195,Juguetes,A jugar,Kiinde,"",2,bueno,319.00,319.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ADAP17 - Kiinde Biberon,BAJO STOCK
+JUGP196,Juguetes,A jugar,Medela,"",1,bueno,1069.20,1069.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP43 - Medela Doble,BAJO STOCK
+JUGP197,Juguetes,A jugar,Haakaa,"",1,bueno,368.50,368.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ADAP18 - Haakaa Recolector,BAJO STOCK
+JUGP198,Juguetes,A jugar,Spectra,"",1,bueno,2970.00,2970.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP44 - Spectra Doble,BAJO STOCK
+JUGP199,Juguetes,A jugar,Espejos,"",1,bueno,165.00,165.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP15 - Espejos retrovisores,BAJO STOCK
+JUGP200,Juguetes,A jugar,BabyBjorn,"",1,bueno,1074.60,1074.60,0.50,1,Polanco,compra directa,25/09/2025,,SKU: CAPP56 - BabyBjorn Cangurera,BAJO STOCK
+JUGP201,Juguetes,A jugar,Twingar,"",1,bueno,1350.00,1350.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP58 - Twingar Cangurera,BAJO STOCK
+JUGP202,Juguetes,A jugar,Koala,"",1,bueno,715.00,715.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP60 - Koala Kin Rebozo,BAJO STOCK
+JUGP203,Juguetes,A jugar,Yemaya,"",1,bueno,2149.20,2149.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP62 - Yemaya Mochila Ergonómica,BAJO STOCK
+JUGP204,Juguetes,A jugar,Pac,"",1,bueno,979.00,979.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACAP16 - Pac Back Cargador Autoasiento,BAJO STOCK
+JUGP205,Juguetes,A jugar,Gap,"",1,bueno,489.50,489.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP17 - Gap Porta patineta,BAJO STOCK
+JUGP206,Juguetes,A jugar,Chicco,"",2,bueno,874.50,874.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP64 - Chicco Cangurera,BAJO STOCK
+JUGP207,Juguetes,A jugar,Infanti,"",1,bueno,1990.00,1990.00,0.50,5,Polanco,compra directa,25/09/2025,,SKU: CYMP30 - Infanti Colecho,BAJO STOCK
+JUGP208,Juguetes,A jugar,Pigeon,"",2,bueno,121.00,121.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: ADAP10 - Pigeon Mordederas,BAJO STOCK
+JUGP209,Juguetes,A jugar,Pigeon,"",1,bueno,115.50,115.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ADAP11 - Pigeon Cubiertos,BAJO STOCK
+JUGP210,Juguetes,A jugar,Pigeon,"",1,bueno,220.00,220.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ADAP12 - Pigeon Cepillos,BAJO STOCK
+JUGP211,Juguetes,A jugar,Artista,"",1,bueno,4801.78,4801.78,0.50,1,Polanco,compra directa,25/09/2025,,SKU: ACRP23 - Artista reconocido Cuadros,BAJO STOCK
+JUGP212,Juguetes,A jugar,Saddle,"",1,bueno,968.00,968.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP55 - Saddle Baby Cargador niñ@ grande,BAJO STOCK
+JUGP213,Juguetes,A jugar,Disney,"",1,bueno,214.50,214.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: DISP27 - Disney 6-7 años,BAJO STOCK
+JUGP214,Juguetes,A jugar,Its,"",1,bueno,1074.60,1074.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP70 - Its Imagical Bicicleta de Equilibrio,BAJO STOCK
+JUGP215,Juguetes,A jugar,General,"",1,bueno,649.00,649.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP32 - General Patines,BAJO STOCK
+JUGP216,Juguetes,A jugar,Next,"",1,bueno,753.50,753.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP33 - Next Patines,BAJO STOCK
+JUGP217,Juguetes,A jugar,Disney,"",1,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP38 - Disney  Patines,BAJO STOCK
+JUGP218,Juguetes,A jugar,Heelys,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP39 - Heelys Patines,BAJO STOCK
+JUGP219,Juguetes,A jugar,Heelys,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP40 - Heelys Patines,BAJO STOCK
+JUGP220,Juguetes,A jugar,Disney,"",1,bueno,275.00,275.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP41 - Disney  Patines,BAJO STOCK
+JUGP221,Juguetes,A jugar,Heelys,"",1,bueno,539.00,539.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP43 - Heelys Patines,BAJO STOCK
+JUGP222,Juguetes,A jugar,Spectra,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ADAP19 - Spectra Accesorios de extractor,BAJO STOCK
+JUGP223,Juguetes,A jugar,Baby,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP19 - Baby jogger Adaptador de carriola,BAJO STOCK
+JUGP224,Juguetes,A jugar,Personajes,"",1,bueno,742.50,742.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ACRP26 - Personajes Cuadros,BAJO STOCK
+JUGP225,Juguetes,A jugar,Chicco,"",1,bueno,3218.40,3218.40,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CYMP18 - Chicco Colecho,BAJO STOCK
+JUGP226,Juguetes,A jugar,PinBall,"",2,bueno,434.50,434.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JUGP243 - PinBall Chicco,BAJO STOCK
+JUGP227,Juguetes,A jugar,Mega,"",1,bueno,385.00,385.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JUGP254 - Mega Bloks 5 años y más,BAJO STOCK
+JUGP228,Juguetes,A jugar,Mattel,"",1,bueno,357.50,357.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: JUGP230 - Mattel 5 años y más,BAJO STOCK
+JUGP229,Juguetes,A jugar,Quinper,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP51 - Quinper 12 meses,BAJO STOCK
+JUGP233,Juguetes,A jugar,Mattel,"",1,bueno,99.00,99.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP328 - Mattel 5 años y más,BAJO STOCK
+JUGP234,Juguetes,A jugar,T,"",1,bueno,148.50,148.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: LYRP53 - T rex Niños,BAJO STOCK
+JUGP235,Juguetes,A jugar,Lansinoh,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDLP45 - Lansinoh Sencillo,BAJO STOCK
+JUGP236,Juguetes,A jugar,Luca,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP60 - Luca Gobbi 12 meses,BAJO STOCK
+JUGP237,Juguetes,A jugar,Couture,"",1,bueno,357.50,357.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP64 - Couture Princess 4 años,BAJO STOCK
+JUGP238,Juguetes,A jugar,Petit,"",1,bueno,357.50,357.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP66 - Petit Coeur 2 años,BAJO STOCK
+JUGP239,Juguetes,A jugar,Vestido,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP67 - Vestido 18 meses,BAJO STOCK
+JUGP240,Juguetes,A jugar,Mayoral,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP68 - Mayoral 2 años,BAJO STOCK
+JUGP241,Juguetes,A jugar,Babine,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP71 - Babine 2 años,BAJO STOCK
+JUGP242,Juguetes,A jugar,Janie,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP72 - Janie and Jack 12 meses,BAJO STOCK
+JUGP243,Juguetes,A jugar,American,"",1,bueno,357.50,357.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP63 - American princess 18 meses,BAJO STOCK
+JUGP244,Juguetes,A jugar,100%,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP62 - 100% algodon 3 años,BAJO STOCK
+JUGP246,Juguetes,A jugar,Razor,"",1,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP49 - Razor Scooter pequeño,BAJO STOCK
+JUGP247,Juguetes,A jugar,Mercurio,"",1,bueno,1074.60,1074.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP75 - Mercurio Bicicleta de Equilibrio,BAJO STOCK
+JUGP248,Juguetes,A jugar,Fist,"",1,bueno,979.00,979.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP76 - Fist move Bicicleta de Equilibrio,BAJO STOCK
+JUGP249,Juguetes,A jugar,Napps,"",1,bueno,195.00,195.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ADAP24 - Napps Baberos,BAJO STOCK
+JUGP253,Juguetes,A jugar,Chicco,"",2,bueno,874.50,874.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDBP17 - Chicco Eléctrico,BAJO STOCK
+JUGP254,Juguetes,A jugar,Dundy,"",1,bueno,2149.20,2149.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP337 - Dundy 5 años y más,BAJO STOCK
+JUGP255,Juguetes,A jugar,Chicco,"",1,bueno,1458.00,1458.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCBP70 - Chicco Silla Mecedora,BAJO STOCK
+JUGP258,Juguetes,A jugar,Mattel,"",1,bueno,764.50,764.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP349 - Mattel 5 años y más,BAJO STOCK
+JUGP259,Juguetes,A jugar,Mattel,"",1,bueno,203.50,203.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP350 - Mattel 5 años y más,BAJO STOCK
+JUGP260,Juguetes,A jugar,Build,"",1,bueno,330.00,330.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP351 - Build a Bear 5 años y más,BAJO STOCK
+JUGP261,Juguetes,A jugar,Levis,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MBCP33 - Levis 6 meses,BAJO STOCK
+JUGP262,Juguetes,A jugar,Adidas,"",1,bueno,181.50,181.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MBCP35 - Adidas 12 meses,BAJO STOCK
+JUGP263,Juguetes,A jugar,Gap,"",1,bueno,176.00,176.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP55 - Gap 12 meses,BAJO STOCK
+JUGP264,Juguetes,A jugar,Dockers,"",1,bueno,269.50,269.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP54 - Dockers 12 meses,BAJO STOCK
+JUGP265,Juguetes,A jugar,Carters,"",1,bueno,154.00,154.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP53 - Carters 6 meses,BAJO STOCK
+JUGP266,Juguetes,A jugar,Ferrioni,"",1,bueno,154.00,154.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP51 - Ferrioni 12 meses,BAJO STOCK
+JUGP267,Juguetes,A jugar,Tommy,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP44 - Tommy Hilfilger 12 meses,BAJO STOCK
+JUGP268,Juguetes,A jugar,Ralph,"",1,bueno,132.00,132.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP47 - Ralph Lauren 0-3 meses,BAJO STOCK
+JUGP269,Juguetes,A jugar,Adidas,"",1,bueno,154.00,154.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HACP50 - Adidas 12 meses,BAJO STOCK
+JUGP270,Juguetes,A jugar,Everlast,"",1,bueno,269.50,269.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HCCP31 - Everlast 12 meses,BAJO STOCK
+JUGP271,Juguetes,A jugar,UnderArmour,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HCCP32 - UnderArmour 0-3 meses,BAJO STOCK
+JUGP272,Juguetes,A jugar,Puma,"",1,bueno,379.50,379.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HCCP33 - Puma 6 meses,BAJO STOCK
+JUGP273,Juguetes,A jugar,Puma,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HCCP36 - Puma 6 meses,BAJO STOCK
+JUGP274,Juguetes,A jugar,Ralph,"",2,bueno,187.00,187.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HCCP28 - Ralph Lauren 0-3 meses,BAJO STOCK
+JUGP275,Juguetes,A jugar,Bóboli,"",1,bueno,385.00,385.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HCCP37 - Bóboli 9 meses,BAJO STOCK
+JUGP276,Juguetes,A jugar,Spin,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP354 - Spin master  3 años,BAJO STOCK
+JUGP277,Juguetes,A jugar,Playskool,"",1,bueno,77.00,77.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP357 - Playskool 2 años,BAJO STOCK
+JUGP278,Juguetes,A jugar,Luca,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP50 - Luca Gobbi 3-4a 15.5-16cm,BAJO STOCK
+JUGP279,Juguetes,A jugar,Luca,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP51 - Luca Gobbi 3-4a 15.5-16cm,BAJO STOCK
+JUGP280,Juguetes,A jugar,Mini,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP52 - Mini Melissa 18-24m 13.5-14cm,BAJO STOCK
+JUGP281,Juguetes,A jugar,Mini,"",1,bueno,214.50,214.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP53 - Mini Melissa  5-6a 17.5-18cm,BAJO STOCK
+JUGP282,Juguetes,A jugar,Adidas,"",1,bueno,269.50,269.50,0.50,1,Polanco,compra directa,25/09/2025,,SKU: MBCP49 - Adidas 11 años,BAJO STOCK
+JUGP283,Juguetes,A jugar,Mayoral,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MACP89 - Mayoral 7 años,BAJO STOCK
+JUGP284,Juguetes,A jugar,Adidas,"",1,bueno,357.50,357.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MACP95 - Adidas 10 años,BAJO STOCK
+JUGP285,Juguetes,A jugar,H&M,"",1,bueno,275.00,275.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MACP96 - H&M 7 años,BAJO STOCK
+JUGP286,Juguetes,A jugar,Tommy,"",1,bueno,220.00,220.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MACP97 - Tommy Hilfilger 12 meses,BAJO STOCK
+JUGP287,Juguetes,A jugar,Adidas,"",1,bueno,132.00,132.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MACP98 - Adidas 4 años,BAJO STOCK
+JUGP288,Juguetes,A jugar,Ralph,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP110 - Ralph Lauren 5 años,BAJO STOCK
+JUGP289,Juguetes,A jugar,Ralph,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP115 - Ralph Lauren 6 años,BAJO STOCK
+JUGP290,Juguetes,A jugar,Ralph,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP113 - Ralph Lauren 4 años,BAJO STOCK
+JUGP291,Juguetes,A jugar,Puma,"",1,bueno,379.50,379.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCCP116 - Puma 2 años,BAJO STOCK
+JUGP292,Juguetes,A jugar,Prinsel,"",1,bueno,418.00,418.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ANDP31 - Prinsel Fija,BAJO STOCK
+JUGP293,Juguetes,A jugar,Spin,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP38 - Spin master Completo,BAJO STOCK
+JUGP294,Juguetes,A jugar,Spin,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JDMP39 - Spin master Completo,BAJO STOCK
+JUGP295,Juguetes,A jugar,General,"",1,bueno,137.50,137.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP393 - General 3 años,BAJO STOCK
+JUGP296,Juguetes,A jugar,Fisher,"",1,bueno,154.00,154.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP407 - Fisher Price 2 años,BAJO STOCK
+JUGP297,Juguetes,A jugar,Marvel,"",2,bueno,385.00,385.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SORP51 - Marvel Scooter Grande,BAJO STOCK
+JUGP298,Juguetes,A jugar,Von,"",1,bueno,577.50,577.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: PDAP8 - Von Home Eléctrico,BAJO STOCK
+JUGP299,Juguetes,A jugar,Shnuggle,"",2,bueno,1350.00,1350.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: BANP42 - Shnuggle Con base,BAJO STOCK
+JUGP300,Juguetes,A jugar,Mini,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CHNP62 - Mini burbujas 9-12m 11.5-12cm,BAJO STOCK
+JUGP301,Juguetes,A jugar,Andanenes,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CHNP64 - Andanenes 9-12m 11.5-12cm,BAJO STOCK
+JUGP302,Juguetes,A jugar,Mini,"",1,bueno,346.50,346.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CHNP63 - Mini burbujas 2-3a 14.5-15cm,BAJO STOCK
+JUGP303,Juguetes,A jugar,Nike,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CHNP72 - Nike 9-12m 11.5-12cm,BAJO STOCK
+JUGP304,Juguetes,A jugar,Memory,"",1,bueno,544.50,544.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: COLP33 - Memory Foam Cuna de viaje,BAJO STOCK
+JUGP305,Juguetes,A jugar,Maxicosi,"",1,bueno,3078.00,3078.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CYMP35 - Maxicosi Colecho,BAJO STOCK
+JUGP306,Juguetes,A jugar,Marvel,"",1,bueno,99.00,99.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP416 - Marvel 5 años y más,BAJO STOCK
+JUGP307,Juguetes,A jugar,Marvel,"",1,bueno,121.00,121.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP418 - Marvel 5 años y más,BAJO STOCK
+JUGP308,Juguetes,A jugar,Mattel,"",1,bueno,214.50,214.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP419 - Mattel 5 años y más,BAJO STOCK
+JUGP309,Juguetes,A jugar,Marvel,"",1,bueno,99.00,99.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP426 - Marvel 5 años y más,BAJO STOCK
+JUGP310,Juguetes,A jugar,Ybike,"",1,bueno,1566.00,1566.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP61 - Ybike Scooter pequeño,BAJO STOCK
+JUGP311,Juguetes,A jugar,Nathor,"",1,bueno,764.50,764.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP82 - Nathor R-12 / 2-3a,BAJO STOCK
+JUGP312,Juguetes,A jugar,Fisher,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACRP29 - Fisher price proyector,BAJO STOCK
+JUGP313,Juguetes,A jugar,General,"",1,bueno,429.00,429.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: COLP34 - General Cuna estándar,BAJO STOCK
+JUGP314,Juguetes,A jugar,Baby,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDCP7 - Baby Mink Cuna estándar,BAJO STOCK
+JUGP315,Juguetes,A jugar,Disney,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP34 - Disney 2-3 años,BAJO STOCK
+JUGP316,Juguetes,A jugar,Disney,"",1,bueno,385.00,385.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP434 - Disney 4 años,BAJO STOCK
+JUGP317,Juguetes,A jugar,Rawlings,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP439 - Rawlings 5 años y más,BAJO STOCK
+JUGP318,Juguetes,A jugar,Fisher,"",1,bueno,214.50,214.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP446 - Fisher Price 2 años,BAJO STOCK
+JUGP320,Juguetes,A jugar,Feber,"",1,bueno,1074.60,1074.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MDEP38 - Feber Eléctrico,BAJO STOCK
+JUGP321,Juguetes,A jugar,Apache,"",1,bueno,544.50,544.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP65 - Apache Scooter Grande,BAJO STOCK
+JUGP322,Juguetes,A jugar,Babymoov,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: BANP45 - Babymoov Otro,BAJO STOCK
+JUGP323,Juguetes,A jugar,Marc,"",1,bueno,1566.00,1566.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: ABDP66 - Marc jacobs Bolsa,BAJO STOCK
+JUGP324,Juguetes,A jugar,General,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ABDP67 - General Pañalera,BAJO STOCK
+JUGP325,Juguetes,A jugar,Mattel,"",1,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP447 - Mattel 3 años,BAJO STOCK
+JUGP326,Juguetes,A jugar,Nenuco,"",1,bueno,1242.00,1242.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP448 - Nenuco 3 años,BAJO STOCK
+JUGP327,Juguetes,A jugar,Its,"",1,bueno,1195.00,1195.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: TYBP88 - Its Imagical Triciclo convertible,BAJO STOCK
+JUGP328,Juguetes,A jugar,Shnuggle,"",1,bueno,1350.00,1350.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: BANP47 - Shnuggle Con base,BAJO STOCK
+JUGP329,Juguetes,A jugar,Cybex,"",1,bueno,2154.60,2154.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCBP75 - Cybex Silla Mecedora,BAJO STOCK
+JUGP330,Juguetes,A jugar,Prinsel,"",1,bueno,797.50,797.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ANDP32 - Prinsel Plegable,BAJO STOCK
+JUGP331,Juguetes,A jugar,General,"",1,bueno,214.50,214.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP451 - General 3 años,BAJO STOCK
+JUGP332,Juguetes,A jugar,Chicco,"",1,bueno,275.00,275.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACAP26 - Chicco Espejos retrovisores,BAJO STOCK
+JUGP333,Juguetes,A jugar,YoYo,"",1,bueno,3774.60,3774.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP27 - YoYo Adaptador de carriola,BAJO STOCK
+JUGP334,Juguetes,A jugar,YoYo,"",1,bueno,2154.60,2154.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP28 - YoYo Adaptador de carriola,BAJO STOCK
+JUGP335,Juguetes,A jugar,YoYo,"",1,bueno,2154.60,2154.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP29 - YoYo Adaptador de carriola,BAJO STOCK
+JUGP336,Juguetes,A jugar,D,"",1,bueno,214.50,214.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP75 - D Yaly Rebozo,BAJO STOCK
+JUGP337,Juguetes,A jugar,Avi,"",1,bueno,357.50,357.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP72 - Avi Cangurera,BAJO STOCK
+JUGP338,Juguetes,A jugar,Diva,"",1,bueno,825.00,825.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP74 - Diva Essenza Mei Thai,BAJO STOCK
+JUGP339,Juguetes,A jugar,Cardiff,"",1,bueno,1074.60,1074.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP70 - Cardiff Cruiser Patines,BAJO STOCK
+JUGP340,Juguetes,A jugar,Disney,"",1,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP72 - Disney  Patines,BAJO STOCK
+JUGP341,Juguetes,A jugar,Via,"",1,bueno,1614.60,1614.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ABDP71 - Via Spiga Talla 24,BAJO STOCK
+JUGP342,Juguetes,A jugar,Nicolle,"",1,bueno,984.50,984.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ABDP70 - Nicolle Aimee Bolsa,BAJO STOCK
+JUGP343,Juguetes,A jugar,Evenflo,"",1,bueno,2154.60,2154.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP46 - Evenflo Sencillo,BAJO STOCK
+JUGP344,Juguetes,A jugar,Fisher,"",1,bueno,935.00,935.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCBP78 - Fisher Price Silla Mecedora,BAJO STOCK
+JUGP345,Juguetes,A jugar,Tommee,"",1,bueno,1053.00,1053.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDBP20 - Tommee Tippee Eléctrico,BAJO STOCK
+JUGP346,Juguetes,A jugar,Esterilizador,"",1,bueno,247.50,247.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDBP21 - Esterilizador portátil UV Munchkin,BAJO STOCK
+JUGP347,Juguetes,A jugar,Chicco,"",1,bueno,435.00,435.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MDCP20 - Chicco Sonido y movimiento,BAJO STOCK
+JUGP348,Juguetes,A jugar,Baby,"",1,bueno,968.00,968.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACAP30 - Baby jogger Patín carriola,BAJO STOCK
+JUGP349,Juguetes,A jugar,ABC,"",1,bueno,935.00,935.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACAP31 - ABC Design Patín carriola,BAJO STOCK
+JUGP350,Juguetes,A jugar,Kids,"",2,bueno,544.50,544.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDCP8 - Kids Matrimonial,BAJO STOCK
+JUGP351,Juguetes,A jugar,Mattel,"",1,bueno,544.50,544.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP460 - Mattel 4 años,BAJO STOCK
+JUGP352,Juguetes,A jugar,Bambineto,"",1,bueno,2154.60,2154.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: BANP52 - Bambineto Con base y cambiador,BAJO STOCK
+JUGP353,Juguetes,A jugar,Prinsel,"",1,bueno,605.00,605.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ANDP35 - Prinsel Fija,BAJO STOCK
+JUGP354,Juguetes,A jugar,Baby,"",1,bueno,935.00,935.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCBP81 - Baby Einstein Silla Mecedora,BAJO STOCK
+JUGP355,Juguetes,A jugar,Fisher,"",1,bueno,874.50,874.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP461 - Fisher Price 2 años,BAJO STOCK
+JUGP356,Juguetes,A jugar,TushBaby,"",1,bueno,1290.60,1290.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP78 - TushBaby Cangurera,BAJO STOCK
+JUGP357,Juguetes,A jugar,Monopoly,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP42 - Monopoly Fornite Nuevo,BAJO STOCK
+JUGP358,Juguetes,A jugar,Chicco,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP47 - Chicco Sencillo,BAJO STOCK
+JUGP359,Juguetes,A jugar,Little,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ANDP36 - Little Monkey Plegable,BAJO STOCK
+JUGP360,Juguetes,A jugar,Fao,"",1,bueno,869.00,869.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP462 - Fao Schwarz 5 años y más,BAJO STOCK
+JUGP361,Juguetes,A jugar,Hot,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP470 - Hot Wheels 3 años,BAJO STOCK
+JUGP362,Juguetes,A jugar,Apache,"",1,bueno,544.50,544.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SORP73 - Apache Scooter pequeño,BAJO STOCK
+JUGP363,Juguetes,A jugar,Prinsel,"",1,bueno,462.00,462.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: BANP53 - Prinsel Con base,BAJO STOCK
+JUGP364,Juguetes,A jugar,ChilaFish,"",1,bueno,764.50,764.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP97 - ChilaFish Bicicleta de Equilibrio,BAJO STOCK
+JUGP365,Juguetes,A jugar,BabyBjorn,"",1,bueno,3235.00,3235.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCBP82 - BabyBjorn Silla Mecedora,BAJO STOCK
+JUGP366,Juguetes,A jugar,Chicco,"",1,bueno,1069.20,1069.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP485 - Chicco 5 años y más,BAJO STOCK
+JUGP367,Juguetes,A jugar,Paw,"",1,bueno,385.00,385.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP483 - Paw Patrol 3 años,BAJO STOCK
+JUGP368,Juguetes,A jugar,Imaginext,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP475 - Imaginext 3 años,BAJO STOCK
+JUGP369,Juguetes,A jugar,Imaginext,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP476 - Imaginext 3 años,BAJO STOCK
+JUGP370,Juguetes,A jugar,Imaginext,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP477 - Imaginext 3 años,BAJO STOCK
+JUGP371,Juguetes,A jugar,Hot,"",1,bueno,984.50,984.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP487 - Hot Wheels 5 años y más,BAJO STOCK
+JUGP372,Juguetes,A jugar,Bebear,"",1,bueno,984.50,984.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP79 - Bebear Cangurera,BAJO STOCK
+JUGP373,Juguetes,A jugar,Novelty,"",1,bueno,302.50,302.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP46 - Novelty Completo,BAJO STOCK
+JUGP374,Juguetes,A jugar,Smart,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP45 - Smart Games Completo,BAJO STOCK
+JUGP375,Juguetes,A jugar,Mega,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP492 - Mega Bloks 2 años,BAJO STOCK
+JUGP376,Juguetes,A jugar,Playskool,"",1,bueno,434.50,434.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP495 - Playskool 3 años,BAJO STOCK
+JUGP377,Juguetes,A jugar,Alpha,"",1,bueno,280.28,280.28,0.50,3,Polanco,compra directa,25/09/2025,,SKU: JUGP497 - Alpha 2 años,BAJO STOCK
+JUGP378,Juguetes,A jugar,Bright,"",1,bueno,715.00,715.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCBP83 - Bright Starts Silla Mecedora,BAJO STOCK
+JUGP379,Juguetes,A jugar,Halo,"",1,bueno,4314.60,4314.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CYMP38 - Halo Moises,BAJO STOCK
+JUGP380,Juguetes,A jugar,Raganet,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCRP82 - Raganet Correpasillos,BAJO STOCK
+JUGP381,Juguetes,A jugar,Oxelo,"",1,bueno,825.00,825.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP77 - Oxelo Scooter Grande,BAJO STOCK
+JUGP382,Juguetes,A jugar,Kristhian,"",1,bueno,1350.00,1350.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CYMP40 - Kristhian Moisés,BAJO STOCK
+JUGP383,Juguetes,A jugar,Teytoy,"",1,bueno,544.50,544.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MDCP21 - Teytoy Sonido y movimiento,BAJO STOCK
+JUGP384,Juguetes,A jugar,Disney,"",1,bueno,264.00,264.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: DISP39 - Disney +8 años,BAJO STOCK
+JUGP385,Juguetes,A jugar,Marvel,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP40 - Marvel 2-3 años,BAJO STOCK
+JUGP386,Juguetes,A jugar,Marvel,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP41 - Marvel +8 años,BAJO STOCK
+JUGP387,Juguetes,A jugar,Dc,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP37 - Dc comics +8 años,BAJO STOCK
+JUGP388,Juguetes,A jugar,Marvel,"",1,bueno,198.00,198.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP36 - Marvel +8 años,BAJO STOCK
+JUGP389,Juguetes,A jugar,Marvel,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP38 - Marvel +8 años,BAJO STOCK
+JUGP390,Juguetes,A jugar,Marvel,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP42 - Marvel +8 años,BAJO STOCK
+JUGP391,Juguetes,A jugar,Disney,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP43 - Disney 4-5 años,BAJO STOCK
+JUGP392,Juguetes,A jugar,Marvel,"",1,bueno,165.00,165.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP44 - Marvel 2-3 años,BAJO STOCK
+JUGP393,Juguetes,A jugar,Marvel,"",1,bueno,214.50,214.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP46 - Marvel 4-5 años,BAJO STOCK
+JUGP394,Juguetes,A jugar,Disney,"",1,bueno,385.00,385.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP49 - Disney 2-3 años,BAJO STOCK
+JUGP395,Juguetes,A jugar,Disney,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP48 - Disney 6-7 años,BAJO STOCK
+JUGP396,Juguetes,A jugar,Disney,"",1,bueno,319.00,319.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP47 - Disney 2-3 años,BAJO STOCK
+JUGP397,Juguetes,A jugar,Chicco,"",1,bueno,1830.60,1830.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP83 - Chicco Mochila Senderismo,BAJO STOCK
+JUGP398,Juguetes,A jugar,Tina,"",1,bueno,275.00,275.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: BANP55 - Tina,BAJO STOCK
+JUGP399,Juguetes,A jugar,Dbebe,"",1,bueno,299.00,299.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: BANP56 - Dbebe Tina,BAJO STOCK
+JUGP400,Juguetes,A jugar,Medela,"",1,bueno,3186.00,3186.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: EDLP48 - Medela Doble,BAJO STOCK
+JUGP401,Juguetes,A jugar,Chicco,"",1,bueno,313.50,313.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ACRP32 - Chicco Otro,BAJO STOCK
+JUGP402,Juguetes,A jugar,Arlequin,"",1,bueno,319.00,319.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP50 - Arlequin +8 años,BAJO STOCK
+JUGP403,Juguetes,A jugar,Aurora,"",1,bueno,209.00,209.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP51 - Aurora 2-3 años,BAJO STOCK
+JUGP404,Juguetes,A jugar,Aurora,"",1,bueno,143.00,143.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: DISP52 - Aurora 4-5 años,BAJO STOCK
+JUGP405,Juguetes,A jugar,Bailarina,"",1,bueno,319.00,319.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP53 - Bailarina 6-7 años,BAJO STOCK
+JUGP406,Juguetes,A jugar,Barbie,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP54 - Barbie Princesa 6-7 años,BAJO STOCK
+JUGP407,Juguetes,A jugar,Melissa&Dough,"",1,bueno,165.00,165.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP58 - Melissa&Dough 4-5 años,BAJO STOCK
+JUGP408,Juguetes,A jugar,Disney,"",1,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: DISP57 - Disney 4-5 años,BAJO STOCK
+JUGP409,Juguetes,A jugar,Bella,"",1,bueno,467.50,467.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP56 - Bella 6-7 años,BAJO STOCK
+JUGP410,Juguetes,A jugar,Disney,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP55 - Disney +8 años,BAJO STOCK
+JUGP411,Juguetes,A jugar,Dungeons,"",1,bueno,346.50,346.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP48 - Dungeons and dragons Completo,BAJO STOCK
+JUGP412,Juguetes,A jugar,Skip,"",1,bueno,181.50,181.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACAP34 - Skip hop Organizador,BAJO STOCK
+JUGP413,Juguetes,A jugar,Huffy,"",1,bueno,1074.60,1074.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: TYBP103 - Huffy Bicicleta de Equilibrio,BAJO STOCK
+JUGP414,Juguetes,A jugar,Ingenuity,"",1,bueno,935.00,935.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCBP85 - Ingenuity Columpio mecedora,BAJO STOCK
+JUGP415,Juguetes,A jugar,Marcas,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP67 - Marcas Españolas 4-5a 16.5-17cm,BAJO STOCK
+JUGP416,Juguetes,A jugar,Marcas,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP68 - Marcas Españolas  5-6a 17.5-18cm,BAJO STOCK
+JUGP417,Juguetes,A jugar,Marcas,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP69 - Marcas Españolas 2-3a 14.5-15cm,BAJO STOCK
+JUGP418,Juguetes,A jugar,Chicco,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP70 - Chicco 12-18m 12.5-13cm,BAJO STOCK
+JUGP419,Juguetes,A jugar,Just,"",1,bueno,330.00,330.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: MCCP124 - Just 4 kids 3 años,BAJO STOCK
+JUGP421,Juguetes,A jugar,Ingenuity,"",1,bueno,1614.60,1614.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ANDP38 - Ingenuity Plegable,BAJO STOCK
+JUGP422,Juguetes,A jugar,Disney,"",1,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP59 - Disney 4-5 años,BAJO STOCK
+JUGP423,Juguetes,A jugar,Disney,"",1,bueno,434.50,434.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: DISP60 - Disney +8 años,BAJO STOCK
+JUGP424,Juguetes,A jugar,Novelty,"",1,bueno,247.50,247.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP50 - Novelty Completo,BAJO STOCK
+JUGP425,Juguetes,A jugar,Novelty,"",1,bueno,66.00,66.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JDMP51 - Novelty Completo,BAJO STOCK
+JUGP426,Juguetes,A jugar,Pista,"",1,bueno,544.50,544.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP507 - Pista Disney Mickey,BAJO STOCK
+JUGP427,Juguetes,A jugar,Lego,"",1,bueno,654.50,654.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP508 - Lego 2 años,BAJO STOCK
+JUGP428,Juguetes,A jugar,Chicco,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CMNP71 - Chicco 3-4a 15.5-16cm,BAJO STOCK
+JUGP429,Juguetes,A jugar,Extractor,"",1,bueno,764.50,764.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: EDLP50 - Extractor Doble,BAJO STOCK
+JUGP430,Juguetes,A jugar,Bumper,"",1,bueno,715.00,715.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACRP34 - Bumper para cuna,BAJO STOCK
+JUGP431,Juguetes,A jugar,Plegable,"",2,bueno,120.00,120.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CYMP44 - Plegable Moisés,BAJO STOCK
+JUGP432,Juguetes,A jugar,Mattel,"",1,bueno,984.50,984.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP513 - Mattel 5 años y más,BAJO STOCK
+JUGP433,Juguetes,A jugar,Hockey,"",1,bueno,544.50,544.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: JUGP509 - Hockey 5 años y más,BAJO STOCK
+JUGP434,Juguetes,A jugar,ItsIMagical,"",1,bueno,275.00,275.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP514 - ItsIMagical 2 años,BAJO STOCK
+JUGP435,Juguetes,A jugar,Disney,"",1,bueno,544.50,544.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP515 - Disney 5 años y más,BAJO STOCK
+JUGP436,Juguetes,A jugar,Lennylamb,"",1,bueno,1350.00,1350.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CAPP84 - Lennylamb Mochila Ergonómica,BAJO STOCK
+JUGP437,Juguetes,A jugar,Redlemon,"",2,bueno,385.00,385.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CAPP85 - Redlemon Mochila Ergonómica,BAJO STOCK
+JUGP438,Juguetes,A jugar,Disney,"",1,bueno,935.00,935.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SORP83 - Disney  Patines,BAJO STOCK
+JUGP440,Juguetes,A jugar,Wood,"",1,bueno,979.00,979.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: TYBP108 - Wood bike Bicicleta de Equilibrio,BAJO STOCK
+JUGP441,Juguetes,A jugar,Summer,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCBP87 - Summer Silla Mecedora,BAJO STOCK
+JUGP442,Juguetes,A jugar,Adidas,"",1,bueno,825.00,825.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CHNP75 - Adidas 2-3a 14.5-15cm,BAJO STOCK
+MCRP001,Montables y correpasillos Bebé,A jugar,Fisher,"",2,bueno,324.50,324.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCRP13 - Fisher Price Correpasillos,BAJO STOCK
+MCRP002,Montables y correpasillos Bebé,A jugar,General,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSMCRP19 - General  Montable y correpasillos,BAJO STOCK
+MCRP003,Montables y correpasillos Bebé,A jugar,Fisher,"",2,bueno,395.00,395.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCRP21 - Fisher Price Montable y correpasillos,BAJO STOCK
+MCRP004,Montables y correpasillos Bebé,A jugar,Fisher,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCRP22 - Fisher Price Montable y correpasillos,BAJO STOCK
+MCRP005,Montables y correpasillos Bebé,A jugar,General,"",1,bueno,324.50,324.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCRP23 - General Montable y correpasillos,BAJO STOCK
+MCRP006,Montables y correpasillos Bebé,A jugar,Feber,"",1,bueno,418.00,418.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMCRP45 - Feber Montable,BAJO STOCK
+MCRP007,Montables y correpasillos Bebé,A jugar,Feber,"",1,bueno,972.00,972.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMCRP47 - Feber Montable,BAJO STOCK
+MCRP008,Montables y correpasillos Bebé,A jugar,Molto,"",1,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: MCRP80 - Molto Montable,BAJO STOCK
+MCRP009,Montables y correpasillos Bebé,A jugar,Step,"",2,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCRP85 - Step 2 Montable,BAJO STOCK
+MCRP010,Montables y correpasillos Bebé,A jugar,chicco,"",1,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCRP86 - chicco Correpasillos,BAJO STOCK
+MCRP011,Montables y correpasillos Bebé,A jugar,Little,"",1,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: MCRP87 - Little Tikes Montable,BAJO STOCK
+AUTP001,Autoasientos,A pasear,Cybex,"",1,bueno,2689.20,2689.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSAUTP21 - Cybex Portabebé 0-13 kg,BAJO STOCK
+AUTP002,Autoasientos,A pasear,Maxicosi,"",1,bueno,2970.00,2970.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSAUTP22 - Maxicosi Portabebé 0-13 kg,BAJO STOCK
+AUTP003,Autoasientos,A pasear,Maxicosi,"",1,bueno,3495.00,3495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSAUTP45 - Maxicosi Portabebé 0-13 kg,BAJO STOCK
+AUTP004,Autoasientos,A pasear,Cybex,"",1,bueno,2689.20,2689.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSAUTP21 - Cybex Portabebé 0-13 kg,BAJO STOCK
+AUTP005,Autoasientos,A pasear,Maxicosi,"",1,bueno,2970.00,2970.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSAUTP22 - Maxicosi Portabebé 0-13 kg,BAJO STOCK
+AUTP006,Autoasientos,A pasear,Maxicosi,"",1,bueno,3495.00,3495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSAUTP45 - Maxicosi Portabebé 0-13 kg,BAJO STOCK
+AUTP007,Autoasientos,A pasear,Uppababy,"",1,bueno,3013.20,3013.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSODPP52 - Uppababy  Bambineto,BAJO STOCK
+AUTP008,Autoasientos,A pasear,Mon,"",1,bueno,2430.00,2430.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: AUTP109 - Mon Caramel  Autoasientos 0-18 a 25 kg,BAJO STOCK
+AUTP009,Autoasientos,A pasear,Cybex,"",1,bueno,3234.60,3234.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP111 - Cybex Autoasientos 0-18 a 25 kg,BAJO STOCK
+AUTP010,Autoasientos,A pasear,Chicco,"",2,bueno,3942.00,3942.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP119 - Chicco Autoasientos 9-18 a 30 kg,BAJO STOCK
+AUTP012,Autoasientos,A pasear,Nuna,"",1,bueno,8000.00,8000.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: AUTP125 - Nuna Autoasientos 0-18 a 35 kg,BAJO STOCK
+AUTP013,Autoasientos,A pasear,Britax,"",1,bueno,4590.00,4590.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP133 - Britax Autoasientos 0-18 a 25 kg,BAJO STOCK
+AUTP014,Autoasientos,A pasear,Chicco,"",1,bueno,3834.00,3834.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP134 - Chicco Autoasientos 0-18 a 25 kg,BAJO STOCK
+AUTP015,Autoasientos,A pasear,Joie,"",1,bueno,4590.00,4590.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP147 - Joie Autoasientos 9-18 a 30 kg,BAJO STOCK
+AUTP016,Autoasientos,A pasear,Chicco,"",1,bueno,3942.00,3942.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: AUTP156 - Chicco Autoasientos 9-18 a 30 kg,BAJO STOCK
+AUTP017,Autoasientos,A pasear,Nuna,"",1,bueno,8000.00,8000.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP159 - Nuna Autoasientos 9-18 a 30 kg,BAJO STOCK
+AUTP018,Autoasientos,A pasear,Evenflo,"",1,bueno,1566.00,1566.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP161 - Evenflo Booster 18 a 49 Kg,BAJO STOCK
+AUTP019,Autoasientos,A pasear,Britax,"",1,bueno,2154.60,2154.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP164 - Britax Portabebé 0-13 kg,BAJO STOCK
+AUTP021,Autoasientos,A pasear,Chicco,"",1,bueno,2538.00,2538.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP179 - Chicco Portabebé 0-13 kg,BAJO STOCK
+AUTP022,Autoasientos,A pasear,Cybex,"",1,bueno,4854.60,4854.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP180 - Cybex Portabebé 0-13 kg,BAJO STOCK
+AUTP023,Autoasientos,A pasear,Britax,"",1,bueno,3132.00,3132.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: AUTP182 - Britax Booster 15 a 45 kg,BAJO STOCK
+CARP002,Carriolas,A pasear,Stokke,"",1,bueno,7325.00,7325.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCARP30 - Stokke Sin portabebé,BAJO STOCK
+CARP003,Carriolas,A pasear,Stokke,"",1,bueno,7325.00,7325.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCARP30 - Stokke Sin portabebé,BAJO STOCK
+CARP004,Carriolas,A pasear,Prinsel,"",1,bueno,5022.00,5022.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP69 - Prinsel Con portabebé,BAJO STOCK
+CARP005,Carriolas,A pasear,UppaBaby,"",1,bueno,6490.00,6490.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSCARP72 - UppaBaby Sin portabebé,BAJO STOCK
+CARP006,Carriolas,A pasear,Bugaboo,"",1,bueno,4590.00,4590.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP74 - Bugaboo con fundas para bambineto,BAJO STOCK
+CARP007,Carriolas,A pasear,Chicco,"",1,bueno,2850.00,2850.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP161 - Chicco Doble,BAJO STOCK
+CARP008,Carriolas,A pasear,Bugaboo,"",1,bueno,3690.00,3690.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP91 - Bugaboo Bee,BAJO STOCK
+CARP009,Carriolas,A pasear,Buggy,"",1,bueno,3099.00,3099.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSCARP92 - Buggy pod asiento adicional para carriola,BAJO STOCK
+CARP010,Carriolas,A pasear,Maclaren,"",1,bueno,10249.20,10249.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP96 - Maclaren Doble con Babinetos funda y acc,BAJO STOCK
+CARP011,Carriolas,A pasear,Chicco,"",1,bueno,4806.00,4806.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSCARP97 - Chicco Doble,BAJO STOCK
+CARP012,Carriolas,A pasear,Safety,"",1,bueno,3510.00,3510.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP107 - Safety 1st Con portabebé,BAJO STOCK
+CARP013,Carriolas,A pasear,Infanti,"",1,bueno,2322.00,2322.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSCARP111 - Infanti Doble,BAJO STOCK
+CARP014,Carriolas,A pasear,Chicco,"",1,bueno,5929.20,5929.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP126 - Chicco Sin portabebé,BAJO STOCK
+CARP015,Carriolas,A pasear,Joovy,"",1,bueno,2370.60,2370.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP129 - Joovy  Sin portabebé,BAJO STOCK
+CARP016,Carriolas,A pasear,Joovy,"",1,bueno,2370.60,2370.60,0.50,1,Polanco,compra directa,25/09/2025,,SKU: CARP132 - Joovy  Sin portabebé,BAJO STOCK
+CARP017,Carriolas,A pasear,Chicco,"",1,bueno,5670.00,5670.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: CARP140 - Chicco Con portabebé,BAJO STOCK
+CARP018,Carriolas,A pasear,Bugaboo,"",1,bueno,7995.00,7995.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP141 - Bugaboo Sin portabebé,BAJO STOCK
+CARP019,Carriolas,A pasear,Baby,"",1,bueno,759.00,759.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CARP150 - Baby Trend Sin portabebé,BAJO STOCK
+CARP020,Carriolas,A pasear,Britax,"",1,bueno,5995.00,5995.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP151 - Britax Portabebé y Base,BAJO STOCK
+CARP021,Carriolas,A pasear,GB,"",1,bueno,4849.20,4849.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP155 - GB Con portabebé,BAJO STOCK
+CARP022,Carriolas,A pasear,Graco,"",1,bueno,5130.00,5130.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP157 - Graco Portabebé y Base,BAJO STOCK
+CARP023,Carriolas,A pasear,Stokke,"",1,bueno,9714.60,9714.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP159 - Stokke Sin portabebé,BAJO STOCK
+CARP024,Carriolas,A pasear,Stokke,"",1,bueno,7995.00,7995.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CARP160-1 - Stokke Sin portabebé,BAJO STOCK
+CARP025,Carriolas,A pasear,Bugaboo,"",1,bueno,8990.00,8990.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP176 - Bugaboo Sin portabebé,BAJO STOCK
+CARP026,Carriolas,A pasear,Chicco,"",1,bueno,4860.00,4860.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CARP184 - Chicco Doble,BAJO STOCK
+CARP027,Carriolas,A pasear,Donna,"",1,bueno,6469.20,6469.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP186 - Donna Portabebé y Base,BAJO STOCK
+CARP028,Carriolas,A pasear,Donna,"",1,bueno,9601.20,9601.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CARP190 - Donna Portabebé y Base,BAJO STOCK
+CARP029,Carriolas,A pasear,Stokke,"",1,bueno,9714.60,9714.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP197 - Stokke Con portabebé,BAJO STOCK
+CARP030,Carriolas,A pasear,Chicco,"",1,bueno,1890.00,1890.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP200 - Chicco Portabebé y Base,BAJO STOCK
+CARP031,Carriolas,A pasear,Donna,"",1,bueno,7117.20,7117.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP205 - Donna Portabebé y Base,BAJO STOCK
+CARP032,Carriolas,A pasear,UppaBaby,"",1,bueno,8934.60,8934.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP213 - UppaBaby Sin portabebé,BAJO STOCK
+CARP033,Carriolas,A pasear,Cybex,"",1,bueno,6361.20,6361.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: CARP217 - Cybex Portabebé y Base,BAJO STOCK
+CARP034,Carriolas,A pasear,Graco,"",1,bueno,3456.00,3456.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: CARP219 - Graco Sin portabebé,BAJO STOCK
+ODPP001,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP21 - Flotis Inflable,BAJO STOCK
+ODPP002,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP22 - Flotis Inflable,BAJO STOCK
+ODPP003,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP24 - Flotis Inflable,BAJO STOCK
+ODPP004,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP26 - Flotis Inflable,BAJO STOCK
+ODPP005,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP27 - Flotis Inflable,BAJO STOCK
+ODPP006,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP28 - Flotis Inflable,BAJO STOCK
+ODPP007,Otros de Paseo,A pasear,Flotdores,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP29 - Flotdores Auxiliares Inflable,BAJO STOCK
+ODPP008,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP30 - Flotis Inflable,BAJO STOCK
+ODPP009,Otros de Paseo,A pasear,Flotis,"",1,bueno,55.00,55.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP31 - Flotis Inflable,BAJO STOCK
+ODPP010,Otros de Paseo,A pasear,Salvavidas,"",1,bueno,66.00,66.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP32 - Salvavidas Inflable,BAJO STOCK
+ODPP011,Otros de Paseo,A pasear,Flotis,"",1,bueno,77.00,77.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP33 - Flotis Inflable,BAJO STOCK
+ODPP012,Otros de Paseo,A pasear,General,"",1,bueno,110.00,110.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSODPP36 - General Inflable,BAJO STOCK
+ODPP013,Otros de Paseo,A pasear,General,"",1,bueno,33.00,33.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP42 - General Inflable,BAJO STOCK
+ODPP014,Otros de Paseo,A pasear,General,"",1,bueno,110.00,110.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP47 - General Inflable,BAJO STOCK
+ODPP015,Otros de Paseo,A pasear,General,"",1,bueno,110.00,110.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP48 - General Inflable,BAJO STOCK
+ODPP016,Otros de Paseo,A pasear,General,"",1,bueno,429.00,429.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP54 - General Adaptador de asiento,BAJO STOCK
+ODPP017,Otros de Paseo,A pasear,General,"",1,bueno,484.00,484.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSODPP55 - General Adaptador de asiento,BAJO STOCK
+ODPP018,Otros de Paseo,A pasear,Salvavidas,"",1,bueno,181.50,181.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ODPP60 - Salvavidas Inflable,BAJO STOCK
+ODPP019,Otros de Paseo,A pasear,Delta,"",1,bueno,907.50,907.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ODPP63 - Delta Baby Bambineto,BAJO STOCK
+ODPP020,Otros de Paseo,A pasear,Eddie,"",1,bueno,661.57,661.57,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ODPP64 - Eddie Bauer Bambineto,BAJO STOCK
+ODPP021,Otros de Paseo,A pasear,Panbitt,"",1,bueno,984.50,984.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ODPP65 - Panbitt Bambineto portátil,BAJO STOCK
+ODPP022,Otros de Paseo,A pasear,General,"",1,bueno,247.50,247.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ODPP70 - General Casco Protector Bici,BAJO STOCK
+ODPP023,Otros de Paseo,A pasear,General,"",1,bueno,143.00,143.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ODPP72 - General Casco Protector Bici,BAJO STOCK
+ODPP024,Otros de Paseo,A pasear,General,"",1,bueno,198.00,198.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ODPP78 - General Casco Protector Bici,BAJO STOCK
+ODPP026,Otros de Paseo,A pasear,Distroller,"",1,bueno,275.00,275.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ODPP94 - Distroller Casco Protector Bici,BAJO STOCK
+ODPP027,Otros de Paseo,A pasear,Its,"",1,bueno,148.50,148.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ODPP95 - Its Imagical Inflable,BAJO STOCK
+ODPP028,Otros de Paseo,A pasear,Moose,"",1,bueno,385.00,385.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ODPP103 - Moose Mochila,BAJO STOCK
+BRIP002,Brincolines,En Casa,Fisher,"",1,bueno,1701.00,1701.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSBRIP3 - Fisher Price Base luz y sonido,BAJO STOCK
+BRIP003,Brincolines,En Casa,Fisher,"",1,bueno,1701.00,1701.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSBRIP3 - Fisher Price Base luz y sonido,BAJO STOCK
+BRIP004,Brincolines,En Casa,Fisher,"",1,bueno,935.00,935.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSBRIP7 - Fisher Price Base luz y sonido,BAJO STOCK
+BRIP005,Brincolines,En Casa,Prinsel,"",1,bueno,984.50,984.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: BRIP15 - Prinsel Base luz y sonido,BAJO STOCK
+BRIP006,Brincolines,En Casa,Dbebe,"",1,bueno,1614.60,1614.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: BRIP16 - Dbebe Base luz y sonido,BAJO STOCK
+BRIP007,Brincolines,En Casa,Fisher,"",1,bueno,2646.00,2646.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: BRIP19 - Fisher Price Base luz y sonido,BAJO STOCK
+HYAP005,Higiene y accesorios,En Casa,Nuevo,"",2,bueno,995.00,995.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HSHYAP27 - Nuevo Entrenador sencillo,BAJO STOCK
+HYAP006,Higiene y accesorios,En Casa,Boon,"",1,bueno,395.00,395.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSHYAP31 - Boon Organizador de Pañales,BAJO STOCK
+HYAP007,Higiene y accesorios,En Casa,Boon,"",1,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSHYAP32 - Boon Contenedor Juguetes Baño,BAJO STOCK
+HYAP008,Higiene y accesorios,En Casa,Summer,"",1,bueno,247.00,247.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSHYAP37 - Summer Hamaca,BAJO STOCK
+HYAP009,Higiene y accesorios,En Casa,Esalera,"",2,bueno,495.00,495.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSHYAP59 - Esalera para baño,BAJO STOCK
+HYAP010,Higiene y accesorios,En Casa,General,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSPROVISIONAL010 - General Esalera para baño,BAJO STOCK
+HYAP011,Higiene y accesorios,En Casa,Jool,"",1,bueno,324.50,324.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HYAP64 - Jool Asiento entrenador,BAJO STOCK
+HYAP012,Higiene y accesorios,En Casa,General,"",1,bueno,77.00,77.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HYAP69 - General Esalera para baño,BAJO STOCK
+HYAP013,Higiene y accesorios,En Casa,Munchkin,"",1,bueno,522.50,522.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HYAP72 - Munchkin Organizador,BAJO STOCK
+HYAP014,Higiene y accesorios,En Casa,Munchkin,"",1,bueno,595.00,595.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HYAP79 - Munchkin Calentador de Toallitas,BAJO STOCK
+HYAP015,Higiene y accesorios,En Casa,Huggies,"",1,bueno,825.00,825.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HYAP93 - Huggies Pañales,BAJO STOCK
+HYAP016,Higiene y accesorios,En Casa,Huggies,"",1,bueno,495.00,495.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HYAP94 - Huggies Pañales,BAJO STOCK
+HYAP018,Higiene y accesorios,En Casa,Kleen,"",1,bueno,132.00,132.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HYAP98 - Kleen Bebe Pañales,BAJO STOCK
+MONP002,Monitores,En Casa,Angelcare,"",1,bueno,2585.00,2585.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSMONP9 - Angelcare Con Sonido,BAJO STOCK
+MONP003,Monitores,En Casa,Angelcare,"",1,bueno,2154.60,2154.60,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSMONP10 - Angelcare Movimiento y Video,BAJO STOCK
+MONP004,Monitores,En Casa,Angelcare,"",1,bueno,2149.00,2149.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMONP11 - Angelcare Movimiento y Video,BAJO STOCK
+MONP005,Monitores,En Casa,General,"",1,bueno,1717.20,1717.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMONP13 - General Con Sonido,BAJO STOCK
+MONP006,Monitores,En Casa,Motorola,"",1,bueno,2430.00,2430.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSMONP16 - Motorola Sonido y Video,BAJO STOCK
+SPCP001,Sillas para comer,En Casa,Chicco,"",1,bueno,1069.20,1069.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP15 - Chicco Portátil fijar en mesa,BAJO STOCK
+SPCP002,Sillas para comer,En Casa,Svan,"",1,bueno,2694.60,2694.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP5 - Svan Silla alta,BAJO STOCK
+SPCP003,Sillas para comer,En Casa,Prince,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP46 - Prince Lionheart Portátil fijar en mesa,BAJO STOCK
+SPCP004,Sillas para comer,En Casa,Chicco,"",1,bueno,1069.20,1069.20,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP15 - Chicco Portátil fijar en mesa,BAJO STOCK
+SPCP005,Sillas para comer,En Casa,Svan,"",1,bueno,2694.60,2694.60,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP5 - Svan Silla alta,BAJO STOCK
+SPCP006,Sillas para comer,En Casa,Prince,"",1,bueno,495.00,495.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP46 - Prince Lionheart Portátil fijar en mesa,BAJO STOCK
+SPCP007,Sillas para comer,En Casa,Transkids,"",1,bueno,539.00,539.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP80 - Transkids Portátil fijar en silla,BAJO STOCK
+SPCP008,Sillas para comer,En Casa,Little,"",1,bueno,435.00,435.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSSPCP84 - Little tikes  Portátil fijar en silla,BAJO STOCK
+SPCP009,Sillas para comer,En Casa,Chicco,"",1,bueno,539.00,539.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: HSSPCP92 - Chicco Portátil fijar en silla,BAJO STOCK
+SPCP010,Sillas para comer,En Casa,Evenflo,"",1,bueno,1620.00,1620.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSSPCP100 - Evenflo Silla alta,BAJO STOCK
+SPCP011,Sillas para comer,En Casa,Chicco,"",1,bueno,1938.00,1938.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP130 - Chicco Silla alta,BAJO STOCK
+SPCP012,Sillas para comer,En Casa,Graco,"",1,bueno,2700.00,2700.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP131 - Graco Silla alta,BAJO STOCK
+SPCP013,Sillas para comer,En Casa,Chicco,"",1,bueno,3769.20,3769.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP108 - Chicco Silla alta,BAJO STOCK
+SPCP014,Sillas para comer,En Casa,Napps,"",1,bueno,1085.00,1085.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP134 - Napps Silla alta,BAJO STOCK
+SPCP015,Sillas para comer,En Casa,Napps,"",2,bueno,1185.00,1185.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP135 - Napps Silla alta,BAJO STOCK
+SPCP016,Sillas para comer,En Casa,Brevi,"",1,bueno,1069.20,1069.20,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SPCP138 - Brevi Silla alta,BAJO STOCK
+SPCP017,Sillas para comer,En Casa,Chicco,"",1,bueno,2473.20,2473.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP147 - Chicco Silla alta,BAJO STOCK
+SPCP018,Sillas para comer,En Casa,Chicco,"",1,bueno,2154.60,2154.60,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP146 - Chicco Portátil fijar en mesa,BAJO STOCK
+SPCP019,Sillas para comer,En Casa,Chicco,"",1,bueno,2905.20,2905.20,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP149 - Chicco Silla alta,BAJO STOCK
+SPCP020,Sillas para comer,En Casa,Prinsel,"",1,bueno,544.50,544.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP150 - Prinsel Silla alta,BAJO STOCK
+SPCP021,Sillas para comer,En Casa,Igenuity,"",1,bueno,467.50,467.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SPCP153 - Igenuity Portátil fijar en silla,BAJO STOCK
+SPCP022,Sillas para comer,En Casa,Ingenuity,"",1,bueno,999.00,999.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: SPCP154 - Ingenuity Silla alta,BAJO STOCK
+CHNP001,Calzado Niño,Ropa,,"",2,Bueno,450.00,60.00,1.50,1,Polanco,compra directa,16/07/2025,16/07/2025,"",BAJO STOCK
+CHNP002,Calzado Niño,Ropa,,"",2,Bueno,250.00,60.00,0.30,1,Polanco,compra directa,16/07/2025,16/07/2025,"",BAJO STOCK
+MACP001,Niña arriba de cintura,Ropa,,"",1,Bueno,54.00,54.00,0.50,1,Polanco,compra directa,13/07/2025,18/07/2025,"",BAJO STOCK
+JUGP048,Juguetes,A jugar,Mattel,"",3,bueno,1026.00,1026.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: HSJUGP106 - Mattel Barbie 4X4  3 años,DISPONIBLE
+JUGP060,Juguetes,A jugar,juguete,"",3,bueno,236.50,236.50,0.50,4,Polanco,compra directa,25/09/2025,,SKU: HSJUGP169 - juguete de madera  2 años,DISPONIBLE
+JUGP230,Juguetes,A jugar,Alimentacon,"",4,bueno,423.50,423.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ADAP20 - Alimentacon Termo,DISPONIBLE
+JUGP231,Juguetes,A jugar,Mate,"",8,bueno,137.50,137.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ADAP23 - Mate Mantel,DISPONIBLE
+JUGP232,Juguetes,A jugar,Marvel,"",6,bueno,99.00,99.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: JUGP320 - Marvel 5 años y más,DISPONIBLE
+JUGP245,Juguetes,A jugar,Disney,"",3,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SORP48 - Disney  Scooter Grande,DISPONIBLE
+JUGP250,Juguetes,A jugar,Napps,"",4,bueno,192.50,192.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ADAP25 - Napps Cucharas silicon,DISPONIBLE
+JUGP251,Juguetes,A jugar,Napps,"",4,bueno,132.00,132.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ADAP26 - Napps Cubiertos,DISPONIBLE
+JUGP252,Juguetes,A jugar,Napps,"",4,bueno,132.00,132.00,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ADAP27 - Napps Vasos,DISPONIBLE
+JUGP256,Juguetes,A jugar,Napps,"",4,bueno,132.00,132.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ADAP28 - Napps Vasos,DISPONIBLE
+JUGP257,Juguetes,A jugar,Napps,"",4,bueno,132.00,132.00,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ADAP29 - Napps Vasos,DISPONIBLE
+JUGP319,Juguetes,A jugar,Smart,"",4,bueno,434.50,434.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: ACAP25 - Smart elf Protector Asientos,DISPONIBLE
+JUGP420,Juguetes,A jugar,Cuadro,"",3,bueno,495.00,495.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: ACRP33 - Cuadro  Personajes Roblox,DISPONIBLE
+JUGP439,Juguetes,A jugar,Scooter,"",3,bueno,203.50,203.50,0.50,3,Polanco,compra directa,25/09/2025,,SKU: SORP84 - Scooter pequeño,DISPONIBLE
+AUTP011,Autoasientos,A pasear,Cosco,"",3,bueno,2970.00,2970.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP121 - Cosco Booster 15 a 45 kg,DISPONIBLE
+AUTP020,Autoasientos,A pasear,Evenflo,"",4,bueno,1350.00,1350.00,0.50,4,Polanco,compra directa,25/09/2025,,SKU: AUTP165 - Evenflo Booster 18 a 49 Kg,DISPONIBLE
+ODPP025,Otros de Paseo,A pasear,Sombras,"",3,bueno,346.50,346.50,0.50,2,Polanco,compra directa,25/09/2025,,SKU: ODPP81 - Sombras Accesorios carriola,DISPONIBLE
+HYAP017,Higiene y accesorios,En Casa,Huggies,"",7,bueno,176.00,176.00,0.50,1,Polanco,compra directa,25/09/2025,,SKU: HYAP96 - Huggies Pañales,DISPONIBLE
+CMNP001,Calzado Niña,Ropa,,"",5,Bueno,52.00,50.00,2.00,1,Polanco,compra directa,21/07/2025,15/08/2025,"Prenda: Pantuflas, Calidad: economico, Talla: 6",DISPONIBLE

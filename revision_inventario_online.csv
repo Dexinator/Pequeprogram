@@ -1,0 +1,678 @@
+codigo_producto,subcategoria,categoria,marca,modelo,cantidad_bodega,precio_online,estado
+ADAP001,Accesorios de alimentación,A comer,Pigeon,Red papillas,1,250.00,BAJO STOCK
+AUTP001,Autoasientos,A pasear,Cybex,"",1,2689.20,BAJO STOCK
+AUTP002,Autoasientos,A pasear,Maxicosi,"",1,2970.00,BAJO STOCK
+AUTP003,Autoasientos,A pasear,Maxicosi,"",1,3495.00,BAJO STOCK
+AUTP004,Autoasientos,A pasear,Cybex,"",1,2689.20,BAJO STOCK
+AUTP005,Autoasientos,A pasear,Maxicosi,"",1,2970.00,BAJO STOCK
+AUTP006,Autoasientos,A pasear,Maxicosi,"",1,3495.00,BAJO STOCK
+AUTP007,Autoasientos,A pasear,Uppababy,"",1,3013.20,BAJO STOCK
+AUTP008,Autoasientos,A pasear,Mon,"",1,2430.00,BAJO STOCK
+AUTP009,Autoasientos,A pasear,Cybex,"",1,3234.60,BAJO STOCK
+AUTP012,Autoasientos,A pasear,Nuna,"",1,8000.00,BAJO STOCK
+AUTP013,Autoasientos,A pasear,Britax,"",1,4590.00,BAJO STOCK
+AUTP014,Autoasientos,A pasear,Chicco,"",1,3834.00,BAJO STOCK
+AUTP015,Autoasientos,A pasear,Joie,"",1,4590.00,BAJO STOCK
+AUTP016,Autoasientos,A pasear,Chicco,"",1,3942.00,BAJO STOCK
+AUTP017,Autoasientos,A pasear,Nuna,"",1,8000.00,BAJO STOCK
+AUTP018,Autoasientos,A pasear,Evenflo,"",1,1566.00,BAJO STOCK
+AUTP019,Autoasientos,A pasear,Britax,"",1,2154.60,BAJO STOCK
+AUTP021,Autoasientos,A pasear,Chicco,"",1,2538.00,BAJO STOCK
+AUTP022,Autoasientos,A pasear,Cybex,"",1,4854.60,BAJO STOCK
+AUTP023,Autoasientos,A pasear,Britax,"",1,3132.00,BAJO STOCK
+AYDP001,Almohadas y donas,A dormir,Dona,"",1,217.80,BAJO STOCK
+AYDP002,Almohadas y donas,A dormir,Dona,"",1,431.20,BAJO STOCK
+AYDP003,Almohadas y donas,A dormir,Almohada,"",1,275.00,BAJO STOCK
+AYDP004,Almohadas y donas,A dormir,General,"",1,104.50,BAJO STOCK
+AYDP005,Almohadas y donas,A dormir,Chicco,"",1,385.00,BAJO STOCK
+AYDP006,Almohadas y donas,A dormir,Boppy,"",1,385.00,BAJO STOCK
+AYDP007,Almohadas y donas,A dormir,Nido,"",1,495.00,BAJO STOCK
+AYDP008,Almohadas y donas,A dormir,Bompy,"",1,319.00,BAJO STOCK
+AYDP009,Almohadas y donas,A dormir,Holo,"",1,874.50,BAJO STOCK
+AYDP010,Almohadas y donas,A dormir,Chicco,"",1,434.50,BAJO STOCK
+AYDP011,Almohadas y donas,A dormir,Mon,"",1,324.50,BAJO STOCK
+AYDP012,Almohadas y donas,A dormir,Babymoon,"",1,214.50,BAJO STOCK
+BPCP001,Barandal para cama,A dormir,North States,180 cm,1,105.00,BAJO STOCK
+BRIP002,Brincolines,En Casa,Fisher,"",1,1701.00,BAJO STOCK
+BRIP003,Brincolines,En Casa,Fisher,"",1,1701.00,BAJO STOCK
+BRIP004,Brincolines,En Casa,Fisher,"",1,935.00,BAJO STOCK
+BRIP005,Brincolines,En Casa,Prinsel,"",1,984.50,BAJO STOCK
+BRIP006,Brincolines,En Casa,Dbebe,"",1,1614.60,BAJO STOCK
+BRIP007,Brincolines,En Casa,Fisher,"",1,2646.00,BAJO STOCK
+CARP002,Carriolas,A pasear,Stokke,"",1,7325.00,BAJO STOCK
+CARP003,Carriolas,A pasear,Stokke,"",1,7325.00,BAJO STOCK
+CARP004,Carriolas,A pasear,Prinsel,"",1,5022.00,BAJO STOCK
+CARP005,Carriolas,A pasear,UppaBaby,"",1,6490.00,BAJO STOCK
+CARP006,Carriolas,A pasear,Bugaboo,"",1,4590.00,BAJO STOCK
+CARP007,Carriolas,A pasear,Chicco,"",1,2850.00,BAJO STOCK
+CARP008,Carriolas,A pasear,Bugaboo,"",1,3690.00,BAJO STOCK
+CARP009,Carriolas,A pasear,Buggy,"",1,3099.00,BAJO STOCK
+CARP010,Carriolas,A pasear,Maclaren,"",1,10249.20,BAJO STOCK
+CARP011,Carriolas,A pasear,Chicco,"",1,4806.00,BAJO STOCK
+CARP012,Carriolas,A pasear,Safety,"",1,3510.00,BAJO STOCK
+CARP013,Carriolas,A pasear,Infanti,"",1,2322.00,BAJO STOCK
+CARP014,Carriolas,A pasear,Chicco,"",1,5929.20,BAJO STOCK
+CARP015,Carriolas,A pasear,Joovy,"",1,2370.60,BAJO STOCK
+CARP016,Carriolas,A pasear,Joovy,"",1,2370.60,BAJO STOCK
+CARP017,Carriolas,A pasear,Chicco,"",1,5670.00,BAJO STOCK
+CARP018,Carriolas,A pasear,Bugaboo,"",1,7995.00,BAJO STOCK
+CARP019,Carriolas,A pasear,Baby,"",1,759.00,BAJO STOCK
+CARP020,Carriolas,A pasear,Britax,"",1,5995.00,BAJO STOCK
+CARP021,Carriolas,A pasear,GB,"",1,4849.20,BAJO STOCK
+CARP022,Carriolas,A pasear,Graco,"",1,5130.00,BAJO STOCK
+CARP023,Carriolas,A pasear,Stokke,"",1,9714.60,BAJO STOCK
+CARP024,Carriolas,A pasear,Stokke,"",1,7995.00,BAJO STOCK
+CARP025,Carriolas,A pasear,Bugaboo,"",1,8990.00,BAJO STOCK
+CARP026,Carriolas,A pasear,Chicco,"",1,4860.00,BAJO STOCK
+CARP027,Carriolas,A pasear,Donna,"",1,6469.20,BAJO STOCK
+CARP028,Carriolas,A pasear,Donna,"",1,9601.20,BAJO STOCK
+CARP029,Carriolas,A pasear,Stokke,"",1,9714.60,BAJO STOCK
+CARP030,Carriolas,A pasear,Chicco,"",1,1890.00,BAJO STOCK
+CARP031,Carriolas,A pasear,Donna,"",1,7117.20,BAJO STOCK
+CARP032,Carriolas,A pasear,UppaBaby,"",1,8934.60,BAJO STOCK
+CARP033,Carriolas,A pasear,Cybex,"",1,6361.20,BAJO STOCK
+CARP034,Carriolas,A pasear,Graco,"",1,3456.00,BAJO STOCK
+CDBP001,Calentador de biberones,A comer,Evenflo,"",1,594.00,BAJO STOCK
+CDBP002,Calentador de biberones,A comer,Tomme,"",1,539.00,BAJO STOCK
+CDBP003,Calentador de biberones,A comer,Chicco,"",1,495.00,BAJO STOCK
+CDBP004,Calentador de biberones,A comer,Tommee,"",1,434.50,BAJO STOCK
+CDBP005,Calentador de biberones,A comer,Chicco,"",1,605.00,BAJO STOCK
+CDBP006,Calentador de biberones,A comer,Nevi,"",1,495.00,BAJO STOCK
+CDBP007,Calentador de biberones,A comer,Evenflo,"",1,467.50,BAJO STOCK
+CDBP008,Calentador de biberones,A comer,Tommee,"",1,495.00,BAJO STOCK
+CDBP009,Calentador de biberones,A comer,Dr.,"",1,935.00,BAJO STOCK
+CDMP002,Cunas de madera,A dormir,Step2,"",1,4957.20,BAJO STOCK
+CDMP003,Cunas de madera,A dormir,Step2,"",1,4957.20,BAJO STOCK
+CDMP004,Cunas de madera,A dormir,Mon,"",1,6950.00,BAJO STOCK
+CDMP005,Cunas de madera,A dormir,Pottery,"",1,15930.00,BAJO STOCK
+CDMP006,Cunas de madera,A dormir,Camita,"",1,1590.00,BAJO STOCK
+CDMP007,Cunas de madera,A dormir,Grand,"",1,13500.00,BAJO STOCK
+CDMP008,Cunas de madera,A dormir,Baby&amp;Kids,"",1,7995.00,BAJO STOCK
+CDMP009,Cunas de madera,A dormir,General,"",1,2970.00,BAJO STOCK
+CDMP010,Cunas de madera,A dormir,Cuna,"",1,2495.00,BAJO STOCK
+CDMP011,Cunas de madera,A dormir,General,"",1,4309.20,BAJO STOCK
+CDMP012,Cunas de madera,A dormir,Babys,"",1,10495.00,BAJO STOCK
+CDMP013,Cunas de madera,A dormir,Hamaca,"",1,324.50,BAJO STOCK
+CDMP014,Cunas de madera,A dormir,Babyletto,"",1,7980.00,BAJO STOCK
+CDVP001,Cunas de viaje,A dormir,Phil&Teds,"",1,1825.20,BAJO STOCK
+CDVP002,Cunas de viaje,A dormir,Evenflo,"",1,1560.00,BAJO STOCK
+CDVP004,Cunas de viaje,A dormir,Baby,"",1,1825.20,BAJO STOCK
+CDVP005,Cunas de viaje,A dormir,Chicco,"",1,3234.60,BAJO STOCK
+CDVP006,Cunas de viaje,A dormir,Prinsel,"",1,1808.55,BAJO STOCK
+CDVP007,Cunas de viaje,A dormir,Safety,"",1,1701.00,BAJO STOCK
+CDVP008,Cunas de viaje,A dormir,Chicco,"",1,4314.60,BAJO STOCK
+CDVP009,Cunas de viaje,A dormir,BabyMoov,"",1,654.50,BAJO STOCK
+CDVP010,Cunas de viaje,A dormir,Tuc,"",1,1074.60,BAJO STOCK
+CDVP011,Cunas de viaje,A dormir,Mon,"",1,2430.00,BAJO STOCK
+CDVP012,Cunas de viaje,A dormir,Babybjorn,"",1,2694.60,BAJO STOCK
+CDVP013,Cunas de viaje,A dormir,Mini,"",1,1134.00,BAJO STOCK
+GYTP001,Gimnasios y tapetes,A jugar,Perrito,"",1,140.00,BAJO STOCK
+GYTP002,Gimnasios y tapetes,A jugar,Skip,"",1,645.00,BAJO STOCK
+GYTP003,Gimnasios y tapetes,A jugar,Chico,"",1,295.00,BAJO STOCK
+GYTP004,Gimnasios y tapetes,A jugar,Fisher,"",1,625.00,BAJO STOCK
+GYTP005,Gimnasios y tapetes,A jugar,MOncaramel,"",1,357.50,BAJO STOCK
+GYTP006,Gimnasios y tapetes,A jugar,Skip,"",1,1242.00,BAJO STOCK
+GYTP007,Gimnasios y tapetes,A jugar,Bright,"",1,388.08,BAJO STOCK
+GYTP008,Gimnasios y tapetes,A jugar,Chiquimundo,"",1,418.00,BAJO STOCK
+GYTP009,Gimnasios y tapetes,A jugar,Fisher,"",1,209.00,BAJO STOCK
+GYTP010,Gimnasios y tapetes,A jugar,Fisher,"",1,275.00,BAJO STOCK
+GYTP011,Gimnasios y tapetes,A jugar,General,"",1,418.00,BAJO STOCK
+GYTP012,Gimnasios y tapetes,A jugar,Biyu,"",1,247.50,BAJO STOCK
+GYTP013,Gimnasios y tapetes,A jugar,Melissa&Dough,"",1,930.05,BAJO STOCK
+GYTP014,Gimnasios y tapetes,A jugar,Tiny,"",1,984.50,BAJO STOCK
+GYTP015,Gimnasios y tapetes,A jugar,Fisher,"",1,544.50,BAJO STOCK
+HYAP006,Higiene y accesorios,En Casa,Boon,"",1,395.00,BAJO STOCK
+HYAP007,Higiene y accesorios,En Casa,Boon,"",1,495.00,BAJO STOCK
+HYAP008,Higiene y accesorios,En Casa,Summer,"",1,247.00,BAJO STOCK
+HYAP010,Higiene y accesorios,En Casa,General,"",1,495.00,BAJO STOCK
+HYAP011,Higiene y accesorios,En Casa,Jool,"",1,324.50,BAJO STOCK
+HYAP012,Higiene y accesorios,En Casa,General,"",1,77.00,BAJO STOCK
+HYAP013,Higiene y accesorios,En Casa,Munchkin,"",1,522.50,BAJO STOCK
+HYAP014,Higiene y accesorios,En Casa,Munchkin,"",1,595.00,BAJO STOCK
+HYAP015,Higiene y accesorios,En Casa,Huggies,"",1,825.00,BAJO STOCK
+HYAP016,Higiene y accesorios,En Casa,Huggies,"",1,495.00,BAJO STOCK
+HYAP018,Higiene y accesorios,En Casa,Kleen,"",1,132.00,BAJO STOCK
+JGGP002,Juegos grandes,A jugar,PlegableCasitas,"",1,319.00,BAJO STOCK
+JGGP003,Juegos grandes,A jugar,Tipee,"",1,825.00,BAJO STOCK
+JGGP004,Juegos grandes,A jugar,General,"",1,484.00,BAJO STOCK
+JGGP005,Juegos grandes,A jugar,Melissa&,"",1,1609.20,BAJO STOCK
+JGGP006,Juegos grandes,A jugar,Vtech,"",1,1069.20,BAJO STOCK
+JGGP007,Juegos grandes,A jugar,Castillo,"",1,5394.60,BAJO STOCK
+JGGP008,Juegos grandes,A jugar,Baby,"",1,1282.50,BAJO STOCK
+JGGP009,Juegos grandes,A jugar,Step2,"",1,2586.60,BAJO STOCK
+JGGP010,Juegos grandes,A jugar,Feber,"",1,695.00,BAJO STOCK
+JGGP011,Juegos grandes,A jugar,Step2,"",1,1895.00,BAJO STOCK
+JGGP012,Juegos grandes,A jugar,Step2,"",1,2754.00,BAJO STOCK
+JGGP013,Juegos grandes,A jugar,Ikea,"",1,764.50,BAJO STOCK
+JGGP014,Juegos grandes,A jugar,Its,"",1,1566.00,BAJO STOCK
+JGGP015,Juegos grandes,A jugar,Joy&Fun,"",1,324.50,BAJO STOCK
+JUGP003,Juguetes,A jugar,Fisher,"",1,132.00,BAJO STOCK
+JUGP004,Juguetes,A jugar,Patines,"",1,1242.00,BAJO STOCK
+JUGP005,Juguetes,A jugar,Hot,"",1,1701.00,BAJO STOCK
+JUGP006,Juguetes,A jugar,General,"",1,742.50,BAJO STOCK
+JUGP007,Juguetes,A jugar,General,"",1,539.00,BAJO STOCK
+JUGP008,Juguetes,A jugar,General,"",1,539.00,BAJO STOCK
+JUGP009,Juguetes,A jugar,General,"",1,550.00,BAJO STOCK
+JUGP010,Juguetes,A jugar,General,"",1,407.00,BAJO STOCK
+JUGP011,Juguetes,A jugar,Kipling,"",1,1998.00,BAJO STOCK
+JUGP012,Juguetes,A jugar,General,"",1,659.99,BAJO STOCK
+JUGP013,Juguetes,A jugar,General,"",1,429.00,BAJO STOCK
+JUGP014,Juguetes,A jugar,Tous,"",1,1890.00,BAJO STOCK
+JUGP015,Juguetes,A jugar,General,"",1,654.50,BAJO STOCK
+JUGP016,Juguetes,A jugar,Tous,"",1,1242.00,BAJO STOCK
+JUGP017,Juguetes,A jugar,General,"",1,1458.00,BAJO STOCK
+JUGP018,Juguetes,A jugar,General,"",1,324.50,BAJO STOCK
+JUGP019,Juguetes,A jugar,General,"",1,484.00,BAJO STOCK
+JUGP020,Juguetes,A jugar,General,"",1,231.00,BAJO STOCK
+JUGP021,Juguetes,A jugar,General,"",1,324.50,BAJO STOCK
+JUGP022,Juguetes,A jugar,General,"",1,654.50,BAJO STOCK
+JUGP023,Juguetes,A jugar,General,"",1,352.00,BAJO STOCK
+JUGP024,Juguetes,A jugar,General,"",1,495.00,BAJO STOCK
+JUGP025,Juguetes,A jugar,General,"",1,616.00,BAJO STOCK
+JUGP026,Juguetes,A jugar,General,"",1,880.00,BAJO STOCK
+JUGP027,Juguetes,A jugar,General,"",1,1393.20,BAJO STOCK
+JUGP028,Juguetes,A jugar,General,"",1,643.50,BAJO STOCK
+JUGP029,Juguetes,A jugar,General,"",1,429.00,BAJO STOCK
+JUGP030,Juguetes,A jugar,General,"",1,506.00,BAJO STOCK
+JUGP031,Juguetes,A jugar,Pañalera,"",1,748.00,BAJO STOCK
+JUGP032,Juguetes,A jugar,Nature,"",1,324.50,BAJO STOCK
+JUGP033,Juguetes,A jugar,Lansinoh,"",1,2189.00,BAJO STOCK
+JUGP034,Juguetes,A jugar,Evenflo,"",1,247.50,BAJO STOCK
+JUGP035,Juguetes,A jugar,Lansinoh,"",1,2189.00,BAJO STOCK
+JUGP036,Juguetes,A jugar,Ameda,"",1,2322.00,BAJO STOCK
+JUGP038,Juguetes,A jugar,Avent,"",1,1296.00,BAJO STOCK
+JUGP039,Juguetes,A jugar,Free,"",1,6990.00,BAJO STOCK
+JUGP040,Juguetes,A jugar,Avent,"",1,1296.00,BAJO STOCK
+JUGP041,Juguetes,A jugar,Chicco,"",1,1069.20,BAJO STOCK
+JUGP042,Juguetes,A jugar,Medela,"",1,4212.00,BAJO STOCK
+JUGP043,Juguetes,A jugar,Avent,"",1,1296.00,BAJO STOCK
+JUGP044,Juguetes,A jugar,Medela,"",1,3186.00,BAJO STOCK
+JUGP045,Juguetes,A jugar,Mochila,"",1,346.50,BAJO STOCK
+JUGP046,Juguetes,A jugar,Mesa,"",1,1350.00,BAJO STOCK
+JUGP047,Juguetes,A jugar,Maya,"",1,879.98,BAJO STOCK
+JUGP049,Juguetes,A jugar,Fisher,"",1,495.00,BAJO STOCK
+JUGP050,Juguetes,A jugar,DC,"",1,434.50,BAJO STOCK
+JUGP051,Juguetes,A jugar,Cuadros,"",1,907.50,BAJO STOCK
+JUGP054,Juguetes,A jugar,Rompe,"",1,605.00,BAJO STOCK
+JUGP055,Juguetes,A jugar,Rompe,"",1,275.00,BAJO STOCK
+JUGP056,Juguetes,A jugar,Rompe,"",1,429.00,BAJO STOCK
+JUGP057,Juguetes,A jugar,Fisher,"",1,203.50,BAJO STOCK
+JUGP058,Juguetes,A jugar,Marvel,"",1,99.00,BAJO STOCK
+JUGP059,Juguetes,A jugar,Rick,"",1,605.00,BAJO STOCK
+JUGP061,Juguetes,A jugar,Ruz,"",1,495.00,BAJO STOCK
+JUGP062,Juguetes,A jugar,Rompe,"",1,495.00,BAJO STOCK
+JUGP063,Juguetes,A jugar,Rompe,"",1,99.00,BAJO STOCK
+JUGP064,Juguetes,A jugar,joovy,"",1,1069.20,BAJO STOCK
+JUGP065,Juguetes,A jugar,Fisher,"",1,198.00,BAJO STOCK
+JUGP066,Juguetes,A jugar,Tiny,"",1,385.00,BAJO STOCK
+JUGP067,Juguetes,A jugar,Tiny,"",1,165.00,BAJO STOCK
+JUGP068,Juguetes,A jugar,Taf,"",1,346.50,BAJO STOCK
+JUGP069,Juguetes,A jugar,Chicco,"",1,715.00,BAJO STOCK
+JUGP070,Juguetes,A jugar,BabyBjorn,"",1,2149.20,BAJO STOCK
+JUGP072,Juguetes,A jugar,Tiny,"",1,275.00,BAJO STOCK
+JUGP074,Juguetes,A jugar,ItsIMagical,"",1,275.00,BAJO STOCK
+JUGP075,Juguetes,A jugar,Marvel,"",1,242.00,BAJO STOCK
+JUGP076,Juguetes,A jugar,General,"",1,175.00,BAJO STOCK
+JUGP077,Juguetes,A jugar,Disfraces,"",1,165.00,BAJO STOCK
+JUGP078,Juguetes,A jugar,Disfraces,"",1,165.00,BAJO STOCK
+JUGP079,Juguetes,A jugar,Disfraces,"",1,104.50,BAJO STOCK
+JUGP080,Juguetes,A jugar,Disfraces,"",1,165.00,BAJO STOCK
+JUGP081,Juguetes,A jugar,Disfraces,"",1,181.50,BAJO STOCK
+JUGP082,Juguetes,A jugar,Disfraces,"",1,214.50,BAJO STOCK
+JUGP083,Juguetes,A jugar,Disfraces,"",1,110.00,BAJO STOCK
+JUGP084,Juguetes,A jugar,Disfraces,"",1,176.00,BAJO STOCK
+JUGP085,Juguetes,A jugar,Disfraces,"",1,242.00,BAJO STOCK
+JUGP086,Juguetes,A jugar,Disfraces,"",1,121.00,BAJO STOCK
+JUGP087,Juguetes,A jugar,Disfraces,"",1,324.50,BAJO STOCK
+JUGP088,Juguetes,A jugar,Disfraces,"",1,214.50,BAJO STOCK
+JUGP089,Juguetes,A jugar,Disfraces,"",1,302.50,BAJO STOCK
+JUGP090,Juguetes,A jugar,Disfraces,"",1,302.50,BAJO STOCK
+JUGP091,Juguetes,A jugar,Disfraces,"",1,99.00,BAJO STOCK
+JUGP092,Juguetes,A jugar,Disfraces,"",1,187.00,BAJO STOCK
+JUGP093,Juguetes,A jugar,Disfraces,"",1,214.50,BAJO STOCK
+JUGP094,Juguetes,A jugar,Disfraces,"",1,187.00,BAJO STOCK
+JUGP095,Juguetes,A jugar,Disfraces,"",1,165.00,BAJO STOCK
+JUGP096,Juguetes,A jugar,Stokke,"",1,1933.20,BAJO STOCK
+JUGP097,Juguetes,A jugar,Beaba,"",1,1506.60,BAJO STOCK
+JUGP098,Juguetes,A jugar,Pimpones,"",1,330.00,BAJO STOCK
+JUGP099,Juguetes,A jugar,Rompecabezas,"",1,99.00,BAJO STOCK
+JUGP100,Juguetes,A jugar,Mattel,"",1,121.00,BAJO STOCK
+JUGP101,Juguetes,A jugar,Infanti,"",1,385.00,BAJO STOCK
+JUGP102,Juguetes,A jugar,Prinsel,"",1,4050.00,BAJO STOCK
+JUGP103,Juguetes,A jugar,Prinsel,"",1,995.00,BAJO STOCK
+JUGP105,Juguetes,A jugar,Magistronic,"",1,1890.00,BAJO STOCK
+JUGP106,Juguetes,A jugar,Prinsel,"",1,643.00,BAJO STOCK
+JUGP107,Juguetes,A jugar,Juguete,"",1,192.50,BAJO STOCK
+JUGP108,Juguetes,A jugar,General,"",1,88.00,BAJO STOCK
+JUGP109,Juguetes,A jugar,Libro,"",1,88.00,BAJO STOCK
+JUGP110,Juguetes,A jugar,General,"",1,99.00,BAJO STOCK
+JUGP111,Juguetes,A jugar,General,"",1,110.00,BAJO STOCK
+JUGP112,Juguetes,A jugar,General,"",1,99.00,BAJO STOCK
+JUGP113,Juguetes,A jugar,baby,"",1,880.00,BAJO STOCK
+JUGP114,Juguetes,A jugar,Libro,"",1,66.00,BAJO STOCK
+JUGP115,Juguetes,A jugar,General,"",1,181.50,BAJO STOCK
+JUGP117,Juguetes,A jugar,Mega,"",1,209.00,BAJO STOCK
+JUGP119,Juguetes,A jugar,Cars,"",1,467.50,BAJO STOCK
+JUGP120,Juguetes,A jugar,Nerf,"",1,1296.00,BAJO STOCK
+JUGP123,Juguetes,A jugar,Chicco,"",1,3750.00,BAJO STOCK
+JUGP124,Juguetes,A jugar,Avent,"",1,1620.00,BAJO STOCK
+JUGP125,Juguetes,A jugar,Spectra,"",1,2802.60,BAJO STOCK
+JUGP126,Juguetes,A jugar,Prinsel,"",1,2700.00,BAJO STOCK
+JUGP127,Juguetes,A jugar,Cuadros,"",1,444.41,BAJO STOCK
+JUGP128,Juguetes,A jugar,Cuadros,"",1,444.41,BAJO STOCK
+JUGP129,Juguetes,A jugar,Cuadros,"",1,412.66,BAJO STOCK
+JUGP130,Juguetes,A jugar,Tippi,"",1,539.00,BAJO STOCK
+JUGP131,Juguetes,A jugar,Cybex,"",1,2694.60,BAJO STOCK
+JUGP133,Juguetes,A jugar,Fisher,"",1,319.00,BAJO STOCK
+JUGP134,Juguetes,A jugar,Mega,"",1,352.00,BAJO STOCK
+JUGP136,Juguetes,A jugar,Prinsel,"",1,533.50,BAJO STOCK
+JUGP137,Juguetes,A jugar,Firestat,"",1,434.50,BAJO STOCK
+JUGP138,Juguetes,A jugar,Baby,"",1,275.00,BAJO STOCK
+JUGP139,Juguetes,A jugar,Paris,"",1,1250.00,BAJO STOCK
+JUGP140,Juguetes,A jugar,Mattel,"",1,654.50,BAJO STOCK
+JUGP142,Juguetes,A jugar,Apache,"",1,495.00,BAJO STOCK
+JUGP143,Juguetes,A jugar,Banana,"",1,984.50,BAJO STOCK
+JUGP144,Juguetes,A jugar,Lego,"",1,214.50,BAJO STOCK
+JUGP146,Juguetes,A jugar,Disney,"",1,385.00,BAJO STOCK
+JUGP147,Juguetes,A jugar,Paw,"",1,814.00,BAJO STOCK
+JUGP148,Juguetes,A jugar,Disney,"",1,467.50,BAJO STOCK
+JUGP149,Juguetes,A jugar,General,"",1,418.00,BAJO STOCK
+JUGP150,Juguetes,A jugar,Cuna,"",1,605.00,BAJO STOCK
+JUGP151,Juguetes,A jugar,Britax,"",1,1830.60,BAJO STOCK
+JUGP152,Juguetes,A jugar,Distroller,"",1,247.50,BAJO STOCK
+JUGP153,Juguetes,A jugar,Apache,"",1,605.00,BAJO STOCK
+JUGP154,Juguetes,A jugar,Mon,"",1,1285.20,BAJO STOCK
+JUGP155,Juguetes,A jugar,Fisher,"",1,66.00,BAJO STOCK
+JUGP156,Juguetes,A jugar,Radio,"",1,874.50,BAJO STOCK
+JUGP157,Juguetes,A jugar,Prinsel,"",1,1069.20,BAJO STOCK
+JUGP158,Juguetes,A jugar,Play-Doh,"",1,643.50,BAJO STOCK
+JUGP160,Juguetes,A jugar,General,"",1,27.50,BAJO STOCK
+JUGP161,Juguetes,A jugar,General,"",1,214.50,BAJO STOCK
+JUGP162,Juguetes,A jugar,General,"",1,181.50,BAJO STOCK
+JUGP163,Juguetes,A jugar,Disney,"",1,434.50,BAJO STOCK
+JUGP164,Juguetes,A jugar,Fisher,"",1,357.50,BAJO STOCK
+JUGP165,Juguetes,A jugar,Ingenuity,"",1,2154.60,BAJO STOCK
+JUGP166,Juguetes,A jugar,Polo,"",1,649.00,BAJO STOCK
+JUGP167,Juguetes,A jugar,Tous,"",1,495.00,BAJO STOCK
+JUGP169,Juguetes,A jugar,Mayoral,"",1,577.50,BAJO STOCK
+JUGP170,Juguetes,A jugar,Foque,"",1,649.00,BAJO STOCK
+JUGP171,Juguetes,A jugar,Primmi,"",1,649.00,BAJO STOCK
+JUGP173,Juguetes,A jugar,Little,"",1,385.00,BAJO STOCK
+JUGP174,Juguetes,A jugar,Babuu,"",1,797.50,BAJO STOCK
+JUGP175,Juguetes,A jugar,Chicco,"",1,715.00,BAJO STOCK
+JUGP176,Juguetes,A jugar,Vtech,"",1,539.00,BAJO STOCK
+JUGP177,Juguetes,A jugar,babymoov,"",1,2149.20,BAJO STOCK
+JUGP178,Juguetes,A jugar,Black&Decker,"",1,1009.80,BAJO STOCK
+JUGP180,Juguetes,A jugar,Tommee,"",1,324.50,BAJO STOCK
+JUGP181,Juguetes,A jugar,Tommee,"",1,544.50,BAJO STOCK
+JUGP182,Juguetes,A jugar,Chicco,"",1,302.50,BAJO STOCK
+JUGP183,Juguetes,A jugar,Munchkin,"",1,385.00,BAJO STOCK
+JUGP184,Juguetes,A jugar,Medela,"",1,2154.60,BAJO STOCK
+JUGP185,Juguetes,A jugar,Medela,"",1,2154.60,BAJO STOCK
+JUGP186,Juguetes,A jugar,Chicco,"",1,1069.20,BAJO STOCK
+JUGP187,Juguetes,A jugar,Evenflo,"",1,814.00,BAJO STOCK
+JUGP188,Juguetes,A jugar,Dr.,"",1,434.50,BAJO STOCK
+JUGP189,Juguetes,A jugar,Spectra,"",1,2802.60,BAJO STOCK
+JUGP190,Juguetes,A jugar,Chicco,"",1,1609.20,BAJO STOCK
+JUGP191,Juguetes,A jugar,Tommee,"",1,1069.20,BAJO STOCK
+JUGP192,Juguetes,A jugar,Spectra,"",1,324.50,BAJO STOCK
+JUGP193,Juguetes,A jugar,Medela,"",1,132.00,BAJO STOCK
+JUGP194,Juguetes,A jugar,Medela,"",1,715.00,BAJO STOCK
+JUGP196,Juguetes,A jugar,Medela,"",1,1069.20,BAJO STOCK
+JUGP197,Juguetes,A jugar,Haakaa,"",1,368.50,BAJO STOCK
+JUGP198,Juguetes,A jugar,Spectra,"",1,2970.00,BAJO STOCK
+JUGP199,Juguetes,A jugar,Espejos,"",1,165.00,BAJO STOCK
+JUGP200,Juguetes,A jugar,BabyBjorn,"",1,1074.60,BAJO STOCK
+JUGP201,Juguetes,A jugar,Twingar,"",1,1350.00,BAJO STOCK
+JUGP202,Juguetes,A jugar,Koala,"",1,715.00,BAJO STOCK
+JUGP203,Juguetes,A jugar,Yemaya,"",1,2149.20,BAJO STOCK
+JUGP204,Juguetes,A jugar,Pac,"",1,979.00,BAJO STOCK
+JUGP205,Juguetes,A jugar,Gap,"",1,489.50,BAJO STOCK
+JUGP207,Juguetes,A jugar,Infanti,"",1,1990.00,BAJO STOCK
+JUGP209,Juguetes,A jugar,Pigeon,"",1,115.50,BAJO STOCK
+JUGP210,Juguetes,A jugar,Pigeon,"",1,220.00,BAJO STOCK
+JUGP211,Juguetes,A jugar,Artista,"",1,4801.78,BAJO STOCK
+JUGP212,Juguetes,A jugar,Saddle,"",1,968.00,BAJO STOCK
+JUGP213,Juguetes,A jugar,Disney,"",1,214.50,BAJO STOCK
+JUGP214,Juguetes,A jugar,Its,"",1,1074.60,BAJO STOCK
+JUGP215,Juguetes,A jugar,General,"",1,649.00,BAJO STOCK
+JUGP216,Juguetes,A jugar,Next,"",1,753.50,BAJO STOCK
+JUGP217,Juguetes,A jugar,Disney,"",1,495.00,BAJO STOCK
+JUGP218,Juguetes,A jugar,Heelys,"",1,385.00,BAJO STOCK
+JUGP219,Juguetes,A jugar,Heelys,"",1,385.00,BAJO STOCK
+JUGP220,Juguetes,A jugar,Disney,"",1,275.00,BAJO STOCK
+JUGP221,Juguetes,A jugar,Heelys,"",1,539.00,BAJO STOCK
+JUGP222,Juguetes,A jugar,Spectra,"",1,324.50,BAJO STOCK
+JUGP223,Juguetes,A jugar,Baby,"",1,385.00,BAJO STOCK
+JUGP224,Juguetes,A jugar,Personajes,"",1,742.50,BAJO STOCK
+JUGP225,Juguetes,A jugar,Chicco,"",1,3218.40,BAJO STOCK
+JUGP227,Juguetes,A jugar,Mega,"",1,385.00,BAJO STOCK
+JUGP228,Juguetes,A jugar,Mattel,"",1,357.50,BAJO STOCK
+JUGP229,Juguetes,A jugar,Quinper,"",1,467.50,BAJO STOCK
+JUGP233,Juguetes,A jugar,Mattel,"",1,99.00,BAJO STOCK
+JUGP234,Juguetes,A jugar,T,"",1,148.50,BAJO STOCK
+JUGP235,Juguetes,A jugar,Lansinoh,"",1,385.00,BAJO STOCK
+JUGP236,Juguetes,A jugar,Luca,"",1,467.50,BAJO STOCK
+JUGP237,Juguetes,A jugar,Couture,"",1,357.50,BAJO STOCK
+JUGP238,Juguetes,A jugar,Petit,"",1,357.50,BAJO STOCK
+JUGP239,Juguetes,A jugar,Vestido,"",1,467.50,BAJO STOCK
+JUGP240,Juguetes,A jugar,Mayoral,"",1,324.50,BAJO STOCK
+JUGP241,Juguetes,A jugar,Babine,"",1,467.50,BAJO STOCK
+JUGP242,Juguetes,A jugar,Janie,"",1,434.50,BAJO STOCK
+JUGP243,Juguetes,A jugar,American,"",1,357.50,BAJO STOCK
+JUGP244,Juguetes,A jugar,100%,"",1,324.50,BAJO STOCK
+JUGP246,Juguetes,A jugar,Razor,"",1,495.00,BAJO STOCK
+JUGP247,Juguetes,A jugar,Mercurio,"",1,1074.60,BAJO STOCK
+JUGP248,Juguetes,A jugar,Fist,"",1,979.00,BAJO STOCK
+JUGP249,Juguetes,A jugar,Napps,"",1,195.00,BAJO STOCK
+JUGP254,Juguetes,A jugar,Dundy,"",1,2149.20,BAJO STOCK
+JUGP255,Juguetes,A jugar,Chicco,"",1,1458.00,BAJO STOCK
+JUGP258,Juguetes,A jugar,Mattel,"",1,764.50,BAJO STOCK
+JUGP259,Juguetes,A jugar,Mattel,"",1,203.50,BAJO STOCK
+JUGP260,Juguetes,A jugar,Build,"",1,330.00,BAJO STOCK
+JUGP261,Juguetes,A jugar,Levis,"",1,247.50,BAJO STOCK
+JUGP262,Juguetes,A jugar,Adidas,"",1,181.50,BAJO STOCK
+JUGP263,Juguetes,A jugar,Gap,"",1,176.00,BAJO STOCK
+JUGP264,Juguetes,A jugar,Dockers,"",1,269.50,BAJO STOCK
+JUGP265,Juguetes,A jugar,Carters,"",1,154.00,BAJO STOCK
+JUGP266,Juguetes,A jugar,Ferrioni,"",1,154.00,BAJO STOCK
+JUGP267,Juguetes,A jugar,Tommy,"",1,247.50,BAJO STOCK
+JUGP268,Juguetes,A jugar,Ralph,"",1,132.00,BAJO STOCK
+JUGP269,Juguetes,A jugar,Adidas,"",1,154.00,BAJO STOCK
+JUGP270,Juguetes,A jugar,Everlast,"",1,269.50,BAJO STOCK
+JUGP271,Juguetes,A jugar,UnderArmour,"",1,247.50,BAJO STOCK
+JUGP272,Juguetes,A jugar,Puma,"",1,379.50,BAJO STOCK
+JUGP273,Juguetes,A jugar,Puma,"",1,214.50,BAJO STOCK
+JUGP275,Juguetes,A jugar,Bóboli,"",1,385.00,BAJO STOCK
+JUGP276,Juguetes,A jugar,Spin,"",1,324.50,BAJO STOCK
+JUGP277,Juguetes,A jugar,Playskool,"",1,77.00,BAJO STOCK
+JUGP278,Juguetes,A jugar,Luca,"",1,324.50,BAJO STOCK
+JUGP279,Juguetes,A jugar,Luca,"",1,324.50,BAJO STOCK
+JUGP280,Juguetes,A jugar,Mini,"",1,324.50,BAJO STOCK
+JUGP281,Juguetes,A jugar,Mini,"",1,214.50,BAJO STOCK
+JUGP282,Juguetes,A jugar,Adidas,"",1,269.50,BAJO STOCK
+JUGP283,Juguetes,A jugar,Mayoral,"",1,324.50,BAJO STOCK
+JUGP284,Juguetes,A jugar,Adidas,"",1,357.50,BAJO STOCK
+JUGP285,Juguetes,A jugar,H&M,"",1,275.00,BAJO STOCK
+JUGP286,Juguetes,A jugar,Tommy,"",1,220.00,BAJO STOCK
+JUGP287,Juguetes,A jugar,Adidas,"",1,132.00,BAJO STOCK
+JUGP288,Juguetes,A jugar,Ralph,"",1,434.50,BAJO STOCK
+JUGP289,Juguetes,A jugar,Ralph,"",1,434.50,BAJO STOCK
+JUGP290,Juguetes,A jugar,Ralph,"",1,434.50,BAJO STOCK
+JUGP291,Juguetes,A jugar,Puma,"",1,379.50,BAJO STOCK
+JUGP292,Juguetes,A jugar,Prinsel,"",1,418.00,BAJO STOCK
+JUGP293,Juguetes,A jugar,Spin,"",1,214.50,BAJO STOCK
+JUGP294,Juguetes,A jugar,Spin,"",1,324.50,BAJO STOCK
+JUGP295,Juguetes,A jugar,General,"",1,137.50,BAJO STOCK
+JUGP296,Juguetes,A jugar,Fisher,"",1,154.00,BAJO STOCK
+JUGP298,Juguetes,A jugar,Von,"",1,577.50,BAJO STOCK
+JUGP300,Juguetes,A jugar,Mini,"",1,324.50,BAJO STOCK
+JUGP301,Juguetes,A jugar,Andanenes,"",1,385.00,BAJO STOCK
+JUGP302,Juguetes,A jugar,Mini,"",1,346.50,BAJO STOCK
+JUGP303,Juguetes,A jugar,Nike,"",1,324.50,BAJO STOCK
+JUGP304,Juguetes,A jugar,Memory,"",1,544.50,BAJO STOCK
+JUGP305,Juguetes,A jugar,Maxicosi,"",1,3078.00,BAJO STOCK
+JUGP306,Juguetes,A jugar,Marvel,"",1,99.00,BAJO STOCK
+JUGP307,Juguetes,A jugar,Marvel,"",1,121.00,BAJO STOCK
+JUGP308,Juguetes,A jugar,Mattel,"",1,214.50,BAJO STOCK
+JUGP309,Juguetes,A jugar,Marvel,"",1,99.00,BAJO STOCK
+JUGP310,Juguetes,A jugar,Ybike,"",1,1566.00,BAJO STOCK
+JUGP311,Juguetes,A jugar,Nathor,"",1,764.50,BAJO STOCK
+JUGP312,Juguetes,A jugar,Fisher,"",1,495.00,BAJO STOCK
+JUGP313,Juguetes,A jugar,General,"",1,429.00,BAJO STOCK
+JUGP314,Juguetes,A jugar,Baby,"",1,247.50,BAJO STOCK
+JUGP315,Juguetes,A jugar,Disney,"",1,434.50,BAJO STOCK
+JUGP316,Juguetes,A jugar,Disney,"",1,385.00,BAJO STOCK
+JUGP317,Juguetes,A jugar,Rawlings,"",1,434.50,BAJO STOCK
+JUGP318,Juguetes,A jugar,Fisher,"",1,214.50,BAJO STOCK
+JUGP320,Juguetes,A jugar,Feber,"",1,1074.60,BAJO STOCK
+JUGP321,Juguetes,A jugar,Apache,"",1,544.50,BAJO STOCK
+JUGP322,Juguetes,A jugar,Babymoov,"",1,324.50,BAJO STOCK
+JUGP323,Juguetes,A jugar,Marc,"",1,1566.00,BAJO STOCK
+JUGP324,Juguetes,A jugar,General,"",1,324.50,BAJO STOCK
+JUGP325,Juguetes,A jugar,Mattel,"",1,495.00,BAJO STOCK
+JUGP326,Juguetes,A jugar,Nenuco,"",1,1242.00,BAJO STOCK
+JUGP327,Juguetes,A jugar,Its,"",1,1195.00,BAJO STOCK
+JUGP328,Juguetes,A jugar,Shnuggle,"",1,1350.00,BAJO STOCK
+JUGP329,Juguetes,A jugar,Cybex,"",1,2154.60,BAJO STOCK
+JUGP330,Juguetes,A jugar,Prinsel,"",1,797.50,BAJO STOCK
+JUGP331,Juguetes,A jugar,General,"",1,214.50,BAJO STOCK
+JUGP332,Juguetes,A jugar,Chicco,"",1,275.00,BAJO STOCK
+JUGP333,Juguetes,A jugar,YoYo,"",1,3774.60,BAJO STOCK
+JUGP334,Juguetes,A jugar,YoYo,"",1,2154.60,BAJO STOCK
+JUGP335,Juguetes,A jugar,YoYo,"",1,2154.60,BAJO STOCK
+JUGP336,Juguetes,A jugar,D,"",1,214.50,BAJO STOCK
+JUGP337,Juguetes,A jugar,Avi,"",1,357.50,BAJO STOCK
+JUGP338,Juguetes,A jugar,Diva,"",1,825.00,BAJO STOCK
+JUGP339,Juguetes,A jugar,Cardiff,"",1,1074.60,BAJO STOCK
+JUGP340,Juguetes,A jugar,Disney,"",1,495.00,BAJO STOCK
+JUGP341,Juguetes,A jugar,Via,"",1,1614.60,BAJO STOCK
+JUGP342,Juguetes,A jugar,Nicolle,"",1,984.50,BAJO STOCK
+JUGP343,Juguetes,A jugar,Evenflo,"",1,2154.60,BAJO STOCK
+JUGP344,Juguetes,A jugar,Fisher,"",1,935.00,BAJO STOCK
+JUGP345,Juguetes,A jugar,Tommee,"",1,1053.00,BAJO STOCK
+JUGP346,Juguetes,A jugar,Esterilizador,"",1,247.50,BAJO STOCK
+JUGP347,Juguetes,A jugar,Chicco,"",1,435.00,BAJO STOCK
+JUGP348,Juguetes,A jugar,Baby,"",1,968.00,BAJO STOCK
+JUGP349,Juguetes,A jugar,ABC,"",1,935.00,BAJO STOCK
+JUGP351,Juguetes,A jugar,Mattel,"",1,544.50,BAJO STOCK
+JUGP352,Juguetes,A jugar,Bambineto,"",1,2154.60,BAJO STOCK
+JUGP353,Juguetes,A jugar,Prinsel,"",1,605.00,BAJO STOCK
+JUGP354,Juguetes,A jugar,Baby,"",1,935.00,BAJO STOCK
+JUGP355,Juguetes,A jugar,Fisher,"",1,874.50,BAJO STOCK
+JUGP356,Juguetes,A jugar,TushBaby,"",1,1290.60,BAJO STOCK
+JUGP357,Juguetes,A jugar,Monopoly,"",1,434.50,BAJO STOCK
+JUGP358,Juguetes,A jugar,Chicco,"",1,324.50,BAJO STOCK
+JUGP359,Juguetes,A jugar,Little,"",1,385.00,BAJO STOCK
+JUGP360,Juguetes,A jugar,Fao,"",1,869.00,BAJO STOCK
+JUGP361,Juguetes,A jugar,Hot,"",1,324.50,BAJO STOCK
+JUGP362,Juguetes,A jugar,Apache,"",1,544.50,BAJO STOCK
+JUGP363,Juguetes,A jugar,Prinsel,"",1,462.00,BAJO STOCK
+JUGP364,Juguetes,A jugar,ChilaFish,"",1,764.50,BAJO STOCK
+JUGP365,Juguetes,A jugar,BabyBjorn,"",1,3235.00,BAJO STOCK
+JUGP366,Juguetes,A jugar,Chicco,"",1,1069.20,BAJO STOCK
+JUGP367,Juguetes,A jugar,Paw,"",1,385.00,BAJO STOCK
+JUGP368,Juguetes,A jugar,Imaginext,"",1,434.50,BAJO STOCK
+JUGP369,Juguetes,A jugar,Imaginext,"",1,324.50,BAJO STOCK
+JUGP370,Juguetes,A jugar,Imaginext,"",1,324.50,BAJO STOCK
+JUGP371,Juguetes,A jugar,Hot,"",1,984.50,BAJO STOCK
+JUGP372,Juguetes,A jugar,Bebear,"",1,984.50,BAJO STOCK
+JUGP373,Juguetes,A jugar,Novelty,"",1,302.50,BAJO STOCK
+JUGP374,Juguetes,A jugar,Smart,"",1,247.50,BAJO STOCK
+JUGP375,Juguetes,A jugar,Mega,"",1,434.50,BAJO STOCK
+JUGP376,Juguetes,A jugar,Playskool,"",1,434.50,BAJO STOCK
+JUGP377,Juguetes,A jugar,Alpha,"",1,280.28,BAJO STOCK
+JUGP378,Juguetes,A jugar,Bright,"",1,715.00,BAJO STOCK
+JUGP379,Juguetes,A jugar,Halo,"",1,4314.60,BAJO STOCK
+JUGP380,Juguetes,A jugar,Raganet,"",1,467.50,BAJO STOCK
+JUGP381,Juguetes,A jugar,Oxelo,"",1,825.00,BAJO STOCK
+JUGP382,Juguetes,A jugar,Kristhian,"",1,1350.00,BAJO STOCK
+JUGP383,Juguetes,A jugar,Teytoy,"",1,544.50,BAJO STOCK
+JUGP384,Juguetes,A jugar,Disney,"",1,264.00,BAJO STOCK
+JUGP385,Juguetes,A jugar,Marvel,"",1,214.50,BAJO STOCK
+JUGP386,Juguetes,A jugar,Marvel,"",1,214.50,BAJO STOCK
+JUGP387,Juguetes,A jugar,Dc,"",1,324.50,BAJO STOCK
+JUGP388,Juguetes,A jugar,Marvel,"",1,198.00,BAJO STOCK
+JUGP389,Juguetes,A jugar,Marvel,"",1,214.50,BAJO STOCK
+JUGP390,Juguetes,A jugar,Marvel,"",1,214.50,BAJO STOCK
+JUGP391,Juguetes,A jugar,Disney,"",1,247.50,BAJO STOCK
+JUGP392,Juguetes,A jugar,Marvel,"",1,165.00,BAJO STOCK
+JUGP393,Juguetes,A jugar,Marvel,"",1,214.50,BAJO STOCK
+JUGP394,Juguetes,A jugar,Disney,"",1,385.00,BAJO STOCK
+JUGP395,Juguetes,A jugar,Disney,"",1,434.50,BAJO STOCK
+JUGP396,Juguetes,A jugar,Disney,"",1,319.00,BAJO STOCK
+JUGP397,Juguetes,A jugar,Chicco,"",1,1830.60,BAJO STOCK
+JUGP398,Juguetes,A jugar,Tina,"",1,275.00,BAJO STOCK
+JUGP399,Juguetes,A jugar,Dbebe,"",1,299.00,BAJO STOCK
+JUGP400,Juguetes,A jugar,Medela,"",1,3186.00,BAJO STOCK
+JUGP401,Juguetes,A jugar,Chicco,"",1,313.50,BAJO STOCK
+JUGP402,Juguetes,A jugar,Arlequin,"",1,319.00,BAJO STOCK
+JUGP403,Juguetes,A jugar,Aurora,"",1,209.00,BAJO STOCK
+JUGP404,Juguetes,A jugar,Aurora,"",1,143.00,BAJO STOCK
+JUGP405,Juguetes,A jugar,Bailarina,"",1,319.00,BAJO STOCK
+JUGP406,Juguetes,A jugar,Barbie,"",1,495.00,BAJO STOCK
+JUGP407,Juguetes,A jugar,Melissa&Dough,"",1,165.00,BAJO STOCK
+JUGP408,Juguetes,A jugar,Disney,"",1,385.00,BAJO STOCK
+JUGP409,Juguetes,A jugar,Bella,"",1,467.50,BAJO STOCK
+JUGP410,Juguetes,A jugar,Disney,"",1,324.50,BAJO STOCK
+JUGP411,Juguetes,A jugar,Dungeons,"",1,346.50,BAJO STOCK
+JUGP412,Juguetes,A jugar,Skip,"",1,181.50,BAJO STOCK
+JUGP413,Juguetes,A jugar,Huffy,"",1,1074.60,BAJO STOCK
+JUGP414,Juguetes,A jugar,Ingenuity,"",1,935.00,BAJO STOCK
+JUGP415,Juguetes,A jugar,Marcas,"",1,434.50,BAJO STOCK
+JUGP416,Juguetes,A jugar,Marcas,"",1,434.50,BAJO STOCK
+JUGP417,Juguetes,A jugar,Marcas,"",1,434.50,BAJO STOCK
+JUGP418,Juguetes,A jugar,Chicco,"",1,434.50,BAJO STOCK
+JUGP419,Juguetes,A jugar,Just,"",1,330.00,BAJO STOCK
+JUGP421,Juguetes,A jugar,Ingenuity,"",1,1614.60,BAJO STOCK
+JUGP422,Juguetes,A jugar,Disney,"",1,324.50,BAJO STOCK
+JUGP423,Juguetes,A jugar,Disney,"",1,434.50,BAJO STOCK
+JUGP424,Juguetes,A jugar,Novelty,"",1,247.50,BAJO STOCK
+JUGP425,Juguetes,A jugar,Novelty,"",1,66.00,BAJO STOCK
+JUGP426,Juguetes,A jugar,Pista,"",1,544.50,BAJO STOCK
+JUGP427,Juguetes,A jugar,Lego,"",1,654.50,BAJO STOCK
+JUGP428,Juguetes,A jugar,Chicco,"",1,434.50,BAJO STOCK
+JUGP429,Juguetes,A jugar,Extractor,"",1,764.50,BAJO STOCK
+JUGP430,Juguetes,A jugar,Bumper,"",1,715.00,BAJO STOCK
+JUGP432,Juguetes,A jugar,Mattel,"",1,984.50,BAJO STOCK
+JUGP433,Juguetes,A jugar,Hockey,"",1,544.50,BAJO STOCK
+JUGP434,Juguetes,A jugar,ItsIMagical,"",1,275.00,BAJO STOCK
+JUGP435,Juguetes,A jugar,Disney,"",1,544.50,BAJO STOCK
+JUGP436,Juguetes,A jugar,Lennylamb,"",1,1350.00,BAJO STOCK
+JUGP438,Juguetes,A jugar,Disney,"",1,935.00,BAJO STOCK
+JUGP440,Juguetes,A jugar,Wood,"",1,979.00,BAJO STOCK
+JUGP441,Juguetes,A jugar,Summer,"",1,495.00,BAJO STOCK
+JUGP442,Juguetes,A jugar,Adidas,"",1,825.00,BAJO STOCK
+LACP002,Lactancia,A comer,Tommee,"",1,429.00,BAJO STOCK
+LACP003,Lactancia,A comer,Tommee,"",1,357.50,BAJO STOCK
+LACP005,Lactancia,A comer,Medela,"",1,209.00,BAJO STOCK
+LACP006,Lactancia,A comer,General,"",1,1128.60,BAJO STOCK
+LACP007,Lactancia,A comer,Chicco,"",1,137.50,BAJO STOCK
+LACP008,Lactancia,A comer,Medela,"",1,434.50,BAJO STOCK
+MACP001,Niña arriba de cintura,Ropa,,"",1,54.00,BAJO STOCK
+MCRP002,Montables y correpasillos Bebé,A jugar,General,"",1,324.50,BAJO STOCK
+MCRP004,Montables y correpasillos Bebé,A jugar,Fisher,"",1,495.00,BAJO STOCK
+MCRP005,Montables y correpasillos Bebé,A jugar,General,"",1,324.50,BAJO STOCK
+MCRP006,Montables y correpasillos Bebé,A jugar,Feber,"",1,418.00,BAJO STOCK
+MCRP007,Montables y correpasillos Bebé,A jugar,Feber,"",1,972.00,BAJO STOCK
+MCRP008,Montables y correpasillos Bebé,A jugar,Molto,"",1,495.00,BAJO STOCK
+MCRP010,Montables y correpasillos Bebé,A jugar,chicco,"",1,434.50,BAJO STOCK
+MCRP011,Montables y correpasillos Bebé,A jugar,Little,"",1,495.00,BAJO STOCK
+MDRP001,Muebles de recámara,A dormir,Tete,"",1,4539.56,BAJO STOCK
+MDRP002,Muebles de recámara,A dormir,Pottery,"",1,9174.60,BAJO STOCK
+MONP002,Monitores,En Casa,Angelcare,"",1,2585.00,BAJO STOCK
+MONP003,Monitores,En Casa,Angelcare,"",1,2154.60,BAJO STOCK
+MONP004,Monitores,En Casa,Angelcare,"",1,2149.00,BAJO STOCK
+MONP005,Monitores,En Casa,General,"",1,1717.20,BAJO STOCK
+MONP006,Monitores,En Casa,Motorola,"",1,2430.00,BAJO STOCK
+ODPP001,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP002,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP003,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP004,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP005,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP006,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP007,Otros de Paseo,A pasear,Flotdores,"",1,55.00,BAJO STOCK
+ODPP008,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP009,Otros de Paseo,A pasear,Flotis,"",1,55.00,BAJO STOCK
+ODPP010,Otros de Paseo,A pasear,Salvavidas,"",1,66.00,BAJO STOCK
+ODPP011,Otros de Paseo,A pasear,Flotis,"",1,77.00,BAJO STOCK
+ODPP012,Otros de Paseo,A pasear,General,"",1,110.00,BAJO STOCK
+ODPP013,Otros de Paseo,A pasear,General,"",1,33.00,BAJO STOCK
+ODPP014,Otros de Paseo,A pasear,General,"",1,110.00,BAJO STOCK
+ODPP015,Otros de Paseo,A pasear,General,"",1,110.00,BAJO STOCK
+ODPP016,Otros de Paseo,A pasear,General,"",1,429.00,BAJO STOCK
+ODPP017,Otros de Paseo,A pasear,General,"",1,484.00,BAJO STOCK
+ODPP018,Otros de Paseo,A pasear,Salvavidas,"",1,181.50,BAJO STOCK
+ODPP019,Otros de Paseo,A pasear,Delta,"",1,907.50,BAJO STOCK
+ODPP020,Otros de Paseo,A pasear,Eddie,"",1,661.57,BAJO STOCK
+ODPP021,Otros de Paseo,A pasear,Panbitt,"",1,984.50,BAJO STOCK
+ODPP022,Otros de Paseo,A pasear,General,"",1,247.50,BAJO STOCK
+ODPP023,Otros de Paseo,A pasear,General,"",1,143.00,BAJO STOCK
+ODPP024,Otros de Paseo,A pasear,General,"",1,198.00,BAJO STOCK
+ODPP026,Otros de Paseo,A pasear,Distroller,"",1,275.00,BAJO STOCK
+ODPP027,Otros de Paseo,A pasear,Its,"",1,148.50,BAJO STOCK
+ODPP028,Otros de Paseo,A pasear,Moose,"",1,385.00,BAJO STOCK
+SPCP001,Sillas para comer,En Casa,Chicco,"",1,1069.20,BAJO STOCK
+SPCP002,Sillas para comer,En Casa,Svan,"",1,2694.60,BAJO STOCK
+SPCP003,Sillas para comer,En Casa,Prince,"",1,495.00,BAJO STOCK
+SPCP004,Sillas para comer,En Casa,Chicco,"",1,1069.20,BAJO STOCK
+SPCP005,Sillas para comer,En Casa,Svan,"",1,2694.60,BAJO STOCK
+SPCP006,Sillas para comer,En Casa,Prince,"",1,495.00,BAJO STOCK
+SPCP007,Sillas para comer,En Casa,Transkids,"",1,539.00,BAJO STOCK
+SPCP008,Sillas para comer,En Casa,Little,"",1,435.00,BAJO STOCK
+SPCP009,Sillas para comer,En Casa,Chicco,"",1,539.00,BAJO STOCK
+SPCP010,Sillas para comer,En Casa,Evenflo,"",1,1620.00,BAJO STOCK
+SPCP011,Sillas para comer,En Casa,Chicco,"",1,1938.00,BAJO STOCK
+SPCP012,Sillas para comer,En Casa,Graco,"",1,2700.00,BAJO STOCK
+SPCP013,Sillas para comer,En Casa,Chicco,"",1,3769.20,BAJO STOCK
+SPCP014,Sillas para comer,En Casa,Napps,"",1,1085.00,BAJO STOCK
+SPCP016,Sillas para comer,En Casa,Brevi,"",1,1069.20,BAJO STOCK
+SPCP017,Sillas para comer,En Casa,Chicco,"",1,2473.20,BAJO STOCK
+SPCP018,Sillas para comer,En Casa,Chicco,"",1,2154.60,BAJO STOCK
+SPCP019,Sillas para comer,En Casa,Chicco,"",1,2905.20,BAJO STOCK
+SPCP020,Sillas para comer,En Casa,Prinsel,"",1,544.50,BAJO STOCK
+SPCP021,Sillas para comer,En Casa,Igenuity,"",1,467.50,BAJO STOCK
+SPCP022,Sillas para comer,En Casa,Ingenuity,"",1,999.00,BAJO STOCK
+AUTP010,Autoasientos,A pasear,Chicco,"",2,3942.00,BAJO STOCK
+CDVP003,Cunas de viaje,A dormir,Chicco,"",2,2008.80,BAJO STOCK
+CHNP001,Calzado Niño,Ropa,,"",2,450.00,BAJO STOCK
+CHNP002,Calzado Niño,Ropa,,"",2,250.00,BAJO STOCK
+HYAP005,Higiene y accesorios,En Casa,Nuevo,"",2,995.00,BAJO STOCK
+HYAP009,Higiene y accesorios,En Casa,Esalera,"",2,495.00,BAJO STOCK
+JGGP001,Juegos grandes,A jugar,SmartTrike,"",2,1998.00,BAJO STOCK
+JUGP001,Juguetes,A jugar,Fisher,"",2,324.50,BAJO STOCK
+JUGP002,Juguetes,A jugar,Fisher,"",2,324.50,BAJO STOCK
+JUGP037,Juguetes,A jugar,Medela,"",2,3186.00,BAJO STOCK
+JUGP052,Juguetes,A jugar,Rocky,"",2,825.00,BAJO STOCK
+JUGP053,Juguetes,A jugar,Mattel,"",2,99.00,BAJO STOCK
+JUGP071,Juguetes,A jugar,Baby,"",2,550.00,BAJO STOCK
+JUGP073,Juguetes,A jugar,Fisher,"",2,209.00,BAJO STOCK
+JUGP104,Juguetes,A jugar,Prinsel,"",2,1074.60,BAJO STOCK
+JUGP116,Juguetes,A jugar,Fisher,"",2,209.00,BAJO STOCK
+JUGP118,Juguetes,A jugar,Mega,"",2,539.00,BAJO STOCK
+JUGP121,Juguetes,A jugar,Fisher,"",2,154.00,BAJO STOCK
+JUGP122,Juguetes,A jugar,Safety,"",2,1058.40,BAJO STOCK
+JUGP132,Juguetes,A jugar,Fisher,"",2,693.00,BAJO STOCK
+JUGP135,Juguetes,A jugar,Apache,"",2,1501.20,BAJO STOCK
+JUGP141,Juguetes,A jugar,Chicco,"",2,1350.00,BAJO STOCK
+JUGP145,Juguetes,A jugar,Juego,"",2,434.50,BAJO STOCK
+JUGP159,Juguetes,A jugar,General,"",2,27.50,BAJO STOCK
+JUGP168,Juguetes,A jugar,Mayoral,"",2,577.50,BAJO STOCK
+JUGP172,Juguetes,A jugar,Fiorella,"",2,324.50,BAJO STOCK
+JUGP179,Juguetes,A jugar,Dr.,"",2,247.50,BAJO STOCK
+JUGP195,Juguetes,A jugar,Kiinde,"",2,319.00,BAJO STOCK
+JUGP206,Juguetes,A jugar,Chicco,"",2,874.50,BAJO STOCK
+JUGP208,Juguetes,A jugar,Pigeon,"",2,121.00,BAJO STOCK
+JUGP226,Juguetes,A jugar,PinBall,"",2,434.50,BAJO STOCK
+JUGP253,Juguetes,A jugar,Chicco,"",2,874.50,BAJO STOCK
+JUGP274,Juguetes,A jugar,Ralph,"",2,187.00,BAJO STOCK
+JUGP297,Juguetes,A jugar,Marvel,"",2,385.00,BAJO STOCK
+JUGP299,Juguetes,A jugar,Shnuggle,"",2,1350.00,BAJO STOCK
+JUGP350,Juguetes,A jugar,Kids,"",2,544.50,BAJO STOCK
+JUGP431,Juguetes,A jugar,Plegable,"",2,120.00,BAJO STOCK
+JUGP437,Juguetes,A jugar,Redlemon,"",2,385.00,BAJO STOCK
+LACP001,Lactancia,A comer,Medela,"",2,654.50,BAJO STOCK
+LACP004,Lactancia,A comer,Squezze,"",2,290.00,BAJO STOCK
+MCRP001,Montables y correpasillos Bebé,A jugar,Fisher,"",2,324.50,BAJO STOCK
+MCRP003,Montables y correpasillos Bebé,A jugar,Fisher,"",2,395.00,BAJO STOCK
+MCRP009,Montables y correpasillos Bebé,A jugar,Step,"",2,495.00,BAJO STOCK
+SPCP015,Sillas para comer,En Casa,Napps,"",2,1185.00,BAJO STOCK
+AUTP011,Autoasientos,A pasear,Cosco,"",3,2970.00,DISPONIBLE
+JUGP048,Juguetes,A jugar,Mattel,"",3,1026.00,DISPONIBLE
+JUGP060,Juguetes,A jugar,juguete,"",3,236.50,DISPONIBLE
+JUGP245,Juguetes,A jugar,Disney,"",3,434.50,DISPONIBLE
+JUGP420,Juguetes,A jugar,Cuadro,"",3,495.00,DISPONIBLE
+JUGP439,Juguetes,A jugar,Scooter,"",3,203.50,DISPONIBLE
+ODPP025,Otros de Paseo,A pasear,Sombras,"",3,346.50,DISPONIBLE
+AUTP020,Autoasientos,A pasear,Evenflo,"",4,1350.00,DISPONIBLE
+JUGP230,Juguetes,A jugar,Alimentacon,"",4,423.50,DISPONIBLE
+JUGP250,Juguetes,A jugar,Napps,"",4,192.50,DISPONIBLE
+JUGP251,Juguetes,A jugar,Napps,"",4,132.00,DISPONIBLE
+JUGP252,Juguetes,A jugar,Napps,"",4,132.00,DISPONIBLE
+JUGP256,Juguetes,A jugar,Napps,"",4,132.00,DISPONIBLE
+JUGP257,Juguetes,A jugar,Napps,"",4,132.00,DISPONIBLE
+JUGP319,Juguetes,A jugar,Smart,"",4,434.50,DISPONIBLE
+CMNP001,Calzado Niña,Ropa,,"",5,52.00,DISPONIBLE
+JUGP232,Juguetes,A jugar,Marvel,"",6,99.00,DISPONIBLE
+HYAP017,Higiene y accesorios,En Casa,Huggies,"",7,176.00,DISPONIBLE
+JUGP231,Juguetes,A jugar,Mate,"",8,137.50,DISPONIBLE
