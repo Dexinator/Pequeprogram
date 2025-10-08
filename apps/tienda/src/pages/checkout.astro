@@ -775,7 +775,7 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
               
               try {
                 // Obtener datos del formulario
-                const cardFormData = cardForm.getCardFormData();
+                const cardFormData = window.mpCardForm.getCardFormData();
                 console.log('Datos de la tarjeta:', cardFormData);
                 
                 // Validar token
