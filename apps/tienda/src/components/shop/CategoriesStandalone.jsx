@@ -30,7 +30,7 @@ function CategoriesStandalone() {
           ...cat,
           productCount: cat.product_count || 0,
           emoji: {
-            'A pasear': '🚼',
+            'A pasear': '🚗',
             'A dormir': '🛏️',
             'En Casa': '🏠',
             'A comer': '🍽️',
