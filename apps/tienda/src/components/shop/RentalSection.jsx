@@ -99,7 +99,7 @@ const RentalSection = () => {
               </p>
               <button 
                 className="bg-brand-rosa hover:bg-brand-rosa-dark text-white px-6 py-3 rounded-lg font-heading font-semibold shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all inline-flex items-center"
-                onClick={() => window.location.href = '/contacto'}
+                onClick={() => window.location.href = 'https://wa.me/525523632389?text=Hola,%20me%20interesa%20rentar%20un%20artículo'}
               >
                 Pregunta por disponibilidad
                 <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
