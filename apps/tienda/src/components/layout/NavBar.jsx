@@ -49,7 +49,7 @@ const NavBarContent = () => {
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center">
                 <a href="/" className="flex items-center group">
-                  <LogoReact className="h-20 md:h-24 w-auto group-hover:scale-105 transition-transform duration-300" />
+                  <LogoReact className="h-14 md:h-16 w-auto group-hover:scale-105 transition-transform duration-300" />
                 </a>
               </div>
               

@@ -1,0 +1,363 @@
+MAPEO DE CORRECCIÓN DE SKUs
+================================================================================
+
+JUGP005         → MDEP001         | Original: HSMDEP11        | Hot wheels Eléctrico
+JUGP006         → ABDP001         | Original: HSABDP5         | General Bolsa
+JUGP007         → ABDP002         | Original: HSABDP6         | General Bolsa
+JUGP008         → ABDP003         | Original: HSABDP7         | General Bolsa
+JUGP009         → ABDP004         | Original: HSABDP8         | General Bolsa
+JUGP010         → ABDP005         | Original: HSABDP9         | General Bolsa
+JUGP011         → ABDP006         | Original: HSABDP10        | Kipling Bolsa
+JUGP012         → ABDP007         | Original: HSABDP11        | General Bolsa
+JUGP013         → ABDP008         | Original: HSABDP12        | General Bolsa
+JUGP014         → ABDP009         | Original: HSABDP13        | Tous Bolsa
+JUGP015         → ABDP010         | Original: HSABDP14        | General Bolsa
+JUGP016         → ABDP011         | Original: HSABDP15        | Tous Bolsa
+JUGP017         → ABDP012         | Original: HSABDP16        | General Bolsa
+JUGP018         → ABDP013         | Original: HSABDP17        | General Bolsa
+JUGP019         → ABDP014         | Original: HSABDP20        | General Bolsa
+JUGP020         → ABDP015         | Original: HSABDP21        | General Bolsa
+JUGP021         → ABDP016         | Original: HSABDP22        | General Bolsa
+JUGP022         → ABDP017         | Original: HSABDP25        | General Bolsa
+JUGP023         → ABDP018         | Original: HSABDP26        | General Bolsa
+JUGP024         → ABDP019         | Original: HSABDP27        | General Bolsa
+JUGP025         → ABDP020         | Original: HSABDP28        | General Bolsa
+JUGP026         → ABDP021         | Original: HSABDP29        | General Bolsa
+JUGP027         → ABDP022         | Original: HSABDP30        | General Bolsa
+JUGP028         → ABDP023         | Original: HSABDP31        | General Bolsa
+JUGP029         → ABDP024         | Original: HSABDP32        | General Bolsa
+JUGP030         → ABDP025         | Original: HSABDP36        | General Bolsa
+JUGP031         → ABDP026         | Original: HSABDP40        | Pañalera JJ Cole
+JUGP032         → EDLP001         | Original: HSEDLP6         | Nature Bond Manual Sencillo
+JUGP033         → EDLP002         | Original: HSEDLP8         | Lansinoh Sencillo
+JUGP034         → EDLP003         | Original: HSEDLP9         | Evenflo Sencillo
+JUGP035         → EDLP004         | Original: HSEDLP11        | Lansinoh Doble
+JUGP036         → EDLP005         | Original: HSEDLP14        | Ameda Doble
+JUGP037         → EDLP006         | Original: HSEDLP18        | Medela Doble
+JUGP038         → EDLP007         | Original: HSEDLP19        | Avent Sencillo
+JUGP039         → EDLP008         | Original: HSEDLP20        | Free Style Nuevo Medela Doble
+JUGP040         → EDLP009         | Original: HSEDLP21        | Avent Sencillo
+JUGP041         → EDLP010         | Original: HSEDLP22        | Chicco Sencillo
+JUGP042         → EDLP011         | Original: HSEDLP24        | Medela Doble
+JUGP043         → EDLP012         | Original: HSEDLP25        | Avent Sencillo
+JUGP044         → EDLP013         | Original: HSEDLP26        | Medela Doble
+JUGP045         → ABDP027         | Original: HSABDP44        | Mochila Escolar SkipHop Detalle
+JUGP046         → MDAP001         | Original: HSMDAP9         | Mesa de madera  Sencilla
+JUGP051         → ACRP001         | Original: HSACRP8         | Cuadros  Otro
+JUGP054         → JDMP001         | Original: HSJDMP5         | Rompe cabezas faro Completo
+JUGP055         → JDMP002         | Original: HSJDMP6         | Rompe cabezas flamenco Completo
+JUGP056         → JDMP003         | Original: HSJDMP7         | Rompe cabezas america cars Completo
+JUGP061         → DISP001         | Original: HSDISP4         | Ruz  4-5 años
+JUGP062         → JDMP004         | Original: HSJDMP18        | Rompe cabezas fantasia  Completo
+JUGP063         → JDMP005         | Original: HSJDMP25        | Rompe cabezas barbie  Completo
+JUGP064         → ANDP002         | Original: HSANDP17        | joovy Plegable
+JUGP065         → MDCP001         | Original: HSMDCP6         | Fisher Price Sonido y movimiento
+JUGP066         → MDCP002         | Original: HSMDCP9         | Tiny Love Sonido y movimiento
+JUGP067         → MDCP003         | Original: HSMDCP10        | Tiny Love Sonido y movimiento
+JUGP068         → MDCP004         | Original: HSMDCP11        | Taf toy  Sonido y movimiento
+JUGP069         → CAPP001         | Original: HSCAPP27        | Chicco Cangurera
+JUGP070         → CAPP002         | Original: HSCAPP28        | BabyBjorn Cangurera
+JUGP071         → ACAP001         | Original: HSACAP6         | Baby jogger Adaptador para Portabebé
+JUGP075         → ACRP002         | Original: HSACRP11        | Marvel Saco de dormir
+JUGP076         → ACAP002         | Original: HSACAP9         | General Funda reductora
+JUGP077         → DISP002         | Original: HSMCCP5         | Disfraces  2 años
+JUGP078         → DISP003         | Original: HSMCCP6         | Disfraces  4 años
+JUGP079         → DISP004         | Original: HSMCCP8         | Disfraces  6 meses
+JUGP080         → DISP005         | Original: HSMCCP12        | Disfraces  2 años
+JUGP081         → DISP006         | Original: HSMCCP13        | Disfraces  2 años
+JUGP082         → DISP007         | Original: HSMCCP14        | Disfraces  2 años
+JUGP083         → DISP008         | Original: HSMCCP15        | Disfraces  2 años
+JUGP084         → DISP009         | Original: HSHCCP3         | Disfraces  2 años
+JUGP085         → DISP010         | Original: HSMCCP19        | Disfraces  4 años
+JUGP086         → DISP011         | Original: HSMCCP20        | Disfraces  3 años
+JUGP087         → DISP012         | Original: HSMCCP21        | Disfraces  2 años
+JUGP088         → DISP013         | Original: HSHCCP5         | Disfraces  6 meses
+JUGP089         → DISP014         | Original: HSHCCP9         | Disfraces  3 años
+JUGP090         → DISP015         | Original: HSHCCP10        | Disfraces  4 años
+JUGP091         → DISP016         | Original: HSMCCP22        | Disfraces  4 años
+JUGP092         → DISP017         | Original: HSMCCP26        | Disfraces  5 años
+JUGP093         → DISP018         | Original: HSMCCP27        | Disfraces  5 años
+JUGP094         → DISP019         | Original: HSMCCP29        | Disfraces  5 años
+JUGP095         → DISP020         | Original: HSMCCP32        | Disfraces  4 años
+JUGP096         → ACAP003         | Original: HSACAP11        | Stokke Funda de carriola
+JUGP097         → MCBP002         | Original: HSMCBP40        | Beaba  Silla Mecedora
+JUGP098         → JDMP006         | Original: HSJDMP31        | Pimpones Completo
+JUGP099         → LYRP001         | Original: HSLYRP18        | Rompecabezas 500pz Adultos
+JUGP101         → BPCP002         | Original: HSBPCP6         | Infanti 100 cm
+JUGP102         → MDEP002         | Original: HSMDEP19        | Prinsel Eléctrico
+JUGP103         → ANDP003         | Original: HSANDP20        | Prinsel Plegable
+JUGP104         → ANDP004         | Original: HSANDP21        | Prinsel Plegable
+JUGP105         → TYBP004         | Original: HSTYBP34        | Magistronic R-16 / 3-5a
+JUGP106         → MCBP003         | Original: HSMCBP46        | Prinsel Mecedora Rosa/azul
+JUGP108         → LYRP002         | Original: HSLYRP20        | General Niños
+JUGP109         → LYRP003         | Original: HSLYRP21        | Libro Niños
+JUGP110         → LYRP004         | Original: HSLYRP22        | General Bebés
+JUGP111         → LYRP005         | Original: HSLYRP23        | General Bebés
+JUGP112         → LYRP006         | Original: HSLYRP24        | General Niños
+JUGP113         → PDAP001         | Original: HSPDAP3         | baby Bullet Eléctrico
+JUGP114         → LYRP007         | Original: HSLYRP26        | Libro Niños
+JUGP115         → LYRP008         | Original: HSLYRP34        | General Bebés
+JUGP122         → BPCP003         | Original: HSBPCP8         | Safety 1st 120 cm
+JUGP123         → CYMP001         | Original: HSCYMP17        | Chicco Colecho Magic
+JUGP124         → EDLP014         | Original: HSEDLP29        | Avent Sencillo
+JUGP125         → EDLP015         | Original: HSEDLP30        | Spectra Doble
+JUGP126         → MDEP003         | Original: HSMDEP22        | Prinsel Eléctrico
+JUGP127         → ACRP003         | Original: HSACRP12        | Cuadros
+JUGP128         → ACRP004         | Original: HSACRP13        | Cuadros
+JUGP129         → ACRP005         | Original: HSACRP14        | Cuadros
+JUGP130         → BANP001         | Original: HSBANP24        | Tippi Tina
+JUGP131         → CAPP003         | Original: HSCAPP34        | Cybex Cangurera
+JUGP132         → MDCP005         | Original: HSMDCP13        | Fisher Price Sonido y movimiento
+JUGP133         → MDCP006         | Original: HSMDCP15        | Fisher Price Sonido y movimiento
+JUGP135         → MDEP004         | Original: HSMDEP23        | Apache Empuje
+JUGP136         → ANDP005         | Original: HSANDP22        | Prinsel Fija
+JUGP137         → SORP001         | Original: HSSORP18        | Firestat Patines
+JUGP139         → TYBP005         | Original: HSTYBP48        | Paris R-12 / 2-3a
+JUGP141         → ANDP006         | Original: HSANDP23        | Chicco Plegable
+JUGP142         → SORP002         | Original: HSSORP20        | Apache Scooter Grande
+JUGP143         → TYBP006         | Original: HSTYBP50        | Banana Bicicleta de Equilibrio
+JUGP145         → ADAP001         | Original: HSPROVISIONAL014 | Juego Platos y cubiertos
+JUGP146         → DISP021         | Original: DISP20          | Disney 6-7 años
+JUGP148         → DISP022         | Original: DISP23          | Disney 6-7 años
+JUGP149         → SORP003         | Original: SORP25          | General Scooter pequeño
+JUGP150         → COLP002         | Original: COLP27          | Cuna estándar
+JUGP151         → CAPP004         | Original: CAPP48          | Britax Cangurera
+JUGP153         → SORP004         | Original: SORP30          | Apache Scooter Grande
+JUGP154         → CAPP005         | Original: CAPP50          | Mon Caramel Bambineto
+JUGP156         → TYBP007         | Original: TYBP64          | Radio Flyer Triciclo Pequeño
+JUGP157         → BANP002         | Original: BANP36          | Prinsel Con base y cambiador
+JUGP159         → HCCP001         | Original: HCCP15          | General 18 meses
+JUGP160         → HCCP002         | Original: HCCP16          | General 6 meses
+JUGP161         → CHNP003         | Original: CHNP10          | General 7-8a 19.5-20cm
+JUGP162         → MCCP005         | Original: MCCP37          | General 7 años
+JUGP163         → DISP023         | Original: DISP24          | Disney 4-5 años
+JUGP165         → MCBP004         | Original: MCBP64          | Ingenuity Columpio mecedora
+JUGP166         → MCCP006         | Original: MCCP40          | Polo Ralph Lauren 4 años
+JUGP167         → MCCP007         | Original: MCCP41          | Tous 0-3 meses
+JUGP168         → MCCP008         | Original: MCCP43          | Mayoral 3 años
+JUGP169         → MCCP009         | Original: MCCP44          | Mayoral 6 meses
+JUGP170         → MCCP010         | Original: MCCP47          | Foque 18 meses
+JUGP171         → MCCP011         | Original: MCCP48          | Primmi 12 meses
+JUGP172         → MCCP012         | Original: MCCP45          | Fiorella 12 meses
+JUGP173         → HCCP003         | Original: HCCP18          | Little Me 9 meses
+JUGP174         → CAPP006         | Original: CAPP54          | Babuu Bambineto
+JUGP175         → CAPP007         | Original: CAPP53          | Chicco Cangurera
+JUGP177         → PDAP002         | Original: PDAP6           | babymoov Eléctrico
+JUGP178         → PDAP003         | Original: PDAP7           | Black&Decker Eléctrico
+JUGP179         → EDBP003         | Original: EDBP6           | Dr. Browns Microondas
+JUGP180         → EDBP004         | Original: EDBP7           | Tommee Tippee Microondas
+JUGP181         → EDBP005         | Original: EDBP8           | Tommee Tippee Microondas
+JUGP182         → EDBP006         | Original: EDBP9           | Chicco Microondas
+JUGP183         → EDBP007         | Original: EDBP12          | Munchkin Microondas
+JUGP184         → EDLP016         | Original: EDLP32          | Medela Sencillo
+JUGP185         → EDLP017         | Original: EDLP33          | Medela Sencillo
+JUGP186         → EDLP018         | Original: EDLP35          | Chicco Sencillo
+JUGP187         → EDLP019         | Original: EDLP37          | Evenflo Sencillo
+JUGP188         → EDLP020         | Original: EDLP38          | Dr. Brown Sencillo
+JUGP189         → EDLP021         | Original: EDLP40          | Spectra Doble
+JUGP190         → EDLP022         | Original: EDLP41          | Chicco Sencillo
+JUGP191         → EDLP023         | Original: EDLP42          | Tommee Tippee Sencillo
+JUGP192         → ADAP002         | Original: ADAP14          | Spectra Accesorios de extractor
+JUGP193         → ADAP003         | Original: ADAP15          | Medela Accesorios de extractor
+JUGP194         → ADAP004         | Original: ADAP16          | Medela Biberon
+JUGP195         → ADAP005         | Original: ADAP17          | Kiinde Biberon
+JUGP196         → EDLP024         | Original: EDLP43          | Medela Doble
+JUGP197         → ADAP006         | Original: ADAP18          | Haakaa Recolector
+JUGP198         → EDLP025         | Original: EDLP44          | Spectra Doble
+JUGP199         → ACAP004         | Original: ACAP15          | Espejos retrovisores
+JUGP200         → CAPP008         | Original: CAPP56          | BabyBjorn Cangurera
+JUGP201         → CAPP009         | Original: CAPP58          | Twingar Cangurera
+JUGP202         → CAPP010         | Original: CAPP60          | Koala Kin Rebozo
+JUGP203         → CAPP011         | Original: CAPP62          | Yemaya Mochila Ergonómica
+JUGP204         → ACAP005         | Original: ACAP16          | Pac Back Cargador Autoasiento
+JUGP205         → ACAP006         | Original: ACAP17          | Gap Porta patineta
+JUGP206         → CAPP012         | Original: CAPP64          | Chicco Cangurera
+JUGP207         → CYMP002         | Original: CYMP30          | Infanti Colecho
+JUGP208         → ADAP007         | Original: ADAP10          | Pigeon Mordederas
+JUGP209         → ADAP008         | Original: ADAP11          | Pigeon Cubiertos
+JUGP210         → ADAP009         | Original: ADAP12          | Pigeon Cepillos
+JUGP211         → ACRP006         | Original: ACRP23          | Artista reconocido Cuadros
+JUGP212         → CAPP013         | Original: CAPP55          | Saddle Baby Cargador niñ@ grande
+JUGP213         → DISP024         | Original: DISP27          | Disney 6-7 años
+JUGP214         → TYBP008         | Original: TYBP70          | Its Imagical Bicicleta de Equilibrio
+JUGP215         → SORP005         | Original: SORP32          | General Patines
+JUGP216         → SORP006         | Original: SORP33          | Next Patines
+JUGP217         → SORP007         | Original: SORP38          | Disney  Patines
+JUGP218         → SORP008         | Original: SORP39          | Heelys Patines
+JUGP219         → SORP009         | Original: SORP40          | Heelys Patines
+JUGP220         → SORP010         | Original: SORP41          | Disney  Patines
+JUGP221         → SORP011         | Original: SORP43          | Heelys Patines
+JUGP222         → ADAP010         | Original: ADAP19          | Spectra Accesorios de extractor
+JUGP223         → ACAP007         | Original: ACAP19          | Baby jogger Adaptador de carriola
+JUGP224         → ACRP007         | Original: ACRP26          | Personajes Cuadros
+JUGP225         → CYMP003         | Original: CYMP18          | Chicco Colecho
+JUGP229         → MCCP013         | Original: MCCP51          | Quinper 12 meses
+JUGP230         → ADAP011         | Original: ADAP20          | Alimentacon Termo
+JUGP231         → ADAP012         | Original: ADAP23          | Mate Mantel
+JUGP234         → LYRP009         | Original: LYRP53          | T rex Niños
+JUGP235         → EDLP026         | Original: EDLP45          | Lansinoh Sencillo
+JUGP236         → MCCP014         | Original: MCCP60          | Luca Gobbi 12 meses
+JUGP237         → MCCP015         | Original: MCCP64          | Couture Princess 4 años
+JUGP238         → MCCP016         | Original: MCCP66          | Petit Coeur 2 años
+JUGP239         → MCCP017         | Original: MCCP67          | Vestido 18 meses
+JUGP240         → MCCP018         | Original: MCCP68          | Mayoral 2 años
+JUGP241         → MCCP019         | Original: MCCP71          | Babine 2 años
+JUGP242         → MCCP020         | Original: MCCP72          | Janie and Jack 12 meses
+JUGP243         → MCCP021         | Original: MCCP63          | American princess 18 meses
+JUGP244         → MCCP022         | Original: MCCP62          | 100% algodon 3 años
+JUGP245         → SORP012         | Original: SORP48          | Disney  Scooter Grande
+JUGP246         → SORP013         | Original: SORP49          | Razor Scooter pequeño
+JUGP247         → TYBP009         | Original: TYBP75          | Mercurio Bicicleta de Equilibrio
+JUGP248         → TYBP010         | Original: TYBP76          | Fist move Bicicleta de Equilibrio
+JUGP249         → ADAP013         | Original: ADAP24          | Napps Baberos
+JUGP250         → ADAP014         | Original: ADAP25          | Napps Cucharas silicon
+JUGP251         → ADAP015         | Original: ADAP26          | Napps Cubiertos
+JUGP252         → ADAP016         | Original: ADAP27          | Napps Vasos
+JUGP253         → EDBP008         | Original: EDBP17          | Chicco Eléctrico
+JUGP255         → MCBP005         | Original: MCBP70          | Chicco Silla Mecedora
+JUGP256         → ADAP017         | Original: ADAP28          | Napps Vasos
+JUGP257         → ADAP018         | Original: ADAP29          | Napps Vasos
+JUGP261         → MBCP003         | Original: MBCP33          | Levis 6 meses
+JUGP262         → MBCP004         | Original: MBCP35          | Adidas 12 meses
+JUGP263         → HACP002         | Original: HACP55          | Gap 12 meses
+JUGP264         → HACP003         | Original: HACP54          | Dockers 12 meses
+JUGP265         → HACP004         | Original: HACP53          | Carters 6 meses
+JUGP266         → HACP005         | Original: HACP51          | Ferrioni 12 meses
+JUGP267         → HACP006         | Original: HACP44          | Tommy Hilfilger 12 meses
+JUGP268         → HACP007         | Original: HACP47          | Ralph Lauren 0-3 meses
+JUGP269         → HACP008         | Original: HACP50          | Adidas 12 meses
+JUGP270         → HCCP004         | Original: HCCP31          | Everlast 12 meses
+JUGP271         → HCCP005         | Original: HCCP32          | UnderArmour 0-3 meses
+JUGP272         → HCCP006         | Original: HCCP33          | Puma 6 meses
+JUGP273         → HCCP007         | Original: HCCP36          | Puma 6 meses
+JUGP274         → HCCP008         | Original: HCCP28          | Ralph Lauren 0-3 meses
+JUGP275         → HCCP009         | Original: HCCP37          | Bóboli 9 meses
+JUGP278         → CMNP003         | Original: CMNP50          | Luca Gobbi 3-4a 15.5-16cm
+JUGP279         → CMNP004         | Original: CMNP51          | Luca Gobbi 3-4a 15.5-16cm
+JUGP280         → CMNP005         | Original: CMNP52          | Mini Melissa 18-24m 13.5-14cm
+JUGP281         → CMNP006         | Original: CMNP53          | Mini Melissa  5-6a 17.5-18cm
+JUGP282         → MBCP005         | Original: MBCP49          | Adidas 11 años
+JUGP283         → MACP004         | Original: MACP89          | Mayoral 7 años
+JUGP284         → MACP005         | Original: MACP95          | Adidas 10 años
+JUGP285         → MACP006         | Original: MACP96          | H&M 7 años
+JUGP286         → MACP007         | Original: MACP97          | Tommy Hilfilger 12 meses
+JUGP287         → MACP008         | Original: MACP98          | Adidas 4 años
+JUGP288         → MCCP023         | Original: MCCP110         | Ralph Lauren 5 años
+JUGP289         → MCCP024         | Original: MCCP115         | Ralph Lauren 6 años
+JUGP290         → MCCP025         | Original: MCCP113         | Ralph Lauren 4 años
+JUGP291         → MCCP026         | Original: MCCP116         | Puma 2 años
+JUGP292         → ANDP007         | Original: ANDP31          | Prinsel Fija
+JUGP293         → JDMP007         | Original: JDMP38          | Spin master Completo
+JUGP294         → JDMP008         | Original: JDMP39          | Spin master Completo
+JUGP297         → SORP014         | Original: SORP51          | Marvel Scooter Grande
+JUGP298         → PDAP004         | Original: PDAP8           | Von Home Eléctrico
+JUGP299         → BANP003         | Original: BANP42          | Shnuggle Con base
+JUGP300         → CHNP004         | Original: CHNP62          | Mini burbujas 9-12m 11.5-12cm
+JUGP301         → CHNP005         | Original: CHNP64          | Andanenes 9-12m 11.5-12cm
+JUGP302         → CHNP006         | Original: CHNP63          | Mini burbujas 2-3a 14.5-15cm
+JUGP303         → CHNP007         | Original: CHNP72          | Nike 9-12m 11.5-12cm
+JUGP304         → COLP003         | Original: COLP33          | Memory Foam Cuna de viaje
+JUGP305         → CYMP004         | Original: CYMP35          | Maxicosi Colecho
+JUGP310         → SORP015         | Original: SORP61          | Ybike Scooter pequeño
+JUGP311         → TYBP011         | Original: TYBP82          | Nathor R-12 / 2-3a
+JUGP312         → ACRP008         | Original: ACRP29          | Fisher price proyector
+JUGP313         → COLP004         | Original: COLP34          | General Cuna estándar
+JUGP314         → JDCP002         | Original: JDCP7           | Baby Mink Cuna estándar
+JUGP315         → DISP025         | Original: DISP34          | Disney 2-3 años
+JUGP319         → ACAP008         | Original: ACAP25          | Smart elf Protector Asientos
+JUGP320         → MDEP005         | Original: MDEP38          | Feber Eléctrico
+JUGP321         → SORP016         | Original: SORP65          | Apache Scooter Grande
+JUGP322         → BANP004         | Original: BANP45          | Babymoov Otro
+JUGP323         → ABDP028         | Original: ABDP66          | Marc jacobs Bolsa
+JUGP324         → ABDP029         | Original: ABDP67          | General Pañalera
+JUGP327         → TYBP012         | Original: TYBP88          | Its Imagical Triciclo convertible
+JUGP328         → BANP005         | Original: BANP47          | Shnuggle Con base
+JUGP329         → MCBP006         | Original: MCBP75          | Cybex Silla Mecedora
+JUGP330         → ANDP008         | Original: ANDP32          | Prinsel Plegable
+JUGP332         → ACAP009         | Original: ACAP26          | Chicco Espejos retrovisores
+JUGP333         → ACAP010         | Original: ACAP27          | YoYo Adaptador de carriola
+JUGP334         → ACAP011         | Original: ACAP28          | YoYo Adaptador de carriola
+JUGP335         → ACAP012         | Original: ACAP29          | YoYo Adaptador de carriola
+JUGP336         → CAPP014         | Original: CAPP75          | D Yaly Rebozo
+JUGP337         → CAPP015         | Original: CAPP72          | Avi Cangurera
+JUGP338         → CAPP016         | Original: CAPP74          | Diva Essenza Mei Thai
+JUGP339         → SORP017         | Original: SORP70          | Cardiff Cruiser Patines
+JUGP340         → SORP018         | Original: SORP72          | Disney  Patines
+JUGP341         → ABDP030         | Original: ABDP71          | Via Spiga Talla 24
+JUGP342         → ABDP031         | Original: ABDP70          | Nicolle Aimee Bolsa
+JUGP343         → EDLP027         | Original: EDLP46          | Evenflo Sencillo
+JUGP344         → MCBP007         | Original: MCBP78          | Fisher Price Silla Mecedora
+JUGP345         → EDBP009         | Original: EDBP20          | Tommee Tippee Eléctrico
+JUGP346         → EDBP010         | Original: EDBP21          | Esterilizador portátil UV Munchkin
+JUGP347         → MDCP007         | Original: MDCP20          | Chicco Sonido y movimiento
+JUGP348         → ACAP013         | Original: ACAP30          | Baby jogger Patín carriola
+JUGP349         → ACAP014         | Original: ACAP31          | ABC Design Patín carriola
+JUGP350         → JDCP003         | Original: JDCP8           | Kids Matrimonial
+JUGP352         → BANP006         | Original: BANP52          | Bambineto Con base y cambiador
+JUGP353         → ANDP009         | Original: ANDP35          | Prinsel Fija
+JUGP354         → MCBP008         | Original: MCBP81          | Baby Einstein Silla Mecedora
+JUGP356         → CAPP017         | Original: CAPP78          | TushBaby Cangurera
+JUGP357         → JDMP009         | Original: JDMP42          | Monopoly Fornite Nuevo
+JUGP358         → EDLP028         | Original: EDLP47          | Chicco Sencillo
+JUGP359         → ANDP010         | Original: ANDP36          | Little Monkey Plegable
+JUGP362         → SORP019         | Original: SORP73          | Apache Scooter pequeño
+JUGP363         → BANP007         | Original: BANP53          | Prinsel Con base
+JUGP364         → TYBP013         | Original: TYBP97          | ChilaFish Bicicleta de Equilibrio
+JUGP365         → MCBP009         | Original: MCBP82          | BabyBjorn Silla Mecedora
+JUGP372         → CAPP018         | Original: CAPP79          | Bebear Cangurera
+JUGP373         → JDMP010         | Original: JDMP46          | Novelty Completo
+JUGP374         → JDMP011         | Original: JDMP45          | Smart Games Completo
+JUGP379         → CYMP005         | Original: CYMP38          | Halo Moises
+JUGP380         → MCRP012         | Original: MCRP82          | Raganet Correpasillos
+JUGP381         → SORP020         | Original: SORP77          | Oxelo Scooter Grande
+JUGP382         → CYMP006         | Original: CYMP40          | Kristhian Moisés
+JUGP383         → MDCP008         | Original: MDCP21          | Teytoy Sonido y movimiento
+JUGP384         → DISP026         | Original: DISP39          | Disney +8 años
+JUGP385         → DISP027         | Original: DISP40          | Marvel 2-3 años
+JUGP386         → DISP028         | Original: DISP41          | Marvel +8 años
+JUGP387         → DISP029         | Original: DISP37          | Dc comics +8 años
+JUGP388         → DISP030         | Original: DISP36          | Marvel +8 años
+JUGP389         → DISP031         | Original: DISP38          | Marvel +8 años
+JUGP390         → DISP032         | Original: DISP42          | Marvel +8 años
+JUGP391         → DISP033         | Original: DISP43          | Disney 4-5 años
+JUGP392         → DISP034         | Original: DISP44          | Marvel 2-3 años
+JUGP393         → DISP035         | Original: DISP46          | Marvel 4-5 años
+JUGP394         → DISP036         | Original: DISP49          | Disney 2-3 años
+JUGP395         → DISP037         | Original: DISP48          | Disney 6-7 años
+JUGP396         → DISP038         | Original: DISP47          | Disney 2-3 años
+JUGP397         → CAPP019         | Original: CAPP83          | Chicco Mochila Senderismo
+JUGP400         → EDLP029         | Original: EDLP48          | Medela Doble
+JUGP401         → ACRP009         | Original: ACRP32          | Chicco Otro
+JUGP402         → DISP039         | Original: DISP50          | Arlequin +8 años
+JUGP403         → DISP040         | Original: DISP51          | Aurora 2-3 años
+JUGP404         → DISP041         | Original: DISP52          | Aurora 4-5 años
+JUGP405         → DISP042         | Original: DISP53          | Bailarina 6-7 años
+JUGP406         → DISP043         | Original: DISP54          | Barbie Princesa 6-7 años
+JUGP407         → DISP044         | Original: DISP58          | Melissa&Dough 4-5 años
+JUGP408         → DISP045         | Original: DISP57          | Disney 4-5 años
+JUGP409         → DISP046         | Original: DISP56          | Bella 6-7 años
+JUGP410         → DISP047         | Original: DISP55          | Disney +8 años
+JUGP411         → JDMP012         | Original: JDMP48          | Dungeons and dragons Completo
+JUGP412         → ACAP015         | Original: ACAP34          | Skip hop Organizador
+JUGP413         → TYBP014         | Original: TYBP103         | Huffy Bicicleta de Equilibrio
+JUGP415         → CMNP007         | Original: CMNP67          | Marcas Españolas 4-5a 16.5-17cm
+JUGP416         → CMNP008         | Original: CMNP68          | Marcas Españolas  5-6a 17.5-18cm
+JUGP417         → CMNP009         | Original: CMNP69          | Marcas Españolas 2-3a 14.5-15cm
+JUGP418         → CMNP010         | Original: CMNP70          | Chicco 12-18m 12.5-13cm
+JUGP419         → MCCP027         | Original: MCCP124         | Just 4 kids 3 años
+JUGP420         → ACRP010         | Original: ACRP33          | Cuadro  Personajes Roblox
+JUGP421         → ANDP011         | Original: ANDP38          | Ingenuity Plegable
+JUGP422         → DISP048         | Original: DISP59          | Disney 4-5 años
+JUGP423         → DISP049         | Original: DISP60          | Disney +8 años
+JUGP424         → JDMP013         | Original: JDMP50          | Novelty Completo
+JUGP425         → JDMP014         | Original: JDMP51          | Novelty Completo
+JUGP428         → CMNP011         | Original: CMNP71          | Chicco 3-4a 15.5-16cm
+JUGP429         → EDLP030         | Original: EDLP50          | Extractor Doble
+JUGP430         → ACRP011         | Original: ACRP34          | Bumper para cuna
+JUGP431         → CYMP007         | Original: CYMP44          | Plegable Moisés
+JUGP436         → CAPP020         | Original: CAPP84          | Lennylamb Mochila Ergonómica
+JUGP437         → CAPP021         | Original: CAPP85          | Redlemon Mochila Ergonómica
+JUGP438         → SORP021         | Original: SORP83          | Disney  Patines
+JUGP439         → SORP022         | Original: SORP84          | Scooter pequeño
+JUGP440         → TYBP015         | Original: TYBP108         | Wood bike Bicicleta de Equilibrio
+JUGP442         → CHNP008         | Original: CHNP75          | Adidas 2-3a 14.5-15cm

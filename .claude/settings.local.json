@@ -31,7 +31,8 @@
       "Bash(do grep -q \"^$sku$\" /tmp/local_migration_skus.txt)",
       "Bash(echo \"$sku\")",
       "Bash(docker ps:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }
