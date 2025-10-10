@@ -51,15 +51,18 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
     }).format(price);
   };
   
-  const getConditionBadge = (condition) => {
-    const conditions = {
-      'excelente': { text: 'Excelente', class: 'bg-brand-verde-lima text-white' },
-      'bueno': { text: 'Bueno', class: 'bg-brand-azul text-white' },
-      'regular': { text: 'Regular', class: 'bg-brand-amarillo text-gray-900' }
+  const getStatusBadge = (status) => {
+    const statuses = {
+      'nuevo': { text: 'Nuevo', class: 'bg-brand-verde-lima text-white' },
+      'usado como nuevo': { text: 'Usado como nuevo', class: 'bg-brand-azul text-white' },
+      'buen estado': { text: 'Buen estado', class: 'bg-brand-azul text-white' },
+      'con detalles': { text: 'Con detalles', class: 'bg-brand-amarillo text-gray-900' },
+      'usado': { text: 'Usado', class: 'bg-brand-azul text-white' },
+      'usado con algún detalle': { text: 'Usado con algún detalle', class: 'bg-brand-amarillo text-gray-900' }
     };
     // Normalizar a minúsculas para comparar
-    const normalizedCondition = condition?.toLowerCase() || 'regular';
-    return conditions[normalizedCondition] || conditions['regular'];
+    const normalizedStatus = status?.toLowerCase() || 'usado';
+    return statuses[normalizedStatus] || statuses['usado'];
   };
   
   const handleAddToCart = () => {
@@ -188,8 +191,8 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
                 {product.brand_name}
               </h1>
               <div className="flex flex-wrap items-center gap-3">
-                <span className={`inline-block px-4 py-2 text-sm font-semibold rounded-full ${getConditionBadge(product.condition_state).class} shadow-md`}>
-                  Estado: {getConditionBadge(product.condition_state).text}
+                <span className={`inline-block px-4 py-2 text-sm font-semibold rounded-full ${getStatusBadge(product.status).class} shadow-md`}>
+                  Estado: {getStatusBadge(product.status).text}
                 </span>
                 {product.quantity === 1 && (
                   <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full bg-brand-rosa text-white shadow-md">
@@ -375,7 +378,7 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
                   Acerca de este producto
                 </h3>
                 <p className="font-body text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                  {product.subcategory_name} de la marca {product.brand_name} en estado {getConditionBadge(product.condition_state).text.toLowerCase()}.
+                  {product.subcategory_name} de la marca {product.brand_name} en estado {getStatusBadge(product.status).text.toLowerCase()}.
                   Este producto ha sido cuidadosamente revisado y verificado por nuestro equipo de especialistas para garantizar su calidad.
                 </p>
                 {product.special_offer_text && (
@@ -415,7 +418,7 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
                     </div>
                     <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                       <span className="font-body text-gray-600 dark:text-gray-400">Condición</span>
-                      <span className="font-heading font-semibold text-gray-900 dark:text-gray-100">{getConditionBadge(product.condition_state).text}</span>
+                      <span className="font-heading font-semibold text-gray-900 dark:text-gray-100">{getStatusBadge(product.status).text}</span>
                     </div>
                   </div>
                   {product.features && Object.keys(product.features).length > 0 && (

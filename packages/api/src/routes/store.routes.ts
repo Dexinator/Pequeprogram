@@ -10,6 +10,7 @@ import {
   getProductForPreparation,
   prepareProductForStore,
   getStoreStats,
+  getAvailableStatuses,
   uploadProductImages
 } from '../controllers/store.controller';
 
@@ -23,6 +24,10 @@ router
 router
   .route('/products/featured')
   .get(getFeaturedProducts);
+
+router
+  .route('/available-statuses')
+  .get(getAvailableStatuses);
 
 // Public product detail routes
 router

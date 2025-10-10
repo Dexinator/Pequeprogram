@@ -52,13 +52,17 @@ const ProductDetail = ({ productId }) => {
     }).format(price);
   };
   
-  const getConditionBadge = (condition) => {
-    const conditions = {
-      'excelente': { text: 'Excelente', class: 'bg-green-100 text-green-800' },
-      'bueno': { text: 'Bueno', class: 'bg-blue-100 text-blue-800' },
-      'regular': { text: 'Regular', class: 'bg-yellow-100 text-yellow-800' }
+  const getStatusBadge = (status) => {
+    const statuses = {
+      'nuevo': { text: 'Nuevo', class: 'bg-green-100 text-green-800' },
+      'usado como nuevo': { text: 'Usado como nuevo', class: 'bg-blue-100 text-blue-800' },
+      'buen estado': { text: 'Buen estado', class: 'bg-blue-100 text-blue-800' },
+      'con detalles': { text: 'Con detalles', class: 'bg-yellow-100 text-yellow-800' },
+      'usado': { text: 'Usado', class: 'bg-blue-100 text-blue-800' },
+      'usado con algún detalle': { text: 'Usado con algún detalle', class: 'bg-yellow-100 text-yellow-800' }
     };
-    return conditions[condition] || conditions['regular'];
+    const normalizedStatus = status?.toLowerCase() || 'usado';
+    return statuses[normalizedStatus] || statuses['usado'];
   };
   
   const handleAddToCart = () => {
@@ -168,8 +172,8 @@ const ProductDetail = ({ productId }) => {
                 {product.brand_name}
               </h1>
               <div className="flex items-center gap-3">
-                <span className={`inline-block px-3 py-1 text-sm rounded-full ${getConditionBadge(product.condition_state).class}`}>
-                  Estado: {getConditionBadge(product.condition_state).text}
+                <span className={`inline-block px-3 py-1 text-sm rounded-full ${getStatusBadge(product.status).class}`}>
+                  Estado: {getStatusBadge(product.status).text}
                 </span>
                 {product.quantity === 1 && (
                   <span className="inline-block px-3 py-1 text-sm rounded-full bg-pink-100 text-pink-800">
@@ -345,7 +349,7 @@ const ProductDetail = ({ productId }) => {
               <div className="prose max-w-none">
                 <h3 className="text-lg font-semibold mb-3">Acerca de este producto</h3>
                 <p className="text-gray-600 mb-4">
-                  {product.subcategory_name} de la marca {product.brand_name} en estado {getConditionBadge(product.condition_state).text.toLowerCase()}.
+                  {product.subcategory_name} de la marca {product.brand_name} en estado {getStatusBadge(product.status).text.toLowerCase()}.
                   Este producto ha sido cuidadosamente revisado y verificado por nuestro equipo de especialistas.
                 </p>
                 {product.special_offer_text && (
@@ -377,7 +381,7 @@ const ProductDetail = ({ productId }) => {
                     </div>
                     <div className="flex justify-between py-2 border-b">
                       <span className="text-gray-600">Condición</span>
-                      <span className="font-medium">{getConditionBadge(product.condition_state).text}</span>
+                      <span className="font-medium">{getStatusBadge(product.status).text}</span>
                     </div>
                   </div>
                   {product.features && Object.keys(product.features).length > 0 && (

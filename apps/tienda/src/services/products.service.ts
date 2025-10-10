@@ -38,6 +38,7 @@ export interface ProductFilters {
   min_price?: number;
   max_price?: number;
   condition_state?: string;
+  status?: string;
   location?: string;
   brand_id?: number;
   features?: Record<string, any>;
@@ -230,6 +231,17 @@ export class ProductsService {
       } catch {
         return [];
       }
+    }
+  }
+
+  // Obtener estados disponibles (valores únicos de status)
+  async getAvailableStatuses(): Promise<Array<{ status: string; count: number }>> {
+    try {
+      const response = await this.http.get('/store/available-statuses');
+      return response.data || [];
+    } catch (error) {
+      console.error('Error al obtener estados disponibles:', error);
+      return [];
     }
   }
 }

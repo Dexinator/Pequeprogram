@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { productsService } from '../../services/products.service';
 
-const ProductFilters = ({ 
-  categoryId, 
-  subcategories = [], 
-  onFilterChange, 
-  currentFilters = {} 
+const ProductFilters = ({
+  categoryId,
+  subcategories = [],
+  onFilterChange,
+  currentFilters = {}
 }) => {
   const [priceRange, setPriceRange] = useState({
     min: currentFilters.min_price || '',
@@ -13,14 +13,29 @@ const ProductFilters = ({
   });
   const [featureDefinitions, setFeatureDefinitions] = useState([]);
   const [dynamicFilters, setDynamicFilters] = useState({});
-  
+  const [availableStatuses, setAvailableStatuses] = useState([]);
+
+  // Cargar estados disponibles al montar el componente
+  useEffect(() => {
+    loadAvailableStatuses();
+  }, []);
+
   // Cargar feature definitions cuando cambia la subcategoría
   useEffect(() => {
     if (currentFilters.subcategory_id) {
       loadFeatureDefinitions(currentFilters.subcategory_id);
     }
   }, [currentFilters.subcategory_id]);
-  
+
+  const loadAvailableStatuses = async () => {
+    try {
+      const statuses = await productsService.getAvailableStatuses();
+      setAvailableStatuses(statuses);
+    } catch (error) {
+      console.error('Error al cargar estados:', error);
+    }
+  };
+
   const loadFeatureDefinitions = async (subcategoryId) => {
     try {
       const features = await productsService.getFeatureDefinitions(subcategoryId);
@@ -41,10 +56,10 @@ const ProductFilters = ({
     onFilterChange(newFilters);
   };
   
-  const handleConditionChange = (condition) => {
+  const handleStatusChange = (status) => {
     onFilterChange({
       ...currentFilters,
-      condition_state: condition || undefined
+      status: status || undefined
     });
   };
   
@@ -169,36 +184,41 @@ const ProductFilters = ({
         </form>
       </div>
 
-      {/* Estado/Condición */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Condición</h4>
-        <div className="space-y-2">
-          {['excelente', 'bueno', 'regular'].map((condition) => (
-            <label key={condition} className="flex items-center">
+      {/* Estado */}
+      {availableStatuses.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Estado</h4>
+          <div className="space-y-2">
+            {availableStatuses.map(({ status, count }) => (
+              <label key={status} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    name="status"
+                    value={status}
+                    checked={currentFilters.status === status}
+                    onChange={(e) => handleStatusChange(e.target.value)}
+                    className="mr-2 text-pink-600 focus:ring-pink-500"
+                  />
+                  <span className="text-gray-700 dark:text-gray-300">{status}</span>
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
+              </label>
+            ))}
+            <label className="flex items-center">
               <input
                 type="radio"
-                name="condition"
-                value={condition}
-                checked={currentFilters.condition_state === condition}
-                onChange={(e) => handleConditionChange(e.target.value)}
+                name="status"
+                value=""
+                checked={!currentFilters.status}
+                onChange={() => handleStatusChange('')}
                 className="mr-2 text-pink-600 focus:ring-pink-500"
               />
-              <span className="capitalize text-gray-700 dark:text-gray-300">{condition}</span>
+              <span className="text-gray-700 dark:text-gray-300">Todos</span>
             </label>
-          ))}
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="condition"
-              value=""
-              checked={!currentFilters.condition_state}
-              onChange={() => handleConditionChange('')}
-              className="mr-2 text-pink-600 focus:ring-pink-500"
-            />
-            <span className="text-gray-700 dark:text-gray-300">Todas</span>
-          </label>
+          </div>
         </div>
-      </div>
+      )}
       
       {/* Ubicación */}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">

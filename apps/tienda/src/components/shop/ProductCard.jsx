@@ -23,15 +23,18 @@ const ProductCard = ({ product }) => {
   };
   
   // Obtener estado del producto con colores del design system
-  const getConditionBadge = (condition) => {
-    const conditions = {
-      'excelente': { text: 'Excelente', class: 'bg-brand-verde-lima text-white' },
-      'bueno': { text: 'Bueno', class: 'bg-brand-azul text-white' },
-      'regular': { text: 'Regular', class: 'bg-brand-amarillo text-gray-900' }
+  const getStatusBadge = (status) => {
+    const statuses = {
+      'nuevo': { text: 'Nuevo', class: 'bg-brand-verde-lima text-white' },
+      'usado como nuevo': { text: 'Usado como nuevo', class: 'bg-brand-azul text-white' },
+      'buen estado': { text: 'Buen estado', class: 'bg-brand-azul text-white' },
+      'con detalles': { text: 'Con detalles', class: 'bg-brand-amarillo text-gray-900' },
+      'usado': { text: 'Usado', class: 'bg-brand-azul text-white' },
+      'usado con algún detalle': { text: 'Usado con algún detalle', class: 'bg-brand-amarillo text-gray-900' }
     };
     // Normalizar a minúsculas para comparar
-    const normalizedCondition = condition?.toLowerCase() || 'regular';
-    return conditions[normalizedCondition] || conditions['regular'];
+    const normalizedStatus = status?.toLowerCase() || 'usado';
+    return statuses[normalizedStatus] || statuses['usado'];
   };
   
   // Manejar error de imagen
@@ -140,8 +143,8 @@ const ProductCard = ({ product }) => {
           
           {/* Estado con mejor diseño */}
           <div className="flex items-center gap-2 mb-4">
-            <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${getConditionBadge(product.condition_state).class}`}>
-              {getConditionBadge(product.condition_state).text}
+            <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${getStatusBadge(product.status).class}`}>
+              {getStatusBadge(product.status).text}
             </span>
             {product.modality === 'consignación' && (
               <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-brand-rosa text-white shadow-sm">

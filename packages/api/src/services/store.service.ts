@@ -18,6 +18,7 @@ export interface OnlineProductsParams {
   max_price?: number;
   search?: string;
   condition_state?: string;
+  status?: string;
   location?: string;
   brand_id?: number;
   sort?: string;
@@ -171,6 +172,11 @@ export class StoreService {
       if (params.condition_state) {
         query += ` AND vi.condition_state = $${paramIndex++}`;
         queryParams.push(params.condition_state);
+      }
+
+      if (params.status) {
+        query += ` AND vi.status = $${paramIndex++}`;
+        queryParams.push(params.status);
       }
 
       if (params.location) {
@@ -633,9 +639,9 @@ export class StoreService {
     let dbClient: PoolClient | undefined;
     try {
       dbClient = await pool.connect();
-      
+
       const query = `
-        SELECT 
+        SELECT
           COUNT(CASE WHEN vi.online_store_ready = false AND i.quantity > 0 THEN 1 END) as pending_products,
           COUNT(CASE WHEN vi.online_store_ready = true AND i.quantity > 0 THEN 1 END) as online_products,
           COUNT(CASE WHEN vi.online_prepared_at >= CURRENT_DATE THEN 1 END) as prepared_today,
@@ -644,9 +650,9 @@ export class StoreService {
         FROM valuation_items vi
         LEFT JOIN inventario i ON i.valuation_item_id = vi.id
       `;
-      
+
       const result = await dbClient.query(query);
-      
+
       return {
         pending_products: parseInt(result.rows[0].pending_products),
         online_products: parseInt(result.rows[0].online_products),
@@ -656,6 +662,37 @@ export class StoreService {
       };
     } catch (error) {
       throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async getAvailableStatuses() {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      const query = `
+        SELECT DISTINCT vi.status, COUNT(*) as count
+        FROM valuation_items vi
+        INNER JOIN inventario i ON i.valuation_item_id = vi.id
+        WHERE vi.online_store_ready = true
+        AND i.quantity > 0
+        GROUP BY vi.status
+        ORDER BY count DESC, vi.status ASC
+      `;
+
+      const result = await dbClient.query(query);
+
+      return result.rows.map(row => ({
+        status: row.status,
+        count: parseInt(row.count)
+      }));
+    } catch (error) {
+      console.error('Error al obtener estados disponibles:', error);
+      return [];
     } finally {
       if (dbClient) {
         dbClient.release();
