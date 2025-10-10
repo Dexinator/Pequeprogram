@@ -46,6 +46,7 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
   const max_price = req.query.max_price ? parseFloat(req.query.max_price as string) : undefined;
   const search = req.query.search as string;
   const condition_state = req.query.condition_state as string;
+  const status = req.query.status as string;
   const location = req.query.location as string;
   const brand_id = req.query.brand_id ? parseInt(req.query.brand_id as string) : undefined;
   const sort = req.query.sort as string;
@@ -68,6 +69,7 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
     max_price,
     search,
     condition_state,
+    status,
     location,
     brand_id,
     sort,
@@ -210,6 +212,18 @@ export const getStoreStats = asyncHandler(async (req: Request, res: Response) =>
   res.json(stats);
 });
 
+// @desc    Get available product statuses
+// @route   GET /api/store/available-statuses
+// @access  Public
+export const getAvailableStatuses = asyncHandler(async (req: Request, res: Response) => {
+  const statuses = await storeService.getAvailableStatuses();
+
+  res.json({
+    success: true,
+    data: statuses
+  });
+});
+
 // @desc    Upload product images
 // @route   POST /api/store/upload-images
 // @access  Private (admin, manager, sales)
@@ -227,7 +241,7 @@ export const uploadProductImages = asyncHandler(async (req: Request, res: Respon
 
   try {
     // Subir todas las imágenes en paralelo
-    const uploadPromises = req.files.map((file: Express.Multer.File) => 
+    const uploadPromises = req.files.map((file: Express.Multer.File) =>
       s3Service.uploadProductImage(file, inventoryId)
     );
 
