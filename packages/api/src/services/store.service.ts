@@ -190,13 +190,32 @@ export class StoreService {
       }
 
       if (params.search) {
-        query += ` AND (
-          s.name ILIKE $${paramIndex} OR
-          b.name ILIKE $${paramIndex} OR
-          vi.features::text ILIKE $${paramIndex}
-        )`;
-        queryParams.push(`%${params.search}%`);
-        paramIndex++;
+        // Improved search: split by spaces, commas, and other separators
+        // This allows grouped names like "Cunas, colechos y muebles" to match
+        // individual subcategories like "Cunas de madera", "Colechos y Moisés", etc.
+        const searchTerms = params.search
+          .split(/[\s,]+/)  // Split by spaces and commas
+          .filter(term => term.length > 2);  // Filter out very short words (y, de, a, etc.)
+
+        if (searchTerms.length > 0) {
+          // Build OR conditions for each search term
+          const searchConditions = searchTerms.map(() => {
+            const condition = `(
+              s.name ILIKE $${paramIndex} OR
+              b.name ILIKE $${paramIndex} OR
+              vi.features::text ILIKE $${paramIndex}
+            )`;
+            paramIndex++;
+            return condition;
+          }).join(' OR ');
+
+          query += ` AND (${searchConditions})`;
+
+          // Add parameters for each term
+          searchTerms.forEach(term => {
+            queryParams.push(`%${term}%`);
+          });
+        }
       }
 
       // Filtros dinámicos por features (JSONB)
