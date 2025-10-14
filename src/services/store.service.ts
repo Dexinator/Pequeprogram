@@ -136,12 +136,27 @@ export class StoreService {
           b.name as brand_name,
           i.id as inventory_id,
           i.quantity,
-          i.location
+          i.location,
+          -- Descuentos
+          ad.id as discount_id,
+          ad.name as discount_name,
+          ad.discount_type,
+          ad.discount_value
         FROM valuation_items vi
         INNER JOIN inventario i ON i.valuation_item_id = vi.id
         LEFT JOIN categories c ON vi.category_id = c.id
         LEFT JOIN subcategories s ON vi.subcategory_id = s.id
         LEFT JOIN brands b ON vi.brand_id = b.id
+        -- Left join con descuentos activos
+        LEFT JOIN active_discounts ad ON (
+          ad.is_active = true
+          AND (ad.start_date IS NULL OR ad.start_date <= NOW())
+          AND (ad.end_date IS NULL OR ad.end_date >= NOW())
+          AND (
+            (ad.category_id = vi.category_id AND ad.subcategory_id IS NULL)
+            OR (ad.subcategory_id = vi.subcategory_id AND ad.category_id IS NULL)
+          )
+        )
         WHERE vi.online_store_ready = true
         AND i.quantity > 0
       `;
@@ -263,12 +278,48 @@ export class StoreService {
       const result = await dbClient.query(query, queryParams);
 
       return {
-        products: result.rows.map(row => ({
-          ...row,
-          quantity: parseInt(row.quantity),
-          online_price: parseFloat(row.online_price),
-          weight_grams: parseInt(row.weight_grams)
-        })),
+        products: result.rows.map(row => {
+          const basePrice = parseFloat(row.online_price);
+          let finalPrice = basePrice;
+          let discountPercentage = null;
+          let discountName = null;
+
+          // Aplicar descuento si existe
+          if (row.discount_id) {
+            discountName = row.discount_name;
+
+            if (row.discount_type === 'percentage') {
+              discountPercentage = parseFloat(row.discount_value);
+              finalPrice = basePrice * (1 - discountPercentage / 100);
+            } else if (row.discount_type === 'fixed_amount') {
+              const discountAmount = parseFloat(row.discount_value);
+              finalPrice = Math.max(0, basePrice - discountAmount);
+              // Calcular el porcentaje equivalente para mostrar en UI
+              discountPercentage = Math.round((discountAmount / basePrice) * 100);
+            }
+
+            // Redondear a 2 decimales
+            finalPrice = Math.round(finalPrice * 100) / 100;
+          }
+
+          return {
+            ...row,
+            quantity: parseInt(row.quantity),
+            weight_grams: parseInt(row.weight_grams),
+            // Precio original (sin descuento)
+            original_price: row.discount_id ? basePrice : null,
+            // Precio con descuento aplicado (o precio normal si no hay descuento)
+            online_price: finalPrice,
+            // Información del descuento
+            discount_percentage: discountPercentage,
+            discount_name: discountName,
+            has_discount: !!row.discount_id,
+            // Eliminar campos internos de descuento
+            discount_id: undefined,
+            discount_type: undefined,
+            discount_value: undefined
+          };
+        }),
         total
       };
     } catch (error) {
@@ -284,9 +335,9 @@ export class StoreService {
     let dbClient: PoolClient | undefined;
     try {
       dbClient = await pool.connect();
-      
+
       const query = `
-        SELECT 
+        SELECT
           vi.id,
           vi.category_id,
           vi.subcategory_id,
@@ -302,30 +353,77 @@ export class StoreService {
           b.name as brand_name,
           i.id as inventory_id,
           i.quantity,
-          i.location
+          i.location,
+          -- Descuentos
+          ad.id as discount_id,
+          ad.name as discount_name,
+          ad.discount_type,
+          ad.discount_value
         FROM inventario i
         INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
         LEFT JOIN categories c ON vi.category_id = c.id
         LEFT JOIN subcategories s ON vi.subcategory_id = s.id
         LEFT JOIN brands b ON vi.brand_id = b.id
+        -- Left join con descuentos activos
+        LEFT JOIN active_discounts ad ON (
+          ad.is_active = true
+          AND (ad.start_date IS NULL OR ad.start_date <= NOW())
+          AND (ad.end_date IS NULL OR ad.end_date >= NOW())
+          AND (
+            (ad.category_id = vi.category_id AND ad.subcategory_id IS NULL)
+            OR (ad.subcategory_id = vi.subcategory_id AND ad.category_id IS NULL)
+          )
+        )
         WHERE i.id = $1
         AND vi.online_store_ready = true
         AND i.quantity > 0
       `;
-      
+
       const result = await dbClient.query(query, [inventoryId]);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
+      const basePrice = parseFloat(row.online_price);
+      let finalPrice = basePrice;
+      let discountPercentage = null;
+      let discountName = null;
+
+      // Aplicar descuento si existe
+      if (row.discount_id) {
+        discountName = row.discount_name;
+
+        if (row.discount_type === 'percentage') {
+          discountPercentage = parseFloat(row.discount_value);
+          finalPrice = basePrice * (1 - discountPercentage / 100);
+        } else if (row.discount_type === 'fixed_amount') {
+          const discountAmount = parseFloat(row.discount_value);
+          finalPrice = Math.max(0, basePrice - discountAmount);
+          discountPercentage = Math.round((discountAmount / basePrice) * 100);
+        }
+
+        finalPrice = Math.round(finalPrice * 100) / 100;
+      }
+
       return {
         ...row,
         quantity: parseInt(row.quantity),
-        online_price: parseFloat(row.online_price),
         weight_grams: parseInt(row.weight_grams || 0),
-        images: row.images || []
+        images: row.images || [],
+        // Precio original (sin descuento)
+        original_price: row.discount_id ? basePrice : null,
+        // Precio con descuento aplicado
+        online_price: finalPrice,
+        // Información del descuento
+        discount_percentage: discountPercentage,
+        discount_name: discountName,
+        has_discount: !!row.discount_id,
+        // Eliminar campos internos
+        discount_id: undefined,
+        discount_type: undefined,
+        discount_value: undefined
       };
     } catch (error) {
       throw error;
