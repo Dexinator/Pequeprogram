@@ -50,11 +50,10 @@ const ProductCard = ({ product }) => {
     return product.images[currentImageIndex];
   };
   
-  // Calcular descuento si existe
-  const hasDiscount = product.discount_percentage && product.discount_percentage > 0;
-  const originalPrice = hasDiscount && product.online_price
-    ? product.online_price / (1 - product.discount_percentage / 100)
-    : product.online_price || 0;
+  // Usar el descuento que viene del backend
+  const hasDiscount = product.has_discount && product.discount_percentage > 0;
+  const originalPrice = product.original_price || product.online_price || 0;
+  const finalPrice = product.online_price || 0;
   
   
   // Obtener emoji de categoría

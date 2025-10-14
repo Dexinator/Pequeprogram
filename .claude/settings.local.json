@@ -32,7 +32,8 @@
       "Bash(echo \"$sku\")",
       "Bash(docker ps:*)",
       "Bash(awk:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
