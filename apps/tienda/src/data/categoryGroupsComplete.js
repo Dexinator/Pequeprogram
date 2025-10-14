@@ -31,9 +31,15 @@ export const categoryGroupsComplete = {
       },
       {
         name: 'Sobre Ruedas',
-        type: 'single',
+        type: 'grouped',
         icon: 'wheels',
-        slug: 'sobre-ruedas'
+        slug: 'sobre-ruedas',
+        subcategories: [
+          'Sobre ruedas',
+          'Montables de exterior',
+          'Triciclos y bicicletas',
+          'Sillas para bicicleta'
+        ]
       },
       {
         name: 'Otros de paseo',
@@ -96,12 +102,11 @@ export const categoryGroupsComplete = {
         slug: 'mecedoras-columpios'
       },
       {
-        name: 'Andaderas, Brincolines y Corrales',
+        name: 'Brincolines y Corrales',
         type: 'grouped',
         icon: 'walker',
-        slug: 'andaderas-brincolines',
+        slug: 'brincolines-corrales',
         subcategories: [
-          'Andaderas',
           'Brincolines',
           'Corrales'
         ]
@@ -213,6 +218,12 @@ export const categoryGroupsComplete = {
         ]
       },
       {
+        name: 'Andaderas',
+        type: 'single',
+        icon: 'walker',
+        slug: 'andaderas'
+      },
+      {
         name: 'Correpasillos, mesas y tapetes',
         type: 'grouped',
         icon: 'ride-on',
@@ -248,8 +259,7 @@ export const categoryGroupsComplete = {
         subcategories: [
           'Sobre ruedas',
           'Montables de exterior',
-          'Triciclos y bicicletas',
-          'Sillas para bicicleta'
+          'Triciclos y bicicletas'
         ]
       }
     ]
