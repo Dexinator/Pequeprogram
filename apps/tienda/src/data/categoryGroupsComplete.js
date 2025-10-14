@@ -84,6 +84,12 @@ export const categoryGroupsComplete = {
     slug: 'en-casa',
     groups: [
       {
+        name: 'Sillas para comer',
+        type: 'single',
+        icon: 'high-chairs',
+        slug: 'sillas-comer'
+      },
+      {
         name: 'Mecedoras y Columpios de bebé',
         type: 'single',
         icon: 'rocking-chair',
@@ -125,12 +131,6 @@ export const categoryGroupsComplete = {
         type: 'single',
         icon: 'breastfeeding',
         slug: 'lactancia'
-      },
-      {
-        name: 'Sillas para comer',
-        type: 'single',
-        icon: 'high-chairs',
-        slug: 'sillas-comer'
       },
       {
         name: 'Procesador de alimentos',
