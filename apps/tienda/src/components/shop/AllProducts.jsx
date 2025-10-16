@@ -18,6 +18,12 @@ const AllProducts = () => {
     if (params.get('subcategoria')) {
       initialFilters.subcategory_id = parseInt(params.get('subcategoria'));
     }
+    // Nuevo: manejar el parámetro subcats con múltiples IDs
+    if (params.get('subcats')) {
+      const subcatsParam = params.get('subcats');
+      // Convertir string de IDs separados por comas en array de números
+      initialFilters.subcategory_ids = subcatsParam.split(',').map(id => parseInt(id));
+    }
     if (params.get('search')) {
       initialFilters.search = params.get('search');
     }

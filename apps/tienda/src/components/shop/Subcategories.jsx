@@ -265,11 +265,28 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
             const groupSlug = isGroup ? group.slug : generateSlug(group.name);
             const groupName = isGroup ? group.name : group.name;
             const hasSubcategories = isGroup && group.type === 'grouped' && group.subcategories;
-            
+            const hasSubcategoryIds = isGroup && (group.subcategoryIds || group.subcategoryId);
+
+            // Construir el href basado en si tiene IDs de subcategorías
+            let href = `/productos?categoria=${categoryId}`;
+            if (hasSubcategoryIds) {
+              if (group.subcategoryIds) {
+                // Grupo con múltiples subcategorías
+                href += `&subcats=${group.subcategoryIds.join(',')}`;
+              } else if (group.subcategoryId) {
+                // Grupo con una sola subcategoría
+                href += `&subcats=${group.subcategoryId}`;
+              }
+              href += `&nombre=${encodeURIComponent(groupName)}`;
+            } else {
+              // Fallback al comportamiento anterior para compatibilidad
+              href += `&search=${encodeURIComponent(groupName)}&nombre=${encodeURIComponent(groupName)}`;
+            }
+
             return (
               <a
                 key={group.id || index}
-                href={`/productos?categoria=${categoryId}&search=${encodeURIComponent(groupName)}&nombre=${encodeURIComponent(groupName)}`}
+                href={href}
                 className={`group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1 border-2 ${colors.border} border-opacity-20`}
               >
                 {/* Imagen con ícono SVG */}

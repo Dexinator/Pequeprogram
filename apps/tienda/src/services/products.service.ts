@@ -35,6 +35,7 @@ export interface ProductsResponse {
 export interface ProductFilters {
   category_id?: number;
   subcategory_id?: number;
+  subcategory_ids?: number[]; // Nuevo: array de IDs de subcategorías para filtros múltiples
   min_price?: number;
   max_price?: number;
   condition_state?: string;

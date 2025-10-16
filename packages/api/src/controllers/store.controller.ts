@@ -42,6 +42,27 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
   const limit = parseInt(req.query.limit as string) || 20;
   const category_id = req.query.category_id ? parseInt(req.query.category_id as string) : undefined;
   const subcategory_id = req.query.subcategory_id ? parseInt(req.query.subcategory_id as string) : undefined;
+
+  // Nuevo: manejar múltiples IDs de subcategorías
+  let subcategory_ids: number[] | undefined;
+  if (req.query.subcats) {
+    // Subcats puede venir como "1,2,3" o como array ["1", "2", "3"]
+    const subcatsParam = req.query.subcats;
+    if (typeof subcatsParam === 'string') {
+      subcategory_ids = subcatsParam.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+    } else if (Array.isArray(subcatsParam)) {
+      subcategory_ids = subcatsParam.map(id => parseInt(id as string)).filter(id => !isNaN(id));
+    }
+  } else if (req.query.subcategory_ids) {
+    // También aceptar subcategory_ids como parámetro
+    const subcategoryIdsParam = req.query.subcategory_ids;
+    if (typeof subcategoryIdsParam === 'string') {
+      subcategory_ids = subcategoryIdsParam.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+    } else if (Array.isArray(subcategoryIdsParam)) {
+      subcategory_ids = subcategoryIdsParam.map(id => parseInt(id as string)).filter(id => !isNaN(id));
+    }
+  }
+
   const min_price = req.query.min_price ? parseFloat(req.query.min_price as string) : undefined;
   const max_price = req.query.max_price ? parseFloat(req.query.max_price as string) : undefined;
   const search = req.query.search as string;
@@ -65,6 +86,7 @@ export const getOnlineProducts = asyncHandler(async (req: Request, res: Response
     limit,
     category_id,
     subcategory_id,
+    subcategory_ids, // Nuevo parámetro
     min_price,
     max_price,
     search,

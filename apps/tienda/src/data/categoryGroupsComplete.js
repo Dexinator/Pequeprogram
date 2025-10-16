@@ -9,31 +9,38 @@ export const categoryGroupsComplete = {
     groups: [
       {
         name: 'Autoasientos',
-        type: 'grouped', // Indica que tiene subcategorías agrupadas
+        type: 'single', // Cambiado a single porque solo hay una subcategoría real
         icon: 'car-seat',
         slug: 'autoasientos',
-        subcategories: [
-          'Portabebé 0-13 kg',
-          'Autoasientos 0-18 a 30 kg', 
-          'Booster 0-18 a 49 Kg'
-        ]
+        subcategoryId: 1 // ID de Autoasientos
+      },
+      {
+        name: 'Cargando al peque',
+        type: 'single',
+        icon: 'baby-carrier',
+        slug: 'cargando-al-peque',
+        subcategoryId: 2 // ID de Cargando al peque
       },
       {
         name: 'Carriolas',
-        type: 'grouped',
+        type: 'single', // Cambiado a single porque solo hay una subcategoría real
         icon: 'strollers',
         slug: 'carriolas',
-        subcategories: [
-          'Con Portabebé',
-          'Sin Portabebé',
-          'Doble'
-        ]
+        subcategoryId: 3 // ID de Carriolas
+      },
+      {
+        name: 'Accesorios Carriola y Auto',
+        type: 'single',
+        icon: 'accessories',
+        slug: 'accesorios-carriola',
+        subcategoryId: 4 // ID de Accesorios Carriola y Auto
       },
       {
         name: 'Sobre Ruedas',
         type: 'grouped',
         icon: 'wheels',
         slug: 'sobre-ruedas',
+        subcategoryIds: [8, 5, 6, 7], // IDs reales: Sobre ruedas, Montables de exterior, Triciclos y bicicletas, Sillas para bicicleta
         subcategories: [
           'Sobre ruedas',
           'Montables de exterior',
@@ -45,7 +52,8 @@ export const categoryGroupsComplete = {
         name: 'Otros de paseo',
         type: 'single',
         icon: 'other-travel',
-        slug: 'otros-paseo'
+        slug: 'otros-paseo',
+        subcategoryId: 9 // ID de Otros de Paseo
       }
     ]
   },
@@ -60,6 +68,7 @@ export const categoryGroupsComplete = {
         type: 'grouped',
         icon: 'cribs',
         slug: 'cunas-colechos-muebles',
+        subcategoryIds: [10, 12, 11, 18], // IDs: Cunas de madera, Cunas de viaje, Colechos y Moisés, Muebles de recámara
         subcategories: [
           'Cunas de madera',
           'Cunas de viaje',
@@ -72,13 +81,14 @@ export const categoryGroupsComplete = {
         type: 'grouped',
         icon: 'crib-accessories',
         slug: 'accesorios-cunas',
+        subcategoryIds: [13, 14, 15, 16, 17, 19], // IDs: Juegos de cuna, Colchones, Almohadas y donas, Móviles de cuna, Barandal para cama, Accesorios Recámara
         subcategories: [
           'Juegos de cuna',
           'Colchones',
           'Almohadas y donas',
           'Móviles de cuna',
           'Barandal para cama',
-          'Accesorios recámara'
+          'Accesorios Recámara'
         ]
       }
     ]
@@ -93,19 +103,22 @@ export const categoryGroupsComplete = {
         name: 'Sillas para comer',
         type: 'single',
         icon: 'high-chairs',
-        slug: 'sillas-comer'
+        slug: 'sillas-comer',
+        subcategoryId: 20 // ID de Sillas para comer
       },
       {
         name: 'Mecedoras y Columpios de bebé',
         type: 'single',
         icon: 'rocking-chair',
-        slug: 'mecedoras-columpios'
+        slug: 'mecedoras-columpios',
+        subcategoryId: 21 // ID de Mecedoras y Columpios de bebé
       },
       {
         name: 'Brincolines y Corrales',
         type: 'grouped',
         icon: 'walker',
         slug: 'brincolines-corrales',
+        subcategoryIds: [22, 23], // IDs: Brincolines, Corrales
         subcategories: [
           'Brincolines',
           'Corrales'
@@ -113,15 +126,27 @@ export const categoryGroupsComplete = {
       },
       {
         name: 'Seguridad',
-        type: 'single',
+        type: 'grouped',
         icon: 'safety',
-        slug: 'seguridad'
+        slug: 'seguridad',
+        subcategoryIds: [24, 25, 26], // IDs: Protectores y seguros, Puertas de seguridad, Monitores
+        subcategories: [
+          'Protectores y seguros',
+          'Puertas de seguridad',
+          'Monitores'
+        ]
       },
       {
         name: 'Baño y Accesorios',
-        type: 'single',
+        type: 'grouped',
         icon: 'bathroom',
-        slug: 'bano-accesorios'
+        slug: 'bano-accesorios',
+        subcategoryIds: [27, 28, 29], // IDs: Higiene y accesorios, Bañeras, Pañales
+        subcategories: [
+          'Higiene y accesorios',
+          'Bañeras',
+          'Pañales'
+        ]
       }
     ]
   },
@@ -132,16 +157,31 @@ export const categoryGroupsComplete = {
     slug: 'a-comer',
     groups: [
       {
-        name: 'Lactancia',
-        type: 'single',
+        name: 'Lactancia y Biberones',
+        type: 'grouped',
         icon: 'breastfeeding',
-        slug: 'lactancia'
+        slug: 'lactancia',
+        subcategoryIds: [30, 31, 32, 33], // IDs: Lactancia, Calentador de biberones, Esterilizador de biberones, Extractores de leche
+        subcategories: [
+          'Lactancia',
+          'Calentador de biberones',
+          'Esterilizador de biberones',
+          'Extractores de leche'
+        ]
       },
       {
         name: 'Procesador de alimentos',
         type: 'single',
         icon: 'food-processor',
-        slug: 'procesador-alimentos'
+        slug: 'procesador-alimentos',
+        subcategoryId: 34 // ID de Procesador de alimentos
+      },
+      {
+        name: 'Accesorios de alimentación',
+        type: 'single',
+        icon: 'feeding-accessories',
+        slug: 'accesorios-alimentacion',
+        subcategoryId: 35 // ID de Accesorios de alimentación
       }
     ]
   },
@@ -153,37 +193,55 @@ export const categoryGroupsComplete = {
     groups: [
       {
         name: 'Niña',
-        type: 'single',
+        type: 'grouped',
         icon: 'girl',
-        slug: 'nina'
+        slug: 'nina',
+        subcategoryIds: [36, 37, 38], // IDs: Niña cuerpo completo, Niña arriba de cintura, Niña abajo de cintura
+        subcategories: [
+          'Niña cuerpo completo',
+          'Niña arriba de cintura',
+          'Niña abajo de cintura'
+        ]
       },
       {
         name: 'Calzado Niña',
         type: 'single',
         icon: 'girls-footwear',
-        slug: 'calzado-nina'
+        slug: 'calzado-nina',
+        subcategoryId: 42 // ID de Calzado Niña
       },
       {
         name: 'Niño',
-        type: 'single',
+        type: 'grouped',
         icon: 'boy',
-        slug: 'nino'
+        slug: 'nino',
+        subcategoryIds: [39, 40, 41], // IDs: Niño cuerpo completo, Niño arriba de cintura, Niño abajo de cintura
+        subcategories: [
+          'Niño cuerpo completo',
+          'Niño arriba de cintura',
+          'Niño abajo de cintura'
+        ]
       },
       {
         name: 'Calzado Niño',
         type: 'single',
         icon: 'boys-footwear',
-        slug: 'calzado-nino'
+        slug: 'calzado-nino',
+        subcategoryId: 43 // ID de Calzado Niño
       },
       {
         name: 'Ropa de Dama y Maternidad',
-        type: 'grouped',
+        type: 'single',
         icon: 'women-clothing',
         slug: 'ropa-dama-maternidad',
-        subcategories: [
-          'Ropa de Dama',
-          'Ropa de Maternidad'
-        ]
+        subcategoryId: 45 // ID de Ropa de Dama y Maternidad
+      },
+      {
+        name: 'Accesorios y Bolsas de Dama',
+        type: 'single',
+        icon: 'women-accessories',
+        slug: 'accesorios-dama',
+        subcategoryId: 44 // ID de Accesorios y Bolsas de Dama
       }
     ]
   },
@@ -194,44 +252,36 @@ export const categoryGroupsComplete = {
     slug: 'a-jugar',
     groups: [
       {
-        name: 'Juguetes (por edad)',
-        type: 'grouped',
+        name: 'Juguetes',
+        type: 'single',
         icon: 'toys',
-        slug: 'juguetes-edad',
-        subcategories: [
-          '0-12 meses',
-          '1-3 años',
-          '3-5 años',
-          '5+ años'
-        ]
+        slug: 'juguetes',
+        subcategoryId: 46 // ID de Juguetes
       },
       {
-        name: 'Disfraces (por edad)',
-        type: 'grouped',
+        name: 'Disfraces',
+        type: 'single',
         icon: 'costume',
-        slug: 'disfraces-edad',
-        subcategories: [
-          '0-12 meses',
-          '1-3 años',
-          '3-5 años',
-          '5+ años'
-        ]
+        slug: 'disfraces',
+        subcategoryId: 47 // ID de Disfraces
       },
       {
         name: 'Andaderas',
         type: 'single',
         icon: 'walker',
-        slug: 'andaderas'
+        slug: 'andaderas',
+        subcategoryId: 52 // ID de Andaderas
       },
       {
-        name: 'Correpasillos, mesas y tapetes',
+        name: 'Montables y correpasillos',
         type: 'grouped',
         icon: 'ride-on',
-        slug: 'correpasillos-mesas',
+        slug: 'montables-correpasillos',
+        subcategoryIds: [53, 49, 51], // IDs: Montables y correpasillos Bebé, Mesa de actividades, Gimnasios y tapetes
         subcategories: [
-          'Correpasillos',
-          'Mesas de actividades',
-          'Tapetes didácticos'
+          'Montables y correpasillos Bebé',
+          'Mesa de actividades',
+          'Gimnasios y tapetes'
         ]
       },
       {
@@ -239,23 +289,25 @@ export const categoryGroupsComplete = {
         type: 'grouped',
         icon: 'books',
         slug: 'libros-juegos',
+        subcategoryIds: [50, 48], // IDs: Libros y rompecabezas, Juegos de mesa
         subcategories: [
-          'Libros infantiles',
-          'Juegos de mesa',
-          'Rompecabezas'
+          'Libros y rompecabezas',
+          'Juegos de mesa'
         ]
       },
       {
         name: 'Juegos Grandes',
         type: 'single',
         icon: 'playground',
-        slug: 'juegos-grandes'
+        slug: 'juegos-grandes',
+        subcategoryId: 57 // ID de Juegos grandes
       },
       {
         name: 'Sobre Ruedas',
         type: 'grouped',
         icon: 'bicycle',
         slug: 'sobre-ruedas-jugar',
+        subcategoryIds: [56, 54, 55], // IDs en A jugar: Sobre ruedas, Montables de exterior, Triciclos y bicicletas
         subcategories: [
           'Sobre ruedas',
           'Montables de exterior',

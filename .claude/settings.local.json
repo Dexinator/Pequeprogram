@@ -33,7 +33,8 @@
       "Bash(docker ps:*)",
       "Bash(awk:*)",
       "Bash(node:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(PGPASSWORD=pe1f4f515a5f9afc7e6f85cb5ece49d1952527402a05c9afd287bd371c0d2f679 psql:*)"
     ],
     "deny": []
   }
