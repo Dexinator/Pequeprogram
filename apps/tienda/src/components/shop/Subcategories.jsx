@@ -277,10 +277,9 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
                 // Grupo con una sola subcategoría
                 href += `&subcats=${group.subcategoryId}`;
               }
-              href += `&nombre=${encodeURIComponent(groupName)}`;
             } else {
               // Fallback al comportamiento anterior para compatibilidad
-              href += `&search=${encodeURIComponent(groupName)}&nombre=${encodeURIComponent(groupName)}`;
+              href += `&search=${encodeURIComponent(groupName)}`;
             }
 
             return (
