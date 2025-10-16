@@ -380,6 +380,9 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
 <!-- Cargar SDK de MercadoPago México -->
 <script src="https://sdk.mercadopago.com/js/v2" is:inline></script>
 
+<!-- Cargar script de Device Fingerprint (REQUERIDO en producción) -->
+<script src="https://www.mercadopago.com/v2/security.js" view="checkout" is:inline></script>
+
 <script is:inline define:vars={{ apiBaseUrl, mercadoPagoPublicKey }}>
   console.log('🛒 Checkout script iniciando...');
   console.log('API URL configurada:', apiBaseUrl);
@@ -658,24 +661,27 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
       try {
         console.log('Iniciando MercadoPago...');
         console.log('Public Key:', mercadoPagoPublicKey);
-        
+
         const checkoutForm = document.getElementById('checkout-form');
         const checkoutBtn = document.getElementById('checkout-btn');
-        
+
         if (!checkoutForm || !checkoutBtn || !cartData) {
           console.error('No se pueden inicializar los pagos: faltan elementos o carrito vacío');
           return;
         }
-        
+
         const { cartItems, safeTotal } = cartData;
         const totalWithShipping = safeTotal + shippingCost;
         console.log('Total para MercadoPago:', totalWithShipping);
-        
+
         // Inicializar MercadoPago con detección de fraudes habilitada (REQUERIDO en producción)
         const mp = new window.MercadoPago(mercadoPagoPublicKey, {
           locale: 'es-MX',
           advancedFraudPrevention: true // REQUERIDO para que funcione en producción
         });
+
+        // Guardar referencia global para acceder al deviceId más tarde
+        window.mpInstance = mp;
         
         // Verificar que los contenedores existan
         const cardNumberElement = document.getElementById('form-checkout__cardNumber');
@@ -790,9 +796,14 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
                 // Calcular total con envío
                 const totalWithShipping = safeTotal + shippingCost;
 
-                // Obtener device ID si está disponible (generado por advancedFraudPrevention)
-                const deviceId = mp.deviceId || mp.getDeviceId?.() || null;
-                console.log('Device ID capturado:', deviceId);
+                // Obtener device ID de la variable global creada por security.js
+                // Esta variable es creada automáticamente por https://www.mercadopago.com/v2/security.js
+                const deviceId = window.MP_DEVICE_SESSION_ID || null;
+                console.log('Device ID capturado desde MP_DEVICE_SESSION_ID:', deviceId);
+
+                if (!deviceId) {
+                  console.warn('⚠️ ADVERTENCIA: No se pudo obtener MP_DEVICE_SESSION_ID');
+                }
 
                 // Preparar datos de pago
                 const paymentData = {
