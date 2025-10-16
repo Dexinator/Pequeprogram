@@ -671,10 +671,10 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
         const totalWithShipping = safeTotal + shippingCost;
         console.log('Total para MercadoPago:', totalWithShipping);
         
-        // Inicializar MercadoPago
+        // Inicializar MercadoPago con detección de fraudes habilitada (REQUERIDO en producción)
         const mp = new window.MercadoPago(mercadoPagoPublicKey, {
           locale: 'es-MX',
-          advancedFraudPrevention: false // Desactivar para evitar problemas con crypto
+          advancedFraudPrevention: true // REQUERIDO para que funcione en producción
         });
         
         // Verificar que los contenedores existan
@@ -777,19 +777,23 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
                 // Obtener datos del formulario
                 const cardFormData = window.mpCardForm.getCardFormData();
                 console.log('Datos de la tarjeta:', cardFormData);
-                
+
                 // Validar token
                 if (!cardFormData.token) {
                   throw new Error('No se pudo obtener el token de la tarjeta');
                 }
-                
+
                 if (!cardFormData.paymentMethodId) {
                   throw new Error('No se pudo obtener el método de pago');
                 }
-                
+
                 // Calcular total con envío
                 const totalWithShipping = safeTotal + shippingCost;
-                
+
+                // Obtener device ID si está disponible (generado por advancedFraudPrevention)
+                const deviceId = mp.deviceId || mp.getDeviceId?.() || null;
+                console.log('Device ID capturado:', deviceId);
+
                 // Preparar datos de pago
                 const paymentData = {
                   transaction_amount: totalWithShipping.toString(),
@@ -798,6 +802,7 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api'
                   installments: parseInt(cardFormData.installments) || 1,
                   issuer_id: cardFormData.issuerId,
                   payment_method_id: cardFormData.paymentMethodId,
+                  device_id: deviceId, // Agregar device_id para prevención de fraude
                   payer: {
                     email: emailElement.value,
                     first_name: nombreElement.value,
