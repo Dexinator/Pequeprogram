@@ -17,18 +17,19 @@ if (!process.env.MP_ACCESS_TOKEN) {
  * Procesa un pago con tarjeta mediante MercadoPago
  */
 export const processPayment = asyncHandler(async (req: Request, res: Response) => {
-  const { 
-    transaction_amount, 
-    token, 
-    description, 
-    installments, 
+  const {
+    transaction_amount,
+    token,
+    description,
+    installments,
     issuer_id,
     payer,
     items,
     shipping_address,
     shipping_cost,
     shipping_zone_id,
-    total_weight_grams
+    total_weight_grams,
+    device_id
   } = req.body;
 
   console.log("Datos recibidos en req.body:", JSON.stringify(req.body, null, 2));
@@ -144,7 +145,7 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
   };
 
   // Datos del pago con formato correcto para el monto
-  const paymentData = {
+  const paymentData: any = {
     transaction_amount: Number(parseFloat(transaction_amount).toFixed(2)), // Asegurar formato con 2 decimales
     token,
     description: description || "Compra en Tienda Entrepeques",
@@ -165,6 +166,14 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
       })) || []
     }
   };
+
+  // Agregar device_id si está disponible (REQUERIDO para producción)
+  if (device_id) {
+    paymentData.device_id = device_id;
+    console.log('Device ID incluido en el pago:', device_id);
+  } else {
+    console.warn('⚠️ ADVERTENCIA: No se recibió device_id - puede causar rechazo en producción');
+  }
 
   // Añadir información de teléfono si está disponible
   if (payer?.phone?.number) {
