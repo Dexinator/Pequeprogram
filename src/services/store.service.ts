@@ -14,6 +14,7 @@ export interface OnlineProductsParams {
   limit: number;
   category_id?: number;
   subcategory_id?: number;
+  subcategory_ids?: number[]; // Nuevo: array de IDs de subcategorías
   min_price?: number;
   max_price?: number;
   search?: string;
@@ -172,6 +173,12 @@ export class StoreService {
       if (params.subcategory_id) {
         query += ` AND vi.subcategory_id = $${paramIndex++}`;
         queryParams.push(params.subcategory_id);
+      }
+
+      // Nuevo: manejar múltiples IDs de subcategorías
+      if (params.subcategory_ids && params.subcategory_ids.length > 0) {
+        query += ` AND vi.subcategory_id = ANY($${paramIndex++})`;
+        queryParams.push(params.subcategory_ids);
       }
 
       if (params.min_price !== undefined) {
