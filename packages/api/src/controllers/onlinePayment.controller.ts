@@ -167,12 +167,13 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
     }
   };
 
-  // Agregar device_id si está disponible (REQUERIDO para producción)
+  // NOTA: El device_id NO se envía en el body del pago
+  // MercadoPago lo captura automáticamente cuando advancedFraudPrevention: true
+  // está habilitado en el SDK del frontend
   if (device_id) {
-    paymentData.device_id = device_id;
-    console.log('Device ID incluido en el pago:', device_id);
+    console.log('✅ Device fingerprint recibido del frontend (se usa automáticamente):', device_id.substring(0, 50) + '...');
   } else {
-    console.warn('⚠️ ADVERTENCIA: No se recibió device_id - puede causar rechazo en producción');
+    console.warn('⚠️ ADVERTENCIA: No se recibió device fingerprint del frontend');
   }
 
   // Añadir información de teléfono si está disponible
