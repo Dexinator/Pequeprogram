@@ -3,11 +3,20 @@ import Layout from '../layouts/Layout.astro';
 
 // Verificación básica si estamos en desarrollo o producción
 const isProduction = import.meta.env.PROD;
+
+// Debug: Ver qué variables de entorno están disponibles
+console.log('🔍 SERVER - Todas las variables PUBLIC_*:', Object.keys(import.meta.env).filter(k => k.startsWith('PUBLIC_')));
+console.log('🔍 SERVER - PUBLIC_MP_PUBLIC_KEY:', import.meta.env.PUBLIC_MP_PUBLIC_KEY);
+console.log('🔍 SERVER - PUBLIC_API_URL:', import.meta.env.PUBLIC_API_URL);
+
 // El PUBLIC_KEY de MercadoPago debería estar en variables de entorno
 const mercadoPagoPublicKey = import.meta.env.PUBLIC_MP_PUBLIC_KEY || "TEST-552b4b64-48f2-4316-9231-7b5cf3793e9e";
 
 // Usar variable de entorno para la URL de la API
 const apiBaseUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
+
+console.log('🔍 SERVER - Valor final mercadoPagoPublicKey:', mercadoPagoPublicKey);
+console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
 ---
 
 <Layout title="Proceso de Pago">
