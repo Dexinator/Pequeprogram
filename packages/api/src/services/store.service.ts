@@ -256,7 +256,7 @@ export class StoreService {
       const total = parseInt(countResult.rows[0].total);
 
       // Ordenamiento
-      let orderBy = 'vi.online_prepared_at DESC'; // Default: más recientes
+      let orderBy = 'vi.online_prepared_at DESC NULLS LAST'; // Default: más recientes (productos con fecha primero)
       if (params.sort) {
         switch (params.sort) {
           case 'price_asc':
@@ -272,7 +272,7 @@ export class StoreService {
             orderBy = 's.name DESC, b.name DESC';
             break;
           default:
-            orderBy = 'vi.online_prepared_at DESC';
+            orderBy = 'vi.online_prepared_at DESC NULLS LAST';
         }
       }
 
@@ -736,7 +736,7 @@ export class StoreService {
         WHERE vi.online_store_ready = true
         AND vi.online_featured = true
         AND i.quantity > 0
-        ORDER BY vi.online_prepared_at DESC
+        ORDER BY vi.online_prepared_at DESC NULLS LAST
         LIMIT $1
       `;
       
