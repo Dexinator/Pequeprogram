@@ -390,7 +390,7 @@ export const handleWebhook = asyncHandler(async (req: Request, res: Response) =>
  */
 export const getPaymentStatus = asyncHandler(async (req: Request, res: Response) => {
   const { paymentId } = req.params;
-  
+
   const result = await pool.query(
     `SELECT os.*, array_agg(
       json_build_object(
@@ -406,11 +406,238 @@ export const getPaymentStatus = asyncHandler(async (req: Request, res: Response)
     GROUP BY os.id`,
     [paymentId]
   );
-  
+
   if (result.rows.length === 0) {
     res.status(404).json({ error: true, message: 'Venta no encontrada' });
     return;
   }
-  
+
+  res.json(result.rows[0]);
+});
+
+/**
+ * Lista todas las ventas online con filtros opcionales
+ */
+export const listOnlineSales = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    status,
+    startDate,
+    endDate,
+    customerEmail,
+    page = 1,
+    limit = 20
+  } = req.query;
+
+  const offset = (Number(page) - 1) * Number(limit);
+
+  let whereConditions: string[] = [];
+  let queryParams: any[] = [];
+  let paramIndex = 1;
+
+  // Filtro por estado de pago
+  if (status) {
+    whereConditions.push(`os.payment_status = $${paramIndex}`);
+    queryParams.push(status);
+    paramIndex++;
+  }
+
+  // Filtro por rango de fechas
+  if (startDate) {
+    whereConditions.push(`os.payment_date >= $${paramIndex}`);
+    queryParams.push(startDate);
+    paramIndex++;
+  }
+
+  if (endDate) {
+    whereConditions.push(`os.payment_date <= $${paramIndex}`);
+    queryParams.push(endDate);
+    paramIndex++;
+  }
+
+  // Filtro por email del cliente
+  if (customerEmail) {
+    whereConditions.push(`os.customer_email ILIKE $${paramIndex}`);
+    queryParams.push(`%${customerEmail}%`);
+    paramIndex++;
+  }
+
+  const whereClause = whereConditions.length > 0
+    ? 'WHERE ' + whereConditions.join(' AND ')
+    : '';
+
+  // Obtener el total de registros
+  const countResult = await pool.query(
+    `SELECT COUNT(*) FROM online_sales os ${whereClause}`,
+    queryParams
+  );
+  const totalRecords = parseInt(countResult.rows[0].count);
+
+  // Obtener las ventas con sus items
+  queryParams.push(Number(limit), offset);
+  const result = await pool.query(
+    `SELECT
+      os.*,
+      sz.zone_name,
+      sz.zone_code,
+      json_agg(
+        json_build_object(
+          'id', osi.id,
+          'valuation_item_id', osi.valuation_item_id,
+          'quantity', osi.quantity,
+          'unit_price', osi.unit_price,
+          'subtotal', osi.subtotal,
+          'product_name', CONCAT(s.name, ' ', b.name),
+          'subcategory_name', s.name,
+          'brand_name', b.name,
+          'inventory_id', i.id,
+          'images', vi.images
+        )
+      ) as items
+    FROM online_sales os
+    LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
+    LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+    LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+    LEFT JOIN brands b ON vi.brand_id = b.id
+    LEFT JOIN inventario i ON i.valuation_item_id = vi.id
+    LEFT JOIN shipping_zones sz ON os.shipping_zone_id = sz.id
+    ${whereClause}
+    GROUP BY os.id, sz.zone_name, sz.zone_code
+    ORDER BY os.payment_date DESC
+    LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+    queryParams
+  );
+
+  res.json({
+    sales: result.rows,
+    pagination: {
+      total: totalRecords,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(totalRecords / Number(limit))
+    }
+  });
+});
+
+/**
+ * Obtiene estadísticas de ventas online
+ */
+export const getOnlineSalesStats = asyncHandler(async (req: Request, res: Response) => {
+  // Total de ventas
+  const totalSalesResult = await pool.query(
+    `SELECT
+      COUNT(*) as total_sales,
+      SUM(total_amount) as total_revenue,
+      AVG(total_amount) as average_sale
+    FROM online_sales
+    WHERE payment_status = 'approved'`
+  );
+
+  // Ventas por estado
+  const salesByStatusResult = await pool.query(
+    `SELECT
+      payment_status,
+      COUNT(*) as count,
+      SUM(total_amount) as total
+    FROM online_sales
+    GROUP BY payment_status`
+  );
+
+  // Ventas de los últimos 7 días
+  const recentSalesResult = await pool.query(
+    `SELECT
+      DATE(payment_date) as date,
+      COUNT(*) as count,
+      SUM(total_amount) as total
+    FROM online_sales
+    WHERE payment_date >= NOW() - INTERVAL '7 days'
+    AND payment_status = 'approved'
+    GROUP BY DATE(payment_date)
+    ORDER BY date DESC`
+  );
+
+  // Productos más vendidos
+  const topProductsResult = await pool.query(
+    `SELECT
+      s.name as subcategory_name,
+      b.name as brand_name,
+      SUM(osi.quantity) as total_quantity,
+      SUM(osi.subtotal) as total_revenue
+    FROM online_sale_items osi
+    INNER JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+    INNER JOIN subcategories s ON vi.subcategory_id = s.id
+    LEFT JOIN brands b ON vi.brand_id = b.id
+    INNER JOIN online_sales os ON osi.online_sale_id = os.id
+    WHERE os.payment_status = 'approved'
+    GROUP BY s.name, b.name
+    ORDER BY total_quantity DESC
+    LIMIT 10`
+  );
+
+  // Zonas de envío más comunes
+  const topShippingZonesResult = await pool.query(
+    `SELECT
+      sz.zone_name,
+      sz.zone_code,
+      COUNT(*) as count,
+      SUM(os.shipping_cost) as total_shipping_revenue
+    FROM online_sales os
+    LEFT JOIN shipping_zones sz ON os.shipping_zone_id = sz.id
+    WHERE os.payment_status = 'approved'
+    GROUP BY sz.zone_name, sz.zone_code
+    ORDER BY count DESC`
+  );
+
+  res.json({
+    totalSales: totalSalesResult.rows[0],
+    salesByStatus: salesByStatusResult.rows,
+    recentSales: recentSalesResult.rows,
+    topProducts: topProductsResult.rows,
+    topShippingZones: topShippingZonesResult.rows
+  });
+});
+
+/**
+ * Obtiene el detalle completo de una venta online por ID
+ */
+export const getOnlineSaleById = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const result = await pool.query(
+    `SELECT
+      os.*,
+      sz.zone_name,
+      sz.zone_code,
+      json_agg(
+        json_build_object(
+          'id', osi.id,
+          'valuation_item_id', osi.valuation_item_id,
+          'quantity', osi.quantity,
+          'unit_price', osi.unit_price,
+          'subtotal', osi.subtotal,
+          'product_name', CONCAT(s.name, ' ', b.name),
+          'subcategory_name', s.name,
+          'brand_name', b.name,
+          'inventory_id', i.id,
+          'images', vi.images,
+          'features', vi.features
+        )
+      ) as items
+    FROM online_sales os
+    LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
+    LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+    LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+    LEFT JOIN brands b ON vi.brand_id = b.id
+    LEFT JOIN inventario i ON i.valuation_item_id = vi.id
+    LEFT JOIN shipping_zones sz ON os.shipping_zone_id = sz.id
+    WHERE os.id = $1
+    GROUP BY os.id, sz.zone_name, sz.zone_code`,
+    [id]
+  );
+
+  if (result.rows.length === 0) {
+    res.status(404).json({ error: true, message: 'Venta no encontrada' });
+    return;
+  }
+
   res.json(result.rows[0]);
 });
