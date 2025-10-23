@@ -4,6 +4,7 @@ import VentasModule from './modules/VentasModule';
 import InventarioModule from './modules/InventarioModule';
 import ComprasModule from './modules/ComprasModule';
 import ConsignacionesModule from './modules/ConsignacionesModule';
+import OnlineSalesModule from './modules/OnlineSalesModule';
 
 export default function POSApp() {
   const { user, logout } = useAuth();
@@ -24,6 +25,8 @@ export default function POSApp() {
         return <ComprasModule />;
       case 'consignaciones':
         return <ConsignacionesModule />;
+      case 'ventas-online':
+        return <OnlineSalesModule />;
       default:
         return <VentasModule />;
     }
@@ -49,6 +52,12 @@ export default function POSApp() {
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
       </svg>
+    ),
+    'ventas-online': (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity="0.5" />
+      </svg>
     )
   };
 
@@ -65,6 +74,7 @@ export default function POSApp() {
               <div className="hidden sm:ml-6 sm:flex sm:space-x-2">
                 {Object.entries({
                   ventas: 'Ventas',
+                  'ventas-online': 'Ventas Online',
                   inventario: 'Inventario',
                   compras: 'Compras',
                   consignaciones: 'Consignaciones'
@@ -103,9 +113,10 @@ export default function POSApp() {
 
         {/* Mobile navigation */}
         <div className="sm:hidden border-t border-gray-200">
-          <div className="grid grid-cols-2 gap-1 p-2">
+          <div className="grid grid-cols-3 gap-1 p-2">
             {Object.entries({
               ventas: 'Ventas',
+              'ventas-online': 'Online',
               inventario: 'Inventario',
               compras: 'Compras',
               consignaciones: 'Consignaciones'

@@ -299,8 +299,8 @@ const AllProducts = () => {
       {/* Modal de filtros móvil */}
       {showFilters && (
         <div className="lg:hidden fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowFilters(false)} />
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl">
+          <div className="absolute inset-0 bg-black bg-opacity-50 z-10" onClick={() => setShowFilters(false)} />
+          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl z-20">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filtros</h2>
