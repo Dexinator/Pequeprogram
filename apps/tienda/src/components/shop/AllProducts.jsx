@@ -298,25 +298,65 @@ const AllProducts = () => {
       
       {/* Modal de filtros móvil */}
       {showFilters && (
-        <div className="lg:hidden fixed inset-0 z-50">
-          {/* Overlay */}
+        <>
+          <style>{`
+            .mobile-filters-modal * {
+              color-scheme: light !important;
+            }
+            .mobile-filters-modal .dark\\:bg-gray-800,
+            .mobile-filters-modal .dark\\:bg-gray-700 {
+              background-color: #ffffff !important;
+            }
+            .mobile-filters-modal .dark\\:text-gray-100,
+            .mobile-filters-modal .dark\\:text-gray-300 {
+              color: #111827 !important;
+            }
+            .mobile-filters-modal .dark\\:border-gray-700,
+            .mobile-filters-modal .dark\\:border-gray-600 {
+              border-color: #d1d5db !important;
+            }
+          `}</style>
           <div
-            className="fixed inset-0 bg-black bg-opacity-50"
-            onClick={() => setShowFilters(false)}
-            style={{ zIndex: 1 }}
-          />
-          {/* Panel de filtros */}
-          <div
-            className="fixed right-0 top-0 bottom-0 w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl flex flex-col"
-            style={{ zIndex: 2 }}
+            className="lg:hidden fixed inset-0"
+            style={{ zIndex: 9999 }}
           >
+            {/* Overlay */}
+            <div
+              className="fixed inset-0"
+              onClick={() => setShowFilters(false)}
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 1
+              }}
+            />
+            {/* Panel de filtros */}
+            <div
+              className="mobile-filters-modal fixed right-0 top-0 bottom-0 w-full sm:max-w-sm flex flex-col shadow-2xl"
+              style={{
+                backgroundColor: '#ffffff',
+                zIndex: 2,
+                colorScheme: 'light'
+              }}
+            >
             {/* Header fijo */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <div
+              className="p-4 flex-shrink-0"
+              style={{
+                borderBottom: '1px solid #e5e7eb',
+                backgroundColor: '#ffffff'
+              }}
+            >
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filtros</h2>
+                <h2 className="text-lg font-semibold" style={{ color: '#111827' }}>Filtros</h2>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300"
+                  className="p-2 rounded-lg"
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#374151'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   aria-label="Cerrar filtros"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,11 +366,14 @@ const AllProducts = () => {
               </div>
             </div>
             {/* Contenido scrolleable */}
-            <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-800">
+            <div
+              className="flex-1 overflow-y-auto p-4"
+              style={{ backgroundColor: '#ffffff' }}
+            >
               {/* Categorías móvil */}
               {categories.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Categoría</h4>
+                  <h4 className="font-medium mb-3" style={{ color: '#111827' }}>Categoría</h4>
                   <select
                     value={filters.category_id || ''}
                     onChange={(e) => {
@@ -341,7 +384,12 @@ const AllProducts = () => {
                       });
                       setShowFilters(false);
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-pink-500"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
+                    style={{
+                      borderColor: '#d1d5db',
+                      backgroundColor: '#ffffff',
+                      color: '#111827'
+                    }}
                   >
                     <option value="">Todas las categorías</option>
                     {categories.map((cat) => (
@@ -353,18 +401,21 @@ const AllProducts = () => {
                 </div>
               )}
 
-              <ProductFilters
-                categoryId={filters.category_id}
-                subcategories={subcategories}
-                onFilterChange={(newFilters) => {
-                  handleFilterChange(newFilters);
-                  setShowFilters(false);
-                }}
-                currentFilters={filters}
-              />
+              <div style={{ backgroundColor: '#ffffff', color: '#111827' }}>
+                <ProductFilters
+                  categoryId={filters.category_id}
+                  subcategories={subcategories}
+                  onFilterChange={(newFilters) => {
+                    handleFilterChange(newFilters);
+                    setShowFilters(false);
+                  }}
+                  currentFilters={filters}
+                />
+              </div>
             </div>
           </div>
         </div>
+        </>
       )}
     </div>
   );
