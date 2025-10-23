@@ -31,6 +31,9 @@ const baseOrigins = [
   'https://pos.entrepeques.com',
   'https://entrepeques.com',
   'https://www.entrepeques.com',
+  // Producción - Dominios .mx
+  'https://entrepeques.mx',
+  'https://www.entrepeques.mx',
   // Desarrollo local
   'http://localhost:4321', // valuador
   'http://localhost:4322', // admin
@@ -60,23 +63,23 @@ if (config.nodeEnv === 'production' && config.databaseUrl.startsWith('postgres:/
 
 // Procesar CORS_ORIGIN si viene desde variable de entorno
 // Si se proporciona CORS_ORIGIN, agregarlo a la lista base en lugar de reemplazarla
+let allOrigins = [...baseOrigins];
 if (process.env.CORS_ORIGIN) {
-  const additionalOrigins = process.env.CORS_ORIGIN.includes(',') 
+  const additionalOrigins = process.env.CORS_ORIGIN.includes(',')
     ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
     : [process.env.CORS_ORIGIN];
-  
+
   // Combinar orígenes base con adicionales, eliminando duplicados
-  const allOrigins = [...new Set([...baseOrigins, ...additionalOrigins])];
-  config.corsOrigin = allOrigins;
+  allOrigins = [...new Set([...baseOrigins, ...additionalOrigins])];
 }
 
 // Función para validar origen dinámicamente
 config.corsOrigin = function(origin: any, callback: any) {
   // Permitir requests sin origen (Postman, curl, etc.)
   if (!origin) return callback(null, true);
-  
+
   // Lista de orígenes permitidos (incluye los de las variables de entorno si existen)
-  const allowedOrigins = [...baseOrigins];
+  const allowedOrigins = allOrigins;
   
   // En desarrollo, permitir cualquier localhost
   if (config.nodeEnv === 'development' && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
