@@ -298,15 +298,26 @@ const AllProducts = () => {
       
       {/* Modal de filtros móvil */}
       {showFilters && (
-        <div className="lg:hidden fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50 z-10" onClick={() => setShowFilters(false)} />
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl z-20">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="lg:hidden fixed inset-0 z-50">
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={() => setShowFilters(false)}
+            style={{ zIndex: 1 }}
+          />
+          {/* Panel de filtros */}
+          <div
+            className="fixed right-0 top-0 bottom-0 w-full max-w-sm bg-white dark:bg-gray-800 shadow-xl flex flex-col"
+            style={{ zIndex: 2 }}
+          >
+            {/* Header fijo */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filtros</h2>
                 <button
                   onClick={() => setShowFilters(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300"
+                  aria-label="Cerrar filtros"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -314,7 +325,8 @@ const AllProducts = () => {
                 </button>
               </div>
             </div>
-            <div className="p-4 overflow-y-auto h-full pb-20 bg-white dark:bg-gray-800">
+            {/* Contenido scrolleable */}
+            <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-800">
               {/* Categorías móvil */}
               {categories.length > 0 && (
                 <div className="mb-6">
@@ -340,7 +352,7 @@ const AllProducts = () => {
                   </select>
                 </div>
               )}
-              
+
               <ProductFilters
                 categoryId={filters.category_id}
                 subcategories={subcategories}
