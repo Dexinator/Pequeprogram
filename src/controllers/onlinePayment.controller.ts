@@ -29,7 +29,9 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
     shipping_cost,
     shipping_zone_id,
     total_weight_grams,
-    device_id
+    device_id,
+    delivery_method,
+    pickup_postal_code
   } = req.body;
 
   console.log("Datos recibidos en req.body:", JSON.stringify(req.body, null, 2));
@@ -86,6 +88,21 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
       }
     });
     return;
+  }
+
+  // Validar delivery_method
+  const isPickup = delivery_method === 'pickup';
+
+  if (isPickup) {
+    // Si es pickup, el costo de envío debe ser 0
+    const actualShippingCost = parseFloat(shipping_cost) || 0;
+    if (actualShippingCost !== 0) {
+      res.status(400).json({
+        error: true,
+        message: 'El costo de envío debe ser $0 para recoger en tienda'
+      });
+      return;
+    }
   }
 
   // Verificar disponibilidad de stock para los items
@@ -227,15 +244,26 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
       try {
         await client.query('BEGIN');
         
+        // Preparar notas según método de entrega
+        let saleNotes = null;
+        let postalCodeToSave = null;
+
+        if (isPickup) {
+          saleNotes = 'RECOGER EN TIENDA - Av. Homero 1616, Polanco I Secc, Miguel Hidalgo, 11510 CDMX';
+          postalCodeToSave = pickup_postal_code || null; // Para estadísticas
+        } else {
+          postalCodeToSave = shipping_address?.postal_code || null;
+        }
+
         // Crear el registro de venta online con información de envío
         const saleResult = await client.query(
           `INSERT INTO online_sales (
             payment_id, customer_email, customer_name, customer_phone,
             shipping_address, total_amount, payment_status, payment_method,
-            payment_date, notes, shipping_cost, shipping_zone_id, 
-            shipping_postal_code, shipping_street, shipping_city, 
-            shipping_state, total_weight_grams
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id`,
+            payment_date, notes, shipping_cost, shipping_zone_id,
+            shipping_postal_code, shipping_street, shipping_city,
+            shipping_state, total_weight_grams, delivery_method
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING id`,
           [
             paymentResult.id,
             payer?.email || "cliente@entrepeques.com",
@@ -246,14 +274,15 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
             paymentResult.status,
             paymentResult.payment_method_id,
             new Date(),
-            null,
+            saleNotes, // Incluye nota de pickup si aplica
             shipping_cost || 0,
             shipping_zone_id || null,
-            shipping_address?.postal_code || null,
-            shipping_address?.street || null,
-            shipping_address?.city || null,
-            shipping_address?.state || null,
-            total_weight_grams || null
+            postalCodeToSave, // CP para envío o estadísticas
+            isPickup ? null : (shipping_address?.street || null), // Solo si es envío
+            isPickup ? null : (shipping_address?.city || null), // Solo si es envío
+            isPickup ? null : (shipping_address?.state || null), // Solo si es envío
+            total_weight_grams || null,
+            delivery_method || 'shipping' // Nuevo campo
           ]
         );
         

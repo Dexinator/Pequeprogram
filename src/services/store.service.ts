@@ -823,4 +823,449 @@ export class StoreService {
       }
     }
   }
+
+  // New methods for product management
+  async updatePublishedProduct(inventoryId: string, userId: number, data: PrepareProductData) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      // Start transaction
+      await dbClient.query('BEGIN');
+
+      // Get valuation_item_id and current values from inventory
+      const inventoryQuery = `
+        SELECT
+          vi.id as valuation_item_id,
+          vi.weight_grams,
+          vi.online_price,
+          vi.online_featured,
+          vi.images,
+          vi.edit_history
+        FROM inventario i
+        JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        WHERE i.id = $1 AND vi.online_store_ready = true
+      `;
+      const inventoryResult = await dbClient.query(inventoryQuery, [inventoryId]);
+
+      if (inventoryResult.rows.length === 0) {
+        throw new Error('Producto no encontrado o no está publicado');
+      }
+
+      const currentItem = inventoryResult.rows[0];
+      const valuationItemId = currentItem.valuation_item_id;
+
+      // Build edit history entry
+      const fieldsChanged: string[] = [];
+      const oldValues: any = {};
+      const newValues: any = {};
+
+      if (data.weight_grams !== currentItem.weight_grams) {
+        fieldsChanged.push('weight_grams');
+        oldValues.weight_grams = currentItem.weight_grams;
+        newValues.weight_grams = data.weight_grams;
+      }
+
+      if (data.online_price !== parseFloat(currentItem.online_price)) {
+        fieldsChanged.push('online_price');
+        oldValues.online_price = parseFloat(currentItem.online_price);
+        newValues.online_price = data.online_price;
+      }
+
+      if (data.online_featured !== currentItem.online_featured) {
+        fieldsChanged.push('online_featured');
+        oldValues.online_featured = currentItem.online_featured;
+        newValues.online_featured = data.online_featured;
+      }
+
+      if (JSON.stringify(data.images) !== JSON.stringify(currentItem.images)) {
+        fieldsChanged.push('images');
+        oldValues.images = currentItem.images;
+        newValues.images = data.images;
+      }
+
+      // Build updated edit history
+      const currentEditHistory = currentItem.edit_history || [];
+      const editEntry = {
+        edited_by: userId,
+        edited_at: new Date().toISOString(),
+        fields_changed: fieldsChanged,
+        old_values: oldValues,
+        new_values: newValues
+      };
+      const updatedEditHistory = [...currentEditHistory, editEntry];
+
+      // Update valuation_items
+      const updateQuery = `
+        UPDATE valuation_items
+        SET
+          weight_grams = $1,
+          images = $2,
+          online_price = $3,
+          online_featured = $4,
+          edit_history = $5,
+          updated_at = NOW()
+        WHERE id = $6
+        RETURNING *
+      `;
+
+      const updateResult = await dbClient.query(updateQuery, [
+        data.weight_grams,
+        JSON.stringify(data.images),
+        data.online_price,
+        data.online_featured || false,
+        JSON.stringify(updatedEditHistory),
+        valuationItemId
+      ]);
+
+      // Commit transaction
+      await dbClient.query('COMMIT');
+
+      return updateResult.rows[0];
+    } catch (error) {
+      if (dbClient) {
+        await dbClient.query('ROLLBACK');
+      }
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async unpublishProduct(inventoryId: string, userId: number, reason: string) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      // Start transaction
+      await dbClient.query('BEGIN');
+
+      // Get valuation_item_id from inventory
+      const inventoryQuery = `
+        SELECT valuation_item_id
+        FROM inventario
+        WHERE id = $1
+      `;
+      const inventoryResult = await dbClient.query(inventoryQuery, [inventoryId]);
+
+      if (inventoryResult.rows.length === 0) {
+        throw new Error('Producto no encontrado en inventario');
+      }
+
+      const valuationItemId = inventoryResult.rows[0].valuation_item_id;
+
+      // Unpublish the product
+      const updateQuery = `
+        UPDATE valuation_items
+        SET
+          online_store_ready = false,
+          unpublished_by = $1,
+          unpublished_at = NOW(),
+          unpublish_reason = $2,
+          updated_at = NOW()
+        WHERE id = $3
+        RETURNING *
+      `;
+
+      const updateResult = await dbClient.query(updateQuery, [
+        userId,
+        reason,
+        valuationItemId
+      ]);
+
+      // Commit transaction
+      await dbClient.query('COMMIT');
+
+      return updateResult.rows[0];
+    } catch (error) {
+      if (dbClient) {
+        await dbClient.query('ROLLBACK');
+      }
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async bulkUpdateProducts(productIds: string[], action: string, userId: number, data?: any) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      // Start transaction
+      await dbClient.query('BEGIN');
+
+      // Get valuation_item_ids from inventory
+      const inventoryQuery = `
+        SELECT i.id as inventory_id, vi.id as valuation_item_id
+        FROM inventario i
+        JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        WHERE i.id = ANY($1) AND vi.online_store_ready = true
+      `;
+      const inventoryResult = await dbClient.query(inventoryQuery, [productIds]);
+
+      if (inventoryResult.rows.length === 0) {
+        throw new Error('No se encontraron productos válidos');
+      }
+
+      const valuationItemIds = inventoryResult.rows.map(row => row.valuation_item_id);
+      const results: any[] = [];
+
+      switch (action) {
+        case 'feature':
+          // Mark products as featured
+          const featureQuery = `
+            UPDATE valuation_items
+            SET
+              online_featured = true,
+              updated_at = NOW()
+            WHERE id = ANY($1)
+            RETURNING id
+          `;
+          const featureResult = await dbClient.query(featureQuery, [valuationItemIds]);
+          results.push(...featureResult.rows);
+          break;
+
+        case 'unfeature':
+          // Remove featured status
+          const unfeatureQuery = `
+            UPDATE valuation_items
+            SET
+              online_featured = false,
+              updated_at = NOW()
+            WHERE id = ANY($1)
+            RETURNING id
+          `;
+          const unfeatureResult = await dbClient.query(unfeatureQuery, [valuationItemIds]);
+          results.push(...unfeatureResult.rows);
+          break;
+
+        case 'unpublish':
+          // Bulk unpublish products
+          const unpublishQuery = `
+            UPDATE valuation_items
+            SET
+              online_store_ready = false,
+              unpublished_by = $1,
+              unpublished_at = NOW(),
+              unpublish_reason = $2,
+              updated_at = NOW()
+            WHERE id = ANY($3)
+            RETURNING id
+          `;
+          const unpublishResult = await dbClient.query(unpublishQuery, [
+            userId,
+            data?.reason || 'Despublicación masiva',
+            valuationItemIds
+          ]);
+          results.push(...unpublishResult.rows);
+          break;
+
+        case 'update_price':
+          // Bulk update price (percentage or fixed)
+          if (!data?.priceAdjustment) {
+            throw new Error('Se requiere ajuste de precio');
+          }
+
+          let priceUpdateQuery = '';
+          if (data.priceAdjustment.type === 'percentage') {
+            priceUpdateQuery = `
+              UPDATE valuation_items
+              SET
+                online_price = online_price * (1 + $1 / 100),
+                updated_at = NOW()
+              WHERE id = ANY($2)
+              RETURNING id, online_price
+            `;
+          } else {
+            priceUpdateQuery = `
+              UPDATE valuation_items
+              SET
+                online_price = $1,
+                updated_at = NOW()
+              WHERE id = ANY($2)
+              RETURNING id, online_price
+            `;
+          }
+
+          const priceResult = await dbClient.query(priceUpdateQuery, [
+            data.priceAdjustment.value,
+            valuationItemIds
+          ]);
+          results.push(...priceResult.rows);
+          break;
+
+        default:
+          throw new Error('Acción no válida');
+      }
+
+      // Commit transaction
+      await dbClient.query('COMMIT');
+
+      return {
+        success: true,
+        affectedCount: results.length,
+        affectedIds: results.map(r => r.id)
+      };
+    } catch (error) {
+      if (dbClient) {
+        await dbClient.query('ROLLBACK');
+      }
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  async getPublishedProductsForManagement(params: any) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      let query = `
+        SELECT
+          vi.id,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.condition_state,
+          vi.features,
+          vi.online_price,
+          vi.weight_grams,
+          vi.images,
+          vi.online_featured,
+          vi.online_prepared_at,
+          vi.online_prepared_by,
+          vi.unpublished_at,
+          vi.unpublished_by,
+          vi.unpublish_reason,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location,
+          u.username as prepared_by_username
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        LEFT JOIN users u ON vi.online_prepared_by = u.id
+        WHERE vi.online_store_ready = true
+        AND i.quantity > 0
+      `;
+
+      const queryParams: any[] = [];
+      let paramIndex = 1;
+
+      // Apply filters
+      if (params.category_id) {
+        query += ` AND vi.category_id = $${paramIndex++}`;
+        queryParams.push(params.category_id);
+      }
+
+      if (params.subcategory_id) {
+        query += ` AND vi.subcategory_id = $${paramIndex++}`;
+        queryParams.push(params.subcategory_id);
+      }
+
+      if (params.featured !== undefined) {
+        query += ` AND vi.online_featured = $${paramIndex++}`;
+        queryParams.push(params.featured);
+      }
+
+      if (params.min_price !== undefined) {
+        query += ` AND vi.online_price >= $${paramIndex++}`;
+        queryParams.push(params.min_price);
+      }
+
+      if (params.max_price !== undefined) {
+        query += ` AND vi.online_price <= $${paramIndex++}`;
+        queryParams.push(params.max_price);
+      }
+
+      if (params.location) {
+        query += ` AND i.location = $${paramIndex++}`;
+        queryParams.push(params.location);
+      }
+
+      if (params.search) {
+        query += ` AND (
+          s.name ILIKE $${paramIndex} OR
+          b.name ILIKE $${paramIndex} OR
+          vi.features::text ILIKE $${paramIndex} OR
+          i.id ILIKE $${paramIndex}
+        )`;
+        queryParams.push(`%${params.search}%`);
+        paramIndex++;
+      }
+
+      if (params.date_from) {
+        query += ` AND vi.online_prepared_at >= $${paramIndex++}`;
+        queryParams.push(params.date_from);
+      }
+
+      if (params.date_to) {
+        query += ` AND vi.online_prepared_at <= $${paramIndex++}`;
+        queryParams.push(params.date_to);
+      }
+
+      // Count total
+      const countQuery = `SELECT COUNT(*) as total FROM (${query}) as subquery`;
+      const countResult = await dbClient.query(countQuery, queryParams);
+      const total = parseInt(countResult.rows[0].total);
+
+      // Add sorting
+      let orderBy = 'vi.online_prepared_at DESC NULLS LAST';
+      if (params.sort) {
+        switch (params.sort) {
+          case 'price_asc':
+            orderBy = 'vi.online_price ASC';
+            break;
+          case 'price_desc':
+            orderBy = 'vi.online_price DESC';
+            break;
+          case 'featured':
+            orderBy = 'vi.online_featured DESC, vi.online_prepared_at DESC';
+            break;
+          case 'inventory_id':
+            orderBy = 'i.id ASC';
+            break;
+        }
+      }
+
+      // Add pagination
+      query += ` ORDER BY ${orderBy}`;
+      query += ` LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
+      queryParams.push(params.limit);
+      queryParams.push((params.page - 1) * params.limit);
+
+      const result = await dbClient.query(query, queryParams);
+
+      return {
+        products: result.rows.map(row => ({
+          ...row,
+          quantity: parseInt(row.quantity),
+          online_price: parseFloat(row.online_price),
+          weight_grams: parseInt(row.weight_grams || 0),
+          images: row.images || []
+        })),
+        total
+      };
+    } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
 }

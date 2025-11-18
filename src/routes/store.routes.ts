@@ -11,7 +11,11 @@ import {
   prepareProductForStore,
   getStoreStats,
   getAvailableStatuses,
-  uploadProductImages
+  uploadProductImages,
+  updatePublishedProduct,
+  unpublishProduct,
+  bulkUpdateProducts,
+  getPublishedProductsForManagement
 } from '../controllers/store.controller';
 
 const router = express.Router();
@@ -59,10 +63,27 @@ router
 router
   .route('/upload-images')
   .post(
-    authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), 
+    authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']),
     uploadMultiple,
     handleMulterError,
     uploadProductImages
   );
+
+// Product management routes (admin/superadmin only)
+router
+  .route('/products/management')
+  .get(authorize(['superadmin', 'admin']), getPublishedProductsForManagement);
+
+router
+  .route('/products/:id/update')
+  .put(authorize(['superadmin', 'admin']), updatePublishedProduct);
+
+router
+  .route('/products/:id/unpublish')
+  .put(authorize(['superadmin', 'admin']), unpublishProduct);
+
+router
+  .route('/products/bulk-update')
+  .put(authorize(['superadmin', 'admin']), bulkUpdateProducts);
 
 export default router;
