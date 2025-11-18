@@ -79,6 +79,31 @@ export default function OnlineSaleDetailModal({ sale, onClose }) {
 
         {/* Content */}
         <div className="p-6 space-y-6">
+          {/* Método de Entrega - Badge destacado */}
+          <div className="mb-4">
+            {sale.delivery_method === 'pickup' ? (
+              <div className="bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-300 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">🏪</div>
+                  <div>
+                    <p className="text-lg font-bold text-green-900">RECOGER EN TIENDA</p>
+                    <p className="text-sm text-green-700">El cliente recogerá su pedido en la tienda física</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">🚚</div>
+                  <div>
+                    <p className="text-lg font-bold text-blue-900">ENVÍO A DOMICILIO</p>
+                    <p className="text-sm text-blue-700">El pedido será enviado a la dirección del cliente</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Estado y Fecha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -117,37 +142,111 @@ export default function OnlineSaleDetailModal({ sale, onClose }) {
             </div>
           </div>
 
-          {/* Dirección de Envío */}
+          {/* Dirección de Envío o Información de Tienda */}
           <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Dirección de Envío</h3>
-            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-              <p className="text-sm font-medium text-gray-900">{sale.shipping_street}</p>
-              {sale.shipping_address?.neighborhood && (
-                <p className="text-sm text-gray-700">Colonia: {sale.shipping_address.neighborhood}</p>
-              )}
-              <p className="text-sm text-gray-700">
-                {sale.shipping_city}, {sale.shipping_state}
-              </p>
-              <p className="text-sm text-gray-700">CP: {sale.shipping_postal_code}</p>
-              {sale.shipping_address?.references && (
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-sm text-gray-600">Referencias:</p>
-                  <p className="text-sm text-gray-700">{sale.shipping_address.references}</p>
+            {sale.delivery_method === 'pickup' ? (
+              // INFORMACIÓN DE LA TIENDA PARA RECOGER
+              <>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  📍 Información para Recoger el Pedido
+                </h3>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-lg border border-green-200 space-y-4">
+                  {/* Dirección de la tienda */}
+                  <div>
+                    <p className="text-sm font-semibold text-green-900 mb-2 flex items-center">
+                      <span className="mr-2">🏢</span>
+                      Dirección de la Tienda:
+                    </p>
+                    <div className="ml-6 text-sm text-gray-800 space-y-1">
+                      <p className="font-medium">Av. Homero 1616</p>
+                      <p>Polanco I Secc, Miguel Hidalgo</p>
+                      <p>11510 Ciudad de México, CDMX</p>
+                    </div>
+                  </div>
+
+                  {/* Horarios */}
+                  <div className="pt-3 border-t border-green-200">
+                    <p className="text-sm font-semibold text-green-900 mb-2 flex items-center">
+                      <span className="mr-2">🕐</span>
+                      Horarios de Atención:
+                    </p>
+                    <div className="ml-6 text-sm text-gray-800 space-y-1">
+                      <p><span className="font-medium">Lunes - Viernes:</span> 11:00 am - 7:30 pm</p>
+                      <p><span className="font-medium">Sábados:</span> 11:00 am - 6:30 pm</p>
+                      <p className="text-red-600"><span className="font-medium">Domingos:</span> Cerrado</p>
+                    </div>
+                  </div>
+
+                  {/* Contacto */}
+                  <div className="pt-3 border-t border-green-200">
+                    <p className="text-sm font-semibold text-green-900 mb-2 flex items-center">
+                      <span className="mr-2">📞</span>
+                      Contacto:
+                    </p>
+                    <div className="ml-6 text-sm text-gray-800 space-y-1">
+                      <p>Teléfono: <a href="tel:+525565883245" className="text-blue-600 hover:underline">(55) 6588 3245</a></p>
+                      <p>WhatsApp: <a href="https://wa.me/525523632389" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">(55) 2363 2389</a></p>
+                    </div>
+                  </div>
+
+                  {/* Instrucciones */}
+                  <div className="pt-3 border-t border-green-200">
+                    <p className="text-sm font-semibold text-yellow-800 mb-2 flex items-center">
+                      <span className="mr-2">💡</span>
+                      Instrucciones:
+                    </p>
+                    <div className="ml-6 text-sm text-gray-800">
+                      <p>Estacionamiento disponible con parquímetro. Llámanos al llegar y te ayudamos.</p>
+                    </div>
+                  </div>
+
+                  {/* Botón de navegación */}
+                  <div className="pt-3">
+                    <a
+                      href="https://www.google.com/maps/dir//Av.+Homero+1616,+Polanco,+Polanco+I+Secc,+Miguel+Hidalgo,+11510+Ciudad+de+México,+CDMX"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+                    >
+                      🗺️ Cómo Llegar
+                    </a>
+                  </div>
                 </div>
-              )}
-              {sale.zone_name && (
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-sm text-blue-600 font-medium">
-                    Zona de Envío: {sale.zone_name} ({sale.zone_code})
+              </>
+            ) : (
+              // DIRECCIÓN DE ENVÍO A DOMICILIO
+              <>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Dirección de Envío</h3>
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <p className="text-sm font-medium text-gray-900">{sale.shipping_street}</p>
+                  {sale.shipping_address?.neighborhood && (
+                    <p className="text-sm text-gray-700">Colonia: {sale.shipping_address.neighborhood}</p>
+                  )}
+                  <p className="text-sm text-gray-700">
+                    {sale.shipping_city}, {sale.shipping_state}
                   </p>
+                  <p className="text-sm text-gray-700">CP: {sale.shipping_postal_code}</p>
+                  {sale.shipping_address?.references && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <p className="text-sm text-gray-600">Referencias:</p>
+                      <p className="text-sm text-gray-700">{sale.shipping_address.references}</p>
+                    </div>
+                  )}
+                  {sale.zone_name && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <p className="text-sm text-blue-600 font-medium">
+                        Zona de Envío: {sale.zone_name} ({sale.zone_code})
+                      </p>
+                    </div>
+                  )}
+                  {sale.total_weight_grams && (
+                    <p className="text-sm text-gray-600">
+                      Peso Total: {(sale.total_weight_grams / 1000).toFixed(2)} kg
+                    </p>
+                  )}
                 </div>
-              )}
-              {sale.total_weight_grams && (
-                <p className="text-sm text-gray-600">
-                  Peso Total: {(sale.total_weight_grams / 1000).toFixed(2)} kg
-                </p>
-              )}
-            </div>
+              </>
+            )}
           </div>
 
           {/* Productos */}
@@ -215,9 +314,15 @@ export default function OnlineSaleDetailModal({ sale, onClose }) {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Costo de Envío:</span>
-                <span className="font-medium text-gray-900">
-                  {formatCurrency(sale.shipping_cost || 0)}
-                </span>
+                {sale.delivery_method === 'pickup' ? (
+                  <span className="font-semibold text-green-600">
+                    ¡Gratis! (Recoger en tienda)
+                  </span>
+                ) : (
+                  <span className="font-medium text-gray-900">
+                    {formatCurrency(sale.shipping_cost || 0)}
+                  </span>
+                )}
               </div>
               <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
                 <span className="text-base font-semibold text-gray-900">Total:</span>

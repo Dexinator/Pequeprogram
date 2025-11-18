@@ -267,15 +267,34 @@ export default function OnlineSalesList() {
                       {formatDate(sale.payment_date)}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-sm text-gray-900">
-                        {sale.shipping_city}, {sale.shipping_state}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        CP: {sale.shipping_postal_code}
-                      </div>
-                      {sale.zone_name && (
-                        <div className="text-xs text-blue-600">
-                          {sale.zone_name} - {formatCurrency(sale.shipping_cost)}
+                      {sale.delivery_method === 'pickup' ? (
+                        // RECOGER EN TIENDA
+                        <div>
+                          <div className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full mb-1">
+                            🏪 RECOGER EN TIENDA
+                          </div>
+                          <div className="text-sm text-gray-900">Polanco, CDMX</div>
+                          <div className="text-xs text-green-600 font-medium">
+                            Envío: Gratis
+                          </div>
+                        </div>
+                      ) : (
+                        // ENVÍO A DOMICILIO
+                        <div>
+                          <div className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mb-1">
+                            🚚 ENVÍO A DOMICILIO
+                          </div>
+                          <div className="text-sm text-gray-900">
+                            {sale.shipping_city}, {sale.shipping_state}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            CP: {sale.shipping_postal_code}
+                          </div>
+                          {sale.zone_name && (
+                            <div className="text-xs text-blue-600">
+                              {sale.zone_name} - {formatCurrency(sale.shipping_cost)}
+                            </div>
+                          )}
                         </div>
                       )}
                     </td>

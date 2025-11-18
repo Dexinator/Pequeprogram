@@ -36,8 +36,42 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
         <div class="lg:col-span-8">
           <div class="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg shadow-md">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Información de pago</h2>
-            
+
             <form id="checkout-form" class="space-y-6">
+              <!-- Método de entrega -->
+              <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Método de entrega</h3>
+                <div class="space-y-3">
+                  <label class="flex items-start p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-pink-500 dark:hover:border-pink-500 transition-colors has-[:checked]:border-pink-500 has-[:checked]:bg-pink-50 dark:has-[:checked]:bg-pink-900/20">
+                    <input
+                      type="radio"
+                      name="delivery_method"
+                      value="shipping"
+                      checked
+                      class="mt-1 h-4 w-4 text-pink-600 focus:ring-pink-500"
+                    >
+                    <div class="ml-3 flex-1">
+                      <span class="font-semibold text-gray-900 dark:text-gray-100">🚚 Envío a domicilio</span>
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Recibe tu pedido en la dirección que nos indiques</p>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-pink-500 dark:hover:border-pink-500 transition-colors has-[:checked]:border-pink-500 has-[:checked]:bg-pink-50 dark:has-[:checked]:bg-pink-900/20">
+                    <input
+                      type="radio"
+                      name="delivery_method"
+                      value="pickup"
+                      class="mt-1 h-4 w-4 text-pink-600 focus:ring-pink-500"
+                    >
+                    <div class="ml-3 flex-1">
+                      <span class="font-semibold text-gray-900 dark:text-gray-100">🏪 Recoger en tienda</span>
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Sin costo de envío - Polanco, CDMX</p>
+                      <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">✓ Ahorra el costo de envío</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
               <!-- Información personal -->
               <div>
                 <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Datos personales</h3>
@@ -180,6 +214,107 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   </div>
                 </div>
               </div>
+
+              <!-- Información de tienda para recoger (oculto por defecto) -->
+              <div id="store-pickup-info" class="border-t pt-6 hidden">
+                <div class="p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/20 rounded-lg border-2 border-green-300 dark:border-green-700">
+                  <h3 class="text-lg font-bold text-green-800 dark:text-green-200 mb-4 flex items-center">
+                    <span class="text-2xl mr-2">📍</span>
+                    Información para recoger tu pedido
+                  </h3>
+
+                  <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Columna izquierda: Dirección y horarios -->
+                    <div class="space-y-4">
+                      <!-- Dirección -->
+                      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800 dark:text-gray-100 mb-2 flex items-center">
+                          <span class="mr-2">🏢</span>
+                          Dirección:
+                        </p>
+                        <p class="text-gray-700 dark:text-gray-300">Av. Homero 1616</p>
+                        <p class="text-gray-700 dark:text-gray-300">Polanco I Secc, Miguel Hidalgo</p>
+                        <p class="text-gray-700 dark:text-gray-300">11510 Ciudad de México, CDMX</p>
+                      </div>
+
+                      <!-- Horarios -->
+                      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800 dark:text-gray-100 mb-2 flex items-center">
+                          <span class="mr-2">🕐</span>
+                          Horarios de atención:
+                        </p>
+                        <div class="space-y-1 text-sm">
+                          <p class="text-gray-700 dark:text-gray-300">
+                            <span class="font-medium">Lunes - Viernes:</span> 11:00 am - 7:30 pm
+                          </p>
+                          <p class="text-gray-700 dark:text-gray-300">
+                            <span class="font-medium">Sábados:</span> 11:00 am - 6:30 pm
+                          </p>
+                          <p class="text-red-600 dark:text-red-400">
+                            <span class="font-medium">Domingos:</span> Cerrado
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Columna derecha: Acciones y tips -->
+                    <div class="space-y-4">
+                      <!-- Botones de acción -->
+                      <div class="space-y-2">
+                        <a
+                          href="https://www.google.com/maps/dir//Av.+Homero+1616,+Polanco,+Polanco+I+Secc,+Miguel+Hidalgo,+11510+Ciudad+de+México,+CDMX"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold shadow-md transition-colors"
+                        >
+                          <span class="mr-2">🗺️</span>
+                          Cómo llegar
+                        </a>
+                        <a
+                          href="tel:+525565883245"
+                          class="flex items-center justify-center w-full bg-gray-700 hover:bg-gray-800 text-white px-4 py-3 rounded-lg font-semibold shadow-md transition-colors"
+                        >
+                          <span class="mr-2">📞</span>
+                          Llamar: (55) 6588 3245
+                        </a>
+                        <a
+                          href="https://wa.me/525523632389?text=Hola,%20quiero%20recoger%20mi%20pedido%20en%20tienda"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold shadow-md transition-colors"
+                        >
+                          <span class="mr-2">💬</span>
+                          WhatsApp: (55) 2363 2389
+                        </a>
+                      </div>
+
+                      <!-- Instrucciones -->
+                      <div class="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-300 dark:border-yellow-700">
+                        <p class="text-sm text-yellow-900 dark:text-yellow-200 font-medium flex items-start">
+                          <span class="mr-2 text-lg">💡</span>
+                          <span><strong>Tip:</strong> Estacionamiento disponible con parquímetro. Llámanos al llegar y te ayudamos.</span>
+                        </p>
+                      </div>
+
+                      <!-- Código postal opcional -->
+                      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <label for="pickup-postal-code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Código postal (opcional, para estadísticas)
+                        </label>
+                        <input
+                          type="text"
+                          id="pickup-postal-code"
+                          name="pickup-postal-code"
+                          maxlength="5"
+                          pattern="[0-9]{5}"
+                          placeholder="12345"
+                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               <!-- Información del pago con MercadoPago -->
               <div class="border-t pt-6">
@@ -309,8 +444,13 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   <span>Envío:</span>
                   <span id="checkout-shipping">Calculando...</span>
                 </div>
+
+                <!-- Mensaje motivacional de envío gratis -->
+                <div id="free-shipping-message" class="hidden pt-2 pb-2 px-3 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-200 dark:border-blue-800">
+                  <!-- El contenido se llenará dinámicamente con JavaScript -->
+                </div>
               </div>
-              
+
               <div class="flex justify-between font-semibold text-lg">
                 <span class="text-gray-800 dark:text-gray-100">Total:</span>
                 <span id="checkout-total" class="text-pink-600">$0.00</span>
@@ -420,7 +560,66 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
     
     // Cargar el carrito primero
     const cartData = loadAndDisplayCart();
-    
+
+    // Configurar el listener para cambio de método de entrega
+    const deliveryMethodRadios = document.getElementsByName('delivery_method');
+    const shippingSection = document.querySelector('.border-t.pt-6'); // Sección de envío
+    const storePickupInfo = document.getElementById('store-pickup-info');
+
+    deliveryMethodRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const selectedMethod = e.target.value;
+
+        if (selectedMethod === 'pickup') {
+          // Recoger en tienda: ocultar sección de envío, mostrar info de tienda
+          if (shippingSection) {
+            shippingSection.classList.add('hidden');
+          }
+          if (storePickupInfo) {
+            storePickupInfo.classList.remove('hidden');
+          }
+
+          // Establecer envío a $0
+          shippingCost = 0;
+          shippingZoneId = null;
+
+          // Actualizar UI de envío
+          const checkoutShippingElement = document.getElementById('checkout-shipping');
+          if (checkoutShippingElement) {
+            checkoutShippingElement.innerHTML = '<span class="text-green-600 font-semibold">Recoger en tienda (Gratis)</span>';
+          }
+
+          // Ocultar mensaje de envío gratis
+          const freeShippingMessage = document.getElementById('free-shipping-message');
+          if (freeShippingMessage) {
+            freeShippingMessage.classList.add('hidden');
+          }
+
+          // Actualizar total
+          updateTotal(cartData);
+        } else {
+          // Envío a domicilio: mostrar sección de envío, ocultar info de tienda
+          if (shippingSection) {
+            shippingSection.classList.remove('hidden');
+          }
+          if (storePickupInfo) {
+            storePickupInfo.classList.add('hidden');
+          }
+
+          // Resetear envío
+          shippingCost = 0;
+          shippingZoneId = null;
+          const checkoutShippingElement = document.getElementById('checkout-shipping');
+          if (checkoutShippingElement) {
+            checkoutShippingElement.textContent = 'Ingresa código postal';
+          }
+
+          // Actualizar total
+          updateTotal(cartData);
+        }
+      });
+    });
+
     // Configurar el listener para el código postal
     const codigoPostalInput = document.getElementById('codigoPostal');
     if (codigoPostalInput) {
@@ -437,6 +636,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           // Ocultar información de envío si el código postal no es válido
           document.getElementById('shipping-info').classList.add('hidden');
           document.getElementById('shipping-error').classList.add('hidden');
+          document.getElementById('free-shipping-message').classList.add('hidden');
           document.getElementById('checkout-shipping').textContent = 'Ingresa código postal';
           updateTotal(cartData);
         }
@@ -566,11 +766,11 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
     // Función para calcular el envío
     async function calculateShipping(postalCode, cartData) {
       if (!cartData || !cartData.cartItems) return;
-      
+
       try {
         // Mostrar estado de cálculo
         document.getElementById('checkout-shipping').textContent = 'Calculando...';
-        
+
         // Calcular peso total en gramos
         totalWeightGrams = 0;
         cartData.cartItems.forEach(item => {
@@ -578,8 +778,8 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           const itemWeight = item.weight_grams || 500;
           totalWeightGrams += itemWeight * item.quantity;
         });
-        
-        // Llamar al API para calcular envío
+
+        // Llamar al API para calcular envío (incluyendo subtotal para envío gratis)
         const response = await fetch(`${apiBaseUrl}/shipping/calculate`, {
           method: 'POST',
           headers: {
@@ -588,6 +788,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           body: JSON.stringify({
             postal_code: postalCode,
             weight_grams: totalWeightGrams,
+            subtotal: cartData.safeTotal,
             items: cartData.cartItems.map(item => ({
               valuation_item_id: item.valuation_item_id,
               quantity: item.quantity
@@ -596,19 +797,47 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
         });
         
         const data = await response.json();
-        
+
         if (response.ok && !data.error) {
           // Guardar información de envío
           shippingCost = data.shipping_cost;
           shippingZoneId = data.zone.id;
-          
+
           // Actualizar UI
           document.getElementById('shipping-info').classList.remove('hidden');
           document.getElementById('shipping-error').classList.add('hidden');
-          document.getElementById('shipping-cost-display').textContent = `$${shippingCost.toFixed(2)} MXN`;
+
+          // Mostrar costo de envío
+          if (data.free_shipping_applied) {
+            document.getElementById('shipping-cost-display').textContent = '¡Gratis! 🎉';
+          } else {
+            document.getElementById('shipping-cost-display').textContent = `$${shippingCost.toFixed(2)} MXN`;
+          }
+
           document.getElementById('shipping-zone-display').textContent = `Zona: ${data.zone.name} (${data.weight.kg.toFixed(2)} kg)`;
-          document.getElementById('checkout-shipping').textContent = `$${shippingCost.toFixed(2)}`;
-          
+
+          // Actualizar resumen lateral
+          const checkoutShippingElement = document.getElementById('checkout-shipping');
+          if (data.free_shipping_applied) {
+            checkoutShippingElement.innerHTML = '<span class="text-green-600 font-semibold">¡Gratis! 🎉</span>';
+          } else {
+            checkoutShippingElement.textContent = `$${shippingCost.toFixed(2)}`;
+          }
+
+          // Mostrar u ocultar mensaje motivacional
+          const freeShippingMessageElement = document.getElementById('free-shipping-message');
+          if (data.free_shipping_eligible && !data.free_shipping_applied && data.amount_for_free_shipping > 0) {
+            // Mostrar mensaje motivacional
+            freeShippingMessageElement.innerHTML = `
+              <span class="text-sm text-blue-700 dark:text-blue-300">
+                💡 ¡Agrega $${data.amount_for_free_shipping.toFixed(2)} más para envío gratis! (mínimo $${data.free_shipping_minimum} en CDMX)
+              </span>
+            `;
+            freeShippingMessageElement.classList.remove('hidden');
+          } else {
+            freeShippingMessageElement.classList.add('hidden');
+          }
+
           // Actualizar total
           updateTotal(cartData);
         } else {
@@ -617,6 +846,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           shippingZoneId = null;
           document.getElementById('shipping-info').classList.add('hidden');
           document.getElementById('shipping-error').classList.remove('hidden');
+          document.getElementById('free-shipping-message').classList.add('hidden');
           document.getElementById('checkout-shipping').textContent = 'No disponible';
           updateTotal(cartData);
         }
@@ -626,6 +856,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
         shippingZoneId = null;
         document.getElementById('shipping-info').classList.add('hidden');
         document.getElementById('shipping-error').classList.remove('hidden');
+        document.getElementById('free-shipping-message').classList.add('hidden');
         document.getElementById('checkout-shipping').textContent = 'Error';
         updateTotal(cartData);
       }
@@ -777,8 +1008,11 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                 return;
               }
               
-              // Validar que se haya calculado el envío
-              if (!shippingCost || shippingCost === 0) {
+              // Obtener método de entrega seleccionado
+              const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked')?.value || 'shipping';
+
+              // Validar que se haya calculado el envío solo si es envío a domicilio
+              if (deliveryMethod === 'shipping' && (!shippingCost || shippingCost === 0)) {
                 alert('Por favor ingresa un código postal válido para calcular el envío');
                 codigoPostalElement.focus();
                 return;
@@ -814,6 +1048,26 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   console.warn('⚠️ ADVERTENCIA: No se pudo obtener MP_DEVICE_SESSION_ID');
                 }
 
+                // Preparar datos de envío según método de entrega
+                let shippingAddressData = null;
+                let postalCodeForStats = null;
+
+                if (deliveryMethod === 'pickup') {
+                  // Recoger en tienda: solo código postal si lo proporcionaron
+                  const pickupPostalCodeElement = document.getElementById('pickup-postal-code');
+                  postalCodeForStats = pickupPostalCodeElement ? pickupPostalCodeElement.value : null;
+                } else {
+                  // Envío a domicilio: dirección completa
+                  shippingAddressData = {
+                    street: calleElement.value,
+                    neighborhood: coloniaElement.value,
+                    postal_code: codigoPostalElement.value,
+                    city: ciudadElement.value,
+                    state: estadoElement.value,
+                    references: referenciasElement.value || null
+                  };
+                }
+
                 // Preparar datos de pago
                 const paymentData = {
                   transaction_amount: totalWithShipping.toString(),
@@ -823,6 +1077,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   issuer_id: cardFormData.issuerId,
                   payment_method_id: cardFormData.paymentMethodId,
                   device_id: deviceId, // Agregar device_id para prevención de fraude
+                  delivery_method: deliveryMethod, // Nuevo campo
                   payer: {
                     email: emailElement.value,
                     first_name: nombreElement.value,
@@ -832,17 +1087,11 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                       number: telefonoElement.value
                     }
                   },
-                  shipping_address: {
-                    street: calleElement.value,
-                    neighborhood: coloniaElement.value,
-                    postal_code: codigoPostalElement.value,
-                    city: ciudadElement.value,
-                    state: estadoElement.value,
-                    references: referenciasElement.value || null
-                  },
+                  shipping_address: shippingAddressData,
                   shipping_cost: shippingCost,
                   shipping_zone_id: shippingZoneId,
                   total_weight_grams: totalWeightGrams,
+                  pickup_postal_code: postalCodeForStats, // Para estadísticas cuando es pickup
                   items: cartItems.map(item => ({
                     sku: item.inventory_id, // Enviar el SKU (inventory_id)
                     valuation_item_id: item.valuation_item_id || null, // Opcional si ya lo tenemos

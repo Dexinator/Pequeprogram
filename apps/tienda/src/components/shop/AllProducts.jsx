@@ -136,7 +136,21 @@ const AllProducts = () => {
     });
     setCurrentPage(1);
   };
-  
+
+  // Contar filtros activos para el badge
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (filters.category_id) count++;
+    if (filters.subcategory_id) count++;
+    if (filters.subcategory_ids && filters.subcategory_ids.length > 0) {
+      count += filters.subcategory_ids.length;
+    }
+    if (filters.search) count++;
+    return count;
+  };
+
+  const activeFiltersCount = getActiveFiltersCount();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Mostrar error si existe */}
@@ -245,15 +259,21 @@ const AllProducts = () => {
             {/* Barra de herramientas */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                {/* Botón de filtros móvil */}
+                {/* Botón de filtros móvil - Mejorado para mayor visibilidad */}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="lg:hidden flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400"
+                  className="lg:hidden relative inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-brand-rosa to-brand-rosa/90 hover:from-brand-rosa/90 hover:to-brand-rosa text-white font-heading font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
-                  Filtros
+                  <span className="text-base">Filtros</span>
+                  {/* Badge con número de filtros activos */}
+                  {activeFiltersCount > 0 && (
+                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-brand-amarillo text-gray-900 text-xs font-bold rounded-full border-2 border-white shadow-md">
+                      {activeFiltersCount}
+                    </span>
+                  )}
                 </button>
                 
                 {/* Ordenamiento */}

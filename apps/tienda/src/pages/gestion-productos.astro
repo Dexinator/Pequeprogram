@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductManagement from '../components/ProductManagement.jsx';
+
+export const prerender = false;
+---
+
+<Layout title="Gestión de Productos - Entrepeques">
+  <ProductManagement client:only="react" />
+</Layout>

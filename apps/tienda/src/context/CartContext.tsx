@@ -32,18 +32,28 @@ const CART_UPDATE_EVENT = 'entrepeques_cart_update';
 
 // Función helper para emitir evento de actualización del carrito
 const emitCartUpdate = (items: CartItem[]) => {
+  // Solo ejecutar en el navegador
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return;
+  }
+
   // Guardar en localStorage
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-  
+
   // Emitir evento personalizado para sincronizar entre componentes
-  const event = new CustomEvent(CART_UPDATE_EVENT, { 
-    detail: { items } 
+  const event = new CustomEvent(CART_UPDATE_EVENT, {
+    detail: { items }
   });
   window.dispatchEvent(event);
 };
 
 // Función helper para cargar el carrito desde localStorage
 const loadCartFromStorage = (): CartItem[] => {
+  // Solo ejecutar en el navegador
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return [];
+  }
+
   try {
     const savedCart = localStorage.getItem(CART_STORAGE_KEY);
     if (savedCart) {
@@ -60,6 +70,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   // Escuchar cambios en el carrito desde otros componentes
   useEffect(() => {
+    // Solo ejecutar en el navegador
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const handleCartUpdate = (event: CustomEvent) => {
       const newItems = event.detail.items;
       setItems(newItems);

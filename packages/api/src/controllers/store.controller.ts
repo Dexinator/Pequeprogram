@@ -282,3 +282,166 @@ export const uploadProductImages = asyncHandler(async (req: Request, res: Respon
     throw new Error(`Error al subir imágenes: ${error.message}`);
   }
 });
+
+// @desc    Update published product
+// @route   PUT /api/store/products/:id/update
+// @access  Private (admin, superadmin only)
+export const updatePublishedProduct = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    res.status(401);
+    throw new Error('Usuario no autenticado');
+  }
+
+  const {
+    weight_grams,
+    images,
+    online_price,
+    online_featured
+  } = req.body;
+
+  // Validations
+  if (!weight_grams || weight_grams <= 0) {
+    res.status(400);
+    throw new Error('El peso debe ser mayor a 0 gramos');
+  }
+
+  if (!images || !Array.isArray(images) || images.length === 0) {
+    res.status(400);
+    throw new Error('Debe incluir al menos una imagen');
+  }
+
+  if (!online_price || online_price <= 0) {
+    res.status(400);
+    throw new Error('El precio debe ser mayor a 0');
+  }
+
+  const result = await storeService.updatePublishedProduct(id, userId, {
+    weight_grams,
+    images,
+    online_price,
+    online_featured
+  });
+
+  res.json({
+    success: true,
+    data: result,
+    message: 'Producto actualizado exitosamente'
+  });
+});
+
+// @desc    Unpublish product from online store
+// @route   PUT /api/store/products/:id/unpublish
+// @access  Private (admin, superadmin only)
+export const unpublishProduct = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.userId;
+  const { reason } = req.body;
+
+  if (!userId) {
+    res.status(401);
+    throw new Error('Usuario no autenticado');
+  }
+
+  if (!reason || reason.trim().length === 0) {
+    res.status(400);
+    throw new Error('Debe proporcionar una razón para despublicar el producto');
+  }
+
+  const result = await storeService.unpublishProduct(id, userId, reason);
+
+  res.json({
+    success: true,
+    data: result,
+    message: 'Producto despublicado exitosamente'
+  });
+});
+
+// @desc    Bulk update products
+// @route   PUT /api/store/products/bulk-update
+// @access  Private (admin, superadmin only)
+export const bulkUpdateProducts = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  const { product_ids, action, data } = req.body;
+
+  if (!userId) {
+    res.status(401);
+    throw new Error('Usuario no autenticado');
+  }
+
+  if (!product_ids || !Array.isArray(product_ids) || product_ids.length === 0) {
+    res.status(400);
+    throw new Error('Debe seleccionar al menos un producto');
+  }
+
+  if (!action) {
+    res.status(400);
+    throw new Error('Debe especificar una acción');
+  }
+
+  // Validate action
+  const validActions = ['feature', 'unfeature', 'unpublish', 'update_price'];
+  if (!validActions.includes(action)) {
+    res.status(400);
+    throw new Error('Acción no válida');
+  }
+
+  // Limit bulk operations to 50 products at once
+  if (product_ids.length > 50) {
+    res.status(400);
+    throw new Error('No se pueden procesar más de 50 productos a la vez');
+  }
+
+  const result = await storeService.bulkUpdateProducts(product_ids, action, userId, data);
+
+  res.json({
+    success: true,
+    data: result,
+    message: `${result.affectedCount} producto(s) actualizados exitosamente`
+  });
+});
+
+// @desc    Get published products for management
+// @route   GET /api/store/products/management
+// @access  Private (admin, superadmin only)
+export const getPublishedProductsForManagement = asyncHandler(async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+  const category_id = req.query.category_id ? parseInt(req.query.category_id as string) : undefined;
+  const subcategory_id = req.query.subcategory_id ? parseInt(req.query.subcategory_id as string) : undefined;
+  const featured = req.query.featured === 'true' ? true : req.query.featured === 'false' ? false : undefined;
+  const min_price = req.query.min_price ? parseFloat(req.query.min_price as string) : undefined;
+  const max_price = req.query.max_price ? parseFloat(req.query.max_price as string) : undefined;
+  const location = req.query.location as string;
+  const search = req.query.search as string;
+  const date_from = req.query.date_from as string;
+  const date_to = req.query.date_to as string;
+  const sort = req.query.sort as string;
+
+  const result = await storeService.getPublishedProductsForManagement({
+    page,
+    limit,
+    category_id,
+    subcategory_id,
+    featured,
+    min_price,
+    max_price,
+    location,
+    search,
+    date_from,
+    date_to,
+    sort
+  });
+
+  res.json({
+    products: result.products,
+    pagination: {
+      page,
+      limit,
+      total: result.total,
+      totalPages: Math.ceil(result.total / limit)
+    }
+  });
+});

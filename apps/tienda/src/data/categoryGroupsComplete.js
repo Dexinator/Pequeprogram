@@ -100,13 +100,6 @@ export const categoryGroupsComplete = {
     slug: 'en-casa',
     groups: [
       {
-        name: 'Sillas para comer',
-        type: 'single',
-        icon: 'high-chairs',
-        slug: 'sillas-comer',
-        subcategoryId: 20 // ID de Sillas para comer
-      },
-      {
         name: 'Mecedoras y Columpios de bebé',
         type: 'single',
         icon: 'rocking-chair',
@@ -123,6 +116,13 @@ export const categoryGroupsComplete = {
           'Brincolines',
           'Corrales'
         ]
+      },
+      {
+        name: 'Andaderas',
+        type: 'single',
+        icon: 'walker',
+        slug: 'andaderas',
+        subcategoryId: 52 // ID de Andaderas
       },
       {
         name: 'Seguridad',
@@ -156,6 +156,13 @@ export const categoryGroupsComplete = {
     icon: 'high-chairs',
     slug: 'a-comer',
     groups: [
+      {
+        name: 'Sillas para comer',
+        type: 'single',
+        icon: 'high-chairs',
+        slug: 'sillas-comer',
+        subcategoryId: 20 // ID de Sillas para comer
+      },
       {
         name: 'Lactancia y Biberones',
         type: 'grouped',
@@ -264,13 +271,6 @@ export const categoryGroupsComplete = {
         icon: 'costume',
         slug: 'disfraces',
         subcategoryId: 47 // ID de Disfraces
-      },
-      {
-        name: 'Andaderas',
-        type: 'single',
-        icon: 'walker',
-        slug: 'andaderas',
-        subcategoryId: 52 // ID de Andaderas
       },
       {
         name: 'Montables y correpasillos',

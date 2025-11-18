@@ -2,11 +2,14 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { pool } from '../db';
 
+// Constante para envío gratis en CDMX
+const FREE_SHIPPING_CDMX_MINIMUM = 895;
+
 /**
  * Calcula el costo de envío basado en código postal y peso
  */
 export const calculateShipping = asyncHandler(async (req: Request, res: Response) => {
-  const { postal_code, weight_grams, weight_kg, items } = req.body;
+  const { postal_code, weight_grams, weight_kg, items, subtotal } = req.body;
 
   if (!postal_code) {
     res.status(400).json({ 
@@ -118,6 +121,17 @@ export const calculateShipping = asyncHandler(async (req: Request, res: Response
       }
       
       const rate = highestRate.rows[0];
+
+      // Calcular envío gratis para CDMX
+      const originalShippingCost = parseFloat(rate.price);
+      const isCDMX = zone.zone_code === 'cdmx';
+      const currentSubtotal = subtotal ? parseFloat(subtotal) : 0;
+      const qualifiesForFreeShipping = isCDMX && currentSubtotal >= FREE_SHIPPING_CDMX_MINIMUM;
+      const finalShippingCost = qualifiesForFreeShipping ? 0 : originalShippingCost;
+      const amountForFreeShipping = isCDMX && currentSubtotal < FREE_SHIPPING_CDMX_MINIMUM
+        ? FREE_SHIPPING_CDMX_MINIMUM - currentSubtotal
+        : 0;
+
       res.json({
         zone: {
           id: zone.id,
@@ -128,12 +142,30 @@ export const calculateShipping = asyncHandler(async (req: Request, res: Response
           grams: totalWeight,
           kg: weightInKg
         },
-        shipping_cost: parseFloat(rate.price),
+        shipping_cost: finalShippingCost,
+        original_shipping_cost: originalShippingCost,
+        free_shipping_applied: qualifiesForFreeShipping,
+        free_shipping_eligible: isCDMX,
+        free_shipping_minimum: isCDMX ? FREE_SHIPPING_CDMX_MINIMUM : null,
+        amount_for_free_shipping: amountForFreeShipping,
         currency: rate.currency || 'MXN',
-        message: `Envío a ${zone.zone_name} para ${weightInKg.toFixed(2)} kg`
+        message: qualifiesForFreeShipping
+          ? `¡Envío gratis a ${zone.zone_name}!`
+          : `Envío a ${zone.zone_name} para ${weightInKg.toFixed(2)} kg`
       });
     } else {
       const rate = rateResult.rows[0];
+
+      // Calcular envío gratis para CDMX
+      const originalShippingCost = parseFloat(rate.price);
+      const isCDMX = zone.zone_code === 'cdmx';
+      const currentSubtotal = subtotal ? parseFloat(subtotal) : 0;
+      const qualifiesForFreeShipping = isCDMX && currentSubtotal >= FREE_SHIPPING_CDMX_MINIMUM;
+      const finalShippingCost = qualifiesForFreeShipping ? 0 : originalShippingCost;
+      const amountForFreeShipping = isCDMX && currentSubtotal < FREE_SHIPPING_CDMX_MINIMUM
+        ? FREE_SHIPPING_CDMX_MINIMUM - currentSubtotal
+        : 0;
+
       res.json({
         zone: {
           id: zone.id,
@@ -144,9 +176,16 @@ export const calculateShipping = asyncHandler(async (req: Request, res: Response
           grams: totalWeight,
           kg: weightInKg
         },
-        shipping_cost: parseFloat(rate.price),
+        shipping_cost: finalShippingCost,
+        original_shipping_cost: originalShippingCost,
+        free_shipping_applied: qualifiesForFreeShipping,
+        free_shipping_eligible: isCDMX,
+        free_shipping_minimum: isCDMX ? FREE_SHIPPING_CDMX_MINIMUM : null,
+        amount_for_free_shipping: amountForFreeShipping,
         currency: rate.currency || 'MXN',
-        message: `Envío a ${zone.zone_name} para ${weightInKg.toFixed(2)} kg`
+        message: qualifiesForFreeShipping
+          ? `¡Envío gratis a ${zone.zone_name}!`
+          : `Envío a ${zone.zone_name} para ${weightInKg.toFixed(2)} kg`
       });
     }
   } catch (error) {

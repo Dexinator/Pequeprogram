@@ -1,0 +1,144 @@
+Haremos los siguientes cambios en el Layout:
+1. En la versión español, cambia la palabra "Puntos de interés" por "Paradas"
+2. Cambia "Explora" (antes del mapa) por "Descubre las ubicaciones importantes de esta aventura"
+3. Cambia "Obtén toda la información de la aventura, mapas detallados, horarios y recomendaciones en un práctico folleto PDF que puedes llevar contigo durante tu recorrido." por "Obtén la aventura en un práctico folleto PDF que puedes llevar contigo durante tu recorrido."
+4. Cambia el texto "Otras aventuras" por "Vive más experiencias en Santa Marta"
+5. En el apartado "Otras aventuras", las burbujas que aparecerán serán siempre dos, las de las otras dos aventuras que no estemos viendo en la página actual. Las imágenes de las burbujas están en src\assets\images\adventures\burbujas. Considera que tenemos burbujas para español y para inglés.
+
+Revisa la carpeta src\assets\images\adventures\sliders, ahí tienes las imágenes de cada slider de cada tipo de las aventuras.
+
+Vamos a crear las páginas que usarán este Layout, para los contenidos, a continuación te compartiré la información de cada una de ellas:
+
+1. Detectives en acción - español:
+Ubicaciones mapa:
+1 Hormiga Matilda 40.95213693167115, -5.633651711086779
+2 Libélula Azul 40.95223433666433, -5.6328778949975336
+3 Lápiz y Goma 40.95215412080652, -5.631345435687536
+4 Pastor Alemán 40.94966564984236, -5.630538772517705
+5 Puerta Mágica 40.94926668150299, -5.6299212122517
+6 Cocodrilo 40.949195866626745, -5.628342662692132
+7 Abeja Maya 40.94550226294406, -5.62565685440694
+8 Minion Bob 40.948626398674854, -5.627790205814891
+
+Detectives en acción - inglés:
+Título: KINGFISHER DETECTIVES
+Ubicaciones mapa:
+1 Matilda the Ant 40.95213693167115, -5.633651711086779
+2 Blue Dragonfly 40.95223433666433, -5.6328778949975336
+3 Pencil and Eraser 40.95215412080652, -5.631345435687536
+4 German Shepherd 40.94966564984236, -5.630538772517705
+5 Magic Door 40.94926668150299, -5.6299212122517
+6 Crocodile 40.949195866626745, -5.628342662692132
+7 Maya the Bee 40.94550226294406, -5.62565685440694
+8 Minion Bob 40.948626398674854, -5.627790205814891
+
+2. Santa Marta Urban Escape - español:
+Ubiacaciones mapa:
+1 Rueda Aceña 40.9522987099381, -5.632480504558067
+2 Pájaro Carpintero 'Wenceslao' 40.95216545611483, -5.631654560552113
+3 Lápices de la Farola 40.951060505421275, -5.630696761001704
+4 Mariposa 40.949241829940966, -5.630773596802085
+5 Mural 'Mujer, Historia y Pueblo' 40.94911028258176, -5.630069153210581
+6 Garaje 40.949181007192294, -5.6291604781419995
+7 Bolas de Billar 40.95032264396436, -5.627389984130646
+8 Mural 'Océano' 40.950672493127634, -5.628455754646255
+
+SANTA MARTA URBAN ESCAPE - Lectura Fácil
+1 Rueda Aceña 40.9522987099381, -5.632480504558067
+2 Pájaro Carpintero 'Wenceslao' 40.95216545611483, -5.631654560552113
+3 Lápices de la Farola 40.951060505421275, -5.630696761001704
+4 Mariposa 40.949241829940966, -5.630773596802085
+5 Mural 'Mujer, Historia y Pueblo' 40.94911028258176, -5.630069153210581
+6 Garaje 40.949181007192294, -5.6291604781419995
+7 Bolas de Billar 40.95032264396436, -5.627389984130646
+8 Mural 'Océano' 40.950672493127634, -5.628455754646255
+
+SANTA MARTA URBAN ESCAPE - Inglés
+1 Waterwheel 40.9522987099381, -5.632480504558067
+2 Woodpecker “Wenceslao” 40.95216545611483, -5.631654560552113
+3 Lamp Post Pencils 40.951060505421275, -5.630696761001704
+4 Butterfly 40.949241829940966, -5.630773596802085
+5 Mural “Woman, History and
+People” 40.94911028258176, -5.630069153210581
+6 Garage 40.949181007192294, -5.6291604781419995
+7 Pool Balls 40.95032264396436, -5.627389984130646
+8 Mural “Ocean” 40.950672493127634, -5.628455754646255
+
+3.Santa MartaXPlora - español
+
+1 Origen de la Villa 40.95071134566318, -5.630797530988721;
+40.95087405593246, -5.631022101007639
+2 Vestigios del Pasado 40.950407108105324, -5.630693530399303
+3 Patrona de Santa Marta 40.95018933304696, -5.630563443270727
+4 Ayuntamiento 40.949150080295105, -5.630790089922149
+5 Arte 40.949722380367845, -5.629270618554697
+6 Ruta de los Murales 40.95001308665347, -5.629439597700798
+
+ids de tracks de audio parada 1 - 6:
+253A2191788147
+253A2191788151
+253A2191788167
+253A2191788159
+253A2191788155
+253A2191788163
+
+Santa MartaXPlora - lectura fácil
+
+1 Origen de la Villa 40.95071134566318, -5.630797530988721;
+40.95087405593246, -5.631022101007639
+2 Vestigios del Pasado 40.950407108105324, -5.630693530399303
+3 Patrona de Santa Marta 40.95018933304696, -5.630563443270727
+4 Ayuntamiento 40.949150080295105, -5.630790089922149
+5 Arte 40.949722380367845, -5.629270618554697
+6 Ruta de los Murales 40.95001308665347, -5.629439597700798
+
+ids de tracks de audio parada 1 - 6:
+253A2191787379
+253A2191787367
+253A2191787371
+253A2191787359
+253A2191787375
+253A2191787363
+
+Santa MartaXPlora - descriptivo
+1 Origen de la Villa 40.95071134566318, -5.630797530988721;
+40.95087405593246, -5.631022101007639
+2 Vestigios del Pasado 40.950407108105324, -5.630693530399303
+3 Patrona de Santa Marta 40.95018933304696, -5.630563443270727
+4 Ayuntamiento 40.949150080295105, -5.630790089922149
+5 Arte 40.949722380367845, -5.629270618554697
+6 Ruta de los Murales 40.95001308665347, -5.629439597700798
+
+Santa MartaXplora - Signoguía
+1 Origen de la Villa 40.95071134566318, -5.630797530988721;
+40.95087405593246, -5.631022101007639
+2 Vestigios del Pasado 40.950407108105324, -5.630693530399303
+3 Patrona de Santa Marta 40.95018933304696, -5.630563443270727
+4 Ayuntamiento 40.949150080295105, -5.630790089922149
+5 Arte 40.949722380367845, -5.629270618554697
+6 Ruta de los Murales 40.95001308665347, -5.629439597700798
+
+Ids de Vimeo:
+1129278645
+1129278722
+1129278806
+1129278878
+1129278968
+1129279041
+
+Santa MartaXplora - Inglés
+1 Origin of the Town 40.95071134566318, -5.630797530988721;
+40.95087405593246, -5.631022101007639
+2 Traces of the Past 40.950407108105324, -5.630693530399303
+3 Patron Saint of Santa Marta 40.95018933304696, -5.630563443270727
+4 Town Hall 40.949150080295105, -5.630790089922149
+5 Art 40.949722380367845, -5.629270618554697
+6 Mural Route 40.95001308665347, -5.629439597700798
+
+ids de tracks de audio parada 1 - 6:
+253A2191786463
+253A2191786467
+253A2191786459
+253A2191786475
+253A2191786471
+253A2191786479

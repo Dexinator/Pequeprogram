@@ -60,25 +60,43 @@ export class AuthService {
   // Iniciar sesión
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      console.log('Intentando iniciar sesión con:', credentials);
-      console.log('URL de la API:', this.http.getBaseUrl());
+      console.log('🔐 AuthService.login() - Iniciando...');
+      console.log('🔐 Credenciales:', credentials);
+      console.log('🔐 URL de la API:', this.http.getBaseUrl());
 
       const response = await this.http.post<AuthResponse>('/auth/login', credentials);
-      console.log('Respuesta del login:', response);
+      console.log('🔐 Respuesta completa del login:', response);
+      console.log('🔐 response.success:', response.success);
+      console.log('🔐 response.token:', response.token ? 'PRESENTE' : 'AUSENTE');
+      console.log('🔐 response.user:', response.user ? response.user.username : 'AUSENTE');
 
       // Verificar si la respuesta fue exitosa
       if (response.success && response.token && response.user) {
+        console.log('🔐 Respuesta válida, guardando token y usuario...');
+
         // Guardar token y datos de usuario en localStorage
         this.saveToken(response.token);
         this.saveUser(response.user);
 
+        // Verificar que se guardaron correctamente
+        const savedToken = this.getToken();
+        const savedUser = this.getUser();
+        console.log('🔐 Token guardado:', savedToken ? 'SÍ' : 'NO');
+        console.log('🔐 Usuario guardado:', savedUser ? savedUser.username : 'NO');
+
         // Actualizar el token en el servicio HTTP
         this.http.setAuthToken(response.token);
+      } else {
+        console.error('🔐 Respuesta inválida del servidor:', {
+          success: response.success,
+          hasToken: !!response.token,
+          hasUser: !!response.user
+        });
       }
 
       return response;
     } catch (error) {
-      console.error('Error en el servicio de autenticación (login):', error);
+      console.error('🔐 Error en el servicio de autenticación (login):', error);
       throw error;
     }
   }

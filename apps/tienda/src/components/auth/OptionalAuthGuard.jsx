@@ -50,27 +50,23 @@ const OptionalAuthGuard = ({
     }
 
     // Componente por defecto para rutas protegidas
+    // Redirigir a login con URL de retorno
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location.pathname;
+      const loginUrl = `/login?return=${encodeURIComponent(currentPath)}`;
+
+      // Solo redirigir si no estamos ya en la página de login
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = loginUrl;
+      }
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div>
           <div className="bg-white rounded-lg shadow-lg p-10 text-center">
-            <svg className="w-16 h-16 text-pink-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Acceso Restringido</h2>
-            <p className="text-gray-600 mb-6">Debes iniciar sesión para acceder a esta sección.</p>
-            <a 
-              href="/login" 
-              className="inline-block bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
-            >
-              Iniciar Sesión
-            </a>
-            <p className="mt-4 text-sm text-gray-500">
-              ¿No tienes cuenta?{' '}
-              <a href="/registro" className="text-pink-600 hover:text-pink-700">
-                Regístrate aquí
-              </a>
-            </p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Redirigiendo al login...</p>
           </div>
         </div>
       </div>

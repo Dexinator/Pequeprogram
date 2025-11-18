@@ -46,6 +46,7 @@ Para desplegar una aplicación que está en un subdirectorio de un monorepo:
 ```bash
 # Configurar Git para desplegar solo el subdirectorio
 git subtree push --prefix packages/api heroku main
+git subtree push --prefix packages/api entrepeques-staging main
 ```
 
 #### Opción 2: Despliegue desde GitHub
