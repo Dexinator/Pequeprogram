@@ -30,13 +30,13 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
     return parseFloat(product.consignment_price || product.suggested_sale_price || product.final_sale_price) || 0;
   };
 
-  // Calcular descuentos progresivos (10% cada 4 semanas)
+  // Calcular descuentos progresivos (10% cada 8 semanas)
   const calculateDiscountSchedule = (product) => {
     const basePrice = getFinalSalePrice(product);
     return [
-      { weeks: '0-4', price: basePrice, discount: '0%' },
-      { weeks: '4-8', price: basePrice * 0.9, discount: '10%' },
-      { weeks: '8-12', price: basePrice * 0.8, discount: '20%' }
+      { weeks: '0-8', price: basePrice, discount: '0%' },
+      { weeks: '8-16', price: basePrice * 0.9, discount: '10%' },
+      { weeks: '16-24', price: basePrice * 0.8, discount: '20%' }
     ];
   };
 
@@ -101,14 +101,16 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
             <tr>
               <th>Cant.</th>
               <th>Descripción</th>
-              <th>Precio Inicial</th>
-              <th>4 semanas<br/>(10% desc.)</th>
-              <th>8 semanas<br/>(20% desc.)</th>
+              <th>Precio de Venta</th>
+              <th>8 semanas<br/>(10% desc.)</th>
+              <th>16 semanas<br/>(20% desc.)</th>
+              <th>Pago al Cliente<br/>(50%)</th>
             </tr>
           </thead>
           <tbody>
             {consignmentProducts.map((product, index) => {
               const schedule = calculateDiscountSchedule(product);
+              const clientPayment = schedule[0].price * 0.5; // 50% del precio de venta
               return (
                 <tr key={index}>
                   <td className="center">{product.quantity || 1}</td>
@@ -116,16 +118,24 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
                   <td className="price">{formatCurrency(schedule[0].price)}</td>
                   <td className="price">{formatCurrency(schedule[1].price)}</td>
                   <td className="price">{formatCurrency(schedule[2].price)}</td>
+                  <td className="price" style={{backgroundColor: '#e8f5e9', fontWeight: 'bold'}}>
+                    {formatCurrency(clientPayment)}
+                  </td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan="2" className="total-label">TOTAL INICIAL:</td>
-              <td colSpan="3" className="total-price">
-                {formatCurrency(consignmentProducts.reduce((sum, p) => 
+              <td colSpan="2" className="total-label">TOTALES:</td>
+              <td className="total-price">
+                {formatCurrency(consignmentProducts.reduce((sum, p) =>
                   sum + (getFinalSalePrice(p) * (p.quantity || 1)), 0))}
+              </td>
+              <td colSpan="2"></td>
+              <td className="total-price" style={{backgroundColor: '#e8f5e9', fontWeight: 'bold'}}>
+                {formatCurrency(consignmentProducts.reduce((sum, p) =>
+                  sum + (getFinalSalePrice(p) * (p.quantity || 1) * 0.5), 0))}
               </td>
             </tr>
           </tfoot>
@@ -139,9 +149,9 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
           <li><strong>Duración:</strong> Este contrato tiene vigencia de 90 días naturales a partir de la fecha de firma.</li>
           <li><strong>Fecha de vencimiento:</strong> {calculateExpirationDate(valuationDate || new Date())}</li>
           <li><strong>Comisión:</strong> Al venderse el producto, el consignante recibirá el 50% del precio de venta real.</li>
-          <li><strong>Pago:</strong> El pago se realizará a más tardar el día 15 del mes siguiente a la venta del artículo.</li>
-          <li><strong>Descuentos:</strong> El precio se reducirá automáticamente 10% cada 4 semanas hasta la venta o retiro del producto.</li>
-          <li><strong>Devolución:</strong> El consignante puede solicitar la devolución después de 60 días, pagando 10% del precio inicial por gastos de almacenaje.</li>
+          <li><strong>Pago:</strong> El pago se realizará a más tardar el día 30 del mes siguiente a la venta del artículo.</li>
+          <li><strong>Descuentos:</strong> El precio se reducirá 10% cada 8 semanas hasta la venta o retiro del producto.</li>
+          <li><strong>Devolución:</strong> El consignante puede solicitar la devolución después de 60 días, pagando 10% del precio de venta por gastos de almacenaje.</li>
           <li><strong>Artículos no recogidos:</strong> Pasados 3 meses del vencimiento sin recoger, los artículos pasan a ser propiedad de Entrepeques.</li>
         </ul>
       </div>
@@ -169,13 +179,13 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
           
           <p><strong>PRIMERA. Consignación mercantil.</strong> El Consignante transmite al consignatario la posesión de los productos descritos, con el objeto de que sean promovidos para su venta en las tiendas del consignatario.</p>
           
-          <p><strong>SEGUNDA. Precio.</strong> El precio inicial será el señalado en la tabla anterior, pudiendo reducirse en 10% cada 4 semanas. En caso de venta, el Consignante recibirá el 50% del precio de venta real.</p>
+          <p><strong>SEGUNDA. Precio.</strong> El precio de venta será el señalado en la tabla anterior, pudiendo reducirse en 10% cada 8 semanas. En caso de venta, el Consignante recibirá el 50% del precio de venta real.</p>
           
           <p><strong>TERCERA. Duración.</strong> El presente contrato tendrá vigencia por 90 días naturales. Entrepeques queda libre de responsabilidad sobre artículos no recogidos pasados 3 meses del vencimiento.</p>
           
-          <p><strong>CUARTA. Forma y lugar de pago.</strong> El pago del 50% del precio de venta se realizará a más tardar el día 15 del mes siguiente a la venta, en efectivo en tienda o por transferencia electrónica.</p>
+          <p><strong>CUARTA. Forma y lugar de pago.</strong> El pago del 50% del precio de venta se realizará a más tardar el día 30 del mes siguiente a la venta, en efectivo en tienda o por transferencia electrónica.</p>
           
-          <p><strong>QUINTA. Devolución.</strong> El Consignante puede solicitar la devolución pasados 60 días, pagando el 10% del precio inicial por gastos de almacenaje.</p>
+          <p><strong>QUINTA. Devolución.</strong> El Consignante puede solicitar la devolución pasados 60 días, pagando el 10% del precio de venta por gastos de almacenaje.</p>
           
           <p><strong>SEXTA. Transmisión de la propiedad.</strong> Al efectuarse la venta a un tercero, el Consignante transmite la propiedad directamente al comprador.</p>
           

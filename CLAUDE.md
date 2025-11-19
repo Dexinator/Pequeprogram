@@ -350,7 +350,7 @@ Multi-step valuation process:
 
 **Payment Modalities:**
 - **Compra Directa**: Base purchase price (cash payment)
-- **Crédito en Tienda**: Base price + 10% (store vouchers, non-refundable)
+- **Crédito en Tienda**: Base price + 20% (store vouchers, non-refundable)
 - **Consignación**: Base price + 20% (consignment, not included in printed offers)
 
 **API Endpoints:**

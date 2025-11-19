@@ -19,7 +19,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       // Calcular precio según modalidad
       let finalPrice = basePrice;
       if (finalModality === 'crédito en tienda') {
-        finalPrice = basePrice * 1.1; // 10% más
+        finalPrice = basePrice * 1.2; // 20% más
       }
       
       const quantity = Number(product.quantity) || 1;
@@ -43,10 +43,10 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
     return Number(basePrice);
   };
 
-  // Obtener precio de crédito (10% más)
+  // Obtener precio de crédito (20% más)
   const getCreditPrice = (product) => {
     const cashPrice = getCashPrice(product);
-    return cashPrice * 1.1;
+    return cashPrice * 1.2;
   };
 
   // Obtener precio total según modalidad seleccionada
@@ -101,9 +101,9 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
     let finalPrice = basePrice;
     
     if (finalModality === 'crédito en tienda') {
-      finalPrice = basePrice * 1.1; // 10% más que compra directa
-    } else if (finalModality === 'consignación') {
       finalPrice = basePrice * 1.2; // 20% más que compra directa
+    } else if (finalModality === 'consignación') {
+      finalPrice = basePrice * 1.2; // 20% más que compra directa (mismo porcentaje)
     }
     // Para 'compra directa' usar precio base
     
@@ -309,7 +309,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
         </h3>
         <div className="text-sm text-gray-700 space-y-2">
           <p>Al firmar indica que recibe efectivo o crédito para comprar en la tienda como pago por los artículos listados. Los cuales declara haber adquirido legítimamente y ser el legítimo propietario.</p>
-          <p className="text-xs italic mt-2">* Productos "Crédito en tienda" se pagan con vales canjeables únicamente en nuestra tienda</p>
+          <p className="text-xs italic mt-2">* Productos "Crédito en tienda" se pagan con vales canjeables únicamente en nuestra tienda (20% más que efectivo)</p>
         </div>
         
         {/* Espacio para firma */}

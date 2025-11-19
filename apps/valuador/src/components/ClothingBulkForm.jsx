@@ -171,7 +171,7 @@ const ClothingBulkForm = ({ subcategoryId, categoryGroup, onAddProducts, onCance
           purchase_price: prices[quality]?.purchase || 0,
           suggested_purchase_price: prices[quality]?.purchase || 0,
           suggested_sale_price: prices[quality]?.sale || 0,
-          store_credit_price: (prices[quality]?.purchase || 0) * 1.1,
+          store_credit_price: (prices[quality]?.purchase || 0) * 1.2,
           consignment_price: (prices[quality]?.purchase || 0) * 1.2,
           isClothing: true
         });

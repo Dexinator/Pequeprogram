@@ -120,7 +120,7 @@ Para implementar esta lógica, se requieren las siguientes tablas:
 
 ### 5.2 Modalidades de Pago
 - **Compra Directa**: Pago inmediato al cliente en efectivo, precio base
-- **Crédito en Tienda**: Pago mediante vales/créditos canjeables únicamente en la tienda, 10% más que compra directa  
+- **Crédito en Tienda**: Pago mediante vales/créditos canjeables únicamente en la tienda, 20% más que compra directa
 - **Consignación**: Sin pago inmediato, porcentaje mayor al vender (20% más que compra directa)
 - Siempre calcular los tres valores, aunque el cliente elija solo una modalidad
 
@@ -143,8 +143,8 @@ Para implementar esta lógica, se requieren las siguientes tablas:
 **Cálculo de Precios para Ropa:**
 - Precio de compra: Fijo según tabla (tipo × calidad)
 - Precio de venta: Se calcula con la fórmula estándar usando un precio nuevo estimado
-- Crédito en tienda: Precio de compra × 1.1
-- Consignación: Precio de compra × 1.2
+- Crédito en tienda: Precio de compra × 1.2 (20% más)
+- Consignación: Precio de compra × 1.2 (20% más)
 
 ### 5.3 Generación de Ofertas de Compra
 - **Documento de Oferta**: Se genera automáticamente para productos con modalidad "Compra Directa" y "Crédito en Tienda"
