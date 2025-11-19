@@ -73,10 +73,19 @@ export class AuthService {
       // Verificar si la respuesta fue exitosa
       if (response.success && response.token && response.user) {
         console.log('🔐 Respuesta válida, guardando token y usuario...');
+        console.log('🔐 ANTES de saveToken - window:', typeof window);
+        console.log('🔐 ANTES de saveToken - localStorage:', typeof localStorage);
+        console.log('🔐 ANTES de saveToken - token length:', response.token?.length);
 
         // Guardar token y datos de usuario en localStorage
+        console.log('🔐 LLAMANDO a this.saveToken()...');
         this.saveToken(response.token);
+        console.log('🔐 DESPUÉS de this.saveToken()');
+
+        console.log('🔐 LLAMANDO a this.saveUser()...');
         this.saveUser(response.user);
+        console.log('🔐 DESPUÉS de this.saveUser()');
+
 
         // Verificar que se guardaron correctamente
         const savedToken = this.getToken();

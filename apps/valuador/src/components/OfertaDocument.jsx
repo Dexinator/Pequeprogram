@@ -217,9 +217,6 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
               <th className="border border-gray-300 px-2 py-2 text-right font-medium text-xs">
                 Crédito
               </th>
-              <th className="border border-gray-300 px-2 py-2 text-right font-medium text-xs">
-                Total
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -272,9 +269,6 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                   <td className="border border-gray-300 px-2 py-2 text-right text-xs font-medium">
                     {formatCurrency(creditPrice)}
                   </td>
-                  <td className="border border-gray-300 px-2 py-2 text-right text-xs font-bold">
-                    {finalModality === 'consignación' ? '$0.00' : formatCurrency(totalPrice)}
-                  </td>
                 </tr>
               );
             })}
@@ -284,25 +278,23 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
               <td className="border border-gray-300 px-2 py-2 font-bold text-xs" colSpan="4">
                 TOTAL EFECTIVO
               </td>
-              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-xs">
+              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-xs" colSpan="2">
                 {formatCurrency(cashTotal)}
               </td>
-              <td className="border border-gray-300 px-2 py-2" colSpan="2"></td>
             </tr>
             <tr>
-              <td className="border border-gray-300 px-2 py-2 font-bold text-xs" colSpan="5">
+              <td className="border border-gray-300 px-2 py-2 font-bold text-xs" colSpan="4">
                 TOTAL CRÉDITO EN TIENDA
               </td>
-              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-xs">
+              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-xs" colSpan="2">
                 {formatCurrency(creditTotal)}
               </td>
-              <td className="border border-gray-300 px-2 py-2"></td>
             </tr>
             <tr className="print-total-row bg-gray-200">
-              <td className="border border-gray-300 px-2 py-2 font-bold text-center text-xs" colSpan="6">
+              <td className="border border-gray-300 px-2 py-2 font-bold text-center text-xs" colSpan="4">
                 TOTAL DE LA OFERTA
               </td>
-              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-sm">
+              <td className="border border-gray-300 px-2 py-2 text-right font-bold text-sm" colSpan="2">
                 {formatCurrency(offerTotal)}
               </td>
             </tr>

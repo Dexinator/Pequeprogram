@@ -227,6 +227,362 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
         </div>
       </div>
 
+      {/* Botones de acción (no se imprimen) */}
+      <div className="no-print mt-8 flex justify-center gap-4">
+        <button
+          onClick={() => {
+            // Crear una nueva ventana solo con el contenido del contrato
+            const printWindow = window.open('', '_blank', 'width=900,height=800');
+
+            if (printWindow) {
+              // Obtener el HTML del contrato
+              const contractContent = document.querySelector('#contrato-consignacion').outerHTML;
+
+              printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Contrato de Consignación - Entrepeques</title>
+                  <style>
+                    * {
+                      margin: 0;
+                      padding: 0;
+                      box-sizing: border-box;
+                    }
+
+                    body {
+                      font-family: Arial, sans-serif;
+                      background: white;
+                      padding: 20px;
+                    }
+
+                    .no-print {
+                      text-align: center;
+                      margin: 20px 0;
+                    }
+
+                    .no-print button {
+                      background: #9b59b6;
+                      color: white;
+                      border: none;
+                      padding: 10px 20px;
+                      border-radius: 5px;
+                      cursor: pointer;
+                      margin: 0 10px;
+                      font-size: 14px;
+                    }
+
+                    .no-print button:hover {
+                      background: #8e44ad;
+                    }
+
+                    .contrato-container {
+                      font-family: Arial, sans-serif;
+                      font-size: 11pt;
+                      line-height: 1.4;
+                      color: #000;
+                      background: white;
+                      padding: 20px;
+                      max-width: 800px;
+                      margin: 0 auto;
+                    }
+
+                    .contrato-header {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 30px;
+                      padding-bottom: 20px;
+                      border-bottom: 2px solid #333;
+                    }
+
+                    .logo-section {
+                      flex: 0 0 auto;
+                    }
+
+                    .contract-title {
+                      text-align: center;
+                      flex: 1;
+                    }
+
+                    .contract-title h2 {
+                      font-size: 16pt;
+                      margin: 0;
+                      font-weight: bold;
+                    }
+
+                    .contract-number {
+                      font-size: 10pt;
+                      color: #666;
+                      margin-top: 5px;
+                    }
+
+                    .contrato-section {
+                      margin-bottom: 25px;
+                    }
+
+                    .contrato-section h3 {
+                      font-size: 12pt;
+                      font-weight: bold;
+                      margin-bottom: 10px;
+                      padding: 5px;
+                      background: #f0f0f0;
+                      border-left: 4px solid #ff6b9d;
+                    }
+
+                    .client-info {
+                      padding: 10px;
+                    }
+
+                    .info-row {
+                      margin-bottom: 8px;
+                      display: flex;
+                      align-items: baseline;
+                    }
+
+                    .label {
+                      font-weight: bold;
+                      margin-right: 10px;
+                      min-width: 100px;
+                    }
+
+                    .value {
+                      flex: 1;
+                      border-bottom: 1px solid #999;
+                      padding-bottom: 2px;
+                      min-height: 20px;
+                    }
+
+                    .products-table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin-top: 10px;
+                    }
+
+                    .products-table th {
+                      background: #f0f0f0;
+                      padding: 8px;
+                      border: 1px solid #ccc;
+                      font-weight: bold;
+                      font-size: 10pt;
+                    }
+
+                    .products-table td {
+                      padding: 6px;
+                      border: 1px solid #ccc;
+                      font-size: 10pt;
+                    }
+
+                    .products-table .center {
+                      text-align: center;
+                    }
+
+                    .products-table .price {
+                      text-align: right;
+                      white-space: nowrap;
+                    }
+
+                    .products-table tfoot td {
+                      font-weight: bold;
+                      background: #f9f9f9;
+                    }
+
+                    .total-label {
+                      text-align: right;
+                      padding-right: 10px;
+                    }
+
+                    .total-price {
+                      text-align: right;
+                      font-size: 12pt;
+                    }
+
+                    .conditions ul {
+                      margin: 10px 0;
+                      padding-left: 25px;
+                    }
+
+                    .conditions li {
+                      margin-bottom: 8px;
+                      text-align: justify;
+                    }
+
+                    .legal-text {
+                      font-size: 9pt;
+                      text-align: justify;
+                      line-height: 1.3;
+                    }
+
+                    .legal-text p {
+                      margin: 8px 0;
+                    }
+
+                    .legal-text ol {
+                      margin: 5px 0 10px 20px;
+                      padding-left: 10px;
+                    }
+
+                    .legal-text li {
+                      margin-bottom: 5px;
+                    }
+
+                    .payment-options {
+                      padding: 10px;
+                      background: #f9f9f9;
+                      border: 1px solid #ddd;
+                    }
+
+                    .payment-options p {
+                      margin: 8px 0;
+                    }
+
+                    .bank-info {
+                      margin-left: 20px;
+                      padding: 10px;
+                    }
+
+                    .signatures {
+                      margin-top: 40px;
+                    }
+
+                    .signature-date {
+                      text-align: center;
+                      margin-bottom: 40px;
+                      font-style: italic;
+                    }
+
+                    .signature-blocks {
+                      display: flex;
+                      justify-content: space-around;
+                      margin-top: 60px;
+                    }
+
+                    .signature-block {
+                      text-align: center;
+                      width: 250px;
+                    }
+
+                    .signature-line {
+                      border-bottom: 1px solid #000;
+                      margin-bottom: 5px;
+                      height: 40px;
+                    }
+
+                    .signature-block p {
+                      margin: 3px 0;
+                      font-size: 10pt;
+                    }
+
+                    .signature-name {
+                      font-weight: bold;
+                    }
+
+                    .signature-title {
+                      font-style: italic;
+                      font-size: 9pt;
+                    }
+
+                    @media print {
+                      body {
+                        padding: 0;
+                        margin: 0;
+                      }
+
+                      .no-print {
+                        display: none !important;
+                      }
+
+                      .contrato-container {
+                        padding: 0.5in;
+                        margin: 0;
+                        font-size: 10pt;
+                        max-width: none;
+                      }
+
+                      .contrato-header {
+                        page-break-after: avoid;
+                      }
+
+                      .contrato-section {
+                        page-break-inside: avoid;
+                      }
+
+                      .terms {
+                        page-break-before: always;
+                      }
+
+                      .signatures {
+                        page-break-inside: avoid;
+                      }
+
+                      .contrato-section h3 {
+                        print-color-adjust: exact;
+                        -webkit-print-color-adjust: exact;
+                      }
+                    }
+
+                    @page {
+                      size: letter;
+                      margin: 0.75in;
+                    }
+                  </style>
+                </head>
+                <body>
+                  ${contractContent}
+                  <script>
+                    // Auto-abrir diálogo de impresión después de que la página cargue
+                    window.onload = function() {
+                      setTimeout(function() {
+                        window.print();
+                      }, 500);
+                    };
+
+                    // Cerrar ventana después de imprimir o cancelar
+                    window.onafterprint = function() {
+                      window.close();
+                    };
+                  </script>
+                </body>
+                </html>
+              `);
+
+              printWindow.document.close();
+            } else {
+              alert('No se pudo abrir la ventana de impresión. Por favor, permita ventanas emergentes para esta página.');
+            }
+          }}
+          className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+          </svg>
+          Imprimir Contrato
+        </button>
+
+        <button
+          onClick={() => {
+            // Si estamos en una ventana separada, cerrarla
+            if (window.opener) {
+              window.close();
+            } else {
+              // Si estamos en un modal, buscar el botón de cerrar del modal
+              const closeButton = document.querySelector('[data-modal-close]');
+              if (closeButton) {
+                closeButton.click();
+              }
+            }
+          }}
+          className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Cerrar
+        </button>
+      </div>
+
       {/* Estilos CSS para impresión */}
       <style>{`
         .contrato-container {
@@ -433,82 +789,6 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
         .signature-title {
           font-style: italic;
           font-size: 9pt;
-        }
-
-        @media print {
-          body.printing-contract .contrato-container {
-            display: block !important;
-            visibility: visible !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            font-size: 10pt !important;
-            width: 100% !important;
-            max-width: none !important;
-          }
-
-          body.printing-contract .contrato-header {
-            page-break-after: avoid !important;
-            display: flex !important;
-            visibility: visible !important;
-          }
-
-          body.printing-contract .contrato-section {
-            page-break-inside: avoid !important;
-            display: block !important;
-            visibility: visible !important;
-          }
-
-          body.printing-contract .terms {
-            page-break-before: always !important;
-          }
-
-          body.printing-contract .signatures {
-            page-break-inside: avoid !important;
-            display: block !important;
-            visibility: visible !important;
-          }
-
-          body.printing-contract .logo {
-            print-color-adjust: exact !important;
-            -webkit-print-color-adjust: exact !important;
-            display: block !important;
-            visibility: visible !important;
-          }
-
-          body.printing-contract .contrato-section h3 {
-            print-color-adjust: exact !important;
-            -webkit-print-color-adjust: exact !important;
-            display: block !important;
-            visibility: visible !important;
-          }
-          
-          /* Asegurar que todos los elementos del contrato sean visibles */
-          body.printing-contract .info-row,
-          body.printing-contract .products-table,
-          body.printing-contract .legal-text,
-          body.printing-contract .payment-options,
-          body.printing-contract .signature-blocks {
-            display: block !important;
-            visibility: visible !important;
-          }
-          
-          /* Asegurar que la tabla se muestre correctamente */
-          body.printing-contract .products-table tr,
-          body.printing-contract .products-table td,
-          body.printing-contract .products-table th {
-            display: table-row !important;
-            visibility: visible !important;
-          }
-          
-          body.printing-contract .products-table td,
-          body.printing-contract .products-table th {
-            display: table-cell !important;
-          }
-        }
-
-        @page {
-          size: letter;
-          margin: 1in 0.75in;
         }
       `}</style>
     </div>

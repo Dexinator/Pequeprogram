@@ -33,6 +33,7 @@ export const ROUTE_CONFIG = {
   // Rutas solo para empleados (admin, gerente, vendedor)
   employeeOnly: [
     '/preparar-productos',
+    '/gestion-productos',
     '/reportes-tienda',
     '/gestionar-pedidos',
     '/actualizar-inventario'

@@ -1608,39 +1608,15 @@ AuthContext loading: ${authLoading}
             <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-y-auto">
               <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
                 <h2 className="text-xl font-bold text-azul-profundo">Contrato de Consignación - Entrepeques</h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      // Agregar clase especial para impresión
-                      document.body.classList.add('printing-contract');
-                      
-                      // Pequeño delay para asegurar que los estilos se apliquen
-                      setTimeout(() => {
-                        window.print();
-                        
-                        // Remover la clase después de imprimir
-                        setTimeout(() => {
-                          document.body.classList.remove('printing-contract');
-                        }, 100);
-                      }, 100);
-                    }}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
-                    </svg>
-                    Imprimir
-                  </button>
-                  <button
-                    onClick={() => setShowConsignmentContract(false)}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                    data-modal-close
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowConsignmentContract(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  data-modal-close
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
               
               <div className="p-4">

@@ -18,15 +18,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   console.log('🚀 AuthProvider: Inicializando componente...');
-  
+
+  // Inicializar isLoading basándose en si estamos en el cliente
+  // Durante SSR, mantener isLoading=true para evitar redirecciones prematuras
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(typeof window === 'undefined' ? true : true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('🚀 AuthProvider: Estados inicializados', { 
-    user: user?.username || 'null', 
-    isLoading, 
-    error 
+  console.log('🚀 AuthProvider: Estados inicializados', {
+    user: user?.username || 'null',
+    isLoading,
+    isSSR: typeof window === 'undefined',
+    error
   });
 
   const authService = new AuthService();
@@ -81,35 +84,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Verificar autenticación al montar el componente
   useEffect(() => {
     console.log('🔥 AuthProvider useEffect: Ejecutándose...');
-    // Solo ejecutar en el cliente
+    console.log('🔥 Entorno:', typeof window !== 'undefined' ? 'CLIENTE' : 'SERVIDOR');
+
+    // Solo ejecutar en el cliente - CRÍTICO para evitar problemas de SSR
     if (typeof window !== 'undefined') {
+      console.log('🔥 AuthProvider useEffect: En cliente, llamando checkAuth()');
       checkAuth();
-      console.log('🔥 AuthProvider useEffect: checkAuth() llamado');
     } else {
-      // En el servidor, establecer isLoading en false inmediatamente
-      console.log('🔥 AuthProvider useEffect: En servidor, estableciendo isLoading=false');
-      setIsLoading(false);
+      // En el servidor, mantener isLoading=true para que OptionalAuthGuard no redirija
+      console.log('🔥 AuthProvider useEffect: En servidor, manteniendo isLoading=true');
+      // NO llamamos a setIsLoading(false) durante SSR
     }
   }, []);
 
-  // Verificación adicional para asegurar hidratación completa
+  // Verificación de respaldo solo en el cliente
   useEffect(() => {
-    console.log('🔥 AuthProvider useEffect secundario: Verificando estado...');
-    
-    // Si después de 1 segundo seguimos en loading y hay token en localStorage, forzar verificación
+    // Solo ejecutar en el cliente
+    if (typeof window === 'undefined') {
+      console.log('🔥 useEffect secundario: En servidor, saltando...');
+      return;
+    }
+
+    console.log('🔥 AuthProvider useEffect secundario: Verificando estado en cliente...');
+
+    // Si después de 1 segundo seguimos en loading, forzar verificación o finalizar
     const timeoutId = setTimeout(() => {
       console.log('⏰ Timeout: Verificando si necesitamos forzar checkAuth...');
       console.log('⏰ Estado actual:', { isLoading, user: user?.username, isAuthenticated: !!user });
-      
-      if (isLoading && typeof window !== 'undefined') {
+
+      if (isLoading) {
         const rawToken = localStorage.getItem('entrepeques_auth_token');
         const rawUser = localStorage.getItem('entrepeques_user');
-        
-        console.log('⏰ LocalStorage check:', { 
-          token: rawToken ? 'PRESENTE' : 'AUSENTE', 
-          user: rawUser ? 'PRESENTE' : 'AUSENTE' 
+
+        console.log('⏰ LocalStorage check:', {
+          token: rawToken ? 'PRESENTE' : 'AUSENTE',
+          user: rawUser ? 'PRESENTE' : 'AUSENTE'
         });
-        
+
         if (rawToken && rawUser) {
           console.log('🔄 Forzando nueva verificación de autenticación...');
           checkAuth();
