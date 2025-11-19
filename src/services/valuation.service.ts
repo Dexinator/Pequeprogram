@@ -409,17 +409,25 @@ export class ValuationService extends BaseService<Valuation> {
         
         const sku = skuResult.rows[0].sku;
         
-        // Contar productos existentes en inventario para esta subcategoría para generar número secuencial
-        const countQuery = `
-          SELECT COUNT(*) as count
+        // Obtener el número más alto existente para esta subcategoría
+        const maxIdQuery = `
+          SELECT id
           FROM inventario
           WHERE id LIKE $1
+          ORDER BY id DESC
+          LIMIT 1
         `;
-        const countResult = await dbClient.query(countQuery, [`${sku}%`]);
-        const productCount = parseInt(countResult.rows[0].count) + 1;
-        
+        const maxIdResult = await dbClient.query(maxIdQuery, [`${sku}%`]);
+
+        let nextNumber = 1;
+        if (maxIdResult.rows.length > 0) {
+          const lastId = maxIdResult.rows[0].id;
+          const lastNumber = parseInt(lastId.replace(sku, ''));
+          nextNumber = lastNumber + 1;
+        }
+
         // Generar ID del inventario (SKU + número secuencial)
-        const inventarioId = `${sku}${productCount.toString().padStart(3, '0')}`;
+        const inventarioId = `${sku}${nextNumber.toString().padStart(3, '0')}`;
         
         // Insertar el item con precios calculados y location
         const itemQuery = `
