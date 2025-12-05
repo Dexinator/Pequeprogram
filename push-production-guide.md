@@ -4,7 +4,7 @@
 This guide covers the deployment process for all Entrepeques applications:
 - **Backend API + PostgreSQL**: Heroku
 - **Frontend Apps**: Vercel (Valuador, Admin, Tienda, POS)
-
+Remember to merge
 ## Prerequisites
 
 ### Required Accounts
