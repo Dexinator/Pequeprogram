@@ -1,14 +1,23 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import promo2 from "../assets/promos/PP_ANDADERASWEB-01.jpg";
+import promoMontables from "../assets/promos/promo_montables_dic_25.jpg";
+import promoInstagram from "../assets/promos/promo_instagram_dic_25.jpg";
 
 const promos = [
   {
     id: 1,
-    image: promo2,
-    alt: "Promoción Andaderas - 20% de descuento",
-    title: "Andaderas - 20% OFF",
-    link: "/productos?subcategoria=52" // Subcategoría Andaderas con 20% OFF
+    image: promoMontables,
+    alt: "Promoción Montables y Triciclos - 60% de descuento",
+    title: "Montables y Triciclos - 60% OFF",
+    link: "/productos?subcats=5,6,54" // Montables de exterior y Triciclos con 60% OFF
+  },
+  {
+    id: 2,
+    image: promoInstagram,
+    alt: "Síguenos en Instagram @entrepeques1",
+    title: "Síguenos en Instagram",
+    link: "https://www.instagram.com/entrepeques1",
+    external: true
   }
 ];
 ---
@@ -48,6 +57,8 @@ const promos = [
                   <div class="flex justify-center">
                     <a
                       href={promo.link || "#"}
+                      target={promo.external ? "_blank" : undefined}
+                      rel={promo.external ? "noopener noreferrer" : undefined}
                       class={`block group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 ${promo.link ? 'cursor-pointer' : 'cursor-default'}`}
                       style="max-width: 500px; width: 100%;"
                     >
@@ -67,7 +78,7 @@ const promos = [
                             </p>
                             {promo.link && (
                               <p class="text-sm mt-2">
-                                Ver productos →
+                                {promo.external ? "Visitar →" : "Ver productos →"}
                               </p>
                             )}
                           </div>
