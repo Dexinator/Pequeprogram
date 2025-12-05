@@ -157,6 +157,8 @@ export class StoreService {
             (ad.category_id = vi.category_id AND ad.subcategory_id IS NULL)
             OR (ad.subcategory_id = vi.subcategory_id AND ad.category_id IS NULL)
           )
+          -- Filtro adicional por features (si está definido)
+          AND (ad.feature_filter IS NULL OR vi.features @> ad.feature_filter)
         )
         WHERE vi.online_store_ready = true
         AND i.quantity > 0
@@ -380,6 +382,8 @@ export class StoreService {
             (ad.category_id = vi.category_id AND ad.subcategory_id IS NULL)
             OR (ad.subcategory_id = vi.subcategory_id AND ad.category_id IS NULL)
           )
+          -- Filtro adicional por features (si está definido)
+          AND (ad.feature_filter IS NULL OR vi.features @> ad.feature_filter)
         )
         WHERE i.id = $1
         AND vi.online_store_ready = true
