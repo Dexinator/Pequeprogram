@@ -189,10 +189,10 @@ export class ClothingService {
       const consignmentPrice = purchasePrice * 1.2; // +20%
 
       return {
-        purchasePrice: Math.round(purchasePrice * 100) / 100,
-        suggestedSalePrice: Math.round(suggestedSalePrice * 100) / 100,
-        storeCreditPrice: Math.round(storeCreditPrice * 100) / 100,
-        consignmentPrice: Math.round(consignmentPrice * 100) / 100
+        purchasePrice: Math.round(purchasePrice),
+        suggestedSalePrice: Math.round(suggestedSalePrice),
+        storeCreditPrice: Math.round(storeCreditPrice),
+        consignmentPrice: Math.round(consignmentPrice)
       };
     } catch (error) {
       console.error('Error calculating clothing valuation:', error);

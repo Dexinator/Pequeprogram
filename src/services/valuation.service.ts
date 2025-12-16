@@ -261,10 +261,10 @@ export class ValuationService extends BaseService<Valuation> {
       return {
         purchase_score: purchaseScore,
         sale_score: saleScore,
-        suggested_purchase_price: Math.round(purchasePrice * 100) / 100,
-        suggested_sale_price: Math.round(salePrice * 100) / 100,
-        consignment_price: Math.round(consignmentPrice * 100) / 100, // Ahora es precio de venta sugerido
-        store_credit_price: Math.round(storeCreditPrice * 100) / 100
+        suggested_purchase_price: Math.round(purchasePrice),
+        suggested_sale_price: Math.round(salePrice),
+        consignment_price: Math.round(consignmentPrice), // Ahora es precio de venta sugerido
+        store_credit_price: Math.round(storeCreditPrice)
       };
     } catch (error) {
       throw error;
