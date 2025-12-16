@@ -355,7 +355,7 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
                 href="/#tienda"
                 className="px-8 py-3 bg-brand-azul hover:bg-brand-azul-profundo text-white font-semibold rounded-lg transition-colors shadow-lg"
               >
-                Visita nuestras tienda
+                Visita nuestra tienda CDMX
               </a>
             </div>
           </div>

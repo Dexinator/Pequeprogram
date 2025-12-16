@@ -13,8 +13,8 @@ const {
   ogType = 'website'
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://tienda.entrepeques.com');
-const ogImageURL = new URL(ogImage, Astro.site || 'https://tienda.entrepeques.com');
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://entrepeques.mx');
+const ogImageURL = new URL(ogImage, Astro.site || 'https://entrepeques.mx');
 import '../styles/global.css';
 import NavBar from '../components/layout/NavBar.jsx';
 import Footer from '../components/layout/Footer.astro';

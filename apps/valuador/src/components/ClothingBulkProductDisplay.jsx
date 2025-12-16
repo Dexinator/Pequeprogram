@@ -49,18 +49,18 @@ export default function ClothingBulkProductDisplay({ product, index, onRemove })
         <div>
           <p className="text-sm text-gray-600">Precio Compra</p>
           <p className="font-medium text-verde-oscuro">
-            ${typeof data.suggested_purchase_price === 'number' 
-              ? data.suggested_purchase_price.toFixed(2) 
-              : parseFloat(data.suggested_purchase_price || 0).toFixed(2)}
+            ${typeof data.suggested_purchase_price === 'number'
+              ? data.suggested_purchase_price.toFixed(0)
+              : parseFloat(data.suggested_purchase_price || 0).toFixed(0)}
           </p>
         </div>
-        
+
         <div>
           <p className="text-sm text-gray-600">Precio Venta</p>
           <p className="font-medium text-azul-claro">
-            ${typeof data.suggested_sale_price === 'number' 
-              ? data.suggested_sale_price.toFixed(2) 
-              : parseFloat(data.suggested_sale_price || 0).toFixed(2)}
+            ${typeof data.suggested_sale_price === 'number'
+              ? data.suggested_sale_price.toFixed(0)
+              : parseFloat(data.suggested_sale_price || 0).toFixed(0)}
           </p>
         </div>
       </div>

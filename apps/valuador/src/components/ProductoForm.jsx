@@ -830,13 +830,13 @@ export function ProductoForm({
                   <p className="text-sm text-gray-600">Puntaje de Venta: <span className="font-medium">{calculationResult.sale_score}</span></p>
                 </div>
                 <div>
-                  <p className="text-base">Precio de Compra: <span className="font-medium text-azul-profundo">${calculationResult.suggested_purchase_price.toFixed(2)}</span></p>
-                  <p className="text-base">Precio de Venta: <span className="font-medium text-azul-profundo">${calculationResult.suggested_sale_price.toFixed(2)}</span></p>
+                  <p className="text-base">Precio de Compra: <span className="font-medium text-azul-profundo">${calculationResult.suggested_purchase_price.toFixed(0)}</span></p>
+                  <p className="text-base">Precio de Venta: <span className="font-medium text-azul-profundo">${calculationResult.suggested_sale_price.toFixed(0)}</span></p>
                   {calculationResult.store_credit_price && (
-                    <p className="text-base">Precio Crédito Tienda: <span className="font-medium text-verde-oscuro">${calculationResult.store_credit_price.toFixed(2)}</span></p>
+                    <p className="text-base">Precio Crédito Tienda: <span className="font-medium text-verde-oscuro">${calculationResult.store_credit_price.toFixed(0)}</span></p>
                   )}
                   {calculationResult.consignment_price && (
-                    <p className="text-base">Precio Consignación: <span className="font-medium text-amarillo">${calculationResult.consignment_price.toFixed(2)}</span></p>
+                    <p className="text-base">Precio Consignación: <span className="font-medium text-amarillo">${calculationResult.consignment_price.toFixed(0)}</span></p>
                   )}
                 </div>
               </div>

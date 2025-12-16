@@ -984,20 +984,20 @@ function NuevaValuacionContent() {
           <div className="text-center p-3 border border-border rounded-md bg-verde-lima/5">
             <p className="text-sm text-gray-600">Valor de Compra Seleccionado</p>
             <p className="text-2xl font-bold text-verde-oscuro">
-              ${selectedTotals.totalPurchase.toFixed(2)}
+              ${selectedTotals.totalPurchase.toFixed(0)}
             </p>
             <p className="text-xs text-gray-500">
-              Total: ${summary.totalPurchaseValue.toFixed(2)}
+              Total: ${summary.totalPurchaseValue.toFixed(0)}
             </p>
           </div>
 
           <div className="text-center p-3 border border-border rounded-md bg-amarillo/5">
             <p className="text-sm text-gray-600">Valor de Venta Seleccionado</p>
             <p className="text-2xl font-bold text-azul-profundo">
-              ${selectedTotals.totalSale.toFixed(2)}
+              ${selectedTotals.totalSale.toFixed(0)}
             </p>
             <p className="text-xs text-gray-500">
-              Total: ${summary.totalSaleValue.toFixed(2)}
+              Total: ${summary.totalSaleValue.toFixed(0)}
             </p>
           </div>
         </div>
@@ -1064,7 +1064,7 @@ function NuevaValuacionContent() {
                       <div className="text-sm text-gray-600 flex items-center gap-2">
                         <span>Demanda: {product.demand || 'N/A'}</span>
                         {product.new_price && (
-                          <span className="text-azul-claro">• Precio nuevo: ${Number(product.new_price).toFixed(2)}</span>
+                          <span className="text-azul-claro">• Precio nuevo: ${Number(product.new_price).toFixed(0)}</span>
                         )}
                       </div>
                       {!isSelected && (
@@ -1109,7 +1109,7 @@ function NuevaValuacionContent() {
                         />
                       ) : (
                         <span className={editedPrices[product.id] ? 'text-verde-oscuro font-bold' : ''}>
-                          ${typeof finalPurchasePrice === 'number' ? finalPurchasePrice.toFixed(2) : '0.00'}
+                          ${typeof finalPurchasePrice === 'number' ? finalPurchasePrice.toFixed(0) : '0'}
                         </span>
                       )}
                     </td>
@@ -1127,14 +1127,14 @@ function NuevaValuacionContent() {
                         />
                       ) : (
                         <span className={editedPrices[product.id] ? 'text-verde-oscuro font-bold' : ''}>
-                          ${typeof finalSalePrice === 'number' ? finalSalePrice.toFixed(2) : '0.00'}
+                          ${typeof finalSalePrice === 'number' ? finalSalePrice.toFixed(0) : '0'}
                         </span>
                       )}
                     </td>
                     
                     {/* Total Compra */}
                     <td className="p-2 text-right border-b border-border font-medium text-verde-oscuro font-bold">
-                      ${(finalPurchasePrice * (product.quantity || 1)).toFixed(2)}
+                      ${(finalPurchasePrice * (product.quantity || 1)).toFixed(0)}
                     </td>
                     
                     {/* Consignación */}
@@ -1143,7 +1143,7 @@ function NuevaValuacionContent() {
                         ? (
                           <div>
                             <div className="text-xs text-gray-500">Precio sugerido:</div>
-                            <div>${(product.suggested_sale_price * (product.quantity || 1)).toFixed(2)}</div>
+                            <div>${(product.suggested_sale_price * (product.quantity || 1)).toFixed(0)}</div>
                             <div className="text-xs text-verde-oscuro font-bold">Recibirá 50% al venderse</div>
                           </div>
                         )
@@ -1197,11 +1197,11 @@ function NuevaValuacionContent() {
                 <td className="p-2"></td>
                 <td className="p-2"></td>
                 <td className="p-2 text-right">
-                  ${selectedTotals.totalPurchase.toFixed(2)}
+                  ${selectedTotals.totalPurchase.toFixed(0)}
                 </td>
                 <td className="p-2 text-right">
                   {selectedTotals.totalConsignment > 0
-                    ? `$${selectedTotals.totalConsignment.toFixed(2)}`
+                    ? `$${selectedTotals.totalConsignment.toFixed(0)}`
                     : '-'
                   }
                 </td>

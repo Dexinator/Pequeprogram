@@ -28,8 +28,8 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
   };
 
   const formatCurrency = (value) => {
-    if (value === null || value === undefined || isNaN(value)) return '$0.00';
-    return `$${parseFloat(value).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (value === null || value === undefined || isNaN(value)) return '$0';
+    return `$${Math.round(parseFloat(value)).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   // Obtener precio base (efectivo)

@@ -41,8 +41,8 @@ const StatusBadge = ({ status }) => {
 // Componente para mostrar el resumen de una valuación
 const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalConsignacion, valuacionId, fecha }) => {
   const formatCurrency = (value) => {
-    if (value === null || value === undefined || isNaN(value)) return '$0.00';
-    return `$${parseFloat(value).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (value === null || value === undefined || isNaN(value)) return '$0';
+    return `$${Math.round(parseFloat(value)).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   const getModalityBadge = (modality) => {
@@ -311,8 +311,8 @@ function DetalleValuacionContent({ valuationId }) {
   };
 
   const formatCurrency = (value) => {
-    if (value === null || value === undefined || isNaN(value)) return '$0.00';
-    return `$${parseFloat(value).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (value === null || value === undefined || isNaN(value)) return '$0';
+    return `$${Math.round(parseFloat(value)).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   const calculateTotals = (items) => {

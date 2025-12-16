@@ -410,19 +410,19 @@ const ClothingProductForm = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Precio de Compra:</p>
-                <p className="text-xl font-bold text-blue-600">${calculationResult.purchasePrice.toFixed(2)}</p>
+                <p className="text-xl font-bold text-blue-600">${calculationResult.purchasePrice.toFixed(0)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Precio de Venta Sugerido:</p>
-                <p className="text-xl font-bold text-green-600">${calculationResult.suggestedSalePrice.toFixed(2)}</p>
+                <p className="text-xl font-bold text-green-600">${calculationResult.suggestedSalePrice.toFixed(0)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Precio Crédito en Tienda:</p>
-                <p className="text-lg font-semibold text-purple-600">${calculationResult.storeCreditPrice.toFixed(2)}</p>
+                <p className="text-lg font-semibold text-purple-600">${calculationResult.storeCreditPrice.toFixed(0)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Precio Consignación:</p>
-                <p className="text-lg font-semibold text-orange-600">${calculationResult.consignmentPrice.toFixed(2)}</p>
+                <p className="text-lg font-semibold text-orange-600">${calculationResult.consignmentPrice.toFixed(0)}</p>
               </div>
             </div>
           </div>
