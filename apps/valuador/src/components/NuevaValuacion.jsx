@@ -173,18 +173,25 @@ function NuevaValuacionContent() {
     }
   };
 
-  // Calcular totales de productos seleccionados (considerando precios editados)
+  // Calcular totales de productos seleccionados (considerando precios editados y modalidad)
   const calculateSelectedTotals = () => {
-    const selectedProductList = summary.productDetails.filter(product => 
+    const selectedProductList = summary.productDetails.filter(product =>
       selectedProducts.has(product.id)
     );
 
     const totalPurchase = selectedProductList.reduce((sum, item) => {
       // Usar precio editado si existe, sino el precio sugerido
       const editedPrice = editedPrices[item.id];
-      const price = editedPrice?.purchase !== undefined 
+      let price = editedPrice?.purchase !== undefined
         ? Number(editedPrice.purchase)
         : (item.suggested_purchase_price ? Number(item.suggested_purchase_price) : 0);
+
+      // Aplicar +20% si la modalidad es crédito en tienda
+      const finalModality = editedModalities[item.id] || item.modality;
+      if (finalModality === 'crédito en tienda') {
+        price = price * 1.2;
+      }
+
       const quantity = Number(item.quantity) || 1;
       return sum + (isNaN(price) ? 0 : price * quantity);
     }, 0);
@@ -265,25 +272,11 @@ function NuevaValuacionContent() {
           purchase: product.suggested_sale_price || originalPrice
         }
       }));
-    } else if (newModality === 'crédito en tienda') {
-      // Al cambiar a crédito en tienda, aumentar precio de compra en 20%
-      const newPurchasePrice = originalPrice * 1.2;
-      setEditedPrices(prev => ({
-        ...prev,
-        [productId]: {
-          ...prev[productId],
-          purchase: newPurchasePrice
-        }
-      }));
-    } else if (newModality === 'compra directa') {
-      // Al cambiar a compra directa, restaurar precio original
-      setEditedPrices(prev => ({
-        ...prev,
-        [productId]: {
-          ...prev[productId],
-          purchase: originalPrice
-        }
-      }));
+    } else if (newModality === 'crédito en tienda' || newModality === 'compra directa') {
+      // Para crédito en tienda y compra directa, NO modificamos editedPrices
+      // El +20% para crédito se calcula solo al momento de mostrar/calcular totales
+      // Esto evita doble aplicación del incremento y preserva ediciones manuales del usuario
+      // No hacemos nada aquí - solo se guarda la modalidad
     }
   };
 
@@ -292,25 +285,33 @@ function NuevaValuacionContent() {
     return editedModalities[product.id] || product.modality;
   };
 
-  // Obtener precio final (editado o sugerido)
-  const getFinalPrice = (product, type) => {
+  // Obtener precio final (editado o sugerido), aplicando modificador de modalidad
+  const getFinalPrice = (product, type, applyModalityModifier = true) => {
     const editedPrice = editedPrices[product.id];
     let price = 0;
-    
+
     if (type === 'purchase') {
-      price = editedPrice?.purchase !== undefined 
-        ? editedPrice.purchase 
+      price = editedPrice?.purchase !== undefined
+        ? editedPrice.purchase
         : (product.suggested_purchase_price || 0);
+
+      // Aplicar +20% si la modalidad es crédito en tienda
+      if (applyModalityModifier) {
+        const finalModality = getFinalModality(product);
+        if (finalModality === 'crédito en tienda') {
+          price = price * 1.2;
+        }
+      }
     } else if (type === 'sale') {
-      price = editedPrice?.sale !== undefined 
-        ? editedPrice.sale 
+      price = editedPrice?.sale !== undefined
+        ? editedPrice.sale
         : (product.suggested_sale_price || 0);
     }
-    
+
     // Asegurar que siempre devolvemos un número válido
     const numericPrice = Number(price);
     const finalPrice = isNaN(numericPrice) ? 0 : numericPrice;
-    
+
     return finalPrice;
   };
 
@@ -863,7 +864,19 @@ function NuevaValuacionContent() {
         .map(product => {
           const editedPrice = editedPrices[product.id];
           const editedModality = editedModalities[product.id];
-          
+          const finalModality = editedModality || product.modality;
+
+          // Calcular precio base (editado o sugerido)
+          let basePurchasePrice = editedPrice?.purchase !== undefined
+            ? Number(editedPrice.purchase)
+            : Number(product.suggested_purchase_price || 0);
+
+          // Aplicar modificador de modalidad al precio de compra
+          let finalPurchasePrice = basePurchasePrice;
+          if (finalModality === 'crédito en tienda') {
+            finalPurchasePrice = basePurchasePrice * 1.2; // +20%
+          }
+
           // Para productos de ropa, asegurar que se incluyan los precios calculados
           if (product.isClothing) {
             return {
@@ -872,7 +885,7 @@ function NuevaValuacionContent() {
               brand_id: null, // Ropa no usa brand_id
               status: product.status,
               brand_renown: product.brand_renown,
-              modality: editedModality || product.modality,
+              modality: finalModality,
               condition_state: product.condition_state,
               demand: product.demand,
               cleanliness: product.cleanliness,
@@ -881,14 +894,14 @@ function NuevaValuacionContent() {
               features: product.features || {},
               notes: product.notes || '',
               images: product.images || [],
-              // Usar precios editados si existen, sino usar los pre-calculados
-              final_purchase_price: editedPrice?.purchase || product.suggested_purchase_price,
+              // Usar precio con modificador de modalidad aplicado
+              final_purchase_price: finalPurchasePrice,
               final_sale_price: editedPrice?.sale || product.suggested_sale_price,
               // Marcar como producto de ropa
               isClothing: true
             };
           }
-          
+
           // Para productos regulares
           return {
             category_id: product.category_id,
@@ -896,7 +909,7 @@ function NuevaValuacionContent() {
             brand_id: product.brand_id || null,
             status: product.status,
             brand_renown: product.brand_renown,
-            modality: editedModality || product.modality,
+            modality: finalModality,
             condition_state: product.condition_state,
             demand: product.demand,
             cleanliness: product.cleanliness,
@@ -905,8 +918,8 @@ function NuevaValuacionContent() {
             features: product.features || {},
             notes: product.notes || '',
             images: product.images || [],
-            // Incluir precios editados si existen
-            final_purchase_price: editedPrice?.purchase,
+            // Usar precio con modificador de modalidad aplicado
+            final_purchase_price: finalPurchasePrice,
             final_sale_price: editedPrice?.sale
           };
         });
@@ -1035,8 +1048,11 @@ function NuevaValuacionContent() {
                 // Verificar que los precios del producto sean válidos
                 const safePurchasePrice = Number(product.suggested_purchase_price) || 0;
                 const safeSalePrice = Number(product.suggested_sale_price) || 0;
-                
-                const finalPurchasePrice = getFinalPrice(product, 'purchase');
+
+                // Precio base sin modificador de modalidad (para edición)
+                const basePurchasePrice = getFinalPrice(product, 'purchase', false);
+                // Precio final con modificador de modalidad (para mostrar)
+                const finalPurchasePrice = getFinalPrice(product, 'purchase', true);
                 const finalSalePrice = getFinalPrice(product, 'sale');
                 
                 return (
@@ -1103,7 +1119,7 @@ function NuevaValuacionContent() {
                           type="number"
                           step="0.01"
                           min="0"
-                          defaultValue={finalPurchasePrice || 0}
+                          defaultValue={basePurchasePrice || 0}
                           className="w-20 px-2 py-1 text-sm border border-gray-300 rounded text-right focus:ring-azul-claro focus:border-azul-claro"
                           id={`purchase-${product.id}`}
                         />

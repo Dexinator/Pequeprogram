@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AppointmentAdmin from '../../components/appointments/AppointmentAdmin.jsx';
+
+export const prerender = false;
+---
+
+<Layout title="Administrar Citas - Entrepeques">
+  <div class="container mx-auto px-4 py-8">
+    <AppointmentAdmin client:only="react" />
+  </div>
+</Layout>
