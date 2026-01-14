@@ -15,7 +15,10 @@ import {
   updatePublishedProduct,
   unpublishProduct,
   bulkUpdateProducts,
-  getPublishedProductsForManagement
+  getPublishedProductsForManagement,
+  getAllProductsForManagement,
+  getProductForEditing,
+  updateProductNotes
 } from '../controllers/store.controller';
 
 const router = express.Router();
@@ -73,6 +76,19 @@ router
 router
   .route('/products/management')
   .get(authorize(['superadmin', 'admin']), getPublishedProductsForManagement);
+
+// All products management (with notes) - for POS
+router
+  .route('/products/all')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getAllProductsForManagement);
+
+router
+  .route('/products/:id/edit')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getProductForEditing);
+
+router
+  .route('/products/:id/notes')
+  .put(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), updateProductNotes);
 
 router
   .route('/products/:id/update')

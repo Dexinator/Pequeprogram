@@ -22,6 +22,7 @@ export default function ConsignmentsList() {
   const [stats, setStats] = useState({
     total_items: 0,
     available_items: 0,
+    returned_items: 0,
     sold_unpaid_items: 0,
     sold_paid_items: 0,
     total_available_value: 0,
@@ -101,8 +102,11 @@ export default function ConsignmentsList() {
   // Marcar como pagado
   const markAsPaid = (consignment) => {
     setSelectedConsignment(consignment);
+    // Calcular el 50% del precio de venta real
+    const salePrice = consignment.sale_price || consignment.final_sale_price;
+    const amountToPay = (salePrice * 0.5).toFixed(2);
     setPaymentFormData({
-      paid_amount: consignment.consignment_price?.toString() || '',
+      paid_amount: amountToPay,
       notes: ''
     });
     setShowPaymentModal(true);
@@ -136,12 +140,14 @@ export default function ConsignmentsList() {
   const getStatusBadge = (status) => {
     const badges = {
       available: 'bg-green-100 text-green-800',
+      returned: 'bg-gray-100 text-gray-800',
       sold_unpaid: 'bg-yellow-100 text-yellow-800',
       sold_paid: 'bg-blue-100 text-blue-800'
     };
-    
+
     const labels = {
       available: 'Disponible',
+      returned: 'Devuelto',
       sold_unpaid: 'Vendido - Sin Pagar',
       sold_paid: 'Vendido - Pagado'
     };
@@ -160,56 +166,64 @@ export default function ConsignmentsList() {
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Total Productos</h3>
-          <div className="mt-2">
-            <div className="text-2xl font-bold text-pink-600">{stats.total_items}</div>
-            <div className="text-sm text-gray-600">En consignación</div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Total</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-pink-600">{stats.total_items}</div>
+            <div className="text-xs text-gray-600">Consignaciones</div>
           </div>
         </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Disponibles</h3>
-          <div className="mt-2">
-            <div className="text-2xl font-bold text-green-600">{stats.available_items}</div>
-            <div className="text-sm text-gray-600">En tienda</div>
+
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Disponibles</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-green-600">{stats.available_items}</div>
+            <div className="text-xs text-gray-600">En tienda</div>
           </div>
         </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Vendidos Sin Pagar</h3>
-          <div className="mt-2">
-            <div className="text-2xl font-bold text-yellow-600">{stats.sold_unpaid_items}</div>
-            <div className="text-sm text-gray-600">Pendientes</div>
+
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Devueltos</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-gray-600">{stats.returned_items}</div>
+            <div className="text-xs text-gray-600">Sin vender</div>
           </div>
         </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Vendidos Pagados</h3>
-          <div className="mt-2">
-            <div className="text-2xl font-bold text-blue-600">{stats.sold_paid_items}</div>
-            <div className="text-sm text-gray-600">Completados</div>
+
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Sin Pagar</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-yellow-600">{stats.sold_unpaid_items}</div>
+            <div className="text-xs text-gray-600">Vendidos</div>
           </div>
         </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Pendiente de Pago</h3>
-          <div className="mt-2">
-            <div className="text-2xl font-bold text-orange-600">
+
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Pagados</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-blue-600">{stats.sold_paid_items}</div>
+            <div className="text-xs text-gray-600">Completados</div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Por Pagar</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-orange-600">
               {consignmentService.formatCurrency(stats.total_unpaid_value)}
             </div>
-            <div className="text-sm text-gray-600">A pagar</div>
+            <div className="text-xs text-gray-600">50% ventas</div>
           </div>
         </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Total Pagado</h3>
-          <div className="mt-2">
-            <div className="text-2xl font-bold text-indigo-600">
+
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-xs font-medium text-gray-500">Pagado</h3>
+          <div className="mt-1">
+            <div className="text-xl font-bold text-indigo-600">
               {consignmentService.formatCurrency(stats.total_paid_value)}
             </div>
-            <div className="text-sm text-gray-600">Ya pagado</div>
+            <div className="text-xs text-gray-600">Total</div>
           </div>
         </div>
       </div>
@@ -230,6 +244,7 @@ export default function ConsignmentsList() {
             >
               <option value="all">Todos</option>
               <option value="available">Disponibles</option>
+              <option value="returned">Devueltos</option>
               <option value="sold_unpaid">Vendidos Sin Pagar</option>
               <option value="sold_paid">Vendidos Pagados</option>
               <option value="sold">Todos los Vendidos</option>
@@ -312,73 +327,81 @@ export default function ConsignmentsList() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      ID
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      SKU
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Producto
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Cliente
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio Venta / A Pagar
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Precio Venta
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      A Pagar (50%)
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Ubicación
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Estado
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {consignments.map((consignment) => (
-                    <tr key={consignment.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        #{consignment.id}
+                    <tr key={`${consignment.id}-${consignment.sku}`} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                        {consignment.sku || '-'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-gray-900">
                         <div>
                           <p className="font-medium">{consignmentService.getProductDescription(consignment)}</p>
-                          <p className="text-gray-500 text-xs">Valuación #{consignment.valuation_id}</p>
+                          <p className="text-gray-500 text-xs">ID: {consignment.id} | Valuación #{consignment.valuation_id}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-gray-900">
                         <div>
                           <p className="font-medium">{consignment.client_name}</p>
                           <p className="text-gray-500 text-xs">{consignment.client_phone}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm">
-                        {consignment.status === 'available' ? (
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {consignmentService.formatCurrency(consignment.final_sale_price)}
-                            </p>
-                            <p className="text-xs text-gray-500">Recibirá 50% al venderse</p>
-                          </div>
+                      <td className="px-4 py-4 text-sm">
+                        <p className="font-medium text-gray-900">
+                          {consignmentService.formatCurrency(
+                            consignment.status === 'sold_unpaid' || consignment.status === 'sold_paid'
+                              ? (consignment.sale_price || consignment.final_sale_price)
+                              : consignment.final_sale_price
+                          )}
+                        </p>
+                      </td>
+                      <td className="px-4 py-4 text-sm">
+                        {consignment.status === 'returned' ? (
+                          <span className="text-gray-400">-</span>
+                        ) : consignment.status === 'sold_paid' ? (
+                          <p className="font-medium text-green-600">
+                            {consignmentService.formatCurrency(consignment.consignment_paid_amount)}
+                          </p>
                         ) : (
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {consignmentService.formatCurrency(consignment.sale_price || consignment.final_sale_price)}
-                            </p>
-                            <p className="text-xs text-green-600 font-medium">
-                              A pagar: {consignmentService.formatCurrency((consignment.sale_price || consignment.final_sale_price) * 0.5)}
-                            </p>
-                          </div>
+                          <p className="font-medium text-orange-600">
+                            {consignmentService.formatCurrency(
+                              (consignment.sale_price || consignment.final_sale_price) * 0.5
+                            )}
+                          </p>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {consignment.location}
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {consignment.location || '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap">
                         {getStatusBadge(consignment.status)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => viewConsignmentDetail(consignment.id)}
                           className="text-pink-600 hover:text-pink-900 mr-3"
@@ -390,18 +413,8 @@ export default function ConsignmentsList() {
                             onClick={() => markAsPaid(consignment)}
                             className="text-green-600 hover:text-green-900"
                           >
-                            Marcar Pagado
+                            Pagar
                           </button>
-                        )}
-                        {consignment.status === 'sold_paid' && consignment.consignment_paid_date && (
-                          <span className="text-xs text-gray-500">
-                            Pagado {consignmentService.formatDate(consignment.consignment_paid_date)}
-                          </span>
-                        )}
-                        {consignment.status === 'available' && (
-                          <span className="text-xs text-gray-500">
-                            En tienda
-                          </span>
                         )}
                       </td>
                     </tr>
@@ -478,37 +491,45 @@ export default function ConsignmentsList() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h4 className="font-medium mb-2">Información del Producto</h4>
+                  <p><span className="font-medium">SKU:</span> <span className="font-mono">{selectedConsignment.sku || 'N/A'}</span></p>
                   <p><span className="font-medium">Descripción:</span> {consignmentService.getProductDescription(selectedConsignment)}</p>
                   <p><span className="font-medium">Categoría:</span> {selectedConsignment.category_name}</p>
                   <p><span className="font-medium">Subcategoría:</span> {selectedConsignment.subcategory_name}</p>
                   <p><span className="font-medium">Marca:</span> {selectedConsignment.brand_name}</p>
-                  <p><span className="font-medium">Ubicación:</span> {selectedConsignment.location}</p>
+                  <p><span className="font-medium">Ubicación:</span> {selectedConsignment.location || 'N/A'}</p>
                   <p><span className="font-medium">Estado:</span> {getStatusBadge(selectedConsignment.status)}</p>
                 </div>
-                
+
                 <div>
                   <h4 className="font-medium mb-2">Cliente</h4>
                   <p><span className="font-medium">Nombre:</span> {selectedConsignment.client_name}</p>
                   <p><span className="font-medium">Teléfono:</span> {selectedConsignment.client_phone}</p>
                   <p><span className="font-medium">ID Cliente:</span> {selectedConsignment.client_id}</p>
-                  <p><span className="font-medium">Valuación:</span> #{selectedConsignment.valuation_id}</p>
+                  <p><span className="font-medium">ID Valuación:</span> #{selectedConsignment.valuation_id}</p>
+                  <p><span className="font-medium">ID Item:</span> #{selectedConsignment.id}</p>
                 </div>
               </div>
-              
+
               {/* Precios */}
               <div>
                 <h4 className="font-medium mb-2">Información de Precios</h4>
-                <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
                   <div>
-                    <p><span className="font-medium">Precio Consignación:</span></p>
-                    <p className="text-2xl font-bold text-pink-600">
-                      {consignmentService.formatCurrency(selectedConsignment.consignment_price)}
+                    <p className="text-sm text-gray-500">Precio de Venta</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {consignmentService.formatCurrency(selectedConsignment.final_sale_price)}
                     </p>
                   </div>
                   <div>
-                    <p><span className="font-medium">Precio de Venta:</span></p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {consignmentService.formatCurrency(selectedConsignment.final_sale_price)}
+                    <p className="text-sm text-gray-500">A Pagar al Cliente (50%)</p>
+                    <p className="text-xl font-bold text-orange-600">
+                      {consignmentService.formatCurrency(selectedConsignment.final_sale_price * 0.5)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Ganancia Tienda (50%)</p>
+                    <p className="text-xl font-bold text-green-600">
+                      {consignmentService.formatCurrency(selectedConsignment.final_sale_price * 0.5)}
                     </p>
                   </div>
                 </div>
@@ -532,10 +553,26 @@ export default function ConsignmentsList() {
               {(selectedConsignment.status === 'sold_unpaid' || selectedConsignment.status === 'sold_paid') && (
                 <div>
                   <h4 className="font-medium mb-2">Información de Venta</h4>
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="bg-blue-50 p-4 rounded-lg space-y-2">
                     <p><span className="font-medium">Fecha de Venta:</span> {consignmentService.formatDate(selectedConsignment.sold_date)}</p>
                     <p><span className="font-medium">ID de Venta:</span> #{selectedConsignment.sale_id}</p>
                     <p><span className="font-medium">Precio de Venta Real:</span> {consignmentService.formatCurrency(selectedConsignment.sale_price)}</p>
+                    <p className="text-lg">
+                      <span className="font-medium">Monto a Pagar (50%):</span>{' '}
+                      <span className="text-orange-600 font-bold">
+                        {consignmentService.formatCurrency((selectedConsignment.sale_price || selectedConsignment.final_sale_price) * 0.5)}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Información de devolución si está devuelto */}
+              {selectedConsignment.status === 'returned' && (
+                <div>
+                  <h4 className="font-medium mb-2">Información de Devolución</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-gray-600">Este producto fue devuelto al cliente sin haberse vendido.</p>
                   </div>
                 </div>
               )}
@@ -595,33 +632,44 @@ export default function ConsignmentsList() {
             </div>
             
             <div className="p-6 space-y-4">
-              <div>
-                <p className="text-sm text-gray-600 mb-2">
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  <strong>SKU:</strong> <span className="font-mono">{selectedConsignment.sku || 'N/A'}</span>
+                </p>
+                <p className="text-sm text-gray-600">
                   <strong>Producto:</strong> {consignmentService.getProductDescription(selectedConsignment)}
                 </p>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-gray-600">
                   <strong>Cliente:</strong> {selectedConsignment.client_name}
                 </p>
-                <p className="text-sm text-gray-600 mb-4">
-                  <strong>Precio Consignación:</strong> {consignmentService.formatCurrency(selectedConsignment.consignment_price)}
-                </p>
+                <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                  <p className="text-sm text-gray-600">
+                    <strong>Precio de Venta Real:</strong> {consignmentService.formatCurrency(selectedConsignment.sale_price || selectedConsignment.final_sale_price)}
+                  </p>
+                  <p className="text-lg mt-1">
+                    <strong>50% a Pagar:</strong>{' '}
+                    <span className="text-orange-600 font-bold">
+                      {consignmentService.formatCurrency((selectedConsignment.sale_price || selectedConsignment.final_sale_price) * 0.5)}
+                    </span>
+                  </p>
+                </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Monto Pagado al Proveedor *
+                  Monto a Pagar al Cliente *
                 </label>
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="Monto pagado"
+                  placeholder="Monto a pagar"
                   value={paymentFormData.paid_amount}
                   onChange={(e) => setPaymentFormData({ ...paymentFormData, paid_amount: e.target.value })}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Normalmente coincide con el precio de consignación
+                  Por defecto es el 50% del precio de venta. Puede ajustar si es necesario.
                 </p>
               </div>
               

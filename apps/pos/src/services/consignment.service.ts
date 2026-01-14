@@ -13,7 +13,7 @@ export interface ConsignmentProduct {
   consignment_price: number;
   final_sale_price: number;
   location: string;
-  status: 'available' | 'sold_unpaid' | 'sold_paid';
+  status: 'available' | 'sold_unpaid' | 'sold_paid' | 'returned';
   sold_date?: Date;
   sale_id?: number;
   sale_price?: number;
@@ -22,6 +22,8 @@ export interface ConsignmentProduct {
   consignment_paid_date?: Date;
   consignment_paid_amount?: number;
   consignment_paid_notes?: string;
+  sku?: string;
+  inventory_quantity?: number;
   created_at: Date;
   updated_at: Date;
 }
@@ -37,6 +39,7 @@ export interface ConsignmentFilters {
 export interface ConsignmentStats {
   total_items: number;
   available_items: number;
+  returned_items: number;
   sold_unpaid_items: number;
   sold_paid_items: number;
   total_available_value: number;
@@ -135,6 +138,7 @@ export class ConsignmentService {
       return response.data || {
         total_items: 0,
         available_items: 0,
+        returned_items: 0,
         sold_unpaid_items: 0,
         sold_paid_items: 0,
         total_available_value: 0,
@@ -147,6 +151,7 @@ export class ConsignmentService {
       return {
         total_items: 0,
         available_items: 0,
+        returned_items: 0,
         sold_unpaid_items: 0,
         sold_paid_items: 0,
         total_available_value: 0,

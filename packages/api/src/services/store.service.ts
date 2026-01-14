@@ -1127,6 +1127,217 @@ export class StoreService {
     }
   }
 
+  // Get all inventory products with notes for management
+  async getAllProductsForManagement(params: {
+    page: number;
+    limit: number;
+    category_id?: number;
+    subcategory_id?: number;
+    location?: string;
+    search?: string;
+    has_notes?: boolean;
+    online_ready?: boolean;
+  }) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      let query = `
+        SELECT
+          vi.id,
+          vi.category_id,
+          vi.subcategory_id,
+          vi.brand_id,
+          vi.status,
+          vi.condition_state,
+          vi.features,
+          vi.final_sale_price,
+          vi.online_price,
+          vi.weight_grams,
+          vi.images,
+          vi.notes,
+          vi.online_store_ready,
+          vi.online_featured,
+          vi.online_prepared_at,
+          vi.modality,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE i.quantity > 0
+      `;
+
+      const queryParams: any[] = [];
+      let paramIndex = 1;
+
+      if (params.category_id) {
+        query += ` AND vi.category_id = $${paramIndex++}`;
+        queryParams.push(params.category_id);
+      }
+
+      if (params.subcategory_id) {
+        query += ` AND vi.subcategory_id = $${paramIndex++}`;
+        queryParams.push(params.subcategory_id);
+      }
+
+      if (params.location) {
+        query += ` AND i.location = $${paramIndex++}`;
+        queryParams.push(params.location);
+      }
+
+      if (params.search) {
+        query += ` AND (
+          s.name ILIKE $${paramIndex} OR
+          b.name ILIKE $${paramIndex} OR
+          vi.features::text ILIKE $${paramIndex} OR
+          i.id ILIKE $${paramIndex} OR
+          vi.notes ILIKE $${paramIndex}
+        )`;
+        queryParams.push(`%${params.search}%`);
+        paramIndex++;
+      }
+
+      if (params.has_notes !== undefined) {
+        if (params.has_notes) {
+          query += ` AND vi.notes IS NOT NULL AND vi.notes != ''`;
+        } else {
+          query += ` AND (vi.notes IS NULL OR vi.notes = '')`;
+        }
+      }
+
+      if (params.online_ready !== undefined) {
+        query += ` AND vi.online_store_ready = $${paramIndex++}`;
+        queryParams.push(params.online_ready);
+      }
+
+      // Count total
+      const countQuery = `SELECT COUNT(*) as total FROM (${query}) as subquery`;
+      const countResult = await dbClient.query(countQuery, queryParams);
+      const total = parseInt(countResult.rows[0].total);
+
+      // Add pagination
+      query += ` ORDER BY vi.id DESC`;
+      query += ` LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
+      queryParams.push(params.limit);
+      queryParams.push((params.page - 1) * params.limit);
+
+      const result = await dbClient.query(query, queryParams);
+
+      return {
+        products: result.rows.map(row => ({
+          ...row,
+          quantity: parseInt(row.quantity),
+          final_sale_price: parseFloat(row.final_sale_price || 0),
+          online_price: row.online_price ? parseFloat(row.online_price) : null,
+          weight_grams: row.weight_grams ? parseInt(row.weight_grams) : null,
+          images: row.images || []
+        })),
+        total
+      };
+    } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  // Update product notes
+  async updateProductNotes(inventoryId: string, notes: string) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      // Get valuation_item_id from inventory
+      const inventoryQuery = `
+        SELECT valuation_item_id
+        FROM inventario
+        WHERE id = $1
+      `;
+      const inventoryResult = await dbClient.query(inventoryQuery, [inventoryId]);
+
+      if (inventoryResult.rows.length === 0) {
+        throw new Error('Producto no encontrado en inventario');
+      }
+
+      const valuationItemId = inventoryResult.rows[0].valuation_item_id;
+
+      // Update notes
+      const updateQuery = `
+        UPDATE valuation_items
+        SET notes = $1, updated_at = NOW()
+        WHERE id = $2
+        RETURNING id, notes
+      `;
+
+      const updateResult = await dbClient.query(updateQuery, [notes, valuationItemId]);
+
+      return updateResult.rows[0];
+    } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  // Get single product details for editing
+  async getProductForEditing(inventoryId: string) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      const query = `
+        SELECT
+          vi.*,
+          c.name as category_name,
+          s.name as subcategory_name,
+          b.name as brand_name,
+          i.id as inventory_id,
+          i.quantity,
+          i.location
+        FROM inventario i
+        INNER JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c ON vi.category_id = c.id
+        LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+        LEFT JOIN brands b ON vi.brand_id = b.id
+        WHERE i.id = $1
+        AND i.quantity > 0
+      `;
+
+      const result = await dbClient.query(query, [inventoryId]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const row = result.rows[0];
+      return {
+        ...row,
+        quantity: parseInt(row.quantity),
+        final_sale_price: parseFloat(row.final_sale_price || 0),
+        online_price: row.online_price ? parseFloat(row.online_price) : null,
+        weight_grams: row.weight_grams ? parseInt(row.weight_grams) : null,
+        images: row.images || []
+      };
+    } catch (error) {
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
   async getPublishedProductsForManagement(params: any) {
     let dbClient: PoolClient | undefined;
     try {

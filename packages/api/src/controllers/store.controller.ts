@@ -403,6 +403,82 @@ export const bulkUpdateProducts = asyncHandler(async (req: Request, res: Respons
   });
 });
 
+// @desc    Get all products for management (with notes)
+// @route   GET /api/store/products/all
+// @access  Private (admin, manager, sales)
+export const getAllProductsForManagement = asyncHandler(async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+  const category_id = req.query.category_id ? parseInt(req.query.category_id as string) : undefined;
+  const subcategory_id = req.query.subcategory_id ? parseInt(req.query.subcategory_id as string) : undefined;
+  const location = req.query.location as string;
+  const search = req.query.search as string;
+  const has_notes = req.query.has_notes === 'true' ? true : req.query.has_notes === 'false' ? false : undefined;
+  const online_ready = req.query.online_ready === 'true' ? true : req.query.online_ready === 'false' ? false : undefined;
+
+  const result = await storeService.getAllProductsForManagement({
+    page,
+    limit,
+    category_id,
+    subcategory_id,
+    location,
+    search,
+    has_notes,
+    online_ready
+  });
+
+  res.json({
+    success: true,
+    products: result.products,
+    pagination: {
+      page,
+      limit,
+      total: result.total,
+      totalPages: Math.ceil(result.total / limit)
+    }
+  });
+});
+
+// @desc    Get single product for editing
+// @route   GET /api/store/products/:id/edit
+// @access  Private (admin, manager, sales)
+export const getProductForEditing = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const product = await storeService.getProductForEditing(id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error('Producto no encontrado');
+  }
+
+  res.json({
+    success: true,
+    data: product
+  });
+});
+
+// @desc    Update product notes
+// @route   PUT /api/store/products/:id/notes
+// @access  Private (admin, manager, sales)
+export const updateProductNotes = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { notes } = req.body;
+
+  if (notes === undefined) {
+    res.status(400);
+    throw new Error('Se requiere el campo notes');
+  }
+
+  const result = await storeService.updateProductNotes(id, notes);
+
+  res.json({
+    success: true,
+    data: result,
+    message: 'Notas actualizadas exitosamente'
+  });
+});
+
 // @desc    Get published products for management
 // @route   GET /api/store/products/management
 // @access  Private (admin, superadmin only)
