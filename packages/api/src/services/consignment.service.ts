@@ -345,6 +345,63 @@ export class ConsignmentService {
     }
   }
 
+  async markAsReturned(id: number, notes?: string): Promise<ConsignmentProduct | null> {
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      // Check if the consignment exists, is available (not sold), and has inventory
+      const checkQuery = `
+        SELECT
+          vi.id,
+          inv.id as inventario_id,
+          inv.quantity
+        FROM valuation_items vi
+        LEFT JOIN inventario inv ON inv.valuation_item_id = vi.id
+        LEFT JOIN sale_items si ON si.inventario_id = inv.id
+        WHERE vi.id = $1 AND vi.modality = 'consignación' AND si.id IS NULL AND inv.quantity > 0
+      `;
+      const checkResult = await client.query(checkQuery, [id]);
+
+      if (checkResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return null;
+      }
+
+      const row = checkResult.rows[0];
+
+      // Update inventory quantity to 0 (mark as returned)
+      const updateInventoryQuery = `
+        UPDATE inventario
+        SET quantity = 0, updated_at = NOW()
+        WHERE id = $1
+      `;
+      await client.query(updateInventoryQuery, [row.inventario_id]);
+
+      // Optionally update notes on valuation_item
+      if (notes) {
+        const updateNotesQuery = `
+          UPDATE valuation_items
+          SET notes = COALESCE(notes, '') || $2, updated_at = NOW()
+          WHERE id = $1
+        `;
+        await client.query(updateNotesQuery, [id, `\n[DEVUELTO] ${notes}`]);
+      }
+
+      await client.query('COMMIT');
+
+      // Return the updated consignment
+      return await this.getConsignmentById(id);
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('Error marking consignment as returned:', error);
+      throw new Error('Error al marcar consignación como devuelta');
+    } finally {
+      client.release();
+    }
+  }
+
   async getConsignmentStats() {
     const query = `
       SELECT

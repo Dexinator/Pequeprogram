@@ -126,6 +126,24 @@ export class ConsignmentService {
     }
   }
 
+  // Marcar consignación como devuelta
+  async markAsReturned(id: number, notes?: string): Promise<ConsignmentProduct> {
+    try {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
+
+      const response = await this.http.put<any>(`/consignments/${id}/returned`, {
+        notes
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error al marcar consignación como devuelta:', error);
+      throw error;
+    }
+  }
+
   // Obtener estadísticas de consignaciones
   async getStats(): Promise<ConsignmentStats> {
     try {

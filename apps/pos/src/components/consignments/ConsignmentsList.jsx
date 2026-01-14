@@ -15,10 +15,12 @@ export default function ConsignmentsList() {
   const [selectedConsignment, setSelectedConsignment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
   const [paymentFormData, setPaymentFormData] = useState({
     paid_amount: '',
     notes: ''
   });
+  const [returnNotes, setReturnNotes] = useState('');
   const [stats, setStats] = useState({
     total_items: 0,
     available_items: 0,
@@ -125,7 +127,7 @@ export default function ConsignmentsList() {
         parseFloat(paymentFormData.paid_amount),
         paymentFormData.notes
       );
-      
+
       setShowPaymentModal(false);
       loadConsignments();
       loadStats();
@@ -133,6 +135,31 @@ export default function ConsignmentsList() {
     } catch (error) {
       console.error('Error marcando como pagado:', error);
       alert('Error al marcar consignación como pagada');
+    }
+  };
+
+  // Abrir modal de devolución
+  const openReturnModal = (consignment) => {
+    setSelectedConsignment(consignment);
+    setReturnNotes('');
+    setShowReturnModal(true);
+  };
+
+  // Confirmar devolución
+  const confirmReturn = async () => {
+    try {
+      await consignmentService.markAsReturned(
+        selectedConsignment.id,
+        returnNotes || undefined
+      );
+
+      setShowReturnModal(false);
+      loadConsignments();
+      loadStats();
+      alert('Consignación marcada como devuelta exitosamente');
+    } catch (error) {
+      console.error('Error marcando como devuelto:', error);
+      alert('Error al marcar consignación como devuelta');
     }
   };
 
@@ -401,13 +428,21 @@ export default function ConsignmentsList() {
                       <td className="px-4 py-4 whitespace-nowrap">
                         {getStatusBadge(consignment.status)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         <button
                           onClick={() => viewConsignmentDetail(consignment.id)}
-                          className="text-pink-600 hover:text-pink-900 mr-3"
+                          className="text-pink-600 hover:text-pink-900"
                         >
                           Ver
                         </button>
+                        {consignment.status === 'available' && (
+                          <button
+                            onClick={() => openReturnModal(consignment)}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            Devolver
+                          </button>
+                        )}
                         {consignment.status === 'sold_unpaid' && (
                           <button
                             onClick={() => markAsPaid(consignment)}
@@ -699,6 +734,68 @@ export default function ConsignmentsList() {
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
                 Confirmar Pago
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Marcar como Devuelto */}
+      {showReturnModal && selectedConsignment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold">Marcar como Devuelto</h3>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800">
+                  Esta acción marcará el producto como devuelto al cliente. El producto se quitará del inventario disponible.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  <strong>SKU:</strong> <span className="font-mono">{selectedConsignment.sku || 'N/A'}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Producto:</strong> {consignmentService.getProductDescription(selectedConsignment)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Cliente:</strong> {selectedConsignment.client_name}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Precio de Venta:</strong> {consignmentService.formatCurrency(selectedConsignment.final_sale_price)}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Motivo de devolución (opcional)
+                </label>
+                <textarea
+                  placeholder="Ej: Cliente solicitó devolución, producto no vendido en 90 días..."
+                  value={returnNotes}
+                  onChange={(e) => setReturnNotes(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+              <button
+                onClick={() => setShowReturnModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmReturn}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+              >
+                Confirmar Devolución
               </button>
             </div>
           </div>

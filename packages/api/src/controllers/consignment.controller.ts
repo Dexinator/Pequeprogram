@@ -84,9 +84,34 @@ export const markConsignmentAsPaid = asyncHandler(async (req: Request, res: Resp
 // GET /api/consignments/stats
 export const getConsignmentStats = asyncHandler(async (req: Request, res: Response) => {
   const stats = await consignmentService.getConsignmentStats();
-  
+
   res.json({
     success: true,
     data: stats
+  });
+});
+
+// PUT /api/consignments/:id/returned
+export const markConsignmentAsReturned = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { notes } = req.body;
+
+  const consignment = await consignmentService.markAsReturned(
+    parseInt(id),
+    notes
+  );
+
+  if (!consignment) {
+    res.status(404).json({
+      success: false,
+      message: 'Producto en consignación no encontrado o no está disponible para devolución'
+    });
+    return;
+  }
+
+  res.json({
+    success: true,
+    data: consignment,
+    message: 'Consignación marcada como devuelta exitosamente'
   });
 });

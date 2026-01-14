@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { AuthProvider, useAuth } from '../../context/AuthContext';
 import { appointmentService } from '../../services/appointment.service';
+import OptionalAuthGuard from '../auth/OptionalAuthGuard';
+import { EMPLOYEE_ROLES } from '../../config/routes.config';
 
-const AppointmentAdmin = () => {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+// Componente interno con el contenido
+const AppointmentAdminContent = () => {
   const [activeTab, setActiveTab] = useState('appointments');
   const [appointments, setAppointments] = useState([]);
   const [subcategories, setSubcategories] = useState([]);

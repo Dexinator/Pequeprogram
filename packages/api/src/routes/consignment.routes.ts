@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { protect, authorize } from '../utils/auth.middleware';
-import { getAllConsignments, getConsignmentById, markConsignmentAsPaid, getConsignmentStats } from '../controllers/consignment.controller';
+import { getAllConsignments, getConsignmentById, markConsignmentAsPaid, markConsignmentAsReturned, getConsignmentStats } from '../controllers/consignment.controller';
 
 const router = Router();
 
@@ -18,5 +18,8 @@ router.get('/:id', authorize(['admin', 'manager', 'valuator', 'sales']), getCons
 
 // PUT /api/consignments/:id/paid - Marcar consignación como pagada
 router.put('/:id/paid', authorize(['admin', 'manager']), markConsignmentAsPaid);
+
+// PUT /api/consignments/:id/returned - Marcar consignación como devuelta
+router.put('/:id/returned', authorize(['admin', 'manager']), markConsignmentAsReturned);
 
 export default router;
