@@ -123,7 +123,15 @@ class ProductsService {
 
     try {
       const response = await this.http.get<any>('/categories');
-      return response || [];
+      // La respuesta viene como {success: true, data: [...]}
+      if (response && response.data && Array.isArray(response.data)) {
+        return response.data;
+      }
+      // Fallback si viene como array directo
+      if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
     } catch (error) {
       console.error('Error al obtener categorías:', error);
       return [];
@@ -136,7 +144,15 @@ class ProductsService {
 
     try {
       const response = await this.http.get<any>(`/categories/${categoryId}/subcategories`);
-      return response || [];
+      // La respuesta viene como {success: true, data: [...]} o array directo
+      if (response && response.data && Array.isArray(response.data)) {
+        return response.data;
+      }
+      // Fallback si viene como array directo
+      if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
     } catch (error) {
       console.error('Error al obtener subcategorías:', error);
       return [];

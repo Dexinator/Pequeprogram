@@ -20,11 +20,10 @@ const AppointmentAdminContent = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
+  // El OptionalAuthGuard ya verificó la autenticación antes de renderizar este componente
   useEffect(() => {
-    if (isAuthenticated) {
-      loadData();
-    }
-  }, [isAuthenticated, activeTab]);
+    loadData();
+  }, [activeTab]);
 
   const loadData = async () => {
     setLoading(true);
@@ -129,33 +128,6 @@ const AppointmentAdminContent = () => {
       </span>
     );
   };
-
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-          Acceso Restringido
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-4">
-          Debes iniciar sesion para acceder a esta pagina.
-        </p>
-        <a
-          href="/login"
-          className="inline-block px-6 py-3 bg-pink-500 text-white rounded-lg font-semibold hover:bg-pink-600"
-        >
-          Iniciar Sesion
-        </a>
-      </div>
-    );
-  }
 
   // Group subcategories by category
   const groupedSubcategories = subcategories.reduce((acc, sub) => {
@@ -514,6 +486,24 @@ const AppointmentAdminContent = () => {
         </div>
       )}
     </div>
+  );
+};
+
+// Componente con guardia de autenticación
+const AppointmentAdminWithAuth = () => {
+  return (
+    <OptionalAuthGuard requireAuth={true} allowedRoles={EMPLOYEE_ROLES}>
+      <AppointmentAdminContent />
+    </OptionalAuthGuard>
+  );
+};
+
+// Componente principal que incluye el provider
+const AppointmentAdmin = () => {
+  return (
+    <AuthProvider>
+      <AppointmentAdminWithAuth />
+    </AuthProvider>
   );
 };
 
