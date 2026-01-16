@@ -40,10 +40,10 @@ const ProductCard = ({ product, onPrepare, onEditNotes }) => {
       )}
 
       {/* Notas del producto */}
-      {product.notes && (
+      {product.online_notes && (
         <div className="mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-sm">
           <p className="text-yellow-800 dark:text-yellow-200 font-medium text-xs mb-1">Notas:</p>
-          <p className="text-yellow-700 dark:text-yellow-300 text-xs">{product.notes}</p>
+          <p className="text-yellow-700 dark:text-yellow-300 text-xs">{product.online_notes}</p>
         </div>
       )}
 
@@ -53,7 +53,7 @@ const ProductCard = ({ product, onPrepare, onEditNotes }) => {
           className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded py-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
           title="Agregar o editar notas"
         >
-          {product.notes ? '✏️ Editar nota' : '📝 Agregar nota'}
+          {product.online_notes ? '✏️ Editar nota' : '📝 Agregar nota'}
         </button>
         <button
           onClick={() => onPrepare(product)}
@@ -318,7 +318,7 @@ const PreparationModal = ({ product, onClose, onSave }) => {
 
 // Modal para editar notas
 const NotesModal = ({ product, onClose, onSave }) => {
-  const [notes, setNotes] = useState(product.notes || '');
+  const [notes, setNotes] = useState(product.online_notes || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -340,7 +340,7 @@ const NotesModal = ({ product, onClose, onSave }) => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg">
         <div className="p-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            {product.notes ? 'Editar notas' : 'Agregar notas'}
+            {product.online_notes ? 'Editar notas' : 'Agregar notas'}
           </h2>
 
           {/* Información del producto */}

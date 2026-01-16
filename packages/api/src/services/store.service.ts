@@ -41,7 +41,7 @@ export class StoreService {
       
       // Build query with filters
       let query = `
-        SELECT 
+        SELECT
           vi.id,
           vi.category_id,
           vi.subcategory_id,
@@ -51,6 +51,7 @@ export class StoreService {
           vi.features,
           vi.final_sale_price,
           vi.images,
+          vi.online_notes,
           c.name as category_name,
           s.name as subcategory_name,
           s.sku as subcategory_sku,
@@ -132,6 +133,7 @@ export class StoreService {
           vi.online_price,
           vi.weight_grams,
           vi.images,
+          vi.online_notes,
           c.name as category_name,
           s.name as subcategory_name,
           b.name as brand_name,
@@ -357,6 +359,7 @@ export class StoreService {
           vi.online_price,
           vi.weight_grams,
           vi.images,
+          vi.online_notes,
           c.name as category_name,
           s.name as subcategory_name,
           b.name as brand_name,
@@ -1250,8 +1253,8 @@ export class StoreService {
     }
   }
 
-  // Update product notes
-  async updateProductNotes(inventoryId: string, notes: string) {
+  // Update product online notes (public notes for online store)
+  async updateProductNotes(inventoryId: string, onlineNotes: string) {
     let dbClient: PoolClient | undefined;
     try {
       dbClient = await pool.connect();
@@ -1270,15 +1273,15 @@ export class StoreService {
 
       const valuationItemId = inventoryResult.rows[0].valuation_item_id;
 
-      // Update notes
+      // Update online_notes (public notes for customers)
       const updateQuery = `
         UPDATE valuation_items
-        SET notes = $1, updated_at = NOW()
+        SET online_notes = $1, updated_at = NOW()
         WHERE id = $2
-        RETURNING id, notes
+        RETURNING id, online_notes
       `;
 
-      const updateResult = await dbClient.query(updateQuery, [notes, valuationItemId]);
+      const updateResult = await dbClient.query(updateQuery, [onlineNotes, valuationItemId]);
 
       return updateResult.rows[0];
     } catch (error) {
