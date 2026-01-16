@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import LoginContainer from './LoginContainer';
 
@@ -6,15 +6,30 @@ import LoginContainer from './LoginContainer';
  * Componente de guardia de autenticación opcional para la tienda
  * Permite rutas públicas por defecto, con opción de requerir autenticación
  */
-const OptionalAuthGuard = ({ 
-  children, 
-  requireAuth = false, 
+const OptionalAuthGuard = ({
+  children,
+  requireAuth = false,
   allowedRoles = [],
   fallbackComponent = null,
-  showLoginModal = false 
+  showLoginModal = false
 }) => {
   const { isAuthenticated, isLoading, user, hasRole } = useAuth();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   console.log('🔍 OptionalAuthGuard - Estado:', { isAuthenticated, isLoading, requireAuth, user: user?.username });
+
+  // Manejar redirect en useEffect para evitar problemas de timing
+  useEffect(() => {
+    if (!isLoading && requireAuth && !isAuthenticated && !showLoginModal && !fallbackComponent) {
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        console.log('🔄 OptionalAuthGuard - Redirigiendo a login...');
+        setIsRedirecting(true);
+        const currentPath = window.location.pathname;
+        const loginUrl = `/login?return=${encodeURIComponent(currentPath)}`;
+        window.location.href = loginUrl;
+      }
+    }
+  }, [isLoading, requireAuth, isAuthenticated, showLoginModal, fallbackComponent]);
 
   // Mostrar spinner mientras se verifica la autenticación
   if (isLoading) {
@@ -49,18 +64,7 @@ const OptionalAuthGuard = ({
       return fallbackComponent;
     }
 
-    // Componente por defecto para rutas protegidas
-    // Redirigir a login con URL de retorno
-    if (typeof window !== 'undefined') {
-      const currentPath = window.location.pathname;
-      const loginUrl = `/login?return=${encodeURIComponent(currentPath)}`;
-
-      // Solo redirigir si no estamos ya en la página de login
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = loginUrl;
-      }
-    }
-
+    // Mostrar spinner mientras se procesa el redirect (manejado por useEffect)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div>
