@@ -317,6 +317,24 @@ export class StoreService {
       throw error;
     }
   }
+
+  // Actualizar notas de un producto
+  async updateProductNotes(inventoryId: string, notes: string): Promise<any> {
+    try {
+      console.log('Actualizando notas del producto:', inventoryId);
+
+      // Verificar token antes de la petición
+      this.initializeAuth();
+
+      const response = await this.http.put(`/store/products/${inventoryId}/notes`, { notes });
+
+      console.log('Notas actualizadas:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Error al actualizar notas:', error);
+      throw error;
+    }
+  }
 }
 
 // Exportar instancia por defecto

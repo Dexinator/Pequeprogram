@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from '../../context/AuthContext';
+import { AuthProvider } from '../../context/AuthContext';
 import { appointmentService } from '../../services/appointment.service';
 import OptionalAuthGuard from '../auth/OptionalAuthGuard';
 import { EMPLOYEE_ROLES } from '../../config/routes.config';

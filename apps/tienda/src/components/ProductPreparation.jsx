@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import { storeService } from '../services/store.service';
+import { categoryService } from '../services/api.js';
 import OptionalAuthGuard from './auth/OptionalAuthGuard';
 import { EMPLOYEE_ROLES } from '../config/routes.config';
 
 // Componente de tarjeta de producto pendiente
-const ProductCard = ({ product, onPrepare }) => {
+const ProductCard = ({ product, onPrepare, onEditNotes }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-4">
       <div className="flex justify-between items-start mb-2">
         <div>
           <p className="text-sm text-gray-500">{product.inventory_id}</p>
-          <h3 className="font-semibold text-gray-900">{product.subcategory_name}</h3>
-          <p className="text-sm text-gray-600">{product.brand_name}</p>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{product.subcategory_name}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{product.brand_name}</p>
         </div>
         <span className={`px-2 py-1 text-xs rounded ${
           product.condition_state === 'excelente' ? 'bg-green-100 text-green-800' :
@@ -23,27 +24,44 @@ const ProductCard = ({ product, onPrepare }) => {
           {product.condition_state}
         </span>
       </div>
-      
-      <div className="text-sm text-gray-600 mb-3">
+
+      <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
         <p>Precio sugerido: ${product.final_sale_price}</p>
         <p>Stock: {product.quantity} piezas</p>
         <p>Ubicación: {product.location}</p>
       </div>
 
       {product.features && Object.keys(product.features).length > 0 && (
-        <div className="mb-3 text-xs text-gray-500">
+        <div className="mb-3 text-xs text-gray-500 dark:text-gray-400">
           {Object.entries(product.features).slice(0, 3).map(([key, value]) => (
             <p key={key}>{key}: {value}</p>
           ))}
         </div>
       )}
 
-      <button
-        onClick={() => onPrepare(product)}
-        className="w-full bg-pink-600 text-white rounded py-2 hover:bg-pink-700 transition-colors"
-      >
-        Preparar para tienda
-      </button>
+      {/* Notas del producto */}
+      {product.notes && (
+        <div className="mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-sm">
+          <p className="text-yellow-800 dark:text-yellow-200 font-medium text-xs mb-1">Notas:</p>
+          <p className="text-yellow-700 dark:text-yellow-300 text-xs">{product.notes}</p>
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => onEditNotes(product)}
+          className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded py-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+          title="Agregar o editar notas"
+        >
+          {product.notes ? '✏️ Editar nota' : '📝 Agregar nota'}
+        </button>
+        <button
+          onClick={() => onPrepare(product)}
+          className="flex-1 bg-pink-600 text-white rounded py-2 hover:bg-pink-700 transition-colors"
+        >
+          Preparar
+        </button>
+      </div>
     </div>
   );
 };
@@ -298,15 +316,99 @@ const PreparationModal = ({ product, onClose, onSave }) => {
   );
 };
 
+// Modal para editar notas
+const NotesModal = ({ product, onClose, onSave }) => {
+  const [notes, setNotes] = useState(product.notes || '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await storeService.updateProductNotes(product.inventory_id, notes);
+      onSave();
+    } catch (err) {
+      setError(err.message || 'Error al guardar las notas');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg">
+        <div className="p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            {product.notes ? 'Editar notas' : 'Agregar notas'}
+          </h2>
+
+          {/* Información del producto */}
+          <div className="bg-gray-50 dark:bg-gray-700 rounded p-3 mb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">SKU: {product.inventory_id}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{product.subcategory_name}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{product.brand_name}</p>
+          </div>
+
+          {error && (
+            <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+
+          {/* Campo de notas */}
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+              Notas del producto
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"
+              rows={4}
+              placeholder="Escribe notas sobre el producto (ej: detalles de daños, accesorios incluidos, etc.)"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Las notas son visibles internamente para el equipo
+            </p>
+          </div>
+
+          {/* Botones */}
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              disabled={saving}
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Guardando...' : 'Guardar notas'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Componente principal
 const ProductPreparationContent = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [notesProduct, setNotesProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [filters, setFilters] = useState({
     location: '',
     category_id: '',
+    subcategory_id: '',
     page: 1,
     limit: 12
   });
@@ -315,12 +417,44 @@ const ProductPreparationContent = () => {
     totalPages: 0
   });
 
+  // Cargar categorías al montar el componente
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Cargar subcategorías cuando cambia la categoría
+  useEffect(() => {
+    if (filters.category_id) {
+      loadSubcategories(filters.category_id);
+    } else {
+      setSubcategories([]);
+    }
+  }, [filters.category_id]);
+
   // Cargar datos cuando el componente se monta o los filtros cambian
   // El OptionalAuthGuard ya verificó la autenticación antes de renderizar este componente
   useEffect(() => {
     loadProducts();
     loadStats();
   }, [filters]);
+
+  const loadCategories = async () => {
+    try {
+      const data = await categoryService.getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+    }
+  };
+
+  const loadSubcategories = async (categoryId) => {
+    try {
+      const data = await categoryService.getSubcategories(categoryId);
+      setSubcategories(data);
+    } catch (error) {
+      console.error('Error al cargar subcategorías:', error);
+    }
+  };
 
   const loadProducts = async () => {
     try {
@@ -348,6 +482,20 @@ const ProductPreparationContent = () => {
     setSelectedProduct(null);
     loadProducts();
     loadStats();
+  };
+
+  const handleNotesSaved = () => {
+    setNotesProduct(null);
+    loadProducts();
+  };
+
+  const handleCategoryChange = (categoryId) => {
+    setFilters({
+      ...filters,
+      category_id: categoryId,
+      subcategory_id: '', // Reset subcategory when category changes
+      page: 1
+    });
   };
 
   const formatCurrency = (amount) => {
@@ -392,15 +540,51 @@ const ProductPreparationContent = () => {
       {/* Filtros */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
         <div className="flex flex-wrap gap-4">
+          {/* Filtro de ubicación */}
           <select
             value={filters.location}
             onChange={(e) => setFilters({...filters, location: e.target.value, page: 1})}
-            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="">Todas las ubicaciones</option>
             <option value="Polanco">Polanco</option>
             <option value="Satélite">Satélite</option>
           </select>
+
+          {/* Filtro de categoría */}
+          <select
+            value={filters.category_id}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">Todas las categorías</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+
+          {/* Filtro de subcategoría */}
+          <select
+            value={filters.subcategory_id}
+            onChange={(e) => setFilters({...filters, subcategory_id: e.target.value, page: 1})}
+            disabled={!filters.category_id}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="">Todas las subcategorías</option>
+            {subcategories.map(subcat => (
+              <option key={subcat.id} value={subcat.id}>{subcat.name}</option>
+            ))}
+          </select>
+
+          {/* Botón para limpiar filtros */}
+          {(filters.location || filters.category_id || filters.subcategory_id) && (
+            <button
+              onClick={() => setFilters({ location: '', category_id: '', subcategory_id: '', page: 1, limit: 12 })}
+              className="px-3 py-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors text-sm font-medium"
+            >
+              Limpiar filtros
+            </button>
+          )}
         </div>
       </div>
 
@@ -421,6 +605,7 @@ const ProductPreparationContent = () => {
                 key={product.inventory_id}
                 product={product}
                 onPrepare={setSelectedProduct}
+                onEditNotes={setNotesProduct}
               />
             ))}
           </div>
@@ -452,6 +637,15 @@ const ProductPreparationContent = () => {
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
           onSave={handleProductSaved}
+        />
+      )}
+
+      {/* Modal de notas */}
+      {notesProduct && (
+        <NotesModal
+          product={notesProduct}
+          onClose={() => setNotesProduct(null)}
+          onSave={handleNotesSaved}
         />
       )}
     </div>
