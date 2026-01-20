@@ -53,7 +53,7 @@ export const appointmentService = {
 
   // Get appointments with filters (requires auth)
   async getAppointmentsAdmin(params = {}) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     const queryString = new URLSearchParams(params).toString();
     return fetchApi(`/appointments/admin${queryString ? `?${queryString}` : ''}`, {
       headers: {
@@ -64,7 +64,7 @@ export const appointmentService = {
 
   // Get appointment stats (requires auth)
   async getAppointmentStats() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     return fetchApi('/appointments/admin/stats', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -74,7 +74,7 @@ export const appointmentService = {
 
   // Get appointment details (requires auth)
   async getAppointmentDetail(id) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     return fetchApi(`/appointments/admin/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -84,7 +84,7 @@ export const appointmentService = {
 
   // Cancel appointment (requires auth)
   async cancelAppointment(id, reason) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     return fetchApi(`/appointments/admin/${id}/cancel`, {
       method: 'PUT',
       headers: {
@@ -96,7 +96,7 @@ export const appointmentService = {
 
   // Update appointment status (requires auth)
   async updateAppointmentStatus(id, status, notes) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     return fetchApi(`/appointments/admin/${id}/status`, {
       method: 'PUT',
       headers: {
@@ -108,7 +108,7 @@ export const appointmentService = {
 
   // Get subcategories for admin (requires auth)
   async getSubcategoriesAdmin() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     return fetchApi('/appointments/admin/subcategories', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -118,7 +118,7 @@ export const appointmentService = {
 
   // Toggle subcategory purchasing status (requires auth)
   async toggleSubcategoryPurchasing(id) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('entrepeques_auth_token');
     return fetchApi(`/appointments/admin/subcategories/${id}/toggle`, {
       method: 'PUT',
       headers: {
