@@ -11,7 +11,7 @@ const LoginPageContent = () => {
       // Verificar si hay una URL de retorno
       const urlParams = new URLSearchParams(window.location.search);
       const returnUrl = urlParams.get('return') || '/';
-      
+
       // Redirigir según el tipo de usuario
       if (user.role?.name === 'customer') {
         window.location.href = returnUrl;
