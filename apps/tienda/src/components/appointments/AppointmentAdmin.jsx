@@ -19,11 +19,44 @@ const AppointmentAdminContent = () => {
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [adminNote, setAdminNote] = useState('');
+  const [editingNote, setEditingNote] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
 
   // El OptionalAuthGuard ya verificó la autenticación antes de renderizar este componente
   useEffect(() => {
     loadData();
+    loadAdminNote();
   }, [activeTab]);
+
+  const loadAdminNote = async () => {
+    try {
+      const note = await appointmentService.getAdminNote();
+      setAdminNote(note);
+      setNoteText(note);
+    } catch (err) {
+      console.error('Error loading admin note:', err);
+    }
+  };
+
+  const handleSaveNote = async () => {
+    setSavingNote(true);
+    try {
+      await appointmentService.updateAdminNote(noteText);
+      setAdminNote(noteText);
+      setEditingNote(false);
+    } catch (err) {
+      alert('Error al guardar la nota');
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
+  const handleCancelNoteEdit = () => {
+    setNoteText(adminNote);
+    setEditingNote(false);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -142,6 +175,65 @@ const AppointmentAdminContent = () => {
       <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
         Administrar Citas
       </h1>
+
+      {/* Admin note section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-gray-800 dark:text-white flex items-center">
+            <svg className="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Nota para clientes
+          </h3>
+          {!editingNote && (
+            <button
+              onClick={() => setEditingNote(true)}
+              className="text-sm text-pink-500 hover:text-pink-600 font-medium"
+            >
+              Editar nota
+            </button>
+          )}
+        </div>
+
+        {editingNote ? (
+          <div className="space-y-3">
+            <textarea
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder="Escribe una nota que aparecera en la pagina de citas para los clientes..."
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+              rows={3}
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={handleCancelNoteEdit}
+                disabled={savingNote}
+                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveNote}
+                disabled={savingNote}
+                className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:opacity-50"
+              >
+                {savingNote ? 'Guardando...' : 'Guardar nota'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-gray-600 dark:text-gray-300">
+            {adminNote ? (
+              <p className="whitespace-pre-wrap">{adminNote}</p>
+            ) : (
+              <p className="text-gray-400 italic">No hay nota configurada. Haz clic en "Editar nota" para agregar una.</p>
+            )}
+          </div>
+        )}
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          Esta nota aparecera visible para todos los clientes en la pagina de agendar citas.
+        </p>
+      </div>
 
       {/* Stats cards */}
       {stats && activeTab === 'appointments' && (

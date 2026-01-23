@@ -295,3 +295,36 @@ export const getSubcategoriesAdmin = asyncHandler(async (req: Request, res: Resp
     data: subcategories
   });
 });
+
+// @desc    Get admin note for public display
+// @route   GET /api/appointments/admin-note
+// @access  Public
+export const getAdminNote = asyncHandler(async (req: Request, res: Response) => {
+  const note = await appointmentService.getAdminNote();
+
+  res.json({
+    success: true,
+    data: { note }
+  });
+});
+
+// @desc    Update admin note
+// @route   PUT /api/appointments/admin/note
+// @access  Private (any employee role)
+export const updateAdminNote = asyncHandler(async (req: Request, res: Response) => {
+  const { note } = req.body;
+  const userId = (req as any).user?.id;
+
+  if (typeof note !== 'string') {
+    res.status(400);
+    throw new Error('La nota debe ser un texto');
+  }
+
+  const result = await appointmentService.updateAdminNote(note, userId);
+
+  res.json({
+    success: true,
+    message: 'Nota actualizada exitosamente',
+    data: result
+  });
+});

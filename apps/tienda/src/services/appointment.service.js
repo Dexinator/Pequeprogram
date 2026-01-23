@@ -125,5 +125,23 @@ export const appointmentService = {
         Authorization: `Bearer ${token}`
       }
     });
+  },
+
+  // Get admin note (public)
+  async getAdminNote() {
+    const response = await fetchApi('/appointments/admin-note');
+    return response.data?.note || '';
+  },
+
+  // Update admin note (requires auth)
+  async updateAdminNote(note) {
+    const token = localStorage.getItem('entrepeques_auth_token');
+    return fetchApi('/appointments/admin/note', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ note })
+    });
   }
 };

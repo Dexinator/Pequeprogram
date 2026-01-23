@@ -675,6 +675,45 @@ export class AppointmentService {
       throw new Error('Error al obtener estadísticas');
     }
   }
+
+  // Get admin note for public display
+  async getAdminNote(): Promise<string> {
+    const query = `
+      SELECT setting_value
+      FROM appointment_settings
+      WHERE setting_key = 'admin_note'
+    `;
+
+    try {
+      const result = await pool.query(query);
+      return result.rows[0]?.setting_value || '';
+    } catch (error) {
+      console.error('Error fetching admin note:', error);
+      return '';
+    }
+  }
+
+  // Update admin note (admin only)
+  async updateAdminNote(note: string, userId: number): Promise<{ success: boolean; note: string }> {
+    const query = `
+      INSERT INTO appointment_settings (setting_key, setting_value, updated_by, updated_at)
+      VALUES ('admin_note', $1, $2, NOW())
+      ON CONFLICT (setting_key) DO UPDATE
+      SET setting_value = $1, updated_by = $2, updated_at = NOW()
+      RETURNING setting_value
+    `;
+
+    try {
+      const result = await pool.query(query, [note, userId]);
+      return {
+        success: true,
+        note: result.rows[0].setting_value
+      };
+    } catch (error) {
+      console.error('Error updating admin note:', error);
+      throw new Error('Error al actualizar la nota');
+    }
+  }
 }
 
 export const appointmentService = new AppointmentService();

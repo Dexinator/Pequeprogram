@@ -12,7 +12,9 @@ import {
   cancelAppointment,
   updateAppointmentStatus,
   toggleSubcategoryPurchasing,
-  getSubcategoriesAdmin
+  getSubcategoriesAdmin,
+  getAdminNote,
+  updateAdminNote
 } from '../controllers/appointment.controller';
 
 const router = express.Router();
@@ -34,6 +36,9 @@ router.get('/clients/search', searchClientsByPhone);
 
 // Create new appointment
 router.post('/', createAppointment);
+
+// Get admin note (public)
+router.get('/admin-note', getAdminNote);
 
 // ===== ADMIN ROUTES =====
 // All admin routes require authentication and any employee role
@@ -70,6 +75,14 @@ router.put(
   protect,
   authorize(employeeRoles),
   toggleSubcategoryPurchasing
+);
+
+// Update admin note (must be before /admin/:id to avoid conflict)
+router.put(
+  '/admin/note',
+  protect,
+  authorize(employeeRoles),
+  updateAdminNote
 );
 
 // Get single appointment details

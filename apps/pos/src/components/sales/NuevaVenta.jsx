@@ -23,6 +23,15 @@ export default function NuevaVenta() {
   // Calcular total del carrito
   const cartTotal = cart.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
 
+  // Validar que los pagos mixtos coincidan con el total
+  const isPaymentValid = () => {
+    if (paymentMethod !== 'mixto') return true;
+    if (paymentDetails.length === 0) return false;
+
+    const paymentSum = paymentDetails.reduce((sum, p) => sum + (p.amount || 0), 0);
+    return Math.abs(paymentSum - cartTotal) <= 0.01;
+  };
+
   // Manejar siguiente paso
   const handleNextStep = () => {
     if (currentStep < 4) {
@@ -232,7 +241,7 @@ export default function NuevaVenta() {
             onClick={handleNextStep}
             disabled={
               (currentStep === 1 && cart.length === 0) ||
-              (currentStep === 3 && paymentMethod === 'mixto' && paymentDetails.length === 0)
+              (currentStep === 3 && !isPaymentValid())
             }
             className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >

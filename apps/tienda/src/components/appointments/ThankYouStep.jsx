@@ -136,8 +136,19 @@ const ThankYouStep = ({ appointment }) => {
                 Recibe tu valuacion
               </p>
               <p className="text-sm text-blue-600 dark:text-blue-300">
-                Te haremos una oferta por tus articulos
+                Haremos una oferta por los articulos que seleccionemos.
               </p>
+              <div className="mt-2 text-sm text-blue-600 dark:text-blue-300">
+                <p className="font-medium mb-1">Nuestras formas de pago son:</p>
+                <ol className="list-decimal list-inside space-y-1 ml-1">
+                  <li>Efectivo</li>
+                  <li>Un 20% extra al efectivo en credito para comprar en la tienda</li>
+                  <li>Consignacion (se paga al venderse)</li>
+                </ol>
+                <p className="mt-1 text-xs opacity-80">
+                  Se elige segun las necesidades del cliente y de la tienda.
+                </p>
+              </div>
             </div>
           </div>
         </div>

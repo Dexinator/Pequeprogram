@@ -301,18 +301,6 @@ export const categoryGroupsComplete = {
         icon: 'playground',
         slug: 'juegos-grandes',
         subcategoryId: 57 // ID de Juegos grandes
-      },
-      {
-        name: 'Sobre Ruedas',
-        type: 'grouped',
-        icon: 'bicycle',
-        slug: 'sobre-ruedas-jugar',
-        subcategoryIds: [56, 54, 55], // IDs en A jugar: Sobre ruedas, Montables de exterior, Triciclos y bicicletas
-        subcategories: [
-          'Sobre ruedas',
-          'Montables de exterior',
-          'Triciclos y bicicletas'
-        ]
       }
     ]
   }

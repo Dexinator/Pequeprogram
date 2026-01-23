@@ -25,17 +25,22 @@ const AppointmentWizard = () => {
   const [validationResult, setValidationResult] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [createdAppointment, setCreatedAppointment] = useState(null);
+  const [adminNote, setAdminNote] = useState('');
 
   useEffect(() => {
-    loadSubcategories();
+    loadInitialData();
   }, []);
 
-  const loadSubcategories = async () => {
+  const loadInitialData = async () => {
     try {
-      const data = await appointmentService.getSubcategories();
-      setSubcategories(data);
+      const [subcatData, note] = await Promise.all([
+        appointmentService.getSubcategories(),
+        appointmentService.getAdminNote()
+      ]);
+      setSubcategories(subcatData);
+      setAdminNote(note);
     } catch (err) {
-      setError('Error al cargar subcategorias');
+      setError('Error al cargar datos');
     } finally {
       setLoading(false);
     }
@@ -196,6 +201,18 @@ const AppointmentWizard = () => {
           Valuamos tus articulos infantiles usados en excelente estado
         </p>
       </div>
+
+      {/* Admin note banner */}
+      {adminNote && currentStep < 3 && (
+        <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-yellow-800 dark:text-yellow-200 whitespace-pre-wrap">{adminNote}</p>
+          </div>
+        </div>
+      )}
 
       {/* Progress indicator */}
       {currentStep < 3 && (
