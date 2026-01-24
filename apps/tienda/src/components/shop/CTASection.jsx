@@ -24,14 +24,13 @@ function CTASection() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-          {/* TODO: Restaurar enlace a https://citas.entrepeques.mx/ cuando esté listo */}
-          <button
-            onClick={() => setIsVideoModalOpen(true)}
+          <a
+            href="/citas"
             className="inline-flex items-center justify-center px-8 py-4 bg-brand-rosa hover:bg-brand-rosa-dark text-white font-heading font-semibold rounded-lg shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all"
           >
             <span className="mr-2">🚀</span>
             Quiero vender ahora
-          </button>
+          </a>
           <button
             onClick={() => setIsVideoModalOpen(true)}
             className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-rosa text-brand-rosa hover:bg-brand-rosa hover:text-white font-heading font-semibold rounded-lg transition-all"
