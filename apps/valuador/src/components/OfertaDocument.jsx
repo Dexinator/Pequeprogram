@@ -28,8 +28,8 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
   };
 
   const formatCurrency = (value) => {
-    if (value === null || value === undefined || isNaN(value)) return '$0.00';
-    return `$${parseFloat(value).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (value === null || value === undefined || isNaN(value)) return '$0';
+    return `$${Math.round(parseFloat(value)).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   // Obtener precio base (efectivo)
@@ -89,26 +89,25 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
   const getFinalPurchasePrice = (product) => {
     const editedPrice = editedPrices[product.id];
     const finalModality = editedModalities[product.id] || product.modality;
-    
-    // Si hay precio editado manualmente, usarlo
-    if (editedPrice?.purchase !== undefined) {
-      const numericPrice = Number(editedPrice.purchase);
-      return isNaN(numericPrice) ? 0 : numericPrice;
-    }
-    
-    // Si no hay precio editado, calcular según modalidad
-    const basePrice = product.suggested_purchase_price || 0;
+
+    // Obtener precio base: editado manualmente o sugerido
+    const basePrice = editedPrice?.purchase !== undefined
+      ? Number(editedPrice.purchase)
+      : Number(product.suggested_purchase_price || 0);
+
     let finalPrice = basePrice;
-    
+
+    // Aplicar modificador según modalidad
     if (finalModality === 'crédito en tienda') {
       finalPrice = basePrice * 1.2; // 20% más que compra directa
     } else if (finalModality === 'consignación') {
-      finalPrice = basePrice * 1.2; // 20% más que compra directa (mismo porcentaje)
+      // Para consignación, el editedPrice ya contiene el precio correcto
+      // (el precio de venta sugerido que se establece en handleModalityChange)
+      finalPrice = basePrice;
     }
-    // Para 'compra directa' usar precio base
-    
-    const numericPrice = Number(finalPrice);
-    return isNaN(numericPrice) ? 0 : numericPrice;
+    // Para 'compra directa' usar precio base sin modificar
+
+    return isNaN(finalPrice) ? 0 : finalPrice;
   };
 
   const currentDate = new Date().toLocaleDateString('es-MX', {

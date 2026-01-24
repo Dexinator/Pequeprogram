@@ -36,7 +36,8 @@ export const ROUTE_CONFIG = {
     '/gestion-productos',
     '/reportes-tienda',
     '/gestionar-pedidos',
-    '/actualizar-inventario'
+    '/actualizar-inventario',
+    '/citas/admin'
   ],
   
   // Rutas de administrador

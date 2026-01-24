@@ -15,6 +15,7 @@ import clothingRoutes from './clothing.routes';
 import storeRoutes from './store.routes';
 import onlinePaymentRoutes from './onlinePayment.routes';
 import shippingRoutes from './shipping.routes';
+import appointmentRoutes from './appointment.routes';
 
 const router = Router();
 
@@ -65,5 +66,8 @@ router.use('/online-payments', onlinePaymentRoutes);
 
 // Rutas de envíos
 router.use('/shipping', shippingRoutes);
+
+// Rutas de citas
+router.use('/appointments', appointmentRoutes);
 
 export default router;

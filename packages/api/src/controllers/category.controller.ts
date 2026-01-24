@@ -200,18 +200,24 @@ export class CategoryController {
       const client = await pool.connect();
       try {
         const result = await client.query(`
-          SELECT * FROM subcategories 
+          SELECT * FROM subcategories
           WHERE category_id = $1 AND is_active = true
           ORDER BY name
         `, [categoryId]);
-        
-        res.json(result.rows);
+
+        res.status(200).json({
+          success: true,
+          data: result.rows
+        });
       } finally {
         client.release();
       }
     } catch (error: any) {
       console.error('Error al obtener subcategorías:', error);
-      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Error al procesar la solicitud'
+      });
     }
   }
 
@@ -227,14 +233,20 @@ export class CategoryController {
           WHERE s.is_active = true
           ORDER BY c.name, s.name
         `);
-        
-        res.json(result.rows);
+
+        res.status(200).json({
+          success: true,
+          data: result.rows
+        });
       } finally {
         client.release();
       }
     } catch (error: any) {
       console.error('Error al obtener subcategorías:', error);
-      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Error al procesar la solicitud'
+      });
     }
   }
 

@@ -18,5 +18,5 @@ export default defineConfig({
   },
   output: 'server',
   adapter: adapter,
-  site: 'https://tienda.entrepeques.com'
+  site: 'https://entrepeques.mx'
 });

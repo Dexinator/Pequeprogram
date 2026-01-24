@@ -315,19 +315,19 @@ const ClothingBulkForm = ({ subcategoryId, categoryGroup, onAddProducts, onCance
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Compra Total</p>
-                  <p className="text-xl font-semibold">${totalPrices.purchase.toFixed(2)}</p>
+                  <p className="text-xl font-semibold">${totalPrices.purchase.toFixed(0)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Venta Total</p>
-                  <p className="text-xl font-semibold">${totalPrices.sale.toFixed(2)}</p>
+                  <p className="text-xl font-semibold">${totalPrices.sale.toFixed(0)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Crédito en Tienda</p>
-                  <p className="text-xl font-semibold">${totalPrices.storeCredit.toFixed(2)}</p>
+                  <p className="text-xl font-semibold">${totalPrices.storeCredit.toFixed(0)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Consignación</p>
-                  <p className="text-xl font-semibold">${totalPrices.consignment.toFixed(2)}</p>
+                  <p className="text-xl font-semibold">${totalPrices.consignment.toFixed(0)}</p>
                 </div>
               </div>
             </div>

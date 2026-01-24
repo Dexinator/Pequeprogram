@@ -268,10 +268,10 @@ function HistorialValuacionesContent() {
     return new Date(dateString).toLocaleDateString('es-MX');
   };
 
-  // Formatear moneda de manera segura
+  // Formatear moneda de manera segura (sin decimales)
   const formatCurrency = (value) => {
     const numValue = parseFloat(value || 0);
-    return isNaN(numValue) ? '0.00' : numValue.toFixed(2);
+    return isNaN(numValue) ? '0' : numValue.toFixed(0);
   };
 
   // Formatear estado
