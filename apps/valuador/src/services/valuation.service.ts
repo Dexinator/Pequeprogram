@@ -147,8 +147,8 @@ export class ValuationService {
   // Obtener subcategorías por categoría
   async getSubcategories(categoryId: number): Promise<Subcategory[]> {
     try {
-      const response = await this.http.get<Subcategory[]>(`/categories/${categoryId}/subcategories`);
-      return response || [];
+      const response = await this.http.get<{success: boolean, data: Subcategory[]}>(`/categories/${categoryId}/subcategories`);
+      return response.data || [];
     } catch (error) {
       console.error('Error al obtener subcategorías:', error);
       return [];
@@ -158,8 +158,8 @@ export class ValuationService {
   // Obtener todas las subcategorías
   async getAllSubcategories(): Promise<Subcategory[]> {
     try {
-      const response = await this.http.get<Subcategory[]>('/categories/subcategories');
-      return response || [];
+      const response = await this.http.get<{success: boolean, data: Subcategory[]}>('/categories/subcategories');
+      return response.data || [];
     } catch (error) {
       console.error('Error al obtener todas las subcategorías:', error);
       return [];
