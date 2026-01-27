@@ -66,8 +66,9 @@ function NuevaValuacionContent() {
     identification: ''
   });
 
-  // Estado para los productos
-  const [products, setProducts] = useState([{ id: Date.now(), data: {} }]);
+  // Estado para los productos - usar ID estable para evitar errores de hidratación
+  const [products, setProducts] = useState([{ id: 'product-initial-1', data: {} }]);
+  const [productCounter, setProductCounter] = useState(1);
 
   // Estado para el resumen
   const [showSummary, setShowSummary] = useState(false);
@@ -428,7 +429,9 @@ function NuevaValuacionContent() {
 
   // Agregar un nuevo producto
   const addProduct = () => {
-    setProducts(prev => [...prev, { id: Date.now(), data: {} }]);
+    const newId = `product-${productCounter + 1}`;
+    setProductCounter(prev => prev + 1);
+    setProducts(prev => [...prev, { id: newId, data: {} }]);
   };
 
   // Eliminar un producto
@@ -450,8 +453,9 @@ function NuevaValuacionContent() {
   // Manejar productos masivos de ropa
   const handleBulkClothingProducts = (clothingProducts) => {
     // Crear un producto para cada combinación de calidad-talla
+    const startCounter = productCounter + 1;
     const newProducts = clothingProducts.map((product, index) => ({
-      id: Date.now() + index,
+      id: `product-clothing-${startCounter + index}`,
       data: {
         ...product,
         category_id: selectedClothingCategory?.categoryId,
@@ -494,7 +498,8 @@ function NuevaValuacionContent() {
 
     // Agregar todos los productos al estado
     setProducts(prev => [...prev, ...newProducts]);
-    
+    setProductCounter(prev => prev + clothingProducts.length);
+
     // Cerrar el formulario masivo
     setShowClothingBulkForm(false);
     setSelectedClothingCategory(null);
@@ -635,8 +640,8 @@ function NuevaValuacionContent() {
       // Procesar productos de ropa (ya tienen precios calculados)
       if (clothingProducts.length > 0) {
         const clothingCalculated = clothingProducts.map((product, index) => ({
-          // Generar un ID temporal único para el producto
-          id: `clothing-${Date.now()}-${index}`,
+          // Generar un ID único basado en el producto original
+          id: product.id || `clothing-summary-${index}`,
           category_id: Number(product.data.category_id),
           subcategory_id: Number(product.data.subcategory_id),
           brand_id: null, // Ropa no usa brand_id
