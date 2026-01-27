@@ -211,11 +211,12 @@ export function ProductoForm({
   // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Extraer el nombre real del campo sin el ID del producto
-    // El formato del nombre es "campo-productoId"
-    const fieldNameParts = name.split('-');
-    const fieldName = fieldNameParts[0]; // Tomamos solo la primera parte (el nombre del campo)
+    // El formato del nombre es "campo-producto-N" (ej: "category_id-producto-0")
+    // Buscamos el patrón "-producto-" para separar correctamente
+    const separatorIndex = name.indexOf(`-${productoId}`);
+    const fieldName = separatorIndex !== -1 ? name.substring(0, separatorIndex) : name;
     
     console.log(`Campo cambiado: ${fieldName}, Valor: ${value}`);
     

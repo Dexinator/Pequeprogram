@@ -148,3 +148,7 @@ Thumbs.db
 
 pequekey.pub
 pequekey
+
+*.html
+
+logos/
