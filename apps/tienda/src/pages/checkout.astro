@@ -125,28 +125,26 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
               </div>
               
               <!-- Información de envío -->
-              <div class="border-t pt-6">
+              <div id="shipping-section" class="border-t pt-6">
                 <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Dirección de envío</h3>
                 <div class="space-y-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label for="calle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Calle y número</label>
-                      <input 
-                        type="text" 
-                        id="calle" 
-                        name="calle" 
-                        required 
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      <input
+                        type="text"
+                        id="calle"
+                        name="calle"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 shipping-required"
                       >
                     </div>
                     <div>
                       <label for="colonia" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Colonia</label>
-                      <input 
-                        type="text" 
-                        id="colonia" 
-                        name="colonia" 
-                        required 
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      <input
+                        type="text"
+                        id="colonia"
+                        name="colonia"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 shipping-required"
                       >
                     </div>
                   </div>
@@ -154,35 +152,32 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label for="codigoPostal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
-                      <input 
-                        type="text" 
-                        id="codigoPostal" 
-                        name="codigoPostal" 
-                        required 
+                      <input
+                        type="text"
+                        id="codigoPostal"
+                        name="codigoPostal"
                         maxlength="5"
                         pattern="[0-9]{5}"
                         placeholder="12345"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 shipping-required"
                       >
                     </div>
                     <div>
                       <label for="ciudad" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
-                      <input 
-                        type="text" 
-                        id="ciudad" 
-                        name="ciudad" 
-                        required 
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      <input
+                        type="text"
+                        id="ciudad"
+                        name="ciudad"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 shipping-required"
                       >
                     </div>
                     <div>
                       <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado</label>
-                      <input 
-                        type="text" 
-                        id="estado" 
-                        name="estado" 
-                        required 
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      <input
+                        type="text"
+                        id="estado"
+                        name="estado"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 shipping-required"
                       >
                     </div>
                   </div>
@@ -563,7 +558,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
 
     // Configurar el listener para cambio de método de entrega
     const deliveryMethodRadios = document.getElementsByName('delivery_method');
-    const shippingSection = document.querySelector('.border-t.pt-6'); // Sección de envío
+    const shippingSection = document.getElementById('shipping-section');
     const storePickupInfo = document.getElementById('store-pickup-info');
 
     deliveryMethodRadios.forEach(radio => {
@@ -1001,21 +996,29 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
               const ciudadElement = document.getElementById('ciudad');
               const estadoElement = document.getElementById('estado');
               const referenciasElement = document.getElementById('referencias');
-              
-              if (!emailElement || !telefonoElement || !nombreElement || !apellidoElement ||
-                  !calleElement || !coloniaElement || !codigoPostalElement || !ciudadElement || !estadoElement) {
-                alert('Por favor completa todos los campos requeridos');
-                return;
-              }
-              
+
               // Obtener método de entrega seleccionado
               const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked')?.value || 'shipping';
 
-              // Validar que se haya calculado el envío solo si es envío a domicilio
-              if (deliveryMethod === 'shipping' && (!shippingCost || shippingCost === 0)) {
-                alert('Por favor ingresa un código postal válido para calcular el envío');
-                codigoPostalElement.focus();
+              // Validar campos personales (siempre requeridos)
+              if (!emailElement?.value || !telefonoElement?.value || !nombreElement?.value || !apellidoElement?.value) {
+                alert('Por favor completa todos los datos personales');
                 return;
+              }
+
+              // Validar campos de envío solo si es envío a domicilio
+              if (deliveryMethod === 'shipping') {
+                if (!calleElement?.value || !coloniaElement?.value || !codigoPostalElement?.value || !ciudadElement?.value || !estadoElement?.value) {
+                  alert('Por favor completa todos los campos de dirección de envío');
+                  return;
+                }
+
+                // Validar que se haya calculado el envío
+                if (!shippingCost || shippingCost === 0) {
+                  alert('Por favor ingresa un código postal válido para calcular el envío');
+                  codigoPostalElement.focus();
+                  return;
+                }
               }
               
               // Deshabilitar botón
