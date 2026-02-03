@@ -161,6 +161,13 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
     idempotencyKey: req.get('x-idempotency-key') || Date.now().toString()
   };
 
+  // Generar referencia externa única para correlacionar con MercadoPago
+  const externalReference = `EP-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+
+  // URL del webhook para notificaciones de MercadoPago
+  const apiBaseUrl = process.env.API_BASE_URL || 'https://entrepeques-api-39ced1cb6398.herokuapp.com';
+  const notificationUrl = `${apiBaseUrl}/api/online-payments/webhook`;
+
   // Datos del pago con formato correcto para el monto
   const paymentData: any = {
     transaction_amount: Number(parseFloat(transaction_amount).toFixed(2)), // Asegurar formato con 2 decimales
@@ -169,6 +176,8 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
     installments: Number(installments) || 1,
     payment_method_id: req.body.payment_method_id,
     issuer_id: req.body.issuer_id,
+    external_reference: externalReference, // OBLIGATORIO: Referencia externa para conciliación
+    notification_url: notificationUrl, // OBLIGATORIO: URL del webhook
     payer: {
       email: payer?.email || "cliente@entrepeques.com",
       first_name: payer?.first_name || "Cliente",
@@ -178,6 +187,8 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
       items: items?.map((item: any) => ({
         id: item.valuation_item_id?.toString(),
         title: item.title || "Producto",
+        description: item.description || item.title || "Producto infantil Entrepeques", // RECOMENDADO
+        category_id: "kids", // RECOMENDADO: Categoría de MercadoPago para productos infantiles
         quantity: item.quantity,
         unit_price: item.unit_price
       })) || []
@@ -210,9 +221,13 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
   }
 
   // Loguear datos ANTES de enviar
-  console.log("Datos a enviar a MercadoPago:", paymentData);
+  console.log("Datos a enviar a MercadoPago:", JSON.stringify(paymentData, null, 2));
   console.log("Token recibido:", token);
   console.log("Monto final formateado:", paymentData.transaction_amount, "Tipo:", typeof paymentData.transaction_amount);
+  console.log("✅ CAMPOS OBLIGATORIOS MP:");
+  console.log("  - external_reference:", paymentData.external_reference);
+  console.log("  - notification_url:", paymentData.notification_url);
+  console.log("  - items con category_id:", paymentData.additional_info?.items?.length > 0 ? "Sí" : "No");
 
   try {
     // Crear el pago con MercadoPago SDK v2
@@ -234,7 +249,8 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
       status_detail: paymentResult.status_detail,
       id: paymentResult.id,
       date_created: paymentResult.date_created,
-      payment_method_id: paymentResult.payment_method_id
+      payment_method_id: paymentResult.payment_method_id,
+      external_reference: externalReference // Para conciliación
     };
 
     if (paymentResult.status === 'approved') {
@@ -262,8 +278,8 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
             shipping_address, total_amount, payment_status, payment_method,
             payment_date, notes, shipping_cost, shipping_zone_id,
             shipping_postal_code, shipping_street, shipping_city,
-            shipping_state, total_weight_grams, delivery_method
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING id`,
+            shipping_state, total_weight_grams, delivery_method, external_reference
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) RETURNING id`,
           [
             paymentResult.id,
             payer?.email || "cliente@entrepeques.com",
@@ -282,7 +298,8 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
             isPickup ? null : (shipping_address?.city || null), // Solo si es envío
             isPickup ? null : (shipping_address?.state || null), // Solo si es envío
             total_weight_grams || null,
-            delivery_method || 'shipping' // Nuevo campo
+            delivery_method || 'shipping',
+            externalReference // Referencia externa para conciliación con MercadoPago
           ]
         );
         
