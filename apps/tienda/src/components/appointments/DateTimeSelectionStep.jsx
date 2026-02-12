@@ -92,7 +92,7 @@ const DateTimeSelectionStep = ({ wizardData, onChange, onNext, onBack }) => {
   const isFormValid = () => {
     if (!wizardData.selectedDate || !wizardData.selectedTime) return false;
     if (wizardData.clientType === 'new') {
-      return wizardData.clientName && wizardData.clientPhone;
+      return wizardData.clientName && wizardData.clientPhone && wizardData.clientEmail;
     }
     return wizardData.clientId;
   };
@@ -288,7 +288,7 @@ const DateTimeSelectionStep = ({ wizardData, onChange, onNext, onBack }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-                Correo electronico (opcional)
+                Correo electronico *
               </label>
               <input
                 type="email"
@@ -296,7 +296,11 @@ const DateTimeSelectionStep = ({ wizardData, onChange, onNext, onBack }) => {
                 onChange={e => onChange({ clientEmail: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 placeholder="tu@email.com"
+                required
               />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Te enviaremos la confirmacion de tu cita a este correo
+              </p>
             </div>
           </div>
         ) : (

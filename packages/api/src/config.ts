@@ -10,6 +10,9 @@ interface Config {
   jwtSecret: string;
   jwtExpiresIn: string;
   corsOrigin: string | string[] | RegExp | boolean | ((origin: any, callback: any) => void);
+  resendApiKey: string;
+  notificationEmail: string;
+  emailFrom: string;
 }
 
 // Lista base de orígenes permitidos
@@ -53,6 +56,9 @@ const config: Config = {
   jwtSecret: process.env.JWT_SECRET || 'entrepeques_development_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
   corsOrigin: baseOrigins,
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  notificationEmail: process.env.NOTIFICATION_EMAIL || 'citas@entrepeques.mx',
+  emailFrom: process.env.EMAIL_FROM || 'Entrepeques <citas@mail.entrepeques.mx>',
 };
 
 // En producción con Heroku, modificar la URL de la base de datos si es necesario

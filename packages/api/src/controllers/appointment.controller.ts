@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { appointmentService } from '../services/appointment.service';
+import { emailService } from '../services/email.service';
 
 // ========== PUBLIC ENDPOINTS ==========
 
@@ -121,6 +122,19 @@ export const createAppointment = asyncHandler(async (req: Request, res: Response
       start_time,
       items
     });
+
+    // Send confirmation emails (fire and forget — no bloquea la respuesta)
+    emailService.sendAppointmentConfirmation({
+      clientName: appointment.client_name || client_name || '',
+      clientEmail: appointment.client_email || client_email || '',
+      clientPhone: appointment.client_phone || client_phone || '',
+      appointmentDate: appointment.appointment_date,
+      startTime: appointment.start_time,
+      endTime: appointment.end_time,
+      items: appointment.items || [],
+      totalItems: appointment.total_items || 0,
+      appointmentId: appointment.id,
+    }).catch(err => console.error('Error en envio de emails:', err));
 
     res.status(201).json({
       success: true,
