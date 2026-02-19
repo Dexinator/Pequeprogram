@@ -23,9 +23,9 @@ export function ProductoForm({
     brand_id: initialData.brand_id || "",
     brand_renown: initialData.brand_renown || "",
     modality: initialData.modality || "compra directa",
-    condition_state: initialData.condition_state || "Excelente",
-    demand: initialData.demand || "Media", // Valor predeterminado
-    cleanliness: initialData.cleanliness || "Buena", // Valor predeterminado
+    condition_state: initialData.condition_state || "Bueno",
+    demand: initialData.demand || "Media",
+    cleanliness: initialData.cleanliness || "Regular",
     new_price: initialData.new_price || "",
     quantity: initialData.quantity || 1, // Valor predeterminado
     features: initialData.features || {},
@@ -70,9 +70,9 @@ export function ProductoForm({
         brand_id: initialData.brand_id || "",
         brand_renown: initialData.brand_renown || "",
         modality: initialData.modality || "compra directa",
-        condition_state: initialData.condition_state || "Excelente",
+        condition_state: initialData.condition_state || "Bueno",
         demand: initialData.demand || "Media",
-        cleanliness: initialData.cleanliness || "Buena",
+        cleanliness: initialData.cleanliness || "Regular",
         new_price: initialData.new_price || "",
         quantity: initialData.quantity || 1,
         features: initialData.features || {},
