@@ -381,6 +381,16 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
                   {product.subcategory_name} de la marca {product.brand_name} en estado {getStatusBadge(product.status).text.toLowerCase()}.
                   Este producto ha sido cuidadosamente revisado y verificado por nuestro equipo de especialistas para garantizar su calidad.
                 </p>
+                {product.online_notes && (
+                  <div className="bg-brand-azul/10 border border-brand-azul/20 p-4 rounded-xl mb-4">
+                    <p className="font-heading font-semibold text-brand-azul-profundo dark:text-brand-azul mb-1">
+                      Notas del producto
+                    </p>
+                    <p className="font-body text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                      {product.online_notes}
+                    </p>
+                  </div>
+                )}
                 {product.special_offer_text && (
                   <div className="bg-brand-amarillo/20 border-2 border-brand-amarillo p-4 rounded-xl">
                     <p className="text-gray-900 font-heading">

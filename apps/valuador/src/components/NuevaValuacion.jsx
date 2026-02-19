@@ -90,6 +90,9 @@ function NuevaValuacionContent() {
   // Estado para modalidades editadas en el resumen
   const [editedModalities, setEditedModalities] = useState({});
 
+  // Estado para porcentaje de compra en efectivo vs crédito
+  const [cashPercentage, setCashPercentage] = useState(100);
+
   // Estado para mostrar documento de oferta
   const [showOfferDocument, setShowOfferDocument] = useState(false);
   
@@ -179,27 +182,28 @@ function NuevaValuacionContent() {
       selectedProducts.has(product.id)
     );
 
-    const totalPurchase = selectedProductList.reduce((sum, item) => {
-      // Usar precio editado si existe, sino el precio sugerido
+    // Calcular total base de compra (solo productos NO consignación)
+    const basePurchaseTotal = selectedProductList.reduce((sum, item) => {
+      const finalModality = editedModalities[item.id] || item.modality;
+      if (finalModality === 'consignación') return sum;
+
       const editedPrice = editedPrices[item.id];
-      let price = editedPrice?.purchase !== undefined
+      const price = editedPrice?.purchase !== undefined
         ? Number(editedPrice.purchase)
         : (item.suggested_purchase_price ? Number(item.suggested_purchase_price) : 0);
-
-      // Aplicar +20% si la modalidad es crédito en tienda
-      const finalModality = editedModalities[item.id] || item.modality;
-      if (finalModality === 'crédito en tienda') {
-        price = price * 1.2;
-      }
 
       const quantity = Number(item.quantity) || 1;
       return sum + (isNaN(price) ? 0 : price * quantity);
     }, 0);
 
+    // Aplicar split efectivo/crédito al total base
+    const creditPct = 100 - cashPercentage;
+    const totalCash = basePurchaseTotal * (cashPercentage / 100);
+    const totalCredit = basePurchaseTotal * (creditPct / 100) * 1.2; // +20% en crédito
+
     const totalSale = selectedProductList.reduce((sum, item) => {
-      // Usar precio editado si existe, sino el precio sugerido
       const editedPrice = editedPrices[item.id];
-      const price = editedPrice?.sale !== undefined 
+      const price = editedPrice?.sale !== undefined
         ? Number(editedPrice.sale)
         : (item.suggested_sale_price ? Number(item.suggested_sale_price) : 0);
       const quantity = Number(item.quantity) || 1;
@@ -207,7 +211,6 @@ function NuevaValuacionContent() {
     }, 0);
 
     const totalConsignment = selectedProductList.reduce((sum, item) => {
-      // Usar modalidad editada si existe, sino la original
       const finalModality = editedModalities[item.id] || item.modality;
       if (finalModality !== 'consignación') return sum;
       const price = item.consignment_price ? Number(item.consignment_price) : 0;
@@ -217,7 +220,10 @@ function NuevaValuacionContent() {
 
     return {
       count: selectedProductList.length,
-      totalPurchase: Number(totalPurchase) || 0,
+      basePurchaseTotal: Number(basePurchaseTotal) || 0,
+      totalCash: Number(totalCash) || 0,
+      totalCredit: Number(totalCredit) || 0,
+      totalPurchase: Number(totalCash + totalCredit) || 0,
       totalSale: Number(totalSale) || 0,
       totalConsignment: Number(totalConsignment) || 0
     };
@@ -254,30 +260,19 @@ function NuevaValuacionContent() {
     const product = summary.productDetails.find(p => p.id === productId);
     if (!product) return;
 
-    const currentEditedPrice = editedPrices[productId];
-    const basePurchasePrice = currentEditedPrice?.purchase !== undefined 
-      ? currentEditedPrice.purchase 
-      : (product.suggested_purchase_price || 0);
     const originalPrice = product.suggested_purchase_price || 0;
 
     if (newModality === 'consignación') {
       // En consignación, el proveedor recibe 50% del precio de venta real
-      // No modificamos el precio aquí ya que se calculará al momento de la venta
-      // Solo mantenemos el precio sugerido de venta
       setEditedPrices(prev => ({
         ...prev,
         [productId]: {
           ...prev[productId],
-          // Mantener el precio de venta sugerido sin cambios
           purchase: product.suggested_sale_price || originalPrice
         }
       }));
-    } else if (newModality === 'crédito en tienda' || newModality === 'compra directa') {
-      // Para crédito en tienda y compra directa, NO modificamos editedPrices
-      // El +20% para crédito se calcula solo al momento de mostrar/calcular totales
-      // Esto evita doble aplicación del incremento y preserva ediciones manuales del usuario
-      // No hacemos nada aquí - solo se guarda la modalidad
     }
+    // Para "compra directa", no modificamos precios - el split se aplica globalmente
   };
 
   // Obtener modalidad final (editada o original)
@@ -285,8 +280,8 @@ function NuevaValuacionContent() {
     return editedModalities[product.id] || product.modality;
   };
 
-  // Obtener precio final (editado o sugerido), aplicando modificador de modalidad
-  const getFinalPrice = (product, type, applyModalityModifier = true) => {
+  // Obtener precio final (editado o sugerido)
+  const getFinalPrice = (product, type) => {
     const editedPrice = editedPrices[product.id];
     let price = 0;
 
@@ -294,14 +289,6 @@ function NuevaValuacionContent() {
       price = editedPrice?.purchase !== undefined
         ? editedPrice.purchase
         : (product.suggested_purchase_price || 0);
-
-      // Aplicar +20% si la modalidad es crédito en tienda
-      if (applyModalityModifier) {
-        const finalModality = getFinalModality(product);
-        if (finalModality === 'crédito en tienda') {
-          price = price * 1.2;
-        }
-      }
     } else if (type === 'sale') {
       price = editedPrice?.sale !== undefined
         ? editedPrice.sale
@@ -866,16 +853,13 @@ function NuevaValuacionContent() {
           const editedModality = editedModalities[product.id];
           const finalModality = editedModality || product.modality;
 
-          // Calcular precio base (editado o sugerido)
+          // Calcular precio base (editado o sugerido) - sin modificador de modalidad
+          // El split efectivo/crédito se aplica a nivel de valuación, no por producto
           let basePurchasePrice = editedPrice?.purchase !== undefined
             ? Number(editedPrice.purchase)
             : Number(product.suggested_purchase_price || 0);
 
-          // Aplicar modificador de modalidad al precio de compra
           let finalPurchasePrice = basePurchasePrice;
-          if (finalModality === 'crédito en tienda') {
-            finalPurchasePrice = basePurchasePrice * 1.2; // +20%
-          }
 
           // Para productos de ropa, asegurar que se incluyan los precios calculados
           if (product.isClothing) {
@@ -935,7 +919,7 @@ function NuevaValuacionContent() {
       });
 
       // 3. Usar el nuevo endpoint que crea todo en una transacción
-      const finalizedValuation = await valuationService.finalizeComplete(clientId, selectedProductsData, notes);
+      const finalizedValuation = await valuationService.finalizeComplete(clientId, selectedProductsData, notes, cashPercentage);
 
       console.log('Valuación finalizada con éxito:', finalizedValuation);
       showNotification(`Valuación finalizada con éxito. ${selectedProducts.size} productos incluidos.`);
@@ -977,9 +961,9 @@ function NuevaValuacionContent() {
             <div className="flex-1">
               <p className="text-sm text-azul-profundo font-medium">Personalice su valuación final</p>
               <div className="text-xs text-gray-600 mt-1 space-y-1">
-                <p>• <strong>Compra directa:</strong> Pago inmediato en efectivo</p>
-                <p>• <strong>Crédito en tienda:</strong> Pago +20% en vales de tienda</p>
+                <p>• <strong>Compra:</strong> El total se divide entre efectivo y crédito usando el control de abajo</p>
                 <p>• <strong>Consignación:</strong> El proveedor recibe 50% del precio de venta cuando se venda el producto</p>
+                <p>• La parte de crédito en tienda recibe +20% adicional</p>
                 <p>• Use el botón ✏️ para editar precios individualmente</p>
               </div>
             </div>
@@ -987,7 +971,7 @@ function NuevaValuacionContent() {
         </div>
 
         {/* Tarjetas de totales - ahora muestran totales de productos seleccionados */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-background rounded-md">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-background rounded-md">
           <div className="text-center p-3 border border-border rounded-md bg-azul-claro/5">
             <p className="text-sm text-gray-600">Productos Seleccionados</p>
             <p className="text-2xl font-bold text-azul-profundo">{selectedTotals.count}</p>
@@ -995,23 +979,33 @@ function NuevaValuacionContent() {
           </div>
 
           <div className="text-center p-3 border border-border rounded-md bg-verde-lima/5">
-            <p className="text-sm text-gray-600">Valor de Compra Seleccionado</p>
+            <p className="text-sm text-gray-600">Total Efectivo</p>
             <p className="text-2xl font-bold text-verde-oscuro">
-              ${selectedTotals.totalPurchase.toFixed(0)}
+              ${selectedTotals.totalCash.toFixed(0)}
             </p>
-            <p className="text-xs text-gray-500">
-              Total: ${summary.totalPurchaseValue.toFixed(0)}
+            {cashPercentage < 100 && (
+              <p className="text-xs text-gray-500">{cashPercentage}% del base</p>
+            )}
+          </div>
+
+          <div className="text-center p-3 border border-border rounded-md bg-purple-50">
+            <p className="text-sm text-gray-600">Total Crédito Tienda</p>
+            <p className="text-2xl font-bold text-purple-700">
+              ${selectedTotals.totalCredit.toFixed(0)}
             </p>
+            {(100 - cashPercentage) > 0 && (
+              <p className="text-xs text-gray-500">{100 - cashPercentage}% + 20%</p>
+            )}
           </div>
 
           <div className="text-center p-3 border border-border rounded-md bg-amarillo/5">
-            <p className="text-sm text-gray-600">Valor de Venta Seleccionado</p>
+            <p className="text-sm text-gray-600">Total al Cliente</p>
             <p className="text-2xl font-bold text-azul-profundo">
-              ${selectedTotals.totalSale.toFixed(0)}
+              ${(selectedTotals.totalCash + selectedTotals.totalCredit + selectedTotals.totalConsignment).toFixed(0)}
             </p>
-            <p className="text-xs text-gray-500">
-              Total: ${summary.totalSaleValue.toFixed(0)}
-            </p>
+            {selectedTotals.totalConsignment > 0 && (
+              <p className="text-xs text-gray-500">+ ${selectedTotals.totalConsignment.toFixed(0)} consignación</p>
+            )}
           </div>
         </div>
 
@@ -1049,10 +1043,9 @@ function NuevaValuacionContent() {
                 const safePurchasePrice = Number(product.suggested_purchase_price) || 0;
                 const safeSalePrice = Number(product.suggested_sale_price) || 0;
 
-                // Precio base sin modificador de modalidad (para edición)
-                const basePurchasePrice = getFinalPrice(product, 'purchase', false);
-                // Precio final con modificador de modalidad (para mostrar)
-                const finalPurchasePrice = getFinalPrice(product, 'purchase', true);
+                // Precio base de compra (para edición y mostrar)
+                const basePurchasePrice = getFinalPrice(product, 'purchase');
+                const finalPurchasePrice = basePurchasePrice;
                 const finalSalePrice = getFinalPrice(product, 'sale');
                 
                 return (
@@ -1097,12 +1090,11 @@ function NuevaValuacionContent() {
                     {/* Modalidad */}
                     <td className="p-2 text-center border-b border-border">
                       <select
-                        value={getFinalModality(product)}
+                        value={getFinalModality(product) === 'consignación' ? 'consignación' : 'compra directa'}
                         onChange={(e) => handleModalityChange(product.id, e.target.value)}
                         className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-azul-claro focus:border-azul-claro"
                       >
-                        <option value="compra directa">Compra directa</option>
-                        <option value="crédito en tienda">Crédito en tienda</option>
+                        <option value="compra directa">Compra</option>
                         <option value="consignación">Consignación</option>
                       </select>
                     </td>
@@ -1226,6 +1218,101 @@ function NuevaValuacionContent() {
             </tfoot>
           </table>
         </div>
+
+        {/* Control de split efectivo/crédito */}
+        {selectedTotals.basePurchaseTotal > 0 && (
+          <div className="mt-6 p-4 bg-gradient-to-r from-verde-lima/10 to-purple-50 border border-border rounded-lg">
+            <h4 className="font-semibold text-azul-profundo mb-3">Distribución del Pago de Compra</h4>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              {/* Presets rápidos */}
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: '100% Efectivo', value: 100 },
+                  { label: '75/25', value: 75 },
+                  { label: '50/50', value: 50 },
+                  { label: '25/75', value: 25 },
+                  { label: '100% Crédito', value: 0 },
+                ].map(preset => (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    onClick={() => setCashPercentage(preset.value)}
+                    className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                      cashPercentage === preset.value
+                        ? 'bg-azul-claro text-white border-azul-claro'
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-azul-claro'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Slider */}
+              <div className="flex-1 w-full md:w-auto">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value={cashPercentage}
+                  onChange={(e) => setCashPercentage(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-azul-claro"
+                />
+              </div>
+
+              {/* Inputs numéricos */}
+              <div className="flex items-center gap-2 text-sm">
+                <div className="text-center">
+                  <label className="block text-xs text-gray-500">Efectivo</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={cashPercentage}
+                    onChange={(e) => {
+                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+                      setCashPercentage(val);
+                    }}
+                    className="w-16 text-center border border-gray-300 rounded px-1 py-1 text-sm"
+                  />
+                  <span className="text-xs text-gray-400">%</span>
+                </div>
+                <span className="text-gray-400">/</span>
+                <div className="text-center">
+                  <label className="block text-xs text-gray-500">Crédito</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={100 - cashPercentage}
+                    onChange={(e) => {
+                      const val = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+                      setCashPercentage(100 - val);
+                    }}
+                    className="w-16 text-center border border-gray-300 rounded px-1 py-1 text-sm"
+                  />
+                  <span className="text-xs text-gray-400">%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Resumen del split */}
+            {cashPercentage < 100 && (
+              <div className="mt-3 flex flex-wrap gap-4 text-sm">
+                <span className="text-verde-oscuro font-medium">
+                  Efectivo: ${selectedTotals.totalCash.toFixed(0)} ({cashPercentage}%)
+                </span>
+                <span className="text-purple-700 font-medium">
+                  Crédito: ${selectedTotals.totalCredit.toFixed(0)} ({100 - cashPercentage}% + 20%)
+                </span>
+                <span className="text-gray-500">
+                  Base compra: ${selectedTotals.basePurchaseTotal.toFixed(0)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-gray-600 space-y-1">

@@ -267,7 +267,7 @@ export const valuationController = {
         return res.status(401).json({ error: 'Usuario no autenticado' });
       }
 
-      const { client_id, products, notes } = req.body;
+      const { client_id, products, notes, cash_percentage } = req.body;
 
       if (!client_id) {
         return res.status(400).json({ error: 'El ID del cliente es obligatorio' });
@@ -296,7 +296,8 @@ export const valuationController = {
         }
       }
 
-      const valuation = await valuationService.finalizeComplete(userId, client_id, products, notes || '');
+      const cashPct = cash_percentage !== undefined ? parseFloat(cash_percentage) : 100;
+      const valuation = await valuationService.finalizeComplete(userId, client_id, products, notes || '', cashPct);
       res.status(201).json(valuation);
     } catch (error: any) {
       console.error('Error al finalizar valuación completa:', error);

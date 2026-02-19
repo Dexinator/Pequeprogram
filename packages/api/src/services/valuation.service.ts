@@ -365,7 +365,7 @@ export class ValuationService extends BaseService<Valuation> {
     }
   }
 
-  async finalizeComplete(userId: number, clientId: number, products: any[], notes: string): Promise<any> {
+  async finalizeComplete(userId: number, clientId: number, products: any[], notes: string, cashPercentage: number = 100): Promise<any> {
     let dbClient: PoolClient | undefined;
     try {
       dbClient = await pool.connect();
@@ -373,14 +373,18 @@ export class ValuationService extends BaseService<Valuation> {
       // Iniciar transacción
       await dbClient.query('BEGIN');
       
+      // Validar cashPercentage
+      const validCashPct = Math.max(0, Math.min(100, cashPercentage));
+      const creditPct = 100 - validCashPct;
+
       // 1. Crear la valuación
       const valuationQuery = `
-        INSERT INTO valuations (client_id, user_id, status, notes, created_at, updated_at)
-        VALUES ($1, $2, 'completed', $3, NOW(), NOW())
+        INSERT INTO valuations (client_id, user_id, status, notes, cash_percentage, created_at, updated_at)
+        VALUES ($1, $2, 'completed', $3, $4, NOW(), NOW())
         RETURNING *
       `;
-      
-      const valuationResult = await dbClient.query(valuationQuery, [clientId, userId, notes]);
+
+      const valuationResult = await dbClient.query(valuationQuery, [clientId, userId, notes, validCashPct]);
       const valuation = valuationResult.rows[0];
       
       console.log('Valuación creada:', valuation);
@@ -486,26 +490,29 @@ export class ValuationService extends BaseService<Valuation> {
         ]);
       }
       
-      // 3. Calcular totales finales (multiplicar por cantidad)
+      // 3. Calcular totales finales con split efectivo/crédito
       const totalsQuery = `
-        SELECT 
-          SUM(CASE WHEN modality = 'compra directa' THEN 
-            COALESCE(final_purchase_price, suggested_purchase_price) * quantity ELSE 0 END) as total_purchase,
-          SUM(CASE WHEN modality = 'crédito en tienda' THEN 
-            COALESCE(final_purchase_price, store_credit_price) * quantity ELSE 0 END) as total_store_credit,
-          SUM(CASE WHEN modality = 'consignación' THEN 
+        SELECT
+          SUM(CASE WHEN modality != 'consignación' THEN
+            COALESCE(final_purchase_price, suggested_purchase_price) * quantity ELSE 0 END) as base_purchase_total,
+          SUM(CASE WHEN modality = 'consignación' THEN
             COALESCE(consignment_price, 0) * quantity ELSE 0 END) as total_consignment
         FROM valuation_items
         WHERE valuation_id = $1
       `;
-      
+
       const totalsResult = await dbClient.query(totalsQuery, [valuation.id]);
       const totals = totalsResult.rows[0];
-      
+
+      const basePurchaseTotal = parseFloat(totals.base_purchase_total) || 0;
+      const totalPurchase = basePurchaseTotal * (validCashPct / 100);
+      const totalStoreCredit = basePurchaseTotal * (creditPct / 100) * 1.2;
+      const totalConsignment = parseFloat(totals.total_consignment) || 0;
+
       // 4. Actualizar la valuación con los totales
       const updateQuery = `
         UPDATE valuations
-        SET 
+        SET
           total_purchase_amount = $1,
           total_store_credit_amount = $2,
           total_consignment_amount = $3,
@@ -513,28 +520,28 @@ export class ValuationService extends BaseService<Valuation> {
         WHERE id = $4
         RETURNING *
       `;
-      
+
       const finalValuationResult = await dbClient.query(updateQuery, [
-        parseFloat(totals.total_purchase) || 0,
-        parseFloat(totals.total_store_credit) || 0,
-        parseFloat(totals.total_consignment) || 0,
+        totalPurchase,
+        totalStoreCredit,
+        totalConsignment,
         valuation.id
       ]);
-      
+
       // 5. Si hay crédito en tienda, actualizar el saldo del cliente
-      if (totals.total_store_credit && parseFloat(totals.total_store_credit) > 0) {
+      if (totalStoreCredit > 0) {
         const updateClientCreditQuery = `
-          UPDATE clients 
+          UPDATE clients
           SET store_credit = COALESCE(store_credit, 0) + $1
           WHERE id = $2
         `;
-        
+
         await dbClient.query(updateClientCreditQuery, [
-          parseFloat(totals.total_store_credit),
+          totalStoreCredit,
           clientId
         ]);
-        
-        console.log(`Actualizado crédito del cliente ${clientId}: +${totals.total_store_credit}`);
+
+        console.log(`Actualizado crédito del cliente ${clientId}: +${totalStoreCredit} (${creditPct}% de ${basePurchaseTotal} × 1.2)`);
       }
       
       // Confirmar transacción

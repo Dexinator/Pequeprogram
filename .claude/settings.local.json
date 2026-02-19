@@ -37,7 +37,8 @@
       "Bash(PGPASSWORD=pe1f4f515a5f9afc7e6f85cb5ece49d1952527402a05c9afd287bd371c0d2f679 psql:*)",
       "WebSearch",
       "Read(//mnt/c/coding/Jorgeseva2/**)",
-      "mcp__obsidian-personal__registrar_sesion_desarrollo"
+      "mcp__obsidian-personal__registrar_sesion_desarrollo",
+      "Bash(heroku logs:*)"
     ],
     "deny": []
   }
