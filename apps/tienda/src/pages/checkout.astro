@@ -125,7 +125,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
               </div>
               
               <!-- Información de envío -->
-              <div class="border-t pt-6">
+              <div id="shipping-address-section" class="border-t pt-6">
                 <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Dirección de envío</h3>
                 <div class="space-y-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -154,14 +154,16 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label for="codigoPostal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
-                      <input 
-                        type="text" 
-                        id="codigoPostal" 
-                        name="codigoPostal" 
-                        required 
+                      <input
+                        type="text"
+                        id="codigoPostal"
+                        name="codigoPostal"
+                        required
                         maxlength="5"
+                        inputmode="numeric"
                         pattern="[0-9]{5}"
-                        placeholder="12345"
+                        title="Ingresa un código postal de 5 dígitos (ej: 06600)"
+                        placeholder="Ej: 06600"
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                       >
                     </div>
@@ -208,8 +210,11 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   
                   <!-- Mensaje de error de envío -->
                   <div id="shipping-error" class="p-4 bg-red-50 dark:bg-red-900 rounded-lg hidden">
-                    <p class="text-sm text-red-800 dark:text-red-200">
-                      No se pudo calcular el envío. Por favor verifica el código postal.
+                    <p class="text-sm text-red-800 dark:text-red-200" id="shipping-error-message">
+                      No se pudo calcular el envío. Por favor verifica tu código postal e intenta de nuevo.
+                    </p>
+                    <p class="text-xs text-red-600 dark:text-red-300 mt-1">
+                      Asegúrate de ingresar 5 dígitos sin espacios (ej: 06600). Si el problema persiste, selecciona "Recoger en tienda".
                     </p>
                   </div>
                 </div>
@@ -563,8 +568,24 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
 
     // Configurar el listener para cambio de método de entrega
     const deliveryMethodRadios = document.getElementsByName('delivery_method');
-    const shippingSection = document.querySelector('.border-t.pt-6'); // Sección de envío
+    const shippingSection = document.getElementById('shipping-address-section');
     const storePickupInfo = document.getElementById('store-pickup-info');
+
+    // Campos de dirección que deben ser required solo cuando es envío a domicilio
+    const shippingRequiredFields = ['calle', 'colonia', 'codigoPostal', 'ciudad', 'estado'];
+
+    function toggleShippingRequired(isRequired) {
+      shippingRequiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          if (isRequired) {
+            field.setAttribute('required', '');
+          } else {
+            field.removeAttribute('required');
+          }
+        }
+      });
+    }
 
     deliveryMethodRadios.forEach(radio => {
       radio.addEventListener('change', (e) => {
@@ -578,6 +599,9 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           if (storePickupInfo) {
             storePickupInfo.classList.remove('hidden');
           }
+
+          // Quitar required de campos de dirección ocultos
+          toggleShippingRequired(false);
 
           // Establecer envío a $0
           shippingCost = 0;
@@ -606,6 +630,9 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
             storePickupInfo.classList.add('hidden');
           }
 
+          // Restaurar required en campos de dirección
+          toggleShippingRequired(true);
+
           // Resetear envío
           shippingCost = 0;
           shippingZoneId = null;
@@ -624,10 +651,17 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
     const codigoPostalInput = document.getElementById('codigoPostal');
     if (codigoPostalInput) {
       let debounceTimer;
+
+      // Sanitizar: solo permitir dígitos
       codigoPostalInput.addEventListener('input', (e) => {
+        const sanitized = e.target.value.replace(/[^0-9]/g, '');
+        if (sanitized !== e.target.value) {
+          e.target.value = sanitized;
+        }
+
         clearTimeout(debounceTimer);
-        const postalCode = e.target.value;
-        
+        const postalCode = sanitized;
+
         if (postalCode.length === 5) {
           debounceTimer = setTimeout(() => {
             calculateShipping(postalCode, cartData);
@@ -640,6 +674,14 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           document.getElementById('checkout-shipping').textContent = 'Ingresa código postal';
           updateTotal(cartData);
         }
+      });
+
+      // También sanitizar al pegar
+      codigoPostalInput.addEventListener('paste', (e) => {
+        setTimeout(() => {
+          codigoPostalInput.value = codigoPostalInput.value.replace(/[^0-9]/g, '');
+          codigoPostalInput.dispatchEvent(new Event('input'));
+        }, 0);
       });
     }
     
@@ -841,11 +883,17 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
           // Actualizar total
           updateTotal(cartData);
         } else {
-          // Mostrar error
+          // Mostrar error con mensaje específico del API
+          console.warn('Error de envío:', data.message || 'Sin mensaje');
           shippingCost = 0;
           shippingZoneId = null;
           document.getElementById('shipping-info').classList.add('hidden');
-          document.getElementById('shipping-error').classList.remove('hidden');
+          const errorEl = document.getElementById('shipping-error');
+          errorEl.classList.remove('hidden');
+          const errorMsgEl = document.getElementById('shipping-error-message');
+          if (errorMsgEl && data.message) {
+            errorMsgEl.textContent = data.message;
+          }
           document.getElementById('free-shipping-message').classList.add('hidden');
           document.getElementById('checkout-shipping').textContent = 'No disponible';
           updateTotal(cartData);
@@ -857,7 +905,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
         document.getElementById('shipping-info').classList.add('hidden');
         document.getElementById('shipping-error').classList.remove('hidden');
         document.getElementById('free-shipping-message').classList.add('hidden');
-        document.getElementById('checkout-shipping').textContent = 'Error';
+        document.getElementById('checkout-shipping').textContent = 'Error de conexión';
         updateTotal(cartData);
       }
     }
@@ -1013,7 +1061,7 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
 
               // Validar que se haya calculado el envío solo si es envío a domicilio
               if (deliveryMethod === 'shipping' && (!shippingCost || shippingCost === 0)) {
-                alert('Por favor ingresa un código postal válido para calcular el envío');
+                alert('Por favor ingresa tu código postal (5 dígitos) para calcular el envío. Si el problema persiste, puedes seleccionar "Recoger en tienda".');
                 codigoPostalElement.focus();
                 return;
               }
@@ -1127,7 +1175,24 @@ console.log('🔍 SERVER - Valor final apiBaseUrl:', apiBaseUrl);
                   alert('Tu pago está pendiente de aprobación.');
                   window.location.href = `/confirmacion?payment_id=${data.id}&status=pending`;
                 } else {
-                  alert(`Pago ${data.status}: ${data.status_detail || 'Intenta con otra tarjeta'}`);
+                  // Traducir status_detail de MercadoPago a mensaje amigable
+                  const statusMessages = {
+                    'cc_rejected_bad_filled_card_number': 'El número de tarjeta es incorrecto. Verifica e intenta de nuevo.',
+                    'cc_rejected_bad_filled_date': 'La fecha de vencimiento es incorrecta.',
+                    'cc_rejected_bad_filled_other': 'Alguno de los datos de la tarjeta es incorrecto. Verifica e intenta de nuevo.',
+                    'cc_rejected_bad_filled_security_code': 'El código de seguridad (CVV) es incorrecto.',
+                    'cc_rejected_blacklist': 'No se pudo procesar el pago. Intenta con otra tarjeta.',
+                    'cc_rejected_call_for_authorize': 'Debes llamar a tu banco para autorizar este pago.',
+                    'cc_rejected_card_disabled': 'Tu tarjeta está deshabilitada. Contacta a tu banco.',
+                    'cc_rejected_duplicated_payment': 'Ya realizaste un pago por este monto. Revisa tus transacciones.',
+                    'cc_rejected_high_risk': 'Tu pago fue rechazado por seguridad. Intenta con otra tarjeta.',
+                    'cc_rejected_insufficient_amount': 'Tu tarjeta no tiene fondos suficientes.',
+                    'cc_rejected_invalid_installments': 'Tu tarjeta no permite esa cantidad de cuotas.',
+                    'cc_rejected_max_attempts': 'Llegaste al límite de intentos. Intenta con otra tarjeta.',
+                    'cc_rejected_other_reason': 'Tu pago fue rechazado. Intenta con otra tarjeta o contacta a tu banco.',
+                  };
+                  const friendlyMessage = statusMessages[data.status_detail] || data.status_detail || 'Intenta con otra tarjeta o contacta a tu banco.';
+                  alert(`Pago no aprobado: ${friendlyMessage}`);
                   checkoutBtn.disabled = false;
                   checkoutBtn.textContent = "Finalizar compra";
                 }
