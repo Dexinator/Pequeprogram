@@ -998,7 +998,7 @@ function NuevaValuacionContent() {
             )}
           </div>
 
-          <div className="text-center p-3 border border-border rounded-md bg-amarillo/5">
+          <div className="text-center p-3 border border-border rounded-md bg-orange-50">
             <p className="text-sm text-gray-600">Total al Cliente</p>
             <p className="text-2xl font-bold text-azul-profundo">
               ${(selectedTotals.totalCash + selectedTotals.totalCredit + selectedTotals.totalConsignment).toFixed(0)}
@@ -1219,10 +1219,14 @@ function NuevaValuacionContent() {
           </table>
         </div>
 
-        {/* Control de split efectivo/crédito */}
+        {/* Control de split efectivo/crédito - COMPRA MIXTA */}
         {selectedTotals.basePurchaseTotal > 0 && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-verde-lima/10 to-purple-50 border border-border rounded-lg">
-            <h4 className="font-semibold text-azul-profundo mb-3">Distribución del Pago de Compra</h4>
+          <div className="mt-6 p-5 bg-gradient-to-r from-verde-lima/10 to-purple-50 border-2 border-purple-300 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xl">💰</span>
+              <h4 className="font-bold text-azul-profundo text-lg">Compra Mixta — Efectivo / Crédito en Tienda</h4>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">Ajuste la proporción entre pago en efectivo y crédito en tienda. La parte de crédito recibe +20% adicional.</p>
             <div className="flex flex-col md:flex-row items-center gap-4">
               {/* Presets rápidos */}
               <div className="flex flex-wrap gap-2">
@@ -1320,7 +1324,7 @@ function NuevaValuacionContent() {
               <span className="text-rosa font-medium">⚠️ Debe seleccionar al menos un producto para continuar</span>
             )}
             {selectedProducts.size > 0 && selectedProducts.size < summary.totalProducts && (
-              <span className="text-amarillo font-medium block">
+              <span className="text-orange-600 font-medium block">
                 ⚠️ {summary.totalProducts - selectedProducts.size} producto(s) no se incluirán en la valuación final
               </span>
             )}
@@ -1511,7 +1515,7 @@ AuthContext loading: ${authLoading}
         <div className="flex items-center gap-3">
           <span className="bg-azul-claro text-white text-sm py-1 px-3 rounded-full">Fecha: {currentDate}</span>
           {valuation && (
-            <span className="bg-amarillo text-white text-sm py-1 px-3 rounded-full">ID: VP-{valuation.id}</span>
+            <span className="bg-orange-500 text-white text-sm py-1 px-3 rounded-full">ID: VP-{valuation.id}</span>
           )}
         </div>
       </div>
@@ -1520,7 +1524,7 @@ AuthContext loading: ${authLoading}
       {notification && (
         <div className={`p-4 rounded-md ${
           notification.type === 'error' ? 'bg-rosa/10 border border-rosa text-rosa' :
-          notification.type === 'warning' ? 'bg-amarillo/10 border border-amarillo text-amarillo' :
+          notification.type === 'warning' ? 'bg-orange-50 border border-orange-400 text-orange-700' :
           'bg-verde-lima/10 border border-verde-lima text-verde-oscuro'
         } transition-all duration-300 ease-in-out`}>
           {notification.message}

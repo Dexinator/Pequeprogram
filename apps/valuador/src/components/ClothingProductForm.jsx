@@ -27,7 +27,7 @@ const ClothingProductForm = ({
     status: initialData.status || 'Usado como nuevo',
     conditionState: initialData.conditionState || 'Bueno',
     demand: initialData.demand || 'Media',
-    cleanliness: initialData.cleanliness || 'Buena',
+    cleanliness: initialData.cleanliness || 'Regular',
     quantity: initialData.quantity || 1,
     notes: initialData.notes || ''
   });

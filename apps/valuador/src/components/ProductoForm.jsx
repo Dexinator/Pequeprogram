@@ -836,7 +836,7 @@ export function ProductoForm({
                     <p className="text-base">Precio Crédito Tienda: <span className="font-medium text-verde-oscuro">${calculationResult.store_credit_price.toFixed(0)}</span></p>
                   )}
                   {calculationResult.consignment_price && (
-                    <p className="text-base">Precio Consignación: <span className="font-medium text-amarillo">${calculationResult.consignment_price.toFixed(0)}</span></p>
+                    <p className="text-base">Precio Consignación: <span className="font-medium text-orange-600">${calculationResult.consignment_price.toFixed(0)}</span></p>
                   )}
                 </div>
               </div>
