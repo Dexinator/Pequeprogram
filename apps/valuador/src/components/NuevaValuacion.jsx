@@ -1252,15 +1252,15 @@ function NuevaValuacionContent() {
                 ))}
               </div>
 
-              {/* Slider */}
+              {/* Slider - invertido: izquierda=100% efectivo, derecha=100% crédito */}
               <div className="flex-1 w-full md:w-auto">
                 <input
                   type="range"
                   min="0"
                   max="100"
                   step="5"
-                  value={cashPercentage}
-                  onChange={(e) => setCashPercentage(Number(e.target.value))}
+                  value={100 - cashPercentage}
+                  onChange={(e) => setCashPercentage(100 - Number(e.target.value))}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-azul-claro"
                 />
               </div>

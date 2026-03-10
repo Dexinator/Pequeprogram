@@ -39,7 +39,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       const numericPrice = Number(editedPrice.purchase);
       return isNaN(numericPrice) ? 0 : numericPrice;
     }
-    const basePrice = product.suggested_purchase_price || 0;
+    const basePrice = product.final_purchase_price || product.suggested_purchase_price || 0;
     return Number(basePrice);
   };
 
