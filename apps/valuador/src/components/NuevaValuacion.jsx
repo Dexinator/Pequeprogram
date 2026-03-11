@@ -271,8 +271,18 @@ function NuevaValuacionContent() {
           purchase: product.suggested_sale_price || originalPrice
         }
       }));
+    } else if (newModality === 'compra directa' || newModality === 'crédito en tienda') {
+      // Restaurar precio base original al cambiar de consignación a compra/crédito
+      const currentEdited = editedPrices[productId];
+      if (currentEdited?.purchase === (product.suggested_sale_price || originalPrice)) {
+        // Solo restaurar si el precio actual es el de consignación
+        setEditedPrices(prev => {
+          const updated = { ...prev };
+          delete updated[productId];
+          return updated;
+        });
+      }
     }
-    // Para "compra directa", no modificamos precios - el split se aplica globalmente
   };
 
   // Obtener modalidad final (editada o original)
@@ -1090,11 +1100,12 @@ function NuevaValuacionContent() {
                     {/* Modalidad */}
                     <td className="p-2 text-center border-b border-border">
                       <select
-                        value={getFinalModality(product) === 'consignación' ? 'consignación' : 'compra directa'}
+                        value={getFinalModality(product)}
                         onChange={(e) => handleModalityChange(product.id, e.target.value)}
                         className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-azul-claro focus:border-azul-claro"
                       >
                         <option value="compra directa">Compra</option>
+                        <option value="crédito en tienda">Crédito en Tienda</option>
                         <option value="consignación">Consignación</option>
                       </select>
                     </td>
