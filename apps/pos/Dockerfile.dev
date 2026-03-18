@@ -21,7 +21,7 @@ RUN pnpm add @astrojs/react react react-dom @types/react @types/react-dom
 COPY astro.config.mjs* ./
 COPY tailwind.config.mjs* ./
 COPY tsconfig.json* ./
-COPY .env* ./
+# Variables de entorno se pasan via docker-compose
 
 # Crear directorios necesarios
 RUN mkdir -p src public

@@ -421,16 +421,29 @@ export const getPaymentStatus = asyncHandler(async (req: Request, res: Response)
   const { paymentId } = req.params;
 
   const result = await pool.query(
-    `SELECT os.*, array_agg(
-      json_build_object(
-        'valuation_item_id', osi.valuation_item_id,
-        'quantity', osi.quantity,
-        'unit_price', osi.unit_price,
-        'subtotal', osi.subtotal
-      )
+    `SELECT os.*,
+    COALESCE(
+      json_agg(
+        json_build_object(
+          'valuation_item_id', osi.valuation_item_id,
+          'quantity', osi.quantity,
+          'unit_price', osi.unit_price,
+          'subtotal', osi.subtotal,
+          'product_name', CONCAT(s.name, ' ', b.name),
+          'subcategory_name', s.name,
+          'brand_name', b.name,
+          'inventory_id', i.id,
+          'images', vi.images
+        )
+      ) FILTER (WHERE osi.id IS NOT NULL),
+      '[]'::json
     ) as items
     FROM online_sales os
     LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
+    LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+    LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+    LEFT JOIN brands b ON vi.brand_id = b.id
+    LEFT JOIN inventario i ON i.valuation_item_id = vi.id
     WHERE os.payment_id = $1
     GROUP BY os.id`,
     [paymentId]
@@ -508,6 +521,7 @@ export const listOnlineSales = asyncHandler(async (req: Request, res: Response) 
       os.*,
       sz.zone_name,
       sz.zone_code,
+      COALESCE(
       json_agg(
         json_build_object(
           'id', osi.id,
@@ -521,7 +535,9 @@ export const listOnlineSales = asyncHandler(async (req: Request, res: Response) 
           'inventory_id', i.id,
           'images', vi.images
         )
-      ) as items
+      ) FILTER (WHERE osi.id IS NOT NULL),
+      '[]'::json
+    ) as items
     FROM online_sales os
     LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
     LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
@@ -636,6 +652,7 @@ export const getOnlineSaleById = asyncHandler(async (req: Request, res: Response
       os.*,
       sz.zone_name,
       sz.zone_code,
+      COALESCE(
       json_agg(
         json_build_object(
           'id', osi.id,
@@ -650,7 +667,9 @@ export const getOnlineSaleById = asyncHandler(async (req: Request, res: Response
           'images', vi.images,
           'features', vi.features
         )
-      ) as items
+      ) FILTER (WHERE osi.id IS NOT NULL),
+      '[]'::json
+    ) as items
     FROM online_sales os
     LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
     LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
