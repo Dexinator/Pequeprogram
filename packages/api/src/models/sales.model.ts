@@ -100,14 +100,15 @@ export interface InventoryItem {
   valuation_item_id?: number;
   // Información del producto relacionado
   valuation_item?: {
-    category_id: number;
-    subcategory_id: number;
-    brand_id?: number;
-    status: string;
+    category_id: number | null;
+    subcategory_id: number | null;
+    brand_id?: number | null;
+    status: string | null;
     features: any;
-    final_sale_price?: number;
-    category_name?: string;
-    subcategory_name?: string;
-    brand_name?: string;
+    final_sale_price?: number | null;
+    category_name?: string | null;
+    subcategory_name?: string | null;
+    brand_name?: string | null;
+    images?: any;
   };
 }

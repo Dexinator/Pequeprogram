@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { pool } from '../db';
+import { emailService } from '../services/email.service';
 const mercadopago = require('mercadopago');
 
 // Configuración de MercadoPago SDK v2
@@ -315,7 +316,63 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
         
         await client.query('COMMIT');
         console.log(`Venta online guardada con éxito. ID: ${saleId}, Pago ID: ${paymentResult.id}`);
-        
+
+        // Enviar correo de confirmación (no bloquea la respuesta)
+        try {
+          // Obtener info de items para el email
+          const itemsForEmail = await pool.query(
+            `SELECT osi.quantity, osi.unit_price, osi.subtotal,
+              CONCAT(s.name, ' ', COALESCE(b.name, '')) as product_name,
+              i.id as inventory_id,
+              vi.images
+            FROM online_sale_items osi
+            LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+            LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+            LEFT JOIN brands b ON vi.brand_id = b.id
+            LEFT JOIN inventario i ON i.valuation_item_id = vi.id
+            WHERE osi.online_sale_id = $1`,
+            [saleId]
+          );
+
+          const emailItems = itemsForEmail.rows.map((row: any) => {
+            let images: string[] = [];
+            if (row.images) {
+              const parsed = typeof row.images === 'string' ? JSON.parse(row.images) : row.images;
+              if (Array.isArray(parsed)) {
+                images = parsed.map((img: any) => typeof img === 'object' && img !== null ? img.url : img).filter(Boolean);
+              }
+            }
+            return {
+              productName: (row.product_name || 'Producto').trim(),
+              sku: row.inventory_id || undefined,
+              imageUrl: images[0] || undefined,
+              quantity: parseInt(row.quantity),
+              unitPrice: parseFloat(row.unit_price),
+              subtotal: parseFloat(row.subtotal)
+            };
+          });
+
+          const customerName = `${payer?.first_name || 'Cliente'} ${payer?.last_name || ''}`.trim();
+          const emailShippingCost = Number(shipping_cost) || 0;
+          const emailTotal = Number(amount) || 0;
+
+          emailService.sendOrderConfirmation({
+            orderId: saleId,
+            customerName,
+            customerEmail: payer?.email || '',
+            customerPhone: payer?.phone?.number || undefined,
+            items: emailItems,
+            subtotal: emailTotal - emailShippingCost,
+            shippingCost: emailShippingCost,
+            totalAmount: emailTotal,
+            deliveryMethod: isPickup ? 'pickup' : 'shipping',
+            shippingAddress: shipping_address || undefined,
+            paymentMethod: paymentResult.payment_method_id
+          }).catch(err => console.error('Error enviando email de confirmacion:', err));
+        } catch (emailError) {
+          console.error('Error preparando email de confirmacion:', emailError);
+        }
+
       } catch (dbError) {
         await client.query('ROLLBACK');
         console.error('Error al guardar la venta en la base de datos:', dbError);
