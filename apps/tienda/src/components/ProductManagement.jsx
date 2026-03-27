@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { storeService } from '../services/store.service';
+import { productsService } from '../services/products.service';
 import ProductEditModal from './ProductEditModal';
 import BulkActionsBar from './BulkActionsBar';
 import OptionalAuthGuard from './auth/OptionalAuthGuard';
@@ -107,6 +108,7 @@ const ProductManagementContent = () => {
     limit: 12,
     search: '',
     category_id: '',
+    subcategory_id: '',
     featured: '',
     location: '',
     sort: ''
@@ -115,11 +117,25 @@ const ProductManagementContent = () => {
     total: 0,
     totalPages: 0
   });
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     loadProducts();
     loadStats();
   }, [filters]);
+
+  useEffect(() => {
+    if (filters.category_id) {
+      loadSubcategories(parseInt(filters.category_id));
+    } else {
+      setSubcategories([]);
+    }
+  }, [filters.category_id]);
 
   const loadProducts = async () => {
     try {
@@ -152,6 +168,24 @@ const ProductManagementContent = () => {
       setStats(stats);
     } catch (error) {
       console.error('Error al cargar estadísticas:', error);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const cats = await productsService.getCategories();
+      setCategories(cats);
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+    }
+  };
+
+  const loadSubcategories = async (categoryId) => {
+    try {
+      const subs = await productsService.getSubcategories(categoryId);
+      setSubcategories(subs);
+    } catch (error) {
+      console.error('Error al cargar subcategorías:', error);
     }
   };
 
@@ -245,6 +279,33 @@ const ProductManagementContent = () => {
               />
             </div>
 
+            {/* Categoría */}
+            <select
+              value={filters.category_id}
+              onChange={(e) => setFilters({ ...filters, category_id: e.target.value, subcategory_id: '', page: 1 })}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-brand-rosa bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value="">Todas las categorías</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+
+            {/* Subcategoría */}
+            <select
+              value={filters.subcategory_id}
+              onChange={(e) => setFilters({ ...filters, subcategory_id: e.target.value, page: 1 })}
+              disabled={!filters.category_id}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-brand-rosa bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+            >
+              <option value="">Todas las subcategorías</option>
+              {subcategories.map(sub => (
+                <option key={sub.id} value={sub.id}>{sub.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
             {/* Estado destacado */}
             <select
               value={filters.featured}

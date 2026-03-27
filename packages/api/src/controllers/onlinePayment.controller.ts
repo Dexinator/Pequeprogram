@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { pool } from '../db';
+import { emailService } from '../services/email.service';
 const mercadopago = require('mercadopago');
 
 // Configuración de MercadoPago SDK v2
@@ -332,7 +333,63 @@ export const processPayment = asyncHandler(async (req: Request, res: Response) =
         
         await client.query('COMMIT');
         console.log(`Venta online guardada con éxito. ID: ${saleId}, Pago ID: ${paymentResult.id}`);
-        
+
+        // Enviar correo de confirmación (no bloquea la respuesta)
+        try {
+          // Obtener info de items para el email
+          const itemsForEmail = await pool.query(
+            `SELECT osi.quantity, osi.unit_price, osi.subtotal,
+              CONCAT(s.name, ' ', COALESCE(b.name, '')) as product_name,
+              i.id as inventory_id,
+              vi.images
+            FROM online_sale_items osi
+            LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+            LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+            LEFT JOIN brands b ON vi.brand_id = b.id
+            LEFT JOIN inventario i ON i.valuation_item_id = vi.id
+            WHERE osi.online_sale_id = $1`,
+            [saleId]
+          );
+
+          const emailItems = itemsForEmail.rows.map((row: any) => {
+            let images: string[] = [];
+            if (row.images) {
+              const parsed = typeof row.images === 'string' ? JSON.parse(row.images) : row.images;
+              if (Array.isArray(parsed)) {
+                images = parsed.map((img: any) => typeof img === 'object' && img !== null ? img.url : img).filter(Boolean);
+              }
+            }
+            return {
+              productName: (row.product_name || 'Producto').trim(),
+              sku: row.inventory_id || undefined,
+              imageUrl: images[0] || undefined,
+              quantity: parseInt(row.quantity),
+              unitPrice: parseFloat(row.unit_price),
+              subtotal: parseFloat(row.subtotal)
+            };
+          });
+
+          const customerName = `${payer?.first_name || 'Cliente'} ${payer?.last_name || ''}`.trim();
+          const emailShippingCost = Number(shipping_cost) || 0;
+          const emailTotal = Number(amount) || 0;
+
+          emailService.sendOrderConfirmation({
+            orderId: saleId,
+            customerName,
+            customerEmail: payer?.email || '',
+            customerPhone: payer?.phone?.number || undefined,
+            items: emailItems,
+            subtotal: emailTotal - emailShippingCost,
+            shippingCost: emailShippingCost,
+            totalAmount: emailTotal,
+            deliveryMethod: isPickup ? 'pickup' : 'shipping',
+            shippingAddress: shipping_address || undefined,
+            paymentMethod: paymentResult.payment_method_id
+          }).catch(err => console.error('Error enviando email de confirmacion:', err));
+        } catch (emailError) {
+          console.error('Error preparando email de confirmacion:', emailError);
+        }
+
       } catch (dbError) {
         await client.query('ROLLBACK');
         console.error('Error al guardar la venta en la base de datos:', dbError);
@@ -438,16 +495,29 @@ export const getPaymentStatus = asyncHandler(async (req: Request, res: Response)
   const { paymentId } = req.params;
 
   const result = await pool.query(
-    `SELECT os.*, array_agg(
-      json_build_object(
-        'valuation_item_id', osi.valuation_item_id,
-        'quantity', osi.quantity,
-        'unit_price', osi.unit_price,
-        'subtotal', osi.subtotal
-      )
+    `SELECT os.*,
+    COALESCE(
+      json_agg(
+        json_build_object(
+          'valuation_item_id', osi.valuation_item_id,
+          'quantity', osi.quantity,
+          'unit_price', osi.unit_price,
+          'subtotal', osi.subtotal,
+          'product_name', CONCAT(s.name, ' ', b.name),
+          'subcategory_name', s.name,
+          'brand_name', b.name,
+          'inventory_id', i.id,
+          'images', vi.images
+        )
+      ) FILTER (WHERE osi.id IS NOT NULL),
+      '[]'::json
     ) as items
     FROM online_sales os
     LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
+    LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
+    LEFT JOIN subcategories s ON vi.subcategory_id = s.id
+    LEFT JOIN brands b ON vi.brand_id = b.id
+    LEFT JOIN inventario i ON i.valuation_item_id = vi.id
     WHERE os.payment_id = $1
     GROUP BY os.id`,
     [paymentId]
@@ -525,6 +595,7 @@ export const listOnlineSales = asyncHandler(async (req: Request, res: Response) 
       os.*,
       sz.zone_name,
       sz.zone_code,
+      COALESCE(
       json_agg(
         json_build_object(
           'id', osi.id,
@@ -538,7 +609,9 @@ export const listOnlineSales = asyncHandler(async (req: Request, res: Response) 
           'inventory_id', i.id,
           'images', vi.images
         )
-      ) as items
+      ) FILTER (WHERE osi.id IS NOT NULL),
+      '[]'::json
+    ) as items
     FROM online_sales os
     LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
     LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id
@@ -653,6 +726,7 @@ export const getOnlineSaleById = asyncHandler(async (req: Request, res: Response
       os.*,
       sz.zone_name,
       sz.zone_code,
+      COALESCE(
       json_agg(
         json_build_object(
           'id', osi.id,
@@ -667,7 +741,9 @@ export const getOnlineSaleById = asyncHandler(async (req: Request, res: Response
           'images', vi.images,
           'features', vi.features
         )
-      ) as items
+      ) FILTER (WHERE osi.id IS NOT NULL),
+      '[]'::json
+    ) as items
     FROM online_sales os
     LEFT JOIN online_sale_items osi ON os.id = osi.online_sale_id
     LEFT JOIN valuation_items vi ON osi.valuation_item_id = vi.id

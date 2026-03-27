@@ -58,6 +58,29 @@ export default function OnlineSaleDetailModal({ sale, onClose }) {
 
   const subtotal = sale.total_amount - (sale.shipping_cost || 0);
 
+  // Parse images: pueden venir como string JSON, array, o null
+  const parseImages = (images) => {
+    if (!images) return [];
+    if (Array.isArray(images)) {
+      // Could be array of objects {url, key} or array of strings
+      return images.map(img => typeof img === 'object' && img !== null ? img.url : img).filter(Boolean);
+    }
+    if (typeof images === 'string') {
+      try {
+        const parsed = JSON.parse(images);
+        if (Array.isArray(parsed)) {
+          return parsed.map(img => typeof img === 'object' && img !== null ? img.url : img).filter(Boolean);
+        }
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  // Filter out null items (PostgreSQL json_agg with LEFT JOIN can return [null])
+  const validItems = (sale.items || []).filter(item => item && item.id != null);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -251,51 +274,65 @@ export default function OnlineSaleDetailModal({ sale, onClose }) {
 
           {/* Productos */}
           <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Productos</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Productos ({validItems.length})
+            </h3>
             <div className="space-y-3">
-              {sale.items && Array.isArray(sale.items) && sale.items.length > 0 ? (
-                sale.items.map((item, index) => (
-                  <div key={index} className="bg-gray-50 p-4 rounded-lg flex gap-4">
-                    {/* Imagen del producto */}
-                    {item.images && item.images.length > 0 ? (
-                      <img
-                        src={item.images[0]}
-                        alt={item.product_name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
-                        <span className="text-gray-400 text-xs">Sin imagen</span>
+              {validItems.length > 0 ? (
+                validItems.map((item, index) => {
+                  const itemImages = parseImages(item.images);
+                  return (
+                    <div key={index} className="bg-gray-50 p-4 rounded-lg flex gap-4">
+                      {/* Imagen del producto */}
+                      {itemImages.length > 0 ? (
+                        <img
+                          src={itemImages[0]}
+                          alt={item.product_name || 'Producto'}
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling && (e.target.nextElementSibling.style.display = 'flex');
+                          }}
+                        />
+                      ) : null}
+                      {/* Fallback si no hay imagen o falla la carga */}
+                      <div
+                        className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ display: itemImages.length > 0 ? 'none' : 'flex' }}
+                      >
+                        <span className="text-gray-400 text-xs text-center">Sin imagen</span>
                       </div>
-                    )}
 
-                    {/* Detalles del producto */}
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{item.product_name}</p>
-                      <p className="text-sm text-gray-600">
-                        {item.subcategory_name} {item.brand_name}
-                      </p>
-                      {item.inventory_id && (
-                        <p className="text-xs text-gray-500">SKU: {item.inventory_id}</p>
-                      )}
-                      <div className="mt-2 flex items-center gap-4">
-                        <span className="text-sm text-gray-600">
-                          Cantidad: {item.quantity}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          Precio unitario: {formatCurrency(item.unit_price)}
-                        </span>
+                      {/* Detalles del producto */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900">{item.product_name || 'Producto'}</p>
+                        <p className="text-sm text-gray-600">
+                          {item.subcategory_name} {item.brand_name && `— ${item.brand_name}`}
+                        </p>
+                        {item.inventory_id && (
+                          <p className="text-sm font-mono font-semibold text-blue-700 bg-blue-50 inline-block px-2 py-0.5 rounded mt-1">
+                            SKU: {item.inventory_id}
+                          </p>
+                        )}
+                        <div className="mt-2 flex items-center gap-4">
+                          <span className="text-sm text-gray-600">
+                            Cantidad: {item.quantity}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            Precio unitario: {formatCurrency(item.unit_price)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Subtotal */}
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-lg font-semibold text-gray-900">
+                          {formatCurrency(item.subtotal)}
+                        </p>
                       </div>
                     </div>
-
-                    {/* Subtotal */}
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-gray-900">
-                        {formatCurrency(item.subtotal)}
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <p className="text-sm text-gray-500 text-center py-4">
                   No hay productos en este pedido

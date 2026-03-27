@@ -20,6 +20,7 @@ export interface Product {
   discount_percentage?: number;
   discount_valid_until?: string;
   special_offer_text?: string;
+  online_notes?: string;
 }
 
 export interface ProductsResponse {

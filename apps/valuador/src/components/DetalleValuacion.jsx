@@ -9,7 +9,7 @@ const StatusBadge = ({ status }) => {
       case 'pending':
         return {
           text: 'Pendiente',
-          classes: 'bg-amarillo/20 text-amarillo border-amarillo/30'
+          classes: 'bg-orange-100 text-orange-600 border-orange-300'
         };
       case 'completed':
         return {
@@ -175,7 +175,7 @@ const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalCo
                     {producto.modality === 'consignación' && producto.consignment_price && (
                       <div className="text-center">
                         <p className="text-text-muted text-sm">Precio Consignación</p>
-                        <p className="text-lg font-bold text-amarillo">
+                        <p className="text-lg font-bold text-orange-600">
                           {formatCurrency(producto.consignment_price)}
                         </p>
                         {(Number(producto.quantity) || 1) > 1 && (
@@ -212,7 +212,7 @@ const ValuacionResumen = ({ cliente, productos, totalCompra, totalVenta, totalCo
           {totalConsignacion > 0 && (
             <div className="text-center p-4 bg-amarillo/10 rounded-lg border border-amarillo/20">
               <p className="text-text-muted text-sm">Total Consignación</p>
-              <p className="text-2xl font-bold text-amarillo">{formatCurrency(totalConsignacion)}</p>
+              <p className="text-2xl font-bold text-orange-600">{formatCurrency(totalConsignacion)}</p>
             </div>
           )}
         </div>
@@ -489,7 +489,7 @@ function DetalleValuacionContent({ valuationId }) {
         <div className="bg-background-alt p-4 rounded-lg shadow-sm border border-border">
           <div className="flex items-start gap-3">
             <div className="p-2 bg-amarillo/10 rounded-md">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amarillo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>

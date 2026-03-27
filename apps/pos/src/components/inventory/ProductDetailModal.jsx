@@ -220,19 +220,31 @@ export default function ProductDetailModal({ product, onClose }) {
               </div>
             )}
 
-            {/* Imágenes (si existieran) */}
-            {valuationItem.images && valuationItem.images.length > 0 && (
-              <div>
-                <h4 className="font-medium text-gray-900 mb-3">Imágenes</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {valuationItem.images.map((image, index) => (
-                    <div key={index} className="bg-gray-200 rounded-lg aspect-square flex items-center justify-center">
-                      <span className="text-gray-500 text-sm">Imagen {index + 1}</span>
-                    </div>
-                  ))}
+            {/* Imágenes */}
+            {(() => {
+              let images = valuationItem.images || [];
+              if (typeof images === 'string') {
+                try { images = JSON.parse(images); } catch (e) { images = []; }
+              }
+              if (!Array.isArray(images)) images = [];
+              images = images.map(img => typeof img === 'object' && img !== null ? img.url : img).filter(Boolean);
+              return images.length > 0 ? (
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">Imágenes</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {images.map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Producto ${index + 1}`}
+                        className="w-full aspect-square object-cover rounded-lg border border-gray-200"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : null;
+            })()}
           </div>
         </div>
         

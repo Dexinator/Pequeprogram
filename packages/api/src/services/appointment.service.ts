@@ -77,8 +77,7 @@ const TIME_SLOTS = [
   { start: '13:15', end: '14:00' },
   { start: '16:00', end: '16:45' },
   { start: '16:45', end: '17:30' },
-  { start: '17:30', end: '18:15' },
-  { start: '18:15', end: '19:00' }
+  { start: '17:30', end: '18:15' }
 ];
 
 // Valid days: Tuesday (2) and Thursday (4)

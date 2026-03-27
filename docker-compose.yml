@@ -42,6 +42,10 @@ services:
       # MercadoPago México - Credenciales de prueba (usar variables de entorno en producción)
       MP_ACCESS_TOKEN: ${MP_ACCESS_TOKEN:-TEST-6475800530675623-081123-9b1219d701644edc122fa47d71a5a85d-666796114}
       MP_PUBLIC_KEY: ${MP_PUBLIC_KEY:-TEST-552b4b64-48f2-4316-9231-7b5cf3793e9e}
+      # Resend - Email transaccional
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      NOTIFICATION_EMAIL: ${NOTIFICATION_EMAIL:-citas@entrepeques.mx}
+      EMAIL_FROM: ${EMAIL_FROM:-Entrepeques <citas@mail.entrepeques.mx>}
     volumes:
       - ./packages/api:/app # Mapear código fuente para live reload
       - api_node_modules:/app/node_modules # Evitar sobreescribir node_modules del contenedor

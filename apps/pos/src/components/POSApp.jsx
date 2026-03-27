@@ -5,7 +5,6 @@ import InventarioModule from './modules/InventarioModule';
 import ComprasModule from './modules/ComprasModule';
 import ConsignacionesModule from './modules/ConsignacionesModule';
 import OnlineSalesModule from './modules/OnlineSalesModule';
-import ProductosModule from './modules/ProductosModule';
 
 export default function POSApp() {
   const { user, logout } = useAuth();
@@ -28,8 +27,6 @@ export default function POSApp() {
         return <ConsignacionesModule />;
       case 'ventas-online':
         return <OnlineSalesModule />;
-      case 'productos':
-        return <ProductosModule />;
       default:
         return <VentasModule />;
     }
@@ -61,11 +58,6 @@ export default function POSApp() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity="0.5" />
       </svg>
-    ),
-    productos: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
     )
   };
 
@@ -85,8 +77,7 @@ export default function POSApp() {
                   'ventas-online': 'Ventas Online',
                   inventario: 'Inventario',
                   compras: 'Compras',
-                  consignaciones: 'Consignaciones',
-                  productos: 'Productos'
+                  consignaciones: 'Consignaciones'
                 }).map(([key, label]) => (
                   <button
                     key={key}
@@ -128,8 +119,7 @@ export default function POSApp() {
               'ventas-online': 'Online',
               inventario: 'Inventario',
               compras: 'Compras',
-              consignaciones: 'Consig.',
-              productos: 'Productos'
+              consignaciones: 'Consig.'
             }).map(([key, label]) => (
               <button
                 key={key}

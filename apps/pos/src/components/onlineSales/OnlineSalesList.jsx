@@ -298,15 +298,32 @@ export default function OnlineSalesList() {
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-4 py-3">
                       <div className="text-sm font-semibold text-gray-900">
                         {formatCurrency(sale.total_amount)}
                       </div>
-                      <div className="text-xs text-gray-500">
-                        {sale.items && Array.isArray(sale.items)
-                          ? `${sale.items.length} producto(s)`
-                          : '0 productos'}
-                      </div>
+                      {(() => {
+                        const items = (sale.items || []).filter(i => i && i.id != null);
+                        return items.length > 0 ? (
+                          <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                            {items.slice(0, 2).map((item, idx) => (
+                              <div key={idx}>
+                                {item.inventory_id && (
+                                  <span className="font-mono font-semibold text-blue-600">{item.inventory_id}</span>
+                                )}
+                                {item.product_name && (
+                                  <span className="ml-1">{item.product_name}</span>
+                                )}
+                              </div>
+                            ))}
+                            {items.length > 2 && (
+                              <div className="text-gray-400">+{items.length - 2} más</div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-xs text-gray-400">Sin productos</div>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(sale.payment_status)}`}>

@@ -414,6 +414,19 @@ Multi-step valuation process:
 - **Astro React Components Not Loading Data**: Use `client:only="react"` for components with browser APIs, avoid AuthProvider in public pages
 - **Tailwind Dynamic Classes**: Use complete class names instead of template literals for dynamic styling
 
+## Slack Context
+
+- **Workspace:** Gutete
+- **MCP Server:** slack-gutete
+- **Canal(es):** #sistema-citas (C04H934LJF7)
+
+Para revisar conversaciones de Slack sobre este proyecto, usa las herramientas del MCP `slack-gutete`:
+- `slack_list_channels` para listar canales
+- `slack_get_channel_history` con channel `C04H934LJF7`
+- `slack_get_thread_replies` para hilos completos
+
+Cuando te pidan revisar tareas o cambios pendientes, lee el historial y extrae action items.
+
 ## Important Implementation Details
 
 ### Environment Configuration  

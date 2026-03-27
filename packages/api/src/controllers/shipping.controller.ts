@@ -12,9 +12,21 @@ export const calculateShipping = asyncHandler(async (req: Request, res: Response
   const { postal_code, weight_grams, weight_kg, items, subtotal } = req.body;
 
   if (!postal_code) {
-    res.status(400).json({ 
-      error: true, 
-      message: 'El código postal es requerido' 
+    res.status(400).json({
+      error: true,
+      message: 'El código postal es requerido'
+    });
+    return;
+  }
+
+  // Sanitizar código postal: solo dígitos
+  const cleanPostalCode = String(postal_code).replace(/[^0-9]/g, '');
+
+  if (cleanPostalCode.length !== 5) {
+    console.warn(`⚠️ Código postal inválido recibido: "${postal_code}" (limpio: "${cleanPostalCode}")`);
+    res.status(400).json({
+      error: true,
+      message: `El código postal debe tener 5 dígitos. Recibido: "${postal_code}"`
     });
     return;
   }
@@ -59,28 +71,30 @@ export const calculateShipping = asyncHandler(async (req: Request, res: Response
   const weightInKg = totalWeight / 1000;
 
   try {
-    // Buscar la zona correspondiente al código postal
+    // Buscar la zona correspondiente al código postal (usando código limpio)
     const zoneResult = await pool.query(
-      `SELECT sz.* 
+      `SELECT sz.*
        FROM shipping_zones sz
        INNER JOIN shipping_zone_postcodes szp ON sz.id = szp.zone_id
        WHERE szp.postal_code = $1 AND sz.is_active = true
        LIMIT 1`,
-      [postal_code]
+      [cleanPostalCode]
     );
 
     let zone;
     if (zoneResult.rows.length === 0) {
       // Si no se encuentra el código postal específico, usar zona Nacional
+      console.log(`📦 CP ${cleanPostalCode} no encontrado en zonas específicas, usando zona Nacional`);
       const nationalZone = await pool.query(
         'SELECT * FROM shipping_zones WHERE zone_code = $1 AND is_active = true',
         ['nacional']
       );
-      
+
       if (nationalZone.rows.length === 0) {
-        res.status(500).json({ 
-          error: true, 
-          message: 'No se pudo determinar la zona de envío' 
+        console.error('❌ Zona Nacional no encontrada o inactiva en shipping_zones');
+        res.status(500).json({
+          error: true,
+          message: 'No se pudo determinar la zona de envío. Intenta de nuevo o selecciona recoger en tienda.'
         });
         return;
       }

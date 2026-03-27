@@ -280,12 +280,13 @@ export class ValuationService {
   }
 
   // Finalizar valuación completa (crear + insertar items + finalizar en una transacción)
-  async finalizeComplete(clientId: number, products: any[], notes: string = ''): Promise<Valuation> {
+  async finalizeComplete(clientId: number, products: any[], notes: string = '', cashPercentage: number = 100): Promise<Valuation> {
     this.ensureAuthenticated();
     return this.http.post<Valuation>(`${this.baseEndpoint}/finalize-complete`, {
       client_id: clientId,
       products,
-      notes
+      notes,
+      cash_percentage: cashPercentage
     });
   }
 }

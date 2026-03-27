@@ -5,23 +5,21 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
   const calculateOfferTotal = () => {
     return selectedProducts.reduce((sum, product) => {
       const finalModality = editedModalities[product.id] || product.modality;
-      
+
       // Si es consignación, no suma al total
       if (finalModality === 'consignación') {
         return sum;
       }
-      
-      const editedPrice = editedPrices[product.id];
-      const basePrice = editedPrice?.purchase !== undefined 
-        ? Number(editedPrice.purchase)
-        : (product.suggested_purchase_price ? Number(product.suggested_purchase_price) : 0);
-      
+
+      // Usar getCashPrice para consistencia con los precios mostrados en la tabla
+      const cashPrice = getCashPrice(product);
+
       // Calcular precio según modalidad
-      let finalPrice = basePrice;
+      let finalPrice = cashPrice;
       if (finalModality === 'crédito en tienda') {
-        finalPrice = basePrice * 1.2; // 20% más
+        finalPrice = cashPrice * 1.2; // 20% más
       }
-      
+
       const quantity = Number(product.quantity) || 1;
       return sum + (isNaN(finalPrice) ? 0 : finalPrice * quantity);
     }, 0);
@@ -39,7 +37,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
       const numericPrice = Number(editedPrice.purchase);
       return isNaN(numericPrice) ? 0 : numericPrice;
     }
-    const basePrice = product.suggested_purchase_price || 0;
+    const basePrice = product.final_purchase_price || product.suggested_purchase_price || 0;
     return Number(basePrice);
   };
 
@@ -356,7 +354,6 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                   <meta charset="UTF-8">
                   <meta name="viewport" content="width=device-width, initial-scale=1.0">
                   <title>Oferta de Compra - Entrepeques</title>
-                  <script src="https://cdn.tailwindcss.com"></script>
                   <style>
                     @media print {
                       * {
@@ -469,53 +466,91 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       margin: 0;
                     }
                     
+                    *, *::before, *::after { box-sizing: border-box; }
                     body {
                       font-family: system-ui, -apple-system, sans-serif;
                       margin: 0;
                       padding: 20px;
                       background: white;
+                      color: #1f2937;
                     }
-                    
-                    .no-print {
-                      text-align: center;
-                      margin: 20px 0;
-                    }
-                    
-                    .no-print button {
-                      background: #00A0DD;
-                      color: white;
-                      border: none;
-                      padding: 10px 20px;
-                      border-radius: 5px;
-                      cursor: pointer;
-                      margin: 0 10px;
-                    }
-                    
-                    .no-print button:hover {
-                      background: #0070B9;
-                    }
+                    .oferta-document { max-width: 800px; margin: 0 auto; padding: 2rem; }
+                    .mb-8 { margin-bottom: 2rem; }
+                    .mb-6 { margin-bottom: 1.5rem; }
+                    .mb-4 { margin-bottom: 1rem; }
+                    .mb-3 { margin-bottom: 0.75rem; }
+                    .mb-2 { margin-bottom: 0.5rem; }
+                    .mb-1 { margin-bottom: 0.25rem; }
+                    .mt-8 { margin-top: 2rem; }
+                    .mt-2 { margin-top: 0.5rem; }
+                    .p-8 { padding: 2rem; }
+                    .p-4 { padding: 1rem; }
+                    .p-3 { padding: 0.75rem; }
+                    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+                    .px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+                    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+                    .py-0\\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+                    .pt-4 { padding-top: 1rem; }
+                    .flex { display: flex; }
+                    .grid { display: grid; }
+                    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+                    .gap-2 { gap: 0.5rem; }
+                    .justify-between { justify-content: space-between; }
+                    .items-start { align-items: flex-start; }
+                    .items-end { align-items: flex-end; }
+                    .text-right { text-align: right; }
+                    .text-center { text-align: center; }
+                    .text-left { text-align: left; }
+                    .text-2xl { font-size: 1.5rem; }
+                    .text-lg { font-size: 1.125rem; }
+                    .text-sm { font-size: 0.875rem; }
+                    .text-xs { font-size: 0.75rem; }
+                    .font-bold { font-weight: 700; }
+                    .font-medium { font-weight: 500; }
+                    .italic { font-style: italic; }
+                    .text-gray-800 { color: #1f2937; }
+                    .text-gray-700 { color: #374151; }
+                    .text-gray-600 { color: #4b5563; }
+                    .rounded { border-radius: 0.25rem; }
+                    .rounded-lg { border-radius: 0.5rem; }
+                    .border { border: 1px solid #e5e7eb; }
+                    .border-gray-300 { border-color: #d1d5db; }
+                    .border-gray-400 { border-color: #9ca3af; }
+                    .border-gray-600 { border-color: #4b5563; }
+                    .border-t { border-top: 1px solid #e5e7eb; }
+                    .border-t-2 { border-top: 2px solid #9ca3af; }
+                    .border-b-2 { border-bottom: 2px solid #9ca3af; }
+                    .bg-white { background: white; }
+                    .bg-gray-50 { background: #f9fafb; }
+                    .bg-gray-200 { background: #e5e7eb; }
+                    .bg-gray-300 { background: #d1d5db; }
+                    .w-full { width: 100%; }
+                    .w-5\\/12 { width: 41.666667%; }
+                    .h-12 { height: 3rem; }
+                    .space-y-2 > * + * { margin-top: 0.5rem; }
+                    table { border-collapse: collapse; }
+
+                    .no-print { display: none; }
                   </style>
                 </head>
                 <body>
                   ${documentContent}
-                  <script>
-                    // Auto-abrir diálogo de impresión después de que la página cargue
-                    window.onload = function() {
-                      setTimeout(function() {
-                        window.print();
-                      }, 500);
-                    };
-                    
-                    // Cerrar ventana después de imprimir o cancelar
-                    window.onafterprint = function() {
-                      window.close();
-                    };
-                  </script>
                 </body>
                 </html>
               `);
-              
+
               printWindow.document.close();
+
+              // Cerrar ventana después de imprimir o cancelar
+              printWindow.onafterprint = function() {
+                printWindow.close();
+              };
+
+              // Disparar impresión una sola vez desde la ventana padre
+              setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+              }, 500);
             } else {
               alert('No se pudo abrir la ventana de impresión. Por favor, permita ventanas emergentes para esta página.');
             }

@@ -60,22 +60,6 @@ const ProductSelectionStep = ({
         </ul>
       </div>
 
-      {/* Validation message */}
-      {validationResult && !validationResult.valid && (
-        <div className={`p-4 rounded-lg border ${
-          validationResult.type === 'minimum'
-            ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200'
-            : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'
-        }`}>
-          <div className="flex items-start">
-            <span className="text-xl mr-3">
-              {validationResult.type === 'minimum' ? '📋' : '⚠️'}
-            </span>
-            <p>{validationResult.message}</p>
-          </div>
-        </div>
-      )}
-
       {/* Product entries */}
       <div className="space-y-4">
         {items.map((item, index) => (
@@ -215,6 +199,22 @@ const ProductSelectionStep = ({
                 Prendas ropa
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Validation message */}
+      {validationResult && !validationResult.valid && (
+        <div className={`p-4 rounded-lg border ${
+          validationResult.type === 'minimum'
+            ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200'
+            : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'
+        }`}>
+          <div className="flex items-start">
+            <span className="text-xl mr-3">
+              {validationResult.type === 'minimum' ? '📋' : '⚠️'}
+            </span>
+            <p>{validationResult.message}</p>
           </div>
         </div>
       )}

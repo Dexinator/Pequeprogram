@@ -78,11 +78,9 @@ const ConfirmationStep = ({ wizardData, onConfirm, onBack, submitting }) => {
                 <p className="text-gray-800 dark:text-gray-200">
                   <span className="font-medium">Telefono:</span> {wizardData.clientPhone}
                 </p>
-                {wizardData.clientEmail && (
-                  <p className="text-gray-800 dark:text-gray-200">
-                    <span className="font-medium">Email:</span> {wizardData.clientEmail}
-                  </p>
-                )}
+                <p className="text-gray-800 dark:text-gray-200">
+                  <span className="font-medium">Email:</span> {wizardData.clientEmail}
+                </p>
               </>
             )}
             {wizardData.clientType === 'existing' && (

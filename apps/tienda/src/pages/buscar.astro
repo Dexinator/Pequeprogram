@@ -1,10 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SearchResults from '../components/shop/SearchResults';
+import SearchResultsWithProviders from '../components/shop/SearchResultsWithProviders';
 
 const query = Astro.url.searchParams.get('q') || '';
 ---
 
 <Layout title={query ? `Resultados para "${query}"` : 'Buscar productos'}>
-  <SearchResults client:only="react" initialQuery={query} />
+  <SearchResultsWithProviders client:only="react" initialQuery={query} />
 </Layout>
