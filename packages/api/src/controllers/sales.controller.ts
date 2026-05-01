@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { SalesService } from '../services/sales.service';
+import { TicketService } from '../services/ticket.service';
 import { CreateSaleDto, SaleQueryParams, InventorySearchParams } from '../models/sales.model';
 
 const salesService = new SalesService();
+const ticketService = new TicketService();
 
 // @desc    Create new sale
 // @route   POST /api/sales
@@ -187,6 +189,30 @@ export const getSalesStats = asyncHandler(async (req: Request, res: Response) =>
   res.json({
     success: true,
     data: stats
+  });
+});
+
+// @desc    Get printable ticket payload for a sale (TicketPayload v1)
+// @route   GET /api/sales/:id/ticket-payload
+// @access  Private
+export const getTicketPayload = asyncHandler(async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    res.status(400);
+    throw new Error('ID de venta inválido');
+  }
+
+  const payload = await ticketService.buildTicketPayload(id);
+
+  if (!payload) {
+    res.status(404);
+    throw new Error('Venta no encontrada');
+  }
+
+  res.json({
+    success: true,
+    data: payload,
   });
 });
 
