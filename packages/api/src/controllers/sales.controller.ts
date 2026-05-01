@@ -2,10 +2,12 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { SalesService } from '../services/sales.service';
 import { TicketService } from '../services/ticket.service';
+import { LabelService } from '../services/label.service';
 import { CreateSaleDto, SaleQueryParams, InventorySearchParams } from '../models/sales.model';
 
 const salesService = new SalesService();
 const ticketService = new TicketService();
+const labelService = new LabelService();
 
 // @desc    Create new sale
 // @route   POST /api/sales
@@ -208,6 +210,30 @@ export const getTicketPayload = asyncHandler(async (req: Request, res: Response)
   if (!payload) {
     res.status(404);
     throw new Error('Venta no encontrada');
+  }
+
+  res.json({
+    success: true,
+    data: payload,
+  });
+});
+
+// @desc    Get printable label payload for an inventory item (LabelPayload v1)
+// @route   GET /api/inventory/:id/label-payload
+// @access  Private
+export const getLabelPayload = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400);
+    throw new Error('ID de inventario inválido');
+  }
+
+  const payload = await labelService.buildLabelPayload(id);
+
+  if (!payload) {
+    res.status(404);
+    throw new Error('Producto de inventario no encontrado');
   }
 
   res.json({

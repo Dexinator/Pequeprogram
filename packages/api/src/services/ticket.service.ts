@@ -6,6 +6,7 @@ import {
   TicketItem,
   TicketPayment,
 } from '../models/ticket.model';
+import { buildProductDescription, OfferFeatureDef } from '../utils/product-description';
 
 const PAYMENT_LABELS: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -14,12 +15,6 @@ const PAYMENT_LABELS: Record<string, string> = {
   credito_tienda: 'Crédito en tienda',
   mixto: 'Pago mixto',
 };
-
-const GENERIC_BRAND_NAMES = new Set([
-  'sin marca',
-  'genérica',
-  'generica',
-]);
 
 export class TicketService {
   async buildTicketPayload(saleId: number): Promise<TicketPayloadV1 | null> {
@@ -151,11 +146,8 @@ export class TicketService {
   private async fetchOfferFeatureKeys(
     dbClient: PoolClient,
     subcategoryIds: number[]
-  ): Promise<Map<number, Array<{ key: string; displayName: string; orderIndex: number }>>> {
-    const result = new Map<
-      number,
-      Array<{ key: string; displayName: string; orderIndex: number }>
-    >();
+  ): Promise<Map<number, OfferFeatureDef[]>> {
+    const result = new Map<number, OfferFeatureDef[]>();
     if (subcategoryIds.length === 0) return result;
 
     const query = `
@@ -181,45 +173,17 @@ export class TicketService {
 
   private buildItemDescription(
     row: any,
-    offerFeatureKeysBySubcategory: Map<
-      number,
-      Array<{ key: string; displayName: string; orderIndex: number }>
-    >
+    offerFeatureKeysBySubcategory: Map<number, OfferFeatureDef[]>
   ): string {
-    if (typeof row.sku === 'string' && row.sku.startsWith('OTRP')) {
-      return row.otr_product_name || `Producto ${row.sku}`;
-    }
-
-    const parts: string[] = [];
-    const baseName = row.subcategory_name || row.category_name || 'Artículo';
-    parts.push(baseName);
-
-    const featureKeys = offerFeatureKeysBySubcategory.get(row.subcategory_id) || [];
-    if (featureKeys.length > 0 && row.features && typeof row.features === 'object') {
-      const featureBits: string[] = [];
-      for (const def of featureKeys) {
-        const raw = row.features[def.key];
-        if (raw === undefined || raw === null || raw === '') continue;
-        featureBits.push(this.formatFeatureValue(def.key, def.displayName, raw));
-      }
-      if (featureBits.length > 0) {
-        parts.push(featureBits.join(', '));
-      }
-    }
-
-    if (row.brand_name && !GENERIC_BRAND_NAMES.has(String(row.brand_name).toLowerCase())) {
-      parts.push(row.brand_name);
-    }
-
-    return parts.join(' · ');
-  }
-
-  private formatFeatureValue(key: string, displayName: string, value: any): string {
-    const lowerKey = key.toLowerCase();
-    if (lowerKey === 'talla' || lowerKey === 'size') return `Talla ${value}`;
-    if (lowerKey === 'edad') return `${value}`;
-    if (lowerKey === 'color') return `${value}`;
-    return `${displayName}: ${value}`;
+    return buildProductDescription({
+      sku: row.sku,
+      subcategoryName: row.subcategory_name,
+      categoryName: row.category_name,
+      brandName: row.brand_name,
+      features: row.features,
+      offerFeatureDefs: offerFeatureKeysBySubcategory.get(row.subcategory_id) || [],
+      otrProductName: row.otr_product_name,
+    });
   }
 
   private async fetchPayments(dbClient: PoolClient, saleId: number): Promise<TicketPayment[]> {
