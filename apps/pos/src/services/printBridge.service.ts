@@ -1,6 +1,10 @@
 import { HttpService } from './http.service';
 
-const DEFAULT_BRIDGE_URL = 'http://localhost:9100';
+// HTTPS by default so the production POS (https://...vercel.app) doesn't trip
+// mixed-content blocks. The bridge serves a self-signed cert that the user
+// accepts once per machine. Override with PUBLIC_PRINT_BRIDGE_URL when running
+// the POS locally over plain http for development.
+const DEFAULT_BRIDGE_URL = 'https://localhost:9443';
 
 export interface PrintTicketOptions {
   showSkuPerItem?: boolean;
