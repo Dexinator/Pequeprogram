@@ -4,7 +4,9 @@ import {
   searchClients,
   getClient,
   createClient,
-  updateClient
+  updateClient,
+  adjustStoreCredit,
+  getStoreCreditMovements
 } from '../controllers/client.controller';
 
 const router = express.Router();
@@ -25,5 +27,16 @@ router
   .route('/:id')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), getClient)
   .put(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), updateClient);
+
+// Store credit management — adjustments restricted to admin/manager to keep an
+// authority chain on balance changes; movements list available to everyone who
+// can see the client.
+router
+  .route('/:id/store-credit/adjust')
+  .post(authorize(['superadmin', 'admin', 'manager', 'gerente']), adjustStoreCredit);
+
+router
+  .route('/:id/store-credit/movements')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), getStoreCreditMovements);
 
 export default router;

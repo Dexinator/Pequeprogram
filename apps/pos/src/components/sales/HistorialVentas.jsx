@@ -1,7 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { SalesService, formatCurrency, formatDate } from '../../services/sales.service';
+import { printBridgeService } from '../../services/printBridge.service';
 
 const salesService = new SalesService();
+
+function ReprintTicketButton({ saleId }) {
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState(null);
+
+  const handleClick = async () => {
+    setStatus('loading');
+    setError(null);
+    const result = await printBridgeService.printTicket(saleId);
+    if (result.ok) {
+      setStatus('success');
+      setTimeout(() => setStatus('idle'), 2000);
+    } else {
+      setStatus('error');
+      setError(result.error || 'No se pudo imprimir.');
+      setTimeout(() => setStatus('idle'), 4000);
+    }
+  };
+
+  const label = {
+    idle: 'Reimprimir',
+    loading: 'Imprimiendo…',
+    success: 'Impreso',
+    error: 'Reintentar',
+  }[status];
+
+  const colorClass = {
+    idle: 'text-blue-600 hover:text-blue-900',
+    loading: 'text-gray-400',
+    success: 'text-green-600',
+    error: 'text-red-600 hover:text-red-900',
+  }[status];
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={status === 'loading'}
+      className={colorClass}
+      title={status === 'error' ? error : 'Reimprimir ticket en la impresora'}
+    >
+      {label}
+    </button>
+  );
+}
 
 export default function HistorialVentas() {
   const [sales, setSales] = useState([]);
@@ -212,12 +257,15 @@ export default function HistorialVentas() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => viewSaleDetails(sale.id)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Ver detalles
-                    </button>
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => viewSaleDetails(sale.id)}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        Ver detalles
+                      </button>
+                      <ReprintTicketButton saleId={sale.id} />
+                    </div>
                   </td>
                 </tr>
               ))

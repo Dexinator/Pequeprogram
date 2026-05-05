@@ -6,7 +6,8 @@ import {
   getSale,
   getSalesStats,
   searchInventory,
-  getAvailableInventory
+  getAvailableInventory,
+  getTicketPayload
 } from '../controllers/sales.controller';
 
 const router = express.Router();
@@ -27,6 +28,10 @@ router
 router
   .route('/:id')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getSale);
+
+router
+  .route('/:id/ticket-payload')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getTicketPayload);
 
 // Inventory search routes (separate from sales routes)
 // These will be available at /api/sales/inventory/search and /api/sales/inventory/available

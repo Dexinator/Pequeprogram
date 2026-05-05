@@ -89,15 +89,41 @@ export class ClientService {
     try {
       this.ensureTokenIsSet();
       const response = await this.http.put<any>(`/clients/${id}`, clientData);
-      
+
       if (response.success && response.data) {
         return response.data;
       }
-      
+
       throw new Error(response.message || 'Error al actualizar el cliente');
     } catch (error) {
       console.error('Error al actualizar cliente:', error);
       throw error;
     }
   }
+
+  async adjustStoreCredit(
+    id: number,
+    amount: number,
+    reason: string,
+    notes?: string
+  ): Promise<{ previous_balance: number; new_balance: number; adjustment: number }> {
+    this.ensureTokenIsSet();
+    const response = await this.http.post<any>(`/clients/${id}/store-credit/adjust`, {
+      amount,
+      reason,
+      notes: notes || undefined,
+    });
+    if (!response?.success) {
+      throw new Error(response?.message || 'No se pudo ajustar el saldo');
+    }
+    return response.data;
+  }
+
+  async getStoreCreditMovements(id: number): Promise<any[]> {
+    this.ensureTokenIsSet();
+    const response = await this.http.get<any>(`/clients/${id}/store-credit/movements`);
+    return response?.data || [];
+  }
 }
+
+export const clientService = new ClientService();

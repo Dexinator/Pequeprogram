@@ -3,7 +3,8 @@ import { protect, authorize } from '../utils/auth.middleware';
 import {
   searchInventory,
   getAvailableInventory,
-  updateInventoryQuantity
+  updateInventoryQuantity,
+  getLabelPayload
 } from '../controllers/sales.controller';
 
 const router = express.Router();
@@ -24,5 +25,10 @@ router
 router
   .route('/:id/quantity')
   .put(authorize(['superadmin', 'admin', 'manager', 'gerente']), updateInventoryQuantity);
+
+// Get printable label payload for an inventory item
+router
+  .route('/:id/label-payload')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getLabelPayload);
 
 export default router;

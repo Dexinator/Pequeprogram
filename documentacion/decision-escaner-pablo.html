@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Decisión: Escáner de códigos de barras - Entrepeques</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #2d3436;
+    font-size: 11pt;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header {
+    border-bottom: 3px solid #ff6b9d;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+
+  .brand {
+    font-size: 10pt;
+    color: #ff6b9d;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: 20pt;
+    margin: 4px 0 2px 0;
+    color: #2d3436;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    font-size: 10pt;
+    color: #636e72;
+  }
+
+  h2 {
+    font-size: 13pt;
+    color: #2d3436;
+    margin: 20px 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #feca57;
+  }
+
+  p { margin: 6px 0; }
+
+  .box {
+    background: #fff9e6;
+    border-left: 4px solid #feca57;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .box-blue {
+    background: #e8f3ff;
+    border-left: 4px solid #74b9ff;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .box-green {
+    background: #e6f7f2;
+    border-left: 4px solid #00b894;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 10pt;
+  }
+
+  th {
+    background: #2d3436;
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 10pt;
+  }
+
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #dfe6e9;
+    vertical-align: top;
+  }
+
+  tr.recommended td {
+    background: #e6f7f2;
+    font-weight: 500;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 8.5pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .tag-keep { background: #feca57; color: #2d3436; }
+  .tag-basic { background: #74b9ff; color: white; }
+  .tag-best { background: #00b894; color: white; }
+
+  ul { margin: 6px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+
+  .decision {
+    margin-top: 22px;
+    padding: 16px;
+    border: 2px dashed #ff6b9d;
+    border-radius: 8px;
+  }
+
+  .decision h2 {
+    margin-top: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .check-option {
+    margin: 10px 0;
+    padding: 8px 0;
+  }
+
+  .check-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #2d3436;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  .signature-line {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .signature {
+    width: 45%;
+    border-top: 1px solid #2d3436;
+    padding-top: 5px;
+    text-align: center;
+    font-size: 9pt;
+    color: #636e72;
+  }
+
+  .footer {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #dfe6e9;
+    font-size: 8.5pt;
+    color: #636e72;
+    text-align: center;
+  }
+
+  strong { color: #2d3436; }
+
+  .precio {
+    font-weight: bold;
+    color: #ff6b9d;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">Entrepeques · Modernización POS</div>
+  <h1>Decisión requerida: escáner de códigos de barras</h1>
+  <div class="subtitle">Para: Pablo (encargado de tienda) · De: equipo de desarrollo</div>
+</div>
+
+<h2>Contexto</h2>
+<p>
+Estamos terminando el nuevo sistema de punto de venta. Como parte de esta actualización vamos a incorporar <strong>impresión de tickets</strong> para el cliente (usando la Epson TM-T88IV que ya tenemos), <strong>impresión de etiquetas con código de barras</strong> para los artículos del inventario (usando la Zebra GC420t), y <strong>lectura de esos códigos</strong> con escáner al momento de vender o buscar productos.
+</p>
+<p>
+Las dos impresoras funcionan bien y las vamos a conservar. La única duda es el <strong>escáner Netum</strong> que tienen actualmente. Necesitamos tu opinión antes de cerrar el plan.
+</p>
+
+<h2>Lo que tenemos hoy</h2>
+<div class="box">
+  <p style="margin-top:0"><strong>Escáner marca Netum</strong> (modelo económico, aparentemente de 2012 según la etiqueta).</p>
+  <p>Es un escáner <strong>1D</strong>: lee códigos de barras tradicionales tipo los de supermercado (Code128, EAN, UPC), pero <strong>no lee códigos QR</strong> ni códigos de dos dimensiones.</p>
+  <p style="margin-bottom:0">Se conecta por USB y funciona como si fuera un teclado: al leer un código, lo "escribe" en la computadora. No requiere instalar nada.</p>
+</div>
+
+<h2>¿Por qué te lo preguntamos?</h2>
+<p>
+Todas las opciones que mostramos abajo <strong>funcionan igual de bien con el nuevo sistema</strong> desde el punto de vista técnico. La decisión depende solo de dos preguntas que tú puedes responder mejor que nosotros:
+</p>
+<ul>
+  <li>¿El escáner actual sigue funcionando de forma confiable, sin fallos al leer, cable maltratado o gatillo flojo?</li>
+  <li>¿Ves valor en que en el futuro se puedan leer códigos QR (por ejemplo, pagos QR, o un QR en el ticket del cliente)?</li>
+</ul>
+
+<h2>Opciones</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:22%">Opción</th>
+      <th style="width:18%">Costo</th>
+      <th style="width:35%">Qué aporta</th>
+      <th style="width:25%">Cuándo elegirla</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <span class="tag tag-keep">A · Mantener</span><br>
+        <strong>Netum actual</strong>
+      </td>
+      <td><span class="precio">$0</span></td>
+      <td>
+        Sigue leyendo los códigos que imprimiremos en las etiquetas. Cero gasto.
+      </td>
+      <td>
+        Si sigue leyendo bien y sin fallos. Asumes el riesgo de que falle más adelante.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <span class="tag tag-basic">B · Reemplazo básico</span><br>
+        <strong>Netum NT-1228BC</strong> u similar (1D)
+      </td>
+      <td><span class="precio">$700 – $900</span></td>
+      <td>
+        Escáner nuevo, mismas capacidades que el actual pero sin el desgaste de años de uso.
+      </td>
+      <td>
+        Si el actual ya da lata pero no vemos necesidad de QR a corto plazo.
+      </td>
+    </tr>
+    <tr class="recommended">
+      <td>
+        <span class="tag tag-best">C · Recomendada</span><br>
+        <strong>Honeywell Voyager 1450g</strong> o <strong>Zebra DS2208</strong> (1D + 2D)
+      </td>
+      <td><span class="precio">$2,200 – $2,900</span></td>
+      <td>
+        Lee códigos de barras tradicionales <strong>y códigos QR</strong>. Marca profesional, cables y gatillo durables, garantía del fabricante.
+      </td>
+      <td>
+        Si quieres un equipo que te dure 5+ años sin dolores de cabeza y deje la puerta abierta a pagos QR o promociones con QR.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="box-blue">
+  <strong>Nota sobre precios:</strong> son referencias de mercado mexicano en abril 2026. Los precios exactos los confirmamos contigo antes de comprar.
+</div>
+
+<h2>Nuestra recomendación</h2>
+<div class="box-green">
+  <p style="margin-top:0">
+    Si el Netum actual <strong>sigue funcionando sin fallos</strong>, elegir la <strong>Opción A (mantener)</strong> y guardar el presupuesto para otras prioridades. El nuevo sistema no depende de tener un escáner nuevo.
+  </p>
+  <p style="margin-bottom:0">
+    Si ya presenta <strong>fallos ocasionales</strong> (lecturas fallidas, cable pelado, no siempre enciende), preferimos la <strong>Opción C</strong> sobre la B: el diferencial de precio es modesto y ganas capacidad de leer QR, que nos abre posibilidades futuras (ticket con QR del crédito en tienda, pagos digitales, promociones).
+  </p>
+</div>
+
+<div class="footer">
+  Entrepeques · Proyecto de modernización del punto de venta · Abril 2026
+</div>
+
+</body>
+</html>

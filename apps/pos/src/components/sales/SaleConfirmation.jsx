@@ -1,11 +1,9 @@
 import React from 'react';
 import { formatCurrency, formatDate } from '../../services/sales.service';
+import { printBridgeService } from '../../services/printBridge.service';
+import PrintButton from '../modules/PrintButton';
 
 export default function SaleConfirmation({ sale, onNewSale }) {
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="text-center mb-6">
@@ -110,12 +108,15 @@ export default function SaleConfirmation({ sale, onNewSale }) {
         >
           Nueva Venta
         </button>
-        <button
-          onClick={handlePrint}
-          className="flex-1 py-2 px-4 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
-        >
-          Imprimir Ticket
-        </button>
+        <div className="flex-1">
+          <PrintButton
+            printFn={() => printBridgeService.printTicket(sale.id)}
+            label="Imprimir Ticket"
+            successLabel="Ticket impreso"
+            variant="secondary"
+            className="w-full"
+          />
+        </div>
       </div>
     </div>
   );
