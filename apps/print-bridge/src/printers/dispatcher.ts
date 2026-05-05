@@ -1,12 +1,22 @@
+import os from 'os';
 import config from '../config';
+import { printRawBytesWindows } from './win32';
+import { printRawBytesPosix } from './posix';
 
 /**
  * Dispatches raw bytes (ESC/POS or ZPL) to a physical printer.
  *
- * v0.1: Only dryrun is wired up. The live USB transport is intentionally
- * left as a stub — it will be implemented during the in-store visit, where
- * the actual USB device paths and permissions can be verified. Until then,
- * setting RENDER_MODE=live throws a clear error explaining what's missing.
+ * Two transports:
+ *   - Windows: shells out to PowerShell which uses the Win32 winspool.drv
+ *     API to send bytes to a printer registered in the OS spooler. Pablo
+ *     installs the official Epson and Zebra drivers in Windows, then sets
+ *     EPSON_PRINTER_NAME / ZEBRA_PRINTER_NAME in the .env to the printer
+ *     names exactly as they appear in "Devices and Printers".
+ *   - Linux/macOS: writes bytes directly to a USB device path (typically
+ *     /dev/usb/lpN). The bridge user must have permission on that device.
+ *
+ * RENDER_MODE=dryrun short-circuits both transports and returns immediately,
+ * so the caller can still inspect the rendered bytes via the response.
  */
 
 export type PrinterTarget = 'epson' | 'zebra';
@@ -16,13 +26,20 @@ export async function sendToPrinter(target: PrinterTarget, bytes: Buffer): Promi
     return;
   }
 
-  // RENDER_MODE=live — to be implemented when the bridge is installed in store.
-  // The plan: open the USB device path (Linux) or use node-usb / @serialport/parsers
-  // (Windows) and write bytes directly. Different code paths per OS to handle
-  // the platform's USB permission model.
-  throw new Error(
-    `RENDER_MODE=live no está implementado todavía para ${target}. ` +
-      `Cambia a RENDER_MODE=dryrun o espera a la fase de instalación en tienda. ` +
-      `(${bytes.length} bytes pendientes de envío)`
-  );
+  const settings = target === 'epson' ? config.epson : config.zebra;
+  const platform = os.platform();
+
+  if (platform === 'win32') {
+    if (!settings.printerName) {
+      throw new Error(
+        `Falta configurar ${target === 'epson' ? 'EPSON_PRINTER_NAME' : 'ZEBRA_PRINTER_NAME'} ` +
+          `en el .env del bridge. Debe coincidir EXACTAMENTE con el nombre que aparece ` +
+          `en "Dispositivos e impresoras" de Windows (incluyendo mayúsculas y espacios).`
+      );
+    }
+    await printRawBytesWindows(settings.printerName, bytes);
+    return;
+  }
+
+  await printRawBytesPosix(settings.devicePath, bytes);
 }

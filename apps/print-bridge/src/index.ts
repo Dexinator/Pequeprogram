@@ -1,7 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
+import https from 'https';
+import http from 'http';
 import cors from 'cors';
 import { ZodError } from 'zod';
 import config from './config';
+import { ensureCertificate } from './tls';
 import healthRoutes from './routes/health';
 import ticketRoutes from './routes/ticket';
 import labelRoutes from './routes/label';
@@ -39,9 +42,24 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-app.listen(config.port, config.host, () => {
+http.createServer(app).listen(config.port, config.host, () => {
   console.log(
-    `[print-bridge] listening on http://${config.host}:${config.port} ` +
+    `[print-bridge] HTTP listening on http://${config.host}:${config.port} ` +
       `(mode=${config.renderMode}, location=${config.bridgeLocation})`
   );
 });
+
+if (config.enableHttps) {
+  ensureCertificate()
+    .then(({ key, cert }) => {
+      https.createServer({ key, cert }, app).listen(config.httpsPort, config.host, () => {
+        console.log(
+          `[print-bridge] HTTPS listening on https://${config.host}:${config.httpsPort} ` +
+            `(self-signed; accept it once in the browser)`
+        );
+      });
+    })
+    .catch(err => {
+      console.error('[print-bridge] no se pudo arrancar HTTPS:', err);
+    });
+}
