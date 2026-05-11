@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía de instalación · POS en tienda · Entrepeques</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #2d3436;
+    font-size: 10pt;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .header {
+    border-bottom: 3px solid #ff6b9d;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+  }
+  .brand {
+    font-size: 9pt;
+    color: #ff6b9d;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-size: 18pt;
+    margin: 4px 0 2px 0;
+    color: #2d3436;
+  }
+  .subtitle { font-size: 9.5pt; color: #636e72; }
+
+  h2 {
+    font-size: 12pt;
+    color: #2d3436;
+    margin: 16px 0 6px 0;
+    padding: 4px 8px;
+    background: #ff6b9d;
+    color: white;
+    border-radius: 3px;
+  }
+
+  h3 {
+    font-size: 10.5pt;
+    color: #2d3436;
+    margin: 10px 0 4px 0;
+  }
+
+  p { margin: 4px 0; }
+  ol, ul { margin: 4px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+
+  code, pre {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 9pt;
+  }
+  code {
+    background: #f1f3f5;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #c2185b;
+  }
+  pre {
+    background: #2d3436;
+    color: #f1f3f5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 6px 0;
+    line-height: 1.4;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  .step {
+    background: #fff9e6;
+    border-left: 4px solid #feca57;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .tip {
+    background: #e8f3ff;
+    border-left: 4px solid #74b9ff;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 9.5pt;
+    border-radius: 0 3px 3px 0;
+  }
+  .warn {
+    background: #ffeaea;
+    border-left: 4px solid #ff6b9d;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 9.5pt;
+    border-radius: 0 3px 3px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 9.5pt;
+  }
+  th {
+    background: #2d3436;
+    color: white;
+    padding: 6px 8px;
+    text-align: left;
+  }
+  td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #dfe6e9;
+    vertical-align: top;
+  }
+
+  strong { color: #2d3436; }
+  .footer {
+    margin-top: 16px;
+    padding-top: 8px;
+    border-top: 1px solid #dfe6e9;
+    font-size: 8.5pt;
+    color: #636e72;
+    text-align: center;
+  }
+
+  .toc {
+    background: #f8f9fa;
+    border: 1px solid #dfe6e9;
+    padding: 8px 12px;
+    margin: 10px 0 16px 0;
+    border-radius: 4px;
+    font-size: 9.5pt;
+  }
+  .toc ol { margin: 4px 0 0 16px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">Entrepeques · POS modernizado</div>
+  <h1>Guía de instalación en la PC de tienda</h1>
+  <div class="subtitle">Sistema de tickets, etiquetas y escáner · Windows</div>
+</div>
+
+<div class="toc">
+<strong>En esta guía:</strong>
+<ol>
+  <li>Lo que necesitas tener listo</li>
+  <li>Instalar drivers de las impresoras</li>
+  <li>Instalar el "Print Bridge" (servicio local de impresión)</li>
+  <li>Configurar y arrancar el servicio</li>
+  <li>Aceptar el certificado en el navegador</li>
+  <li>Probar una venta y una etiqueta</li>
+  <li>Si algo falla</li>
+</ol>
+</div>
+
+<h2>1. Lo que necesitas tener listo</h2>
+<ul>
+  <li>La PC de tienda con <strong>Windows</strong> y conexión a internet.</li>
+  <li>Cuenta con permisos de <strong>administrador</strong> (para instalar drivers y un servicio del sistema).</li>
+  <li>La <strong>impresora Epson TM-T88IV</strong> conectada por USB y prendida.</li>
+  <li>La <strong>impresora Zebra GC420t</strong> conectada por USB y prendida, con rollos de etiquetas <strong>49 × 51 mm</strong> y ribbon cargados.</li>
+  <li>El <strong>escáner</strong> conectado por USB.</li>
+</ul>
+
+<h2>2. Instalar drivers de las impresoras</h2>
+
+<h3>Epson TM-T88IV</h3>
+<ol>
+  <li>Abre <strong>epson.com.mx → Soporte → Buscar "TM-T88IV"</strong>.</li>
+  <li>Descarga el "Advanced Printer Driver (APD)" para Windows.</li>
+  <li>Ejecuta el instalador siguiendo los pasos por defecto.</li>
+  <li>Cuando termine, en Windows abre <strong>Configuración → Dispositivos → Impresoras y escáneres</strong>. Debe aparecer una entrada parecida a "EPSON TM-T88IV Receipt".</li>
+</ol>
+
+<h3>Zebra GC420t</h3>
+<ol>
+  <li>Abre <strong>zebra.com → Soporte → Buscar "GC420t"</strong>.</li>
+  <li>Descarga el driver "ZDesigner" para Windows.</li>
+  <li>Instálalo y reinicia si te lo pide.</li>
+  <li>En "Impresoras y escáneres" debe aparecer una entrada parecida a "ZDesigner GC420t".</li>
+</ol>
+
+<div class="warn">
+<strong>Importante:</strong> anota en una hoja el <strong>nombre exacto</strong> que muestra Windows para cada impresora — incluyendo mayúsculas y espacios. Lo vas a usar en el paso 4. Para verlo abre PowerShell y escribe:
+<pre><code>Get-Printer | Select Name</code></pre>
+</div>
+
+<h2>3. Instalar el "Print Bridge"</h2>
+
+<p>El Print Bridge es un mini-programa que corre en esta PC y conecta el sistema de POS con las impresoras USB. Sin él, el POS no puede imprimir porque está en la nube.</p>
+
+<h3>Instalar Node.js (si no está)</h3>
+<ol>
+  <li>Abre <strong>nodejs.org</strong> y descarga la versión <strong>LTS</strong> (botón verde de la izquierda).</li>
+  <li>Ejecuta el instalador con los valores por defecto.</li>
+  <li>Para confirmar: abre <strong>PowerShell</strong> y escribe:
+    <pre><code>node --version
+npm --version</code></pre>
+    Deben mostrar números (Node v20.x o mayor).</li>
+</ol>
+
+<h3>Bajar el código del Print Bridge</h3>
+<ol>
+  <li>Abre <strong>PowerShell como administrador</strong> (botón derecho → "Ejecutar como administrador").</li>
+  <li>Posiciónate donde quieras guardar el código, por ejemplo:
+    <pre><code>cd C:\
+mkdir Entrepeques
+cd Entrepeques</code></pre>
+  </li>
+  <li>Clona el repositorio (si te pide credenciales de GitHub, usa las del equipo):
+    <pre><code>git clone https://github.com/Dexinator/Pequeprogram.git
+cd Pequeprogram\apps\print-bridge</code></pre>
+  </li>
+  <li>Instala dependencias y compila:
+    <pre><code>npm install
+npm run build</code></pre>
+  </li>
+</ol>
+
+<h2>4. Configurar y arrancar el servicio</h2>
+
+<h3>Crear el archivo de configuración</h3>
+<ol>
+  <li>Aún en la carpeta <code>apps\print-bridge</code>, copia el ejemplo:
+    <pre><code>copy .env.example .env</code></pre>
+  </li>
+  <li>Abre <code>.env</code> con el Bloc de notas:
+    <pre><code>notepad .env</code></pre>
+  </li>
+  <li>Cambia estos valores (los demás los dejas como están):
+    <pre><code>ENABLE_HTTPS=true
+RENDER_MODE=live
+EPSON_PRINTER_NAME=NOMBRE EXACTO DE TU EPSON
+ZEBRA_PRINTER_NAME=NOMBRE EXACTO DE TU ZEBRA
+LABEL_WIDTH_DOTS=392
+LABEL_HEIGHT_DOTS=408</code></pre>
+  </li>
+  <li>Guarda y cierra el archivo.</li>
+</ol>
+
+<div class="warn">
+Los nombres de impresora son <strong>case-sensitive</strong>: tienen que coincidir <strong>exactamente</strong> con lo que vimos en <code>Get-Printer</code>, incluyendo mayúsculas y espacios.
+</div>
+
+<h3>Registrar como servicio de Windows</h3>
+<ol>
+  <li>En la misma PowerShell de administrador, ejecuta:
+    <pre><code>npm run service:install</code></pre>
+  </li>
+  <li>Verás mensajes confirmando que el servicio "EntrepequesPrintBridge" se instaló y arrancó.</li>
+  <li>Para verificar que está vivo, abre tu navegador y entra a:
+    <br><code>http://localhost:9100/health</code>
+    <br>Debe contestar con un mensaje en JSON que diga <code>"ok": true</code>.</li>
+</ol>
+
+<div class="tip">
+A partir de ahora, el servicio arranca solo cada vez que prendas la PC y se reinicia si algo lo tira. No tienes que abrir consolas nunca más.
+</div>
+
+<h2>5. Aceptar el certificado en el navegador (una sola vez)</h2>
+
+<p>El sistema de POS vive en la web (Vercel) y por seguridad solo puede hablar con el Print Bridge si la conexión es HTTPS. La primera vez Windows no confía en el certificado del bridge porque es autogenerado, hay que aceptarlo manualmente.</p>
+
+<ol>
+  <li>Abre el navegador que vas a usar para vender (Chrome, Edge o el que prefieras).</li>
+  <li>Entra a:
+    <br><code>https://localhost:9443/health</code></li>
+  <li>El navegador mostrará una advertencia de "Conexión no privada" o similar. Click en <strong>Configuración avanzada</strong> → <strong>Continuar de todos modos</strong> (el texto exacto cambia según navegador).</li>
+  <li>Debe aparecer el mismo JSON de antes con <code>"ok": true</code>.</li>
+  <li>Listo, ya no volverá a preguntar.</li>
+</ol>
+
+<div class="tip">
+Repite este paso en cada navegador que vayan a usar para el POS.
+</div>
+
+<h2>6. Probar una venta y una etiqueta</h2>
+
+<ol>
+  <li>Entra al POS en la URL que te compartimos (Vercel staging o producción).</li>
+  <li>Inicia sesión con tu usuario.</li>
+  <li><strong>Probar ticket:</strong> haz una venta de prueba (puede ser un producto cualquiera, en efectivo). Al cerrar la venta, presiona <strong>Imprimir Ticket</strong>. La Epson debe imprimir el ticket completo con el código de barras al pie.</li>
+  <li><strong>Probar etiqueta:</strong> entra al módulo de <strong>Inventario</strong>, busca cualquier producto y presiona <strong>Imprimir etiqueta</strong>. La Zebra debe imprimir la etiqueta con marca, talla, precio grande y código de barras.</li>
+  <li><strong>Probar escáner:</strong> en el módulo de <strong>Ventas</strong>, escanea una etiqueta recién impresa. El producto debe aparecer automáticamente en el carrito.</li>
+</ol>
+
+<h2>7. Si algo falla</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:42%">Síntoma</th>
+      <th>Qué probar</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>El botón "Imprimir Ticket" dice <em>"No se pudo conectar al servicio de impresión local"</em>.</td>
+      <td>1) Abre <code>https://localhost:9443/health</code> en el navegador. Si no carga, el servicio se detuvo. Reinicia la PC para que arranque otra vez.<br>2) Si carga pero el navegador marca cert no confiable, repite el <strong>paso 5</strong>.</td>
+    </tr>
+    <tr>
+      <td>El ticket sale con caracteres raros (acentos, ñ).</td>
+      <td>Verifica que en "Impresoras y escáneres" la Epson esté configurada en modo <strong>raw</strong>, no como "impresora genérica de texto".</td>
+    </tr>
+    <tr>
+      <td>La etiqueta sale corrida, desfasada o con cosas cortadas.</td>
+      <td>La medida del rollo no coincide con la configuración. Edita el <code>.env</code>: cambia <code>LABEL_WIDTH_DOTS</code> y <code>LABEL_HEIGHT_DOTS</code> al nuevo tamaño (mm × 8). Luego reinicia el servicio desde "Servicios" de Windows: busca <strong>EntrepequesPrintBridge</strong>, click derecho, <em>Reiniciar</em>.</td>
+    </tr>
+    <tr>
+      <td>Error: <code>OpenPrinter falló para '...'</code>.</td>
+      <td>El nombre de la impresora en <code>.env</code> no coincide con el de Windows. Revisa con <code>Get-Printer | Select Name</code> en PowerShell y corrige.</td>
+    </tr>
+    <tr>
+      <td>El escáner no agrega productos al escanear.</td>
+      <td>1) Verifica que el campo de búsqueda esté en foco. 2) Asegúrate de que el escáner esté configurado en layout <strong>Spain keyboard</strong> (en el manual del escáner busca ese código y escanéalo).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">
+Entrepeques · Modernización POS · Guía de instalación PC tienda · Versión 1.0
+</div>
+
+</body>
+</html>
