@@ -47,8 +47,8 @@ ENABLE_HTTPS=true
 EPSON_PRINTER_NAME=NOMBRE EXACTO DE LA EPSON
 ZEBRA_PRINTER_NAME=NOMBRE EXACTO DE LA ZEBRA
 RENDER_MODE=live
-LABEL_WIDTH_DOTS=400      # ajusta cuando Pablo confirme el rollo
-LABEL_HEIGHT_DOTS=200
+LABEL_WIDTH_DOTS=392      # 49 mm a 203 dpi
+LABEL_HEIGHT_DOTS=408     # 51 mm a 203 dpi
 CORS_ORIGINS=https://pos.entrepeques.com,https://pequeprogram-pos.vercel.app,https://pequeprogram-pos-git-development-dexinator.vercel.app
 ```
 

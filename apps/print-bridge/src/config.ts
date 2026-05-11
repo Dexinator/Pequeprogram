@@ -70,8 +70,8 @@ const config: BridgeConfig = {
     productId: process.env.ZEBRA_PRODUCT_ID || null,
   },
   label: {
-    widthDots: parseInt(process.env.LABEL_WIDTH_DOTS || '400', 10),
-    heightDots: parseInt(process.env.LABEL_HEIGHT_DOTS || '200', 10),
+    widthDots: parseInt(process.env.LABEL_WIDTH_DOTS || '392', 10),
+    heightDots: parseInt(process.env.LABEL_HEIGHT_DOTS || '408', 10),
   },
 };
 

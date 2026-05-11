@@ -6,17 +6,28 @@ interface RenderOptions {
 }
 
 /**
- * Generates a ZPL II program for the Zebra GC420t (203 dpi).
+ * Generates a ZPL II program for the Zebra GC420t (203 dpi = 8 dots/mm).
  *
- * Layout (50x25 mm = 400x200 dots default):
- *   line 1: business name (small)
- *   line 2: brand + size (medium)
- *   line 3: description, wrapped (medium)
- *   line 4: large price
- *   bottom: Code128 barcode + SKU text
+ * Calibrated for the Entrepeques roll: 49 mm × 51 mm (392 × 408 dots), nearly
+ * square with slightly more height than width. The layout is anchored by
+ * vertical bands so it degrades reasonably on other sizes:
  *
- * The label uses ^FB for text blocks so long descriptions wrap automatically.
- * Adjust widthDots / heightDots to switch label stock without code changes.
+ *   ┌──────────────────────────┐
+ *   │ Entrepeques        [CONS]│  header band — business + modality marker
+ *   │ Brand · Talla X          │  info band — brand and size
+ *   │ Descripción (3 líneas    │
+ *   │ máximo, hace wrap)       │
+ *   ├──────────────────────────┤
+ *   │                          │
+ *   │        $250.00           │  price band — large centered amount
+ *   │                          │
+ *   ├──────────────────────────┤
+ *   │  ║║║║║║║║║║║║║║║         │  barcode band — Code128 with SKU under
+ *   │       ROP-001234         │
+ *   └──────────────────────────┘
+ *
+ * Font sizes (^A0N,height,width) are scaled to the height so the same code
+ * still produces something readable if widthDots/heightDots change.
  */
 export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): string {
   const { widthDots, heightDots } = opts;
@@ -24,14 +35,24 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
   const margin = 12;
   const innerWidth = widthDots - margin * 2;
 
-  const businessLineY = margin;
-  const brandLineY = businessLineY + 28;
-  const descBlockY = brandLineY + 30;
-  const descBlockHeight = 50;
-  const priceY = descBlockY + descBlockHeight + 6;
-  const barcodeY = priceY + 56;
+  // Vertical bands as fractions of total height. Anchored to absolute Y for
+  // stability across slightly different rolls.
+  const headerY = margin;                                       // business line
+  const brandY = headerY + Math.round(heightDots * 0.07);       // brand + size
+  const descY = brandY + Math.round(heightDots * 0.08);         // description block
+  const descHeight = Math.round(heightDots * 0.20);             // 3 lines of description
+  const priceY = descY + descHeight + Math.round(heightDots * 0.03);
+  const barcodeY = priceY + Math.round(heightDots * 0.22);
 
-  const escape = (s: string) => s.replace(/\^/g, ' ').replace(/~/g, ' ');
+  // Font sizes scale with the height so the proportions stay readable on
+  // different rolls. Tuned for 408 dots tall.
+  const headerFont = Math.max(16, Math.round(heightDots * 0.05));   // ~20 at 408
+  const brandFont = Math.max(20, Math.round(heightDots * 0.07));    // ~28 at 408
+  const descFont = Math.max(18, Math.round(heightDots * 0.055));    // ~22 at 408
+  const priceFont = Math.max(40, Math.round(heightDots * 0.17));    // ~70 at 408
+  const barcodeHeight = Math.max(40, Math.round(heightDots * 0.18)); // ~70 at 408
+
+  const escape = (s: string) => (s ?? '').replace(/\^/g, ' ').replace(/~/g, ' ');
 
   const businessLine = escape(payload.business_name);
   const brandSizeLine = [payload.brand, payload.size].filter(Boolean).join('  ·  ');
@@ -48,17 +69,23 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
     '^LH0,0',
     '^CI28',
 
-    `^FO${margin},${businessLineY}^A0N,20,20^FD${businessLine}${modalityMark}^FS`,
-
-    brandSizeLine
-      ? `^FO${margin},${brandLineY}^A0N,24,24^FD${escape(brandSizeLine)}^FS`
+    // Header — business name on the left, modality marker on the right.
+    `^FO${margin},${headerY}^A0N,${headerFont},${headerFont}^FD${businessLine}^FS`,
+    modalityMark
+      ? `^FO${margin},${headerY}^A0N,${headerFont},${headerFont}^FB${innerWidth},1,0,R,0^FD${modalityMark}^FS`
       : '',
 
-    `^FO${margin},${descBlockY}^A0N,22,22^FB${innerWidth},2,2,L,0^FD${description}^FS`,
+    brandSizeLine
+      ? `^FO${margin},${brandY}^A0N,${brandFont},${brandFont}^FB${innerWidth},1,0,C,0^FD${escape(brandSizeLine)}^FS`
+      : '',
 
-    `^FO${margin},${priceY}^A0N,52,52^FD${priceText}^FS`,
+    `^FO${margin},${descY}^A0N,${descFont},${descFont}^FB${innerWidth},3,2,L,0^FD${description}^FS`,
 
-    `^FO${margin},${barcodeY}^BY2,3,40^BCN,40,Y,N,N^FD${barcodeValue}^FS`,
+    // Price — centered horizontally using ^FB.
+    `^FO${margin},${priceY}^A0N,${priceFont},${priceFont}^FB${innerWidth},1,0,C,0^FD${priceText}^FS`,
+
+    // Code128 barcode with human-readable line underneath.
+    `^FO${margin},${barcodeY}^BY2,3,${barcodeHeight}^BCN,${barcodeHeight},Y,N,N^FD${barcodeValue}^FS`,
 
     '^XZ',
   ].filter(Boolean).join('\n');
@@ -67,11 +94,11 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
 function modalityIndicator(modality: LabelPayloadV1['modality']): string {
   switch (modality) {
     case 'consignacion':
-      return '   [CONS]';
+      return '[CONS]';
     case 'credito_tienda':
-      return '   [CRED]';
+      return '[CRED]';
     case 'otros':
-      return '   [OTR]';
+      return '[OTR]';
     default:
       return '';
   }
