@@ -51,6 +51,8 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
   const descFont = Math.max(18, Math.round(heightDots * 0.055));    // ~22 at 408
   const priceFont = Math.max(40, Math.round(heightDots * 0.17));    // ~70 at 408
   const barcodeHeight = Math.max(40, Math.round(heightDots * 0.18)); // ~70 at 408
+  const footerFont = Math.max(14, Math.round(heightDots * 0.045));   // ~18 at 408
+  const footerY = barcodeY + barcodeHeight + Math.round(heightDots * 0.04);
 
   const escape = (s: string) => (s ?? '').replace(/\^/g, ' ').replace(/~/g, ' ');
 
@@ -59,7 +61,8 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
   const description = escape(payload.description);
   const priceText = escape(payload.price.formatted);
   const barcodeValue = escape(payload.barcode.value);
-
+  const skuText = escape(payload.sku);
+  const inventoryDate = payload.inventory_date ? escape(payload.inventory_date) : '';
   const modalityMark = modalityIndicator(payload.modality);
 
   return [
@@ -84,8 +87,15 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
     // Price — centered horizontally using ^FB.
     `^FO${margin},${priceY}^A0N,${priceFont},${priceFont}^FB${innerWidth},1,0,C,0^FD${priceText}^FS`,
 
-    // Code128 barcode with human-readable line underneath.
-    `^FO${margin},${barcodeY}^BY2,3,${barcodeHeight}^BCN,${barcodeHeight},Y,N,N^FD${barcodeValue}^FS`,
+    // Code128 barcode. We disable the built-in human-readable line (`N` after
+    // the height) because we render our own footer with SKU + date below.
+    `^FO${margin},${barcodeY}^BY2,3,${barcodeHeight}^BCN,${barcodeHeight},N,N,N^FD${barcodeValue}^FS`,
+
+    // Footer line: SKU on the left, inventory month/year on the right.
+    `^FO${margin},${footerY}^A0N,${footerFont},${footerFont}^FB${innerWidth},1,0,L,0^FD${skuText}^FS`,
+    inventoryDate
+      ? `^FO${margin},${footerY}^A0N,${footerFont},${footerFont}^FB${innerWidth},1,0,R,0^FD${inventoryDate}^FS`
+      : '',
 
     '^XZ',
   ].filter(Boolean).join('\n');

@@ -67,6 +67,7 @@ export const labelPayloadSchema = z.object({
     formatted: z.string(),
   }),
   modality: z.enum(['compra', 'consignacion', 'credito_tienda', 'otros', 'desconocida']),
+  inventory_date: z.string().nullable(),
   barcode: z.object({
     value: z.string(),
     format: z.literal('CODE128'),

@@ -42,6 +42,7 @@ export class LabelService {
           formatted: this.formatPrice(priceAmount),
         },
         modality: this.mapModality(row.modality, row.id),
+        inventory_date: this.formatInventoryDate(row.inventory_created_at),
         barcode: {
           value: row.id,
           format: 'CODE128',
@@ -61,6 +62,7 @@ export class LabelService {
         i.id,
         i.quantity,
         i.location,
+        i.created_at AS inventory_created_at,
         vi.subcategory_id,
         vi.modality,
         vi.features,
@@ -142,5 +144,17 @@ export class LabelService {
     if (lower.includes('crédito') || lower.includes('credito')) return 'credito_tienda';
     if (lower.includes('compra')) return 'compra';
     return 'desconocida';
+  }
+
+  // Compact MM/YY of when the product entered inventory, so staff can read
+  // age-of-stock at a glance without scanning. Null if the row has no
+  // created_at (shouldn't happen since the column has a default but be safe).
+  private formatInventoryDate(raw: Date | string | null | undefined): string | null {
+    if (!raw) return null;
+    const d = raw instanceof Date ? raw : new Date(raw);
+    if (Number.isNaN(d.getTime())) return null;
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = String(d.getFullYear()).slice(-2);
+    return `${month}/${year}`;
   }
 }

@@ -16,6 +16,7 @@ export interface LabelPayloadV1 {
   size: string | null;
   price: LabelPrice;
   modality: LabelModality;
+  inventory_date: string | null;
   barcode: {
     value: string;
     format: 'CODE128';
