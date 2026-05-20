@@ -17,7 +17,12 @@ const COLUMNS = 42;
  */
 export async function renderTicketToEscpos(
   payload: TicketPayloadV1,
-  options: { showSkuPerItem: boolean; showStoreCredit: boolean; showSaleBarcode: boolean }
+  options: {
+    showSkuPerItem: boolean;
+    showStoreCredit: boolean;
+    showSaleBarcode: boolean;
+    copyLabel?: string | null;
+  }
 ): Promise<RenderResult> {
   const printer = new ThermalPrinter({
     type: PrinterTypes.EPSON,
@@ -36,6 +41,11 @@ export async function renderTicketToEscpos(
   printer.println(payload.business.address);
   printer.println(`Tel. ${payload.business.phone}`);
   if (payload.business.rfc) printer.println(`RFC ${payload.business.rfc}`);
+  if (options.copyLabel) {
+    printer.bold(true);
+    printer.println(`*** ${options.copyLabel} ***`);
+    printer.bold(false);
+  }
   printer.drawLine();
 
   printer.alignLeft();
@@ -93,9 +103,16 @@ export async function renderTicketToEscpos(
   }
 
   if (options.showSaleBarcode) {
+    // Quiet zone above + tall bars so the handheld scanner can decode the
+    // printed barcode reliably. The previous height of 60 dots (~7.5 mm) was
+    // below what the scanner needs; 150 dots ≈ 18.75 mm at 8 dots/mm.
+    // Narrow-bar width stays at the Epson default (3 dots).
     printer.newLine();
-    printer.code128(payload.sale.barcode.value, { height: 60, text: 2 });
+    printer.alignCenter();
+    printer.code128(payload.sale.barcode.value, { height: 150 });
     printer.println(`Venta #${payload.sale.id}`);
+    printer.newLine();
+    printer.alignLeft();
   }
 
   printer.cut();

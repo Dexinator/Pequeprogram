@@ -11,7 +11,9 @@ function ReprintTicketButton({ saleId }) {
   const handleClick = async () => {
     setStatus('loading');
     setError(null);
-    const result = await printBridgeService.printTicket(saleId);
+    // Reprint is typically for a customer who lost their copy, so print one ticket.
+    // The cashier can press the button twice if both copies are needed again.
+    const result = await printBridgeService.printTicket(saleId, { copies: 1 });
     if (result.ok) {
       setStatus('success');
       setTimeout(() => setStatus('idle'), 2000);

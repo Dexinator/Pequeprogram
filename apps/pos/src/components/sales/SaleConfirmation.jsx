@@ -111,8 +111,8 @@ export default function SaleConfirmation({ sale, onNewSale }) {
         <div className="flex-1">
           <PrintButton
             printFn={() => printBridgeService.printTicket(sale.id)}
-            label="Imprimir Ticket"
-            successLabel="Ticket impreso"
+            label="Imprimir Tickets (Cliente + Tienda)"
+            successLabel="Tickets impresos"
             variant="secondary"
             className="w-full"
           />

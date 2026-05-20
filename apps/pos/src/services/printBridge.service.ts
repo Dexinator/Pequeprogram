@@ -10,6 +10,7 @@ export interface PrintTicketOptions {
   showSkuPerItem?: boolean;
   showStoreCredit?: boolean;
   showSaleBarcode?: boolean;
+  copies?: number;
 }
 
 export interface PrintResult {
@@ -80,18 +81,22 @@ export class PrintBridgeService {
         return { ok: false, error: 'El servidor devolvió un payload de ticket inválido o de versión desconocida.' };
       }
 
+      // Default to two copies: one stays with the customer, one with the store.
+      const copies = Math.max(1, Math.min(5, options.copies ?? 2));
+
       const res = await fetch(`${this.bridgeUrl}/print/ticket`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payload,
+          copies,
           options: {
             show_sku_per_item: options.showSkuPerItem ?? false,
             show_store_credit: options.showStoreCredit ?? true,
             show_sale_barcode: options.showSaleBarcode ?? true,
           },
         }),
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(15000),
       });
 
       const json = await res.json().catch(() => ({}));
