@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { ClientService } from '../../services/client.service';
+import AdjustStoreCreditModal from '../modules/AdjustStoreCreditModal';
+import { useAuth } from '../../context/AuthContext';
 
 const clientService = new ClientService();
 
 export default function ClientSelection({ client, setClient }) {
+  const { user } = useAuth() || {};
+  const userRole = typeof user?.role === 'string' ? user.role : user?.role?.name || '';
+  const canAdjustCredit = ['superadmin', 'admin', 'manager', 'gerente'].includes(userRole);
+
   const [clientType, setClientType] = useState('ocasional');
   const [occasionalClientName, setOccasionalClientName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [showNewClientForm, setShowNewClientForm] = useState(false);
+  const [showAdjustCreditModal, setShowAdjustCreditModal] = useState(false);
   const [newClientData, setNewClientData] = useState({
     name: '',
     phone: '',
@@ -234,8 +241,27 @@ export default function ClientSelection({ client, setClient }) {
                         Crédito disponible: ${parseFloat(client.store_credit).toFixed(2)}
                       </p>
                     )}
+                    {canAdjustCredit && (
+                      <button
+                        onClick={() => setShowAdjustCreditModal(true)}
+                        className="mt-2 text-xs text-pink-600 hover:text-pink-800 underline"
+                        type="button"
+                      >
+                        Ajustar saldo de crédito
+                      </button>
+                    )}
                   </div>
                 </div>
+              )}
+
+              {showAdjustCreditModal && client && (
+                <AdjustStoreCreditModal
+                  client={client}
+                  onClose={() => setShowAdjustCreditModal(false)}
+                  onAdjusted={(result) => {
+                    setClient({ ...client, store_credit: result.new_balance });
+                  }}
+                />
               )}
 
               {/* Botón para nuevo cliente */}

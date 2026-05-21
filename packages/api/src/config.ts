@@ -3,6 +3,16 @@ import dotenv from 'dotenv';
 // Cargar variables de entorno desde .env en desarrollo
 dotenv.config();
 
+interface BusinessConfig {
+  name: string;
+  address: string;
+  phone: string;
+  rfc: string | null;
+  website: string | null;
+  logoUrl: string | null;
+  footerLines: string[];
+}
+
 interface Config {
   port: number;
   nodeEnv: string;
@@ -13,6 +23,7 @@ interface Config {
   resendApiKey: string;
   notificationEmail: string;
   emailFrom: string;
+  business: BusinessConfig;
 }
 
 // Lista base de orígenes permitidos
@@ -59,6 +70,20 @@ const config: Config = {
   resendApiKey: process.env.RESEND_API_KEY || '',
   notificationEmail: process.env.NOTIFICATION_EMAIL || 'citas@entrepeques.mx',
   emailFrom: process.env.EMAIL_FROM || 'Entrepeques <citas@mail.entrepeques.mx>',
+  business: {
+    name: process.env.BUSINESS_NAME || 'Entrepeques',
+    address: process.env.BUSINESS_ADDRESS || 'Homero 1616, 1er piso, Polanco',
+    phone: process.env.BUSINESS_PHONE || '55 6588 3245',
+    rfc: process.env.BUSINESS_RFC || null,
+    website: process.env.BUSINESS_WEBSITE || 'www.entrepeques.mx',
+    logoUrl: process.env.BUSINESS_LOGO_URL || null,
+    footerLines: (process.env.BUSINESS_FOOTER_LINES
+      ? process.env.BUSINESS_FOOTER_LINES.split('|').map(l => l.trim()).filter(Boolean)
+      : [
+          '¡Gracias por tu compra!',
+          'No se aceptan devoluciones. Seis días para cambios.',
+        ]),
+  },
 };
 
 // En producción con Heroku, modificar la URL de la base de datos si es necesario

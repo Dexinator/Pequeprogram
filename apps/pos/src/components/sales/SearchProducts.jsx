@@ -42,6 +42,37 @@ export default function SearchProducts({ cart, setCart }) {
     }
   };
 
+  // Handles a barcode scan or manual Enter press: looks up the exact SKU and
+  // adds it to the cart in one step. Scanners type the code rapidly and emit
+  // Enter at the end, so this gives a true scan-and-go flow without any
+  // intermediate clicks.
+  const handleScanSubmit = async (rawCode) => {
+    setSearching(true);
+    setError('');
+    try {
+      const response = await salesService.searchInventory({
+        q: rawCode,
+        available_only: true,
+        location: 'Polanco',
+      });
+      const items = response.items || [];
+      const exactMatch = items.find(it => it.id === rawCode) || (items.length === 1 ? items[0] : null);
+      if (exactMatch) {
+        addToCart(exactMatch);
+      } else if (items.length > 1) {
+        setSearchResults(items);
+        setError('Varios productos coinciden con ese código. Elige uno.');
+      } else {
+        setError(`No se encontró ningún producto con código "${rawCode}".`);
+      }
+    } catch (err) {
+      console.error('Error en escaneo:', err);
+      setError('Error al buscar el producto escaneado.');
+    } finally {
+      setSearching(false);
+    }
+  };
+
   const addToCart = (product) => {
     const existingItem = cart.find(item => item.id === product.id);
     
@@ -104,7 +135,14 @@ export default function SearchProducts({ cart, setCart }) {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar por ID, categoría o marca..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && searchTerm.trim().length > 0) {
+              e.preventDefault();
+              handleScanSubmit(searchTerm.trim());
+            }
+          }}
+          placeholder="Buscar o escanear código de barras..."
+          autoFocus
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
         />
         {searching && (

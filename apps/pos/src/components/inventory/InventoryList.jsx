@@ -1,8 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { inventoryService } from '../../services/inventory.service';
+import { printBridgeService } from '../../services/printBridge.service';
 import ProductDetailModal from './ProductDetailModal';
 import StockUpdateModal from './StockUpdateModal';
 import { useAuth } from '../../context/AuthContext';
+
+function PrintLabelButton({ inventoryId }) {
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState(null);
+
+  const handleClick = async () => {
+    setStatus('loading');
+    setError(null);
+    const result = await printBridgeService.printLabel(inventoryId, 1);
+    if (result.ok) {
+      setStatus('success');
+      setTimeout(() => setStatus('idle'), 2000);
+    } else {
+      setStatus('error');
+      setError(result.error || 'No se pudo imprimir.');
+      setTimeout(() => setStatus('idle'), 4000);
+    }
+  };
+
+  const label = {
+    idle: 'Imprimir etiqueta',
+    loading: 'Imprimiendo…',
+    success: 'Impresa',
+    error: 'Reintentar',
+  }[status];
+
+  const colorClass = {
+    idle: 'text-blue-600 hover:text-blue-900',
+    loading: 'text-gray-400',
+    success: 'text-green-600',
+    error: 'text-red-600 hover:text-red-900',
+  }[status];
+
+  return (
+    <span className="flex flex-col">
+      <button
+        onClick={handleClick}
+        disabled={status === 'loading'}
+        className={`${colorClass} text-left`}
+        title={status === 'error' ? error : 'Imprimir etiqueta del producto'}
+      >
+        {label}
+      </button>
+    </span>
+  );
+}
 
 export default function InventoryList() {
   const authContext = useAuth();
@@ -398,12 +445,15 @@ export default function InventoryList() {
                         {product.location}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => viewProductDetail(product)}
-                          className="text-pink-600 hover:text-pink-900"
-                        >
-                          Ver Detalle
-                        </button>
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => viewProductDetail(product)}
+                            className="text-pink-600 hover:text-pink-900"
+                          >
+                            Ver Detalle
+                          </button>
+                          <PrintLabelButton inventoryId={product.id} />
+                        </div>
                       </td>
                     </tr>
                   ))}
