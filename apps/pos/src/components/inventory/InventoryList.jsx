@@ -5,14 +5,16 @@ import ProductDetailModal from './ProductDetailModal';
 import StockUpdateModal from './StockUpdateModal';
 import { useAuth } from '../../context/AuthContext';
 
-function PrintLabelButton({ inventoryId }) {
+function PrintLabelButton({ inventoryId, quantity }) {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
+
+  const copies = Math.max(1, parseInt(quantity, 10) || 1);
 
   const handleClick = async () => {
     setStatus('loading');
     setError(null);
-    const result = await printBridgeService.printLabel(inventoryId, 1);
+    const result = await printBridgeService.printLabel(inventoryId, copies);
     if (result.ok) {
       setStatus('success');
       setTimeout(() => setStatus('idle'), 2000);
@@ -452,7 +454,7 @@ export default function InventoryList() {
                           >
                             Ver Detalle
                           </button>
-                          <PrintLabelButton inventoryId={product.id} />
+                          <PrintLabelButton inventoryId={product.id} quantity={product.quantity} />
                         </div>
                       </td>
                     </tr>

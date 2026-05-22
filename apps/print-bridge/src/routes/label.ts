@@ -9,7 +9,7 @@ const router = Router();
 router.post('/label', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = labelPayloadSchema.parse(req.body.payload);
-    const copies = Math.max(1, Math.min(10, parseInt(req.body.copies, 10) || 1));
+    const copies = Math.max(1, Math.min(50, parseInt(req.body.copies, 10) || 1));
 
     const zpl = renderLabelToZpl(payload, {
       widthDots: config.label.widthDots,
