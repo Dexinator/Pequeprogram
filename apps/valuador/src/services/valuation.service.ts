@@ -50,7 +50,7 @@ export class ValuationService {
 
   // Buscar clientes por nombre o teléfono
   async searchClients(term: string): Promise<Client[]> {
-    return this.http.get<Client[]>(`${this.baseEndpoint}/clients/search`, { term });
+    return this.http.get<Client[]>(`${this.baseEndpoint}/clients/search`, { q: term });
   }
 
   // Obtener un cliente por ID
@@ -228,7 +228,7 @@ export class ValuationService {
   // Buscar clientes
   async searchClients(term: string): Promise<Client[]> {
     this.ensureAuthenticated();
-    return this.http.get<Client[]>(`${this.baseEndpoint}/clients/search`, { term });
+    return this.http.get<Client[]>(`${this.baseEndpoint}/clients/search`, { q: term });
   }
 
   // Obtener un cliente por ID
