@@ -3,6 +3,8 @@ import { pool } from '../db';
 export interface ConsignmentProduct {
   id: number;
   valuation_id: number;
+  folio?: string;
+  contract_date?: Date;
   client_id: number;
   client_name: string;
   client_phone: string;
@@ -32,6 +34,7 @@ export interface ConsignmentFilters {
   status?: string;
   location?: string;
   client_id?: number;
+  search?: string;
 }
 
 export class ConsignmentService {
@@ -69,6 +72,15 @@ export class ConsignmentService {
       paramIndex++;
     }
 
+    // Free-text search: folio, client name or inventory SKU
+    if (filters.search) {
+      whereConditions.push(
+        `(v.folio ILIKE $${paramIndex} OR c.name ILIKE $${paramIndex} OR inv.id ILIKE $${paramIndex})`
+      );
+      queryParams.push(`%${filters.search}%`);
+      paramIndex++;
+    }
+
     const whereClause = whereConditions.length > 0 ? 'WHERE ' + whereConditions.join(' AND ') : '';
 
     // Count query
@@ -88,6 +100,8 @@ export class ConsignmentService {
       SELECT
         vi.id,
         vi.valuation_id,
+        v.folio,
+        v.valuation_date as contract_date,
         v.client_id,
         c.name as client_name,
         c.phone as client_phone,
@@ -154,6 +168,8 @@ export class ConsignmentService {
         return {
           id: row.id,
           valuation_id: row.valuation_id,
+          folio: row.folio || undefined,
+          contract_date: row.contract_date,
           client_id: row.client_id,
           client_name: row.client_name,
           client_phone: row.client_phone,
@@ -195,6 +211,8 @@ export class ConsignmentService {
       SELECT
         vi.id,
         vi.valuation_id,
+        v.folio,
+        v.valuation_date as contract_date,
         v.client_id,
         c.name as client_name,
         c.phone as client_phone,
@@ -253,6 +271,8 @@ export class ConsignmentService {
       return {
         id: row.id,
         valuation_id: row.valuation_id,
+        folio: row.folio || undefined,
+        contract_date: row.contract_date,
         client_id: row.client_id,
         client_name: row.client_name,
         client_phone: row.client_phone,
