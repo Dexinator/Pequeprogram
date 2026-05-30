@@ -455,6 +455,7 @@ export class SalesService extends BaseService<Sale> {
           vi.features,
           vi.images,
           vi.final_sale_price,
+          vi.online_store_ready,
           c.name as category_name,
           s.name as subcategory_name,
           b.name as brand_name,
@@ -544,6 +545,7 @@ export class SalesService extends BaseService<Sale> {
             features: row.features,
             images: row.images,
             final_sale_price: parseFloat(row.final_sale_price || 0),
+            online_store_ready: row.online_store_ready === true,
             category_name: row.category_name,
             subcategory_name: row.subcategory_name,
             brand_name: row.brand_name
@@ -709,6 +711,85 @@ export class SalesService extends BaseService<Sale> {
         } : undefined
       };
 
+    } catch (error) {
+      if (dbClient) {
+        await dbClient.query('ROLLBACK');
+      }
+      throw error;
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
+  /**
+   * Update the sale price of an inventory item that has NOT been published online yet.
+   * - Products from valuations -> updates valuation_items.final_sale_price
+   * - Other products (OTRP...) -> updates otherprods_items.sale_unit_price
+   * Items already prepared for the online store (online_store_ready = TRUE) are rejected,
+   * because their price is managed from the online-store preparation flow.
+   */
+  async updateInventoryPrice(
+    inventoryId: string,
+    newPrice: number,
+    userId: number,
+    reason?: string
+  ): Promise<{ id: string; final_sale_price: number; online_store_ready: boolean }> {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      await dbClient.query('BEGIN');
+
+      const checkQuery = `
+        SELECT
+          i.id,
+          i.valuation_item_id,
+          vi.online_store_ready,
+          vi.final_sale_price AS old_price
+        FROM inventario i
+        LEFT JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        WHERE i.id = $1
+      `;
+      const checkResult = await dbClient.query(checkQuery, [inventoryId]);
+
+      if (checkResult.rows.length === 0) {
+        throw new Error('Producto no encontrado en inventario');
+      }
+
+      const row = checkResult.rows[0];
+      const isOtr = typeof inventoryId === 'string' && inventoryId.startsWith('OTRP');
+
+      if (!isOtr && row.valuation_item_id) {
+        if (row.online_store_ready === true) {
+          throw new Error(
+            'El producto ya está publicado en la tienda en línea. Actualiza el precio desde la preparación de la tienda en línea.'
+          );
+        }
+        await dbClient.query(
+          `UPDATE valuation_items SET final_sale_price = $1, updated_at = NOW() WHERE id = $2`,
+          [newPrice, row.valuation_item_id]
+        );
+      } else if (isOtr) {
+        await dbClient.query(
+          `UPDATE otherprods_items SET sale_unit_price = $1, updated_at = NOW() WHERE sku = $2`,
+          [newPrice, inventoryId]
+        );
+      } else {
+        throw new Error('No se puede actualizar el precio de este producto');
+      }
+
+      console.log(
+        `Inventory price update: Product ${inventoryId} price changed from ${row.old_price} to ${newPrice} by user ${userId}. Reason: ${reason || 'No especificado'}`
+      );
+
+      await dbClient.query('COMMIT');
+
+      return {
+        id: inventoryId,
+        final_sale_price: newPrice,
+        online_store_ready: row.online_store_ready === true
+      };
     } catch (error) {
       if (dbClient) {
         await dbClient.query('ROLLBACK');

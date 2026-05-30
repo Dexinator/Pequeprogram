@@ -3,6 +3,7 @@ import { inventoryService } from '../../services/inventory.service';
 import { printBridgeService } from '../../services/printBridge.service';
 import ProductDetailModal from './ProductDetailModal';
 import StockUpdateModal from './StockUpdateModal';
+import PriceUpdateModal from './PriceUpdateModal';
 import { useAuth } from '../../context/AuthContext';
 
 function PrintLabelButton({ inventoryId, quantity }) {
@@ -72,6 +73,8 @@ export default function InventoryList() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
   const [stockProduct, setStockProduct] = useState(null);
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [priceProduct, setPriceProduct] = useState(null);
   const [stats, setStats] = useState({
     total_items: 0,
     total_quantity: 0,
@@ -208,6 +211,39 @@ export default function InventoryList() {
     } catch (error) {
       console.error('❌ Error al actualizar stock:', error);
       alert('Error al actualizar el stock. Por favor, intente nuevamente.');
+      throw error;
+    }
+  };
+
+  // Abrir modal de edición de precio
+  const openPriceModal = (product) => {
+    setPriceProduct(product);
+    setShowPriceModal(true);
+  };
+
+  // Actualizar precio del producto
+  const handlePriceUpdate = async (newPrice, reason) => {
+    if (!priceProduct) return;
+
+    try {
+      await inventoryService.updatePrice(priceProduct.id, newPrice, reason);
+
+      // Actualizar el producto en la lista
+      setProducts(prevProducts =>
+        prevProducts.map(p =>
+          p.id === priceProduct.id ? { ...p, final_sale_price: newPrice } : p
+        )
+      );
+
+      loadStats();
+      setShowPriceModal(false);
+      setPriceProduct(null);
+
+      setTimeout(() => {
+        alert(`Precio actualizado: ${priceProduct.id} ahora cuesta ${inventoryService.formatCurrency(newPrice)}`);
+      }, 100);
+    } catch (error) {
+      console.error('❌ Error al actualizar precio:', error);
       throw error;
     }
   };
@@ -441,7 +477,30 @@ export default function InventoryList() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {inventoryService.formatCurrency(product.final_sale_price)}
+                        <div className="flex items-center space-x-2">
+                          <span>{inventoryService.formatCurrency(product.final_sale_price)}</span>
+                          {canEditStock && (
+                            product.online_store_ready ? (
+                              <span
+                                className="px-2 py-1 bg-gray-100 text-gray-400 rounded text-xs"
+                                title="Publicado en línea: edita el precio desde la preparación de la tienda en línea"
+                              >
+                                Publicado
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => openPriceModal(product)}
+                                className="px-2 py-1 bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors rounded flex items-center space-x-1"
+                                title="Editar precio"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                                <span className="text-xs">Editar</span>
+                              </button>
+                            )
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {product.location}
@@ -527,6 +586,19 @@ export default function InventoryList() {
           onClose={() => {
             setShowStockModal(false);
             setStockProduct(null);
+          }}
+        />
+      )}
+
+      {/* Modal de Edición de Precio */}
+      {showPriceModal && priceProduct && (
+        <PriceUpdateModal
+          product={priceProduct}
+          currentPrice={priceProduct.final_sale_price}
+          onConfirm={handlePriceUpdate}
+          onClose={() => {
+            setShowPriceModal(false);
+            setPriceProduct(null);
           }}
         />
       )}

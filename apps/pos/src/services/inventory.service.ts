@@ -41,6 +41,7 @@ export interface InventoryProduct {
   subcategory_name?: string;
   brand_name?: string;
   final_sale_price?: number;
+  online_store_ready?: boolean;
   description?: string;
 }
 
@@ -113,6 +114,7 @@ export class InventoryService {
           subcategory_name: item.valuation_item?.subcategory_name,
           brand_name: item.valuation_item?.brand_name,
           final_sale_price: item.valuation_item?.final_sale_price,
+          online_store_ready: item.valuation_item?.online_store_ready === true,
           description: this.generateDescription(item)
         };
         return flatItem;
@@ -345,6 +347,30 @@ export class InventoryService {
       return null;
     } catch (error) {
       console.error('Error al actualizar cantidad:', error);
+      throw error;
+    }
+  }
+
+  // Actualizar precio de venta de un producto (solo si no está publicado en línea)
+  async updatePrice(id: string, price: number, reason?: string): Promise<{ id: string; final_sale_price: number; online_store_ready: boolean } | null> {
+    try {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
+
+      console.log('💲 Actualizando precio:', { id, price, reason });
+
+      const response = await this.http.put<any>(`/inventory/${id}/price`, {
+        price,
+        reason
+      });
+
+      console.log('💲 Respuesta del servidor:', response);
+
+      return response?.data || response || null;
+    } catch (error) {
+      console.error('Error al actualizar precio:', error);
       throw error;
     }
   }

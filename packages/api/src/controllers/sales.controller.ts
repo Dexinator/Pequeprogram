@@ -262,3 +262,25 @@ export const updateInventoryQuantity = asyncHandler(async (req: Request, res: Re
     data: result
   });
 });
+
+// @desc    Update inventory item sale price (for items not yet published online)
+// @route   PUT /api/inventory/:id/price
+// @access  Private (admin, manager)
+export const updateInventoryPrice = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { price, reason } = req.body;
+  const userId = (req as any).user.id;
+
+  const priceNum = typeof price === 'number' ? price : parseFloat(price);
+  if (priceNum === undefined || isNaN(priceNum) || priceNum < 0) {
+    res.status(400);
+    throw new Error('El precio debe ser un número válido mayor o igual a 0');
+  }
+
+  const result = await salesService.updateInventoryPrice(id, priceNum, userId, reason);
+
+  res.json({
+    success: true,
+    data: result
+  });
+});
