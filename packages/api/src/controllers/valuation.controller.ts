@@ -39,7 +39,10 @@ export const valuationController = {
    */
   searchClients: async (req: Request, res: Response) => {
     try {
-      const { term } = req.query;
+      // Aceptar tanto `term` (histórico) como `q` (convención usada por el
+      // resto de apps). El valuador envía `q`; sin este alias la búsqueda
+      // devolvía 400 y no encontraba clientes ya registrados.
+      const term = (req.query.term ?? req.query.q) as string | undefined;
 
       if (!term || typeof term !== 'string') {
         return res.status(400).json({

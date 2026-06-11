@@ -373,7 +373,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       
                       .oferta-document {
                         margin: 0 !important;
-                        padding: 15mm !important;
+                        padding: 10mm !important;
                         box-shadow: none !important;
                         background: white !important;
                         color: black !important;
@@ -389,16 +389,16 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       
                       .print-header {
                         border-bottom: 1px solid #666;
-                        margin-bottom: 15px;
-                        padding-bottom: 10px;
+                        margin-bottom: 8px;
+                        padding-bottom: 6px;
                         break-inside: avoid;
                         page-break-inside: avoid;
                       }
-                      
+
                       .provider-info, .terms-section, .footer-section {
                         break-inside: avoid;
                         page-break-inside: avoid;
-                        margin-bottom: 15px;
+                        margin-bottom: 8px;
                         border: none !important;
                         background: white !important;
                       }
@@ -410,7 +410,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       .print-table {
                         width: 100%;
                         border-collapse: collapse;
-                        margin: 10px 0;
+                        margin: 6px 0;
                         break-inside: auto;
                         border: 1px solid #666 !important;
                         font-size: 10px;
