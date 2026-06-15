@@ -132,6 +132,8 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
         .print-table th,
         .print-table td {
           border: 1px solid #e5e7eb;
+          padding: 2px 6px;
+          line-height: 1.15;
         }
       `}</style>
 
@@ -419,9 +421,10 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       .print-table th,
                       .print-table td {
                         border: 1px solid #666 !important;
-                        padding: 3px 4px;
+                        padding: 2px 6px;
+                        line-height: 1.15;
                         text-align: left;
-                        vertical-align: top;
+                        vertical-align: middle;
                         background: white !important;
                         page-break-inside: auto;
                       }
@@ -529,6 +532,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                     .h-12 { height: 3rem; }
                     .space-y-2 > * + * { margin-top: 0.5rem; }
                     table { border-collapse: collapse; }
+                    .print-table th, .print-table td { padding: 2px 6px; line-height: 1.15; }
 
                     .no-print { display: none; }
                   </style>
