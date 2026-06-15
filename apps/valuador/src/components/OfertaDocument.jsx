@@ -477,6 +477,11 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       background: white;
                       color: #1f2937;
                     }
+                    /* Reset de márgenes por defecto (el modal ya lo hace vía Tailwind).
+                       Sin esto, los h1-h3 y p arrastran el margen del navegador y
+                       generan espacio de más, p. ej. encima de "Datos del Proveedor"
+                       y debajo del nombre. El espaciado real lo dan las clases mb-*. */
+                    h1, h2, h3, h4, h5, h6, p { margin: 0; }
                     .oferta-document { max-width: 800px; margin: 0 auto; padding: 2rem; }
                     .mb-8 { margin-bottom: 2rem; }
                     .mb-6 { margin-bottom: 1.5rem; }
