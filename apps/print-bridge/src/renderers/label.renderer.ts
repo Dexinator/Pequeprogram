@@ -32,8 +32,17 @@ interface RenderOptions {
 export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): string {
   const { widthDots, heightDots } = opts;
 
-  const margin = 12;
-  const innerWidth = widthDots - margin * 2;
+  // Calibration margins (dots), tunable per printer via .env. Defaults keep the
+  // original 12-dot border. The GC420t's real printable area is offset
+  // down-and-in from the nominal label edges, so the top line and the
+  // right-aligned date were being clipped; bump LABEL_MARGIN_TOP / _RIGHT to
+  // pull content into the printable zone. No rebuild needed to retune — edit
+  // .env and restart the service.
+  const marginTop = parseInt(process.env.LABEL_MARGIN_TOP || '12', 10);
+  const marginRight = parseInt(process.env.LABEL_MARGIN_RIGHT || '12', 10);
+  const marginLeft = parseInt(process.env.LABEL_MARGIN_LEFT || '12', 10);
+  const margin = marginLeft;
+  const innerWidth = widthDots - marginLeft - marginRight;
 
   // Vertical bands as fractions of total height. Anchored to absolute Y for
   // stability across slightly different rolls. The layout is pulled up and the
@@ -41,7 +50,7 @@ export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): 
   // inventory date) keeps ~10 mm of clearance from the bottom edge: the real
   // roll prints a hair shorter than the configured 408 dots and the date — the
   // bottom-most element — was getting clipped.
-  const headerY = margin;                                       // business line
+  const headerY = marginTop;                                    // business line
   const brandY = headerY + Math.round(heightDots * 0.065);      // brand + size
   const descY = brandY + Math.round(heightDots * 0.075);        // description block
   const descHeight = Math.round(heightDots * 0.18);             // 3 lines of description
