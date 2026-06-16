@@ -9,6 +9,7 @@ export default function ConsignmentsList() {
     status: 'all',
     location: '',
     client_id: '',
+    search: '',
     page: 1,
     limit: 20
   });
@@ -84,6 +85,7 @@ export default function ConsignmentsList() {
       status: 'all',
       location: '',
       client_id: '',
+      search: '',
       page: 1,
       limit: 20
     });
@@ -260,6 +262,19 @@ export default function ConsignmentsList() {
         <h3 className="text-lg font-semibold mb-4">Filtros</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Buscar (Folio / Cliente / SKU)
+            </label>
+            <input
+              type="text"
+              placeholder="Ej: C-260528-42, nombre del cliente, SKU..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Estado
@@ -355,6 +370,12 @@ export default function ConsignmentsList() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Folio
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Fecha Contrato
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       SKU
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -383,6 +404,14 @@ export default function ConsignmentsList() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {consignments.map((consignment) => (
                     <tr key={`${consignment.id}-${consignment.sku}`} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-mono font-medium text-gray-900">
+                        {consignment.folio || '-'}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {consignment.contract_date
+                          ? consignmentService.formatDate(consignment.contract_date)
+                          : '-'}
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
                         {consignment.sku || '-'}
                       </td>
@@ -526,6 +555,8 @@ export default function ConsignmentsList() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h4 className="font-medium mb-2">Información del Producto</h4>
+                  <p><span className="font-medium">Folio:</span> <span className="font-mono">{selectedConsignment.folio || 'N/A'}</span></p>
+                  <p><span className="font-medium">Fecha de Contrato:</span> {selectedConsignment.contract_date ? consignmentService.formatDate(selectedConsignment.contract_date) : 'N/A'}</p>
                   <p><span className="font-medium">SKU:</span> <span className="font-mono">{selectedConsignment.sku || 'N/A'}</span></p>
                   <p><span className="font-medium">Descripción:</span> {consignmentService.getProductDescription(selectedConsignment)}</p>
                   <p><span className="font-medium">Categoría:</span> {selectedConsignment.category_name}</p>

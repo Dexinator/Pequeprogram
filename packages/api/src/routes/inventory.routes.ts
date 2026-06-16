@@ -4,6 +4,7 @@ import {
   searchInventory,
   getAvailableInventory,
   updateInventoryQuantity,
+  updateInventoryPrice,
   getLabelPayload
 } from '../controllers/sales.controller';
 
@@ -25,6 +26,11 @@ router
 router
   .route('/:id/quantity')
   .put(authorize(['superadmin', 'admin', 'manager', 'gerente']), updateInventoryQuantity);
+
+// Update inventory sale price (items not yet published online) - only admin and manager roles
+router
+  .route('/:id/price')
+  .put(authorize(['superadmin', 'admin', 'manager', 'gerente']), updateInventoryPrice);
 
 // Get printable label payload for an inventory item
 router

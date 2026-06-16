@@ -3,6 +3,8 @@ import { HttpService } from './http.service';
 export interface ConsignmentProduct {
   id: number;
   valuation_id: number;
+  folio?: string;
+  contract_date?: Date;
   client_id: number;
   client_name: string;
   client_phone: string;
@@ -34,6 +36,7 @@ export interface ConsignmentFilters {
   status?: string;
   location?: string;
   client_id?: number;
+  search?: string;
 }
 
 export interface ConsignmentStats {
@@ -78,6 +81,7 @@ export class ConsignmentService {
       if (filters.status) params.status = filters.status;
       if (filters.location) params.location = filters.location;
       if (filters.client_id) params.client_id = filters.client_id;
+      if (filters.search) params.search = filters.search;
 
       const response = await this.http.get<any>('/consignments', params);
       

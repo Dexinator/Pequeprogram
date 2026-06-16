@@ -32,27 +32,40 @@ interface RenderOptions {
 export function renderLabelToZpl(payload: LabelPayloadV1, opts: RenderOptions): string {
   const { widthDots, heightDots } = opts;
 
-  const margin = 12;
-  const innerWidth = widthDots - margin * 2;
+  // Calibration margins (dots), tunable per printer via .env. Defaults keep the
+  // original 12-dot border. The GC420t's real printable area is offset
+  // down-and-in from the nominal label edges, so the top line and the
+  // right-aligned date were being clipped; bump LABEL_MARGIN_TOP / _RIGHT to
+  // pull content into the printable zone. No rebuild needed to retune — edit
+  // .env and restart the service.
+  const marginTop = parseInt(process.env.LABEL_MARGIN_TOP || '12', 10);
+  const marginRight = parseInt(process.env.LABEL_MARGIN_RIGHT || '12', 10);
+  const marginLeft = parseInt(process.env.LABEL_MARGIN_LEFT || '12', 10);
+  const margin = marginLeft;
+  const innerWidth = widthDots - marginLeft - marginRight;
 
   // Vertical bands as fractions of total height. Anchored to absolute Y for
-  // stability across slightly different rolls.
-  const headerY = margin;                                       // business line
-  const brandY = headerY + Math.round(heightDots * 0.07);       // brand + size
-  const descY = brandY + Math.round(heightDots * 0.08);         // description block
-  const descHeight = Math.round(heightDots * 0.20);             // 3 lines of description
-  const priceY = descY + descHeight + Math.round(heightDots * 0.03);
-  const barcodeY = priceY + Math.round(heightDots * 0.22);
+  // stability across slightly different rolls. The layout is pulled up and the
+  // fonts trimmed a little vs. the original calibration so the footer (SKU +
+  // inventory date) keeps ~10 mm of clearance from the bottom edge: the real
+  // roll prints a hair shorter than the configured 408 dots and the date — the
+  // bottom-most element — was getting clipped.
+  const headerY = marginTop;                                    // business line
+  const brandY = headerY + Math.round(heightDots * 0.065);      // brand + size
+  const descY = brandY + Math.round(heightDots * 0.075);        // description block
+  const descHeight = Math.round(heightDots * 0.18);             // 3 lines of description
+  const priceY = descY + descHeight + Math.round(heightDots * 0.025);
+  const barcodeY = priceY + Math.round(heightDots * 0.20);
 
   // Font sizes scale with the height so the proportions stay readable on
   // different rolls. Tuned for 408 dots tall.
-  const headerFont = Math.max(16, Math.round(heightDots * 0.05));   // ~20 at 408
-  const brandFont = Math.max(20, Math.round(heightDots * 0.07));    // ~28 at 408
-  const descFont = Math.max(18, Math.round(heightDots * 0.055));    // ~22 at 408
-  const priceFont = Math.max(40, Math.round(heightDots * 0.17));    // ~70 at 408
-  const barcodeHeight = Math.max(40, Math.round(heightDots * 0.18)); // ~70 at 408
-  const footerFont = Math.max(14, Math.round(heightDots * 0.045));   // ~18 at 408
-  const footerY = barcodeY + barcodeHeight + Math.round(heightDots * 0.04);
+  const headerFont = Math.max(16, Math.round(heightDots * 0.048));  // ~20 at 408
+  const brandFont = Math.max(20, Math.round(heightDots * 0.065));   // ~27 at 408
+  const descFont = Math.max(18, Math.round(heightDots * 0.052));    // ~21 at 408
+  const priceFont = Math.max(40, Math.round(heightDots * 0.16));    // ~65 at 408
+  const barcodeHeight = Math.max(40, Math.round(heightDots * 0.16)); // ~65 at 408
+  const footerFont = Math.max(14, Math.round(heightDots * 0.042));   // ~17 at 408
+  const footerY = barcodeY + barcodeHeight + Math.round(heightDots * 0.025);
 
   const escape = (s: string) => (s ?? '').replace(/\^/g, ' ').replace(/~/g, ' ');
 

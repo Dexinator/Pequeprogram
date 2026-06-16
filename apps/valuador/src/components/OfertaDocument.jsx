@@ -132,6 +132,8 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
         .print-table th,
         .print-table td {
           border: 1px solid #e5e7eb;
+          padding: 2px 6px;
+          line-height: 1.15;
         }
       `}</style>
 
@@ -373,7 +375,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       
                       .oferta-document {
                         margin: 0 !important;
-                        padding: 15mm !important;
+                        padding: 10mm !important;
                         box-shadow: none !important;
                         background: white !important;
                         color: black !important;
@@ -389,16 +391,16 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       
                       .print-header {
                         border-bottom: 1px solid #666;
-                        margin-bottom: 15px;
-                        padding-bottom: 10px;
+                        margin-bottom: 8px;
+                        padding-bottom: 6px;
                         break-inside: avoid;
                         page-break-inside: avoid;
                       }
-                      
+
                       .provider-info, .terms-section, .footer-section {
                         break-inside: avoid;
                         page-break-inside: avoid;
-                        margin-bottom: 15px;
+                        margin-bottom: 8px;
                         border: none !important;
                         background: white !important;
                       }
@@ -410,7 +412,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       .print-table {
                         width: 100%;
                         border-collapse: collapse;
-                        margin: 10px 0;
+                        margin: 6px 0;
                         break-inside: auto;
                         border: 1px solid #666 !important;
                         font-size: 10px;
@@ -419,9 +421,10 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       .print-table th,
                       .print-table td {
                         border: 1px solid #666 !important;
-                        padding: 3px 4px;
+                        padding: 2px 6px;
+                        line-height: 1.15;
                         text-align: left;
-                        vertical-align: top;
+                        vertical-align: middle;
                         background: white !important;
                         page-break-inside: auto;
                       }
@@ -474,6 +477,11 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                       background: white;
                       color: #1f2937;
                     }
+                    /* Reset de márgenes por defecto (el modal ya lo hace vía Tailwind).
+                       Sin esto, los h1-h3 y p arrastran el margen del navegador y
+                       generan espacio de más, p. ej. encima de "Datos del Proveedor"
+                       y debajo del nombre. El espaciado real lo dan las clases mb-*. */
+                    h1, h2, h3, h4, h5, h6, p { margin: 0; }
                     .oferta-document { max-width: 800px; margin: 0 auto; padding: 2rem; }
                     .mb-8 { margin-bottom: 2rem; }
                     .mb-6 { margin-bottom: 1.5rem; }
@@ -529,6 +537,7 @@ const OfertaDocument = ({ client, selectedProducts, editedPrices, editedModaliti
                     .h-12 { height: 3rem; }
                     .space-y-2 > * + * { margin-top: 0.5rem; }
                     table { border-collapse: collapse; }
+                    .print-table th, .print-table td { padding: 2px 6px; line-height: 1.15; }
 
                     .no-print { display: none; }
                   </style>

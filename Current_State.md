@@ -3508,4 +3508,32 @@ const suggestedSalePrice = clothingPrice.sale_price;
 - ✅ Integración perfecta con flujo de valuación existente
 - ✅ Valores por defecto optimizados para el negocio
 
+## Sesión: 30 de Mayo, 2026
+
+### Solicitudes de Pablo (Slack #solicitudes-entrepeques) — Folio de consignación + edición de precio en inventario
+
+**Contexto:** Pablo reportó dos necesidades urgentes: (1) no podía saber la fecha en que se dejó un contrato de consignación ni rastrearlo por folio cuando los clientes llaman, y (2) no había forma de cambiar el precio de un artículo en inventario que aún no se ha publicado.
+
+#### 1. Folio rastreable y fecha de contrato en consignaciones
+- **Migración 034** (`034-add-consignment-folio.sql`): nueva columna `valuations.folio` con formato `C-YYMMDD-{id}` (contiene la fecha de contrato y el id consecutivo). Incluye:
+  - Backfill de todas las valuaciones existentes.
+  - Trigger `trigger_set_valuation_folio` (AFTER INSERT) que autogenera el folio para nuevas valuaciones, sin importar qué app inserte.
+  - Índice `idx_valuations_folio` para búsqueda rápida.
+- **API** (`consignment.service.ts` / `consignment.controller.ts`): los endpoints de lista y detalle ahora exponen `folio` y `contract_date` (de `valuations.valuation_date`); se agregó filtro de búsqueda libre (`search`) sobre folio, nombre de cliente o SKU.
+- **POS** (`ConsignmentsList.jsx`): nuevas columnas Folio y Fecha Contrato, caja de búsqueda y ambos campos en el modal de detalle.
+
+#### 2. Edición de precio de venta en inventario (artículos no publicados)
+- **API**: nuevo endpoint `PUT /api/inventory/:id/price` (`sales.service.updateInventoryPrice` + `sales.controller` + `inventory.routes`). Actualiza `valuation_items.final_sale_price` (o `otherprods_items.sale_unit_price` para artículos OTRP). **Rechaza** artículos ya publicados en línea (`online_store_ready = TRUE`). `searchInventory` ahora también expone `online_store_ready`. Permisos: superadmin/admin/manager/gerente.
+- **POS**: nuevo `PriceUpdateModal.jsx` y botón "Editar" junto al precio en `InventoryList.jsx`; muestra una etiqueta "Publicado" (deshabilitado) cuando el artículo ya está en línea.
+
+#### Verificación y despliegue
+- API: `tsc --noEmit` limpio. Migración aplicada en DB local (trigger y backfill verificados) y endpoints probados vía HTTP (folio+fecha en lista/detalle, búsqueda por folio, edición de precio, bloqueo de publicados, validación de precio negativo).
+- POS: los 5 archivos modificados transforman a ESM sin errores en el dev server de Vite.
+- **Deploy a staging:** push a `origin/development` (Vercel auto-deploy del frontend) y `git subtree` de `packages/api` al remote `staging` (Heroku `entrepeques-staging`, build OK, v35). Migración 034 aplicada manualmente al DB de staging (UPDATE 70 valuaciones, 0 folios nulos). Confirmado end-to-end: la API de staging devuelve consignaciones reales con folio (`C-260105-379`) y `contract_date`.
+
+**Nota de entorno:** el stack local de Docker comparte puertos (5432/3001/4321) con otro proyecto (`destino_gamificado`); para verificación local se usó un `docker-compose.override.yml` temporal con puertos alternos (luego eliminado).
+
+### Cambio al Esquema de Base de Datos
+- **valuations.folio** VARCHAR(30) — folio rastreable del contrato (formato `C-YYMMDD-{id}`), autogenerado por trigger. Migración 034.
+
 **Resultado:** Sistema de valuación de ropa transformado de proceso tedioso item por item a entrada masiva eficiente, manteniendo la flexibilidad de precios por calidad y reduciendo drásticamente el tiempo de captura.

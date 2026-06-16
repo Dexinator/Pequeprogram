@@ -774,12 +774,15 @@ export class ValuationService extends BaseService<Valuation> {
       }
       
       if (params.start_date) {
-        query += ` AND v.valuation_date >= $${paramIndex++}`;
+        query += ` AND v.valuation_date >= $${paramIndex++}::date`;
         queryParams.push(params.start_date);
       }
-      
+
       if (params.end_date) {
-        query += ` AND v.valuation_date <= $${paramIndex++}`;
+        // Inclusivo del día completo: comparar con el inicio del día siguiente.
+        // Antes usaba `<= end_date`, que se interpreta como las 00:00 de ese día
+        // y excluía las compras hechas el último día del rango (p. ej. las de hoy).
+        query += ` AND v.valuation_date < ($${paramIndex++}::date + INTERVAL '1 day')`;
         queryParams.push(params.end_date);
       }
       
