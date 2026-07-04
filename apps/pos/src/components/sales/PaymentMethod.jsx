@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function PaymentMethod({ total, client, paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails }) {
+export default function PaymentMethod({ total, subtotal, discountType, setDiscountType, discountValue, setDiscountValue, discountAmount, client, paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails }) {
   const [mixedPayments, setMixedPayments] = useState([
     { payment_method: 'efectivo', amount: 0 }
   ]);
@@ -81,6 +81,54 @@ export default function PaymentMethod({ total, client, paymentMethod, setPayment
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">Método de Pago</h3>
+
+      {/* Descuento */}
+      <div className="bg-white border border-gray-200 p-4 rounded-lg space-y-3">
+        <p className="text-sm font-medium text-gray-700">Descuento</p>
+        <div className="flex items-center gap-3">
+          <select
+            value={discountType}
+            onChange={(e) => {
+              const newType = e.target.value;
+              setDiscountType(newType);
+              if (newType === 'none') setDiscountValue(0);
+            }}
+            className="flex-1 p-2 border border-gray-300 rounded"
+          >
+            <option value="none">Sin descuento</option>
+            <option value="percentage">Porcentaje (%)</option>
+            <option value="fixed_amount">Importe ($)</option>
+          </select>
+          {discountType !== 'none' && (
+            <div className="relative">
+              <span className="absolute left-3 top-2 text-gray-500">
+                {discountType === 'percentage' ? '%' : '$'}
+              </span>
+              <input
+                type="number"
+                value={discountValue}
+                onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)}
+                className="w-32 p-2 pl-8 border border-gray-300 rounded"
+                step="0.01"
+                min="0"
+                max={discountType === 'percentage' ? '100' : undefined}
+              />
+            </div>
+          )}
+        </div>
+        {discountAmount > 0 && (
+          <div className="text-sm space-y-1 border-t pt-2">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-red-600">
+              <span>Descuento{discountType === 'percentage' ? ` (${parseFloat(discountValue) || 0}%)` : ''}</span>
+              <span>-${discountAmount.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Total a pagar */}
       <div className="bg-pink-50 p-4 rounded-lg">

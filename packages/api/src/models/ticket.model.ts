@@ -60,5 +60,8 @@ export interface TicketPayment {
 export interface TicketTotals {
   items_count: number;
   subtotal: number;
+  discount_type: 'percentage' | 'fixed_amount' | null;
+  discount_value: number;
+  discount_amount: number;
   total: number;
 }

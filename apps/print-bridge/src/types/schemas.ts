@@ -40,6 +40,11 @@ export const ticketPayloadSchema = z.object({
   totals: z.object({
     items_count: z.number(),
     subtotal: z.number(),
+    // Campos de descuento con default para retrocompatibilidad con
+    // tickets emitidos por un API que aún no los incluya.
+    discount_type: z.enum(['percentage', 'fixed_amount']).nullable().default(null),
+    discount_value: z.number().default(0),
+    discount_amount: z.number().default(0),
     total: z.number(),
   }),
   payments: z.array(

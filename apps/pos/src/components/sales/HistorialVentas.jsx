@@ -282,17 +282,22 @@ export default function HistorialVentas() {
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-lg font-semibold">Detalle de Venta #{selectedSale.id}</h3>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setSelectedSale(null);
-                }}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 border border-blue-600 rounded text-sm font-medium">
+                  <ReprintTicketButton saleId={selectedSale.id} />
+                </span>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedSale(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -314,6 +319,16 @@ export default function HistorialVentas() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Total</p>
+                  {Number(selectedSale.discount_amount) > 0 && (
+                    <div className="text-xs mb-1">
+                      <div className="text-gray-500">
+                        Subtotal: {formatCurrency(Number(selectedSale.total_amount) + Number(selectedSale.discount_amount))}
+                      </div>
+                      <div className="text-red-600">
+                        Descuento{selectedSale.discount_type === 'percentage' ? ` (${Number(selectedSale.discount_value)}%)` : ''}: -{formatCurrency(selectedSale.discount_amount)}
+                      </div>
+                    </div>
+                  )}
                   <p className="font-medium text-lg text-green-600">
                     {formatCurrency(selectedSale.total_amount)}
                   </p>

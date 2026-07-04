@@ -7,6 +7,7 @@ import {
   SaleQueryParams,
   InventorySearchParams,
   InventoryItem,
+  resolveDiscountAmount,
 } from '../models/sales.model';
 import { BaseService } from './base.service';
 import { pool } from '../db';
@@ -63,15 +64,17 @@ export class SalesService extends BaseService<Sale> {
         throw new Error('Debe especificar client_id o client_name');
       }
       
-      // 3. Calcular total y validar payment_details
-      const totalAmount = data.items.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
-      
+      // 3. Calcular subtotal, descuento y total neto; validar payment_details
+      const subtotal = data.items.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
+      const discountAmount = resolveDiscountAmount(subtotal, data.discount_type, data.discount_value);
+      const totalAmount = Math.round((subtotal - discountAmount) * 100) / 100;
+
       // Validar que payment_details esté presente y no esté vacío
       if (!data.payment_details || data.payment_details.length === 0) {
         throw new Error('Debe especificar al menos un método de pago');
       }
-      
-      // Validar que la suma de los payment_details sea igual al total
+
+      // Validar que la suma de los payment_details sea igual al total (neto de descuento)
       const paymentTotal = data.payment_details.reduce((sum, payment) => sum + payment.amount, 0);
       if (Math.abs(paymentTotal - totalAmount) > 0.01) { // Tolerancia de 1 centavo para errores de redondeo
         throw new Error(`El total de los pagos (${paymentTotal}) no coincide con el total de la venta (${totalAmount})`);
@@ -98,16 +101,19 @@ export class SalesService extends BaseService<Sale> {
         : 'mixto';
         
       const saleQuery = `
-        INSERT INTO sales (client_id, client_name, user_id, total_amount, payment_method, notes, location)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO sales (client_id, client_name, user_id, total_amount, discount_type, discount_value, discount_amount, payment_method, notes, location)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *
       `;
-      
+
       const saleResult = await dbClient.query(saleQuery, [
         data.client_id || null,
         data.client_name || null,
         userId,
         totalAmount,
+        discountAmount > 0 ? data.discount_type : null,
+        discountAmount > 0 ? (Number(data.discount_value) || 0) : 0,
+        discountAmount,
         primaryPaymentMethod,
         data.notes || null,
         'Polanco' // location por defecto
@@ -272,6 +278,9 @@ export class SalesService extends BaseService<Sale> {
         user_id: saleRow.user_id,
         sale_date: saleRow.sale_date,
         total_amount: parseFloat(saleRow.total_amount),
+        discount_type: saleRow.discount_type || null,
+        discount_value: parseFloat(saleRow.discount_value) || 0,
+        discount_amount: parseFloat(saleRow.discount_amount) || 0,
         payment_method: saleRow.payment_method,
         status: saleRow.status,
         location: saleRow.location,

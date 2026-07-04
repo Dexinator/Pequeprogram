@@ -15,15 +15,32 @@ export default function NuevaVenta() {
   const [client, setClient] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('efectivo');
   const [paymentDetails, setPaymentDetails] = useState([]);
+  const [discountType, setDiscountType] = useState('none'); // 'none' | 'percentage' | 'fixed_amount'
+  const [discountValue, setDiscountValue] = useState(0);
   const [saleComplete, setSaleComplete] = useState(false);
   const [completedSale, setCompletedSale] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Calcular total del carrito
-  const cartTotal = cart.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
+  // Subtotal (sin descuento) del carrito
+  const subtotal = cart.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
 
-  // Validar que los pagos mixtos coincidan con el total
+  // Descuento resuelto en pesos (misma lógica que el backend, acotado a [0, subtotal])
+  const computeDiscountAmount = (base, type, value) => {
+    const v = parseFloat(value) || 0;
+    if (type === 'none' || v <= 0) return 0;
+    let amount = 0;
+    if (type === 'percentage') amount = base * (v / 100);
+    else if (type === 'fixed_amount') amount = v;
+    amount = Math.max(0, Math.min(amount, base));
+    return Math.round(amount * 100) / 100;
+  };
+
+  const discountAmount = computeDiscountAmount(subtotal, discountType, discountValue);
+  // Total neto a pagar (lo que valida los pagos)
+  const cartTotal = Math.round((subtotal - discountAmount) * 100) / 100;
+
+  // Validar que los pagos mixtos coincidan con el total neto
   const isPaymentValid = () => {
     if (paymentMethod !== 'mixto') return true;
     if (paymentDetails.length === 0) return false;
@@ -64,7 +81,9 @@ export default function NuevaVenta() {
         payment_method: paymentMethod,
         payment_details: paymentMethod === 'mixto' ? paymentDetails : null,
         location: 'Polanco',
-        notes: ''
+        notes: '',
+        discount_type: discountType === 'none' ? null : discountType,
+        discount_value: discountType === 'none' ? 0 : (parseFloat(discountValue) || 0)
       };
 
       const result = await salesService.createSale(saleData);
@@ -88,6 +107,8 @@ export default function NuevaVenta() {
     setClient(null);
     setPaymentMethod('efectivo');
     setPaymentDetails([]);
+    setDiscountType('none');
+    setDiscountValue(0);
     setSaleComplete(false);
     setCompletedSale(null);
     setError('');
@@ -157,8 +178,14 @@ export default function NuevaVenta() {
         )}
         
         {currentStep === 3 && (
-          <PaymentMethod 
+          <PaymentMethod
             total={cartTotal}
+            subtotal={subtotal}
+            discountType={discountType}
+            setDiscountType={setDiscountType}
+            discountValue={discountValue}
+            setDiscountValue={setDiscountValue}
+            discountAmount={discountAmount}
             client={client}
             paymentMethod={paymentMethod}
             setPaymentMethod={setPaymentMethod}
@@ -181,7 +208,22 @@ export default function NuevaVenta() {
                     <span>${(item.unit_price * item.quantity_sold).toFixed(2)}</span>
                   </div>
                 ))}
-                <div className="border-t pt-2 flex justify-between font-semibold">
+                {discountAmount > 0 && (
+                  <>
+                    <div className="border-t pt-2 flex justify-between text-sm text-gray-600">
+                      <span>Subtotal</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-red-600">
+                      <span>
+                        Descuento
+                        {discountType === 'percentage' ? ` (${parseFloat(discountValue) || 0}%)` : ''}
+                      </span>
+                      <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  </>
+                )}
+                <div className={`${discountAmount > 0 ? '' : 'border-t'} pt-2 flex justify-between font-semibold`}>
                   <span>Total</span>
                   <span>${cartTotal.toFixed(2)}</span>
                 </div>

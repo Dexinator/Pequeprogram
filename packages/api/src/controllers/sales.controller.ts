@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { SalesService } from '../services/sales.service';
 import { TicketService } from '../services/ticket.service';
 import { LabelService } from '../services/label.service';
-import { CreateSaleDto, SaleQueryParams, InventorySearchParams } from '../models/sales.model';
+import { CreateSaleDto, SaleQueryParams, InventorySearchParams, resolveDiscountAmount } from '../models/sales.model';
 
 const salesService = new SalesService();
 const ticketService = new TicketService();
@@ -28,14 +28,16 @@ export const createSale = asyncHandler(async (req: Request, res: Response) => {
       res.status(400);
       throw new Error('Debe especificar payment_method o payment_details');
     }
-    
-    // Calcular el total para el payment_detail
-    const totalAmount = saleData.items.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
-    
+
+    // Calcular el total neto (subtotal - descuento) para el payment_detail
+    const subtotal = saleData.items.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
+    const discountAmount = resolveDiscountAmount(subtotal, saleData.discount_type, saleData.discount_value);
+    const netTotal = Math.round((subtotal - discountAmount) * 100) / 100;
+
     // Crear payment_details desde payment_method legacy
     saleData.payment_details = [{
       payment_method: saleData.payment_method,
-      amount: totalAmount,
+      amount: netTotal,
       notes: undefined
     }];
   }

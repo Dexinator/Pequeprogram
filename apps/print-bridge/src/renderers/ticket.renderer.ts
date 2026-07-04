@@ -72,6 +72,14 @@ export async function renderTicketToEscpos(
 
   printer.drawLine();
   printer.alignRight();
+  if (payload.totals.discount_amount > 0) {
+    printer.println(twoCol('Subtotal', formatMoney(payload.totals.subtotal), COLUMNS));
+    const discountLabel =
+      payload.totals.discount_type === 'percentage'
+        ? `Descuento (${formatPercent(payload.totals.discount_value)})`
+        : 'Descuento';
+    printer.println(twoCol(discountLabel, `-${formatMoney(payload.totals.discount_amount)}`, COLUMNS));
+  }
   printer.bold(true);
   printer.println(twoCol('TOTAL', formatMoney(payload.totals.total), COLUMNS));
   printer.bold(false);
@@ -139,6 +147,11 @@ function formatMoney(amount: number): string {
     currency: 'MXN',
     minimumFractionDigits: 2,
   }).format(amount);
+}
+
+function formatPercent(value: number): string {
+  // Muestra 10 -> "10%", 12.5 -> "12.5%"
+  return `${Number.isInteger(value) ? value : value.toFixed(2).replace(/\.?0+$/, '')}%`;
 }
 
 function twoCol(left: string, right: string, width: number): string {

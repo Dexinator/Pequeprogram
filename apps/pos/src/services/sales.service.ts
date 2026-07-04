@@ -48,6 +48,8 @@ export interface PaymentDetail {
   notes?: string;
 }
 
+export type DiscountType = 'percentage' | 'fixed_amount';
+
 export interface CreateSaleData {
   client_id?: number;
   client_name?: string;
@@ -56,6 +58,8 @@ export interface CreateSaleData {
   payment_details?: PaymentDetail[];
   location: string;
   notes?: string;
+  discount_type?: DiscountType | null;
+  discount_value?: number;
 }
 
 export interface Sale {
@@ -65,6 +69,9 @@ export interface Sale {
   user_id: number;
   sale_date: string;
   total_amount: number;
+  discount_type?: DiscountType | null;
+  discount_value?: number;
+  discount_amount?: number;
   payment_method: string;
   status: string;
   location: string;
