@@ -31,6 +31,7 @@
 - **Backend:** `git subtree push` desde `packages/api` → **Heroku** (staging).
 - **Migraciones:** manuales vía `psql` (el `npm run migrate` de Heroku está roto). Cada ficha que agrega columna/tabla indica su migración.
 - **Staging aislado ya existe** (confirmado por Jorge) → Pablo prueba sin tocar producción.
+- ⚠️ **Print-bridge (impresión de tickets/etiquetas):** es un **servicio local en la PC de la caja** (`localhost:9443`), NO se despliega por Vercel/Heroku. Si un cambio toca `apps/print-bridge` (renderer/schema del ticket), hay que actualizarlo **manualmente en esa PC**: `git pull` → `npm run build` → reiniciar el servicio de Windows. El API puede mandar campos nuevos, pero el ticket no los mostrará hasta actualizar la PC.
 
 ## Dudas de producto pendientes con Pablo
 
@@ -40,6 +41,7 @@ Resueltas por el mapeo de código o pendientes de confirmar. Ver detalle en cada
 2. ✅ **Borrador de compra (E2):** guardar **todo** el estado y **recuperarlo tal cual se quedó** (reusa `status='pending'` + path de rehidratación de `NuevaValuacion`).
 3. ✅ **Descuento POS (E1):** sobre el **total** de la venta; **sí aparece en reportes/estadísticas** además del ticket.
 4. ✅ **Subcategorías Juguetes (E2):** ocultar (`is_active=false`, no borrar) los IDs **8** (sobre ruedas) y **6** (triciclos y bicicletas).
+5. ⏳ **Precio de producto publicado — física vs. en línea (E4, feedback Pablo):** hay dos precios distintos (`final_sale_price` físico / `online_price` en línea) y hoy no se puede editar el físico de un producto ya publicado. *Pregunta para Pablo:* ¿precios **independientes** (solo poder editar el físico) o **ligados** (editar en gestión actualiza el físico)? Ver ficha E4.
 
 ## Ítems parkeados (fuera de esta ronda)
 

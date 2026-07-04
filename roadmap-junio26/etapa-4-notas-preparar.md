@@ -58,6 +58,30 @@
 
 ---
 
+## Item nuevo (feedback Pablo, post-junta) — Precio de producto publicado: física vs. en línea
+
+**Contexto (verificado en código): existen DOS precios distintos por producto.**
+- `valuation_items.final_sale_price` → **precio de tienda física** (inventario/POS). Se edita en POS → `apps/pos/src/components/inventory/PriceUpdateModal.jsx` vía `PUT /inventory/:id/price` (`updateInventoryPrice`).
+- `valuation_items.online_price` → **precio de tienda en línea**. Se edita en Gestión de Productos → `apps/tienda/src/components/ProductEditModal.jsx` (label **"Precio de venta online"**) vía `updatePublishedProduct` (`store.service.ts:835`).
+
+**Bug real reportado:** al publicar, `updateInventoryPrice` (`packages/api/src/services/sales.service.ts:763-772`) **rechaza** editar el precio físico si `online_store_ready = true`, con el mensaje *"Actualiza el precio desde la preparación de la tienda en línea"* — pero esa preparación edita `online_price` (otro campo). Consecuencia: **el precio FÍSICO de un producto publicado queda sin forma de editarse**, y el mensaje es engañoso.
+
+**Decisión de producto (⏳ pregunta para Pablo):**
+- **(A) Independientes:** permitir editar el precio físico de un producto publicado desde inventario, sin tocar el online (arreglar el bloqueo + el mensaje).
+- **(B) Ligados:** que editar el precio en Gestión (online) también actualice el físico (o viceversa) — es lo que Pablo pidió: *"si lo modifico en gestión me ponga ese precio en inventario"*.
+
+> Nota: la UI de gestión ya rotula "Precio de venta online", así que la info para distinguirlos existe. Confirmar con Pablo si quiere **sincronizarlos** o solo **poder editar el físico** de un publicado.
+
+### Puntos de integración (según decisión)
+| Opción | Archivo:línea |
+|---|---|
+| Desbloquear/editar físico (A) | `sales.service.ts:744-772` (`updateInventoryPrice`) + `apps/pos/src/components/inventory/PriceUpdateModal.jsx` |
+| Sincronizar (B) | `store.service.ts:906-917` (`updatePublishedProduct`) para también `SET final_sale_price`, y/o `updateInventoryPrice` para `SET online_price` |
+
+**Migración:** ninguna (solo lógica).
+
+---
+
 ## Migración
 - Sí: `online_discarded` en `valuation_items`. Aplicar en staging vía `psql`.
 
