@@ -46,7 +46,7 @@ function CTASection() {
               <span className="text-3xl">📸</span>
             </div>
             <h3 className="font-heading text-xl font-bold text-brand-azul dark:text-brand-azul-light mb-2">1. Trae tus artículos</h3>
-            <p className="text-gray-600 dark:text-gray-400">Visítanos con los productos que quieres vender o intercambiar en los días y horarios asignados.</p>
+            <p className="text-gray-600 dark:text-gray-400">Visítanos con los productos que quieres vender o intercambiar los <span className="font-semibold">martes y jueves de 11:00 am a 5:30 pm</span>.</p>
           </div>
           <div className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
             <div className="w-16 h-16 mx-auto mb-4 bg-brand-amarillo/20 dark:bg-brand-amarillo/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
