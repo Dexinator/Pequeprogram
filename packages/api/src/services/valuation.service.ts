@@ -845,4 +845,60 @@ export class ValuationService extends BaseService<Valuation> {
       }
     }
   }
-} 
+
+  // ---------------- Borradores de compra (drafts) ----------------
+
+  async saveDraft(
+    userId: number,
+    data: { id?: number; client_id?: number | null; client_name?: string | null; product_count?: number; state: any }
+  ): Promise<any> {
+    if (data.id) {
+      const result = await pool.query(
+        `UPDATE valuation_drafts
+         SET client_id = $1, client_name = $2, product_count = $3, state = $4, updated_at = NOW()
+         WHERE id = $5 AND user_id = $6
+         RETURNING id, client_id, client_name, product_count, created_at, updated_at`,
+        [data.client_id || null, data.client_name || null, data.product_count || 0, JSON.stringify(data.state), data.id, userId]
+      );
+      if (result.rows.length === 0) {
+        throw new Error('Borrador no encontrado');
+      }
+      return result.rows[0];
+    }
+
+    const result = await pool.query(
+      `INSERT INTO valuation_drafts (user_id, client_id, client_name, product_count, state)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, client_id, client_name, product_count, created_at, updated_at`,
+      [userId, data.client_id || null, data.client_name || null, data.product_count || 0, JSON.stringify(data.state)]
+    );
+    return result.rows[0];
+  }
+
+  async getDrafts(userId: number): Promise<any[]> {
+    const result = await pool.query(
+      `SELECT id, client_id, client_name, product_count, created_at, updated_at
+       FROM valuation_drafts
+       WHERE user_id = $1
+       ORDER BY updated_at DESC`,
+      [userId]
+    );
+    return result.rows;
+  }
+
+  async getDraft(userId: number, id: number): Promise<any | null> {
+    const result = await pool.query(
+      `SELECT * FROM valuation_drafts WHERE id = $1 AND user_id = $2`,
+      [id, userId]
+    );
+    return result.rows[0] || null;
+  }
+
+  async deleteDraft(userId: number, id: number): Promise<boolean> {
+    const result = await pool.query(
+      `DELETE FROM valuation_drafts WHERE id = $1 AND user_id = $2`,
+      [id, userId]
+    );
+    return (result.rowCount ?? 0) > 0;
+  }
+}

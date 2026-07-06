@@ -168,20 +168,25 @@ export function ProductoForm({
       try {
         const data = await valuationService.getFeatureDefinitions(Number(formData.subcategory_id));
         setFeatureDefinitions(Array.isArray(data) ? data : []);
-        
-        // Inicializar valores de características
-        const initialFeatures = {};
-        if (Array.isArray(data)) {
-          data.forEach(feature => {
-            initialFeatures[feature.name] = '';
-          });
-        }
-        
-        // Actualizar formData con las características inicializadas
-        setFormData(prev => ({
-          ...prev,
-          features: initialFeatures
-        }));
+
+        // Inicializar valores de características PRESERVANDO los que ya estaban
+        // seleccionados (al "volver a editar" el form se remonta y este effect no
+        // debe borrar las características especiales ya capturadas).
+        setFormData(prev => {
+          const mergedFeatures = {};
+          if (Array.isArray(data)) {
+            data.forEach(feature => {
+              mergedFeatures[feature.name] =
+                prev.features?.[feature.name] ??
+                initialData.features?.[feature.name] ??
+                '';
+            });
+          }
+          return {
+            ...prev,
+            features: mergedFeatures
+          };
+        });
       } catch (error) {
         console.error('Error al cargar definiciones de características:', error);
         setFeatureDefinitions([]);

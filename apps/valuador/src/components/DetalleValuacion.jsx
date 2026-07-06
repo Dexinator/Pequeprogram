@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ValuationService } from '../services/valuation.service';
 import { useAuth, AuthProvider } from '../context/AuthContext';
+import OfertaDocument from './OfertaDocument';
 
 // Componente StatusBadge para mostrar el estado de la valuación
 const StatusBadge = ({ status }) => {
@@ -240,6 +241,7 @@ function DetalleValuacionContent({ valuationId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [client, setClient] = useState(null);
+  const [showOfferModal, setShowOfferModal] = useState(false);
 
   // Instanciar servicio de valuación
   const valuationService = React.useMemo(() => {
@@ -341,8 +343,51 @@ function DetalleValuacionContent({ valuationId }) {
     return { totalCompra, totalVenta, totalConsignacion };
   };
 
+  // Descripción del producto (misma lógica que NuevaValuacion / Historial)
+  const getProductDescription = (product, index) => {
+    const parts = [];
+    const subcategoryName = product.subcategoryName || product.subcategory_name;
+    const categoryName = product.categoryName || product.category_name;
+    if (subcategoryName && subcategoryName.trim()) parts.push(subcategoryName);
+    else if (categoryName && categoryName.trim()) parts.push(categoryName);
+    else parts.push('Artículo');
+
+    if (product.features && typeof product.features === 'object' && product.subcategory_id) {
+      const importantFeatures = [];
+      const importantFields = ['modelo', 'talla', 'edad', 'tipo', 'tamano', 'color', 'size'];
+      importantFields.forEach(fieldName => {
+        if (product.features[fieldName]) {
+          let value = product.features[fieldName];
+          if (fieldName === 'talla' || fieldName === 'size') value = `Talla ${value}`;
+          importantFeatures.push(value);
+        }
+      });
+      if (importantFeatures.length > 0) parts.push(importantFeatures.slice(0, 2).join(', '));
+    }
+
+    const brandName = product.brandName || product.brand_name;
+    if (brandName && !['sin marca', 'genérica'].includes(String(brandName).toLowerCase())) {
+      parts.push(brandName);
+    }
+    if (product.status && product.status.toLowerCase() === 'usado' && product.condition_state) {
+      const conditionMap = { excelente: 'Estado Excelente', bueno: 'Buen Estado', regular: 'Estado Regular', malo: 'Estado Deteriorado' };
+      parts.push(conditionMap[product.condition_state?.toLowerCase()] || product.condition_state);
+    }
+    return parts.join(' - ');
+  };
+
+  // Productos que aparecen en la oferta impresa (compra directa y crédito en tienda;
+  // la consignación no se imprime en la oferta)
+  const offerProducts = (valuation?.items || []).filter(
+    item => item.modality === 'compra directa' || item.modality === 'crédito en tienda'
+  );
+
   const handlePrint = () => {
-    alert(`Se imprimirá la valuación VP-${valuationId}. En una implementación real, se generaría un PDF o se abriría la vista de impresión.`);
+    if (offerProducts.length === 0) {
+      alert('Esta valuación no tiene productos de compra para imprimir (solo consignación).');
+      return;
+    }
+    setShowOfferModal(true);
   };
 
   const handleEdit = () => {
@@ -545,6 +590,37 @@ function DetalleValuacionContent({ valuationId }) {
         <div className="bg-background-alt p-6 rounded-lg shadow-sm border border-border">
           <h2 className="text-xl font-heading font-bold mb-3 text-azul-profundo">Notas</h2>
           <p className="text-text">{valuation.notes}</p>
+        </div>
+      )}
+
+      {/* Modal de oferta de compra */}
+      {showOfferModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-azul-profundo">Oferta de Compra - Entrepeques</h2>
+                <button
+                  onClick={() => setShowOfferModal(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  data-modal-close
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-4">
+                <OfertaDocument
+                  client={client || {}}
+                  selectedProducts={offerProducts}
+                  editedPrices={{}}
+                  editedModalities={{}}
+                  getProductDescription={getProductDescription}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
       

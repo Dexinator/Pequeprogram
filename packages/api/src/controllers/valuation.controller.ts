@@ -306,5 +306,85 @@ export const valuationController = {
       console.error('Error al finalizar valuación completa:', error);
       res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
     }
+  },
+
+  /**
+   * Guardar (crear o actualizar) un borrador de compra del valuador
+   */
+  saveDraft: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+
+      const { id, client_id, client_name, product_count, state } = req.body;
+      if (!state) {
+        return res.status(400).json({ error: 'El estado del borrador es obligatorio' });
+      }
+
+      const draft = await valuationService.saveDraft(userId, { id, client_id, client_name, product_count, state });
+      res.status(id ? 200 : 201).json(draft);
+    } catch (error: any) {
+      console.error('Error al guardar borrador:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
+  },
+
+  /**
+   * Listar los borradores del usuario autenticado
+   */
+  getDrafts: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+      const drafts = await valuationService.getDrafts(userId);
+      res.json(drafts);
+    } catch (error: any) {
+      console.error('Error al listar borradores:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
+  },
+
+  /**
+   * Obtener un borrador por ID (con su estado completo)
+   */
+  getDraft: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+      const draft = await valuationService.getDraft(userId, parseInt(req.params.id));
+      if (!draft) {
+        return res.status(404).json({ error: 'Borrador no encontrado' });
+      }
+      res.json(draft);
+    } catch (error: any) {
+      console.error('Error al obtener borrador:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
+  },
+
+  /**
+   * Eliminar un borrador
+   */
+  deleteDraft: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+      const ok = await valuationService.deleteDraft(userId, parseInt(req.params.id));
+      if (!ok) {
+        return res.status(404).json({ error: 'Borrador no encontrado' });
+      }
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Error al eliminar borrador:', error);
+      res.status(500).json({ error: error.message || 'Error al procesar la solicitud' });
+    }
   }
 };

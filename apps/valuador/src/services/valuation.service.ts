@@ -289,4 +289,26 @@ export class ValuationService {
       cash_percentage: cashPercentage
     });
   }
+
+  // ---------------- Borradores de compra (drafts) ----------------
+
+  async saveDraft(draft: { id?: number; client_id?: number | null; client_name?: string | null; product_count?: number; state: any }): Promise<any> {
+    this.ensureAuthenticated();
+    return this.http.post<any>(`${this.baseEndpoint}/drafts`, draft);
+  }
+
+  async getDrafts(): Promise<any[]> {
+    this.ensureAuthenticated();
+    return this.http.get<any[]>(`${this.baseEndpoint}/drafts`);
+  }
+
+  async getDraft(id: number): Promise<any> {
+    this.ensureAuthenticated();
+    return this.http.get<any>(`${this.baseEndpoint}/drafts/${id}`);
+  }
+
+  async deleteDraft(id: number): Promise<any> {
+    this.ensureAuthenticated();
+    return this.http.delete<any>(`${this.baseEndpoint}/drafts/${id}`);
+  }
 }

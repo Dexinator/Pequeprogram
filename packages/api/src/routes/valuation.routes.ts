@@ -9,6 +9,12 @@ router.post('/clients', authMiddleware, valuationController.createClient);
 router.get('/clients/search', authMiddleware, valuationController.searchClients);
 router.get('/clients/:id', authMiddleware, valuationController.getClient);
 
+// Rutas para borradores de compra (DEBEN ir antes de '/:id' para no colisionar)
+router.get('/drafts', authMiddleware, valuationController.getDrafts);
+router.post('/drafts', authMiddleware, valuationController.saveDraft);
+router.get('/drafts/:id', authMiddleware, valuationController.getDraft);
+router.delete('/drafts/:id', authMiddleware, valuationController.deleteDraft);
+
 // Rutas para valoraciones
 router.post('/', authMiddleware, valuationController.createValuation);
 router.get('/', authMiddleware, valuationController.getValuations);

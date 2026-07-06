@@ -91,6 +91,15 @@ function NuevaValuacionContent() {
   // Estado para modalidades editadas en el resumen
   const [editedModalities, setEditedModalities] = useState({});
 
+  // Estado para cantidades editadas en el resumen
+  const [editedQuantities, setEditedQuantities] = useState({});
+
+  // Estado para borradores de compra
+  const [draftId, setDraftId] = useState(null);
+  const [drafts, setDrafts] = useState([]);
+  const [showDraftsPanel, setShowDraftsPanel] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
+
   // Estado para porcentaje de compra en efectivo vs crédito
   const [cashPercentage, setCashPercentage] = useState(100);
 
@@ -140,6 +149,13 @@ function NuevaValuacionContent() {
     }
   }, [isAuthenticated, user, authLoading]);
 
+  // Cargar borradores del usuario al autenticarse
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      loadDrafts();
+    }
+  }, [isAuthenticated, authLoading]);
+
   // Mostrar notificación
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -148,6 +164,94 @@ function NuevaValuacionContent() {
     setTimeout(() => {
       setNotification(null);
     }, 5000);
+  };
+
+  // ---------------- Borradores de compra ----------------
+
+  const loadDrafts = async () => {
+    try {
+      const list = await valuationService.getDrafts();
+      setDrafts(Array.isArray(list) ? list : []);
+    } catch (error) {
+      console.error('Error al cargar borradores:', error);
+    }
+  };
+
+  // Serializar todo el estado del formulario para guardarlo/recuperarlo tal cual
+  const serializeDraftState = () => ({
+    client,
+    products,
+    productCounter,
+    showSummary,
+    summary,
+    selectedProducts: Array.from(selectedProducts),
+    selectAll,
+    editedPrices,
+    editedModalities,
+    editedQuantities,
+    cashPercentage
+  });
+
+  const handleSaveDraft = async () => {
+    if (!client.name || !client.phone) {
+      showNotification('Complete al menos el nombre y teléfono del cliente para guardar el borrador', 'error');
+      return;
+    }
+    setSavingDraft(true);
+    try {
+      const saved = await valuationService.saveDraft({
+        id: draftId || undefined,
+        client_id: client.id || null,
+        client_name: client.name || null,
+        product_count: products.length,
+        state: serializeDraftState()
+      });
+      setDraftId(saved.id);
+      showNotification('Borrador guardado');
+      loadDrafts();
+    } catch (error) {
+      console.error('Error al guardar borrador:', error);
+      showNotification('Error al guardar el borrador', 'error');
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
+  const restoreDraft = async (draftMeta) => {
+    try {
+      const full = await valuationService.getDraft(draftMeta.id);
+      const s = full.state || {};
+      setClient(s.client || { name: '', phone: '', email: '', identification: '' });
+      setProducts(Array.isArray(s.products) && s.products.length > 0 ? s.products : [{ id: 'product-initial-1', data: {} }]);
+      setProductCounter(s.productCounter || 1);
+      setSummary(s.summary || { totalProducts: 0, totalPurchaseValue: 0, totalSaleValue: 0, totalConsignmentValue: 0, productDetails: [] });
+      setSelectedProducts(new Set(s.selectedProducts || []));
+      setSelectAll(s.selectAll ?? true);
+      setEditedPrices(s.editedPrices || {});
+      setEditedModalities(s.editedModalities || {});
+      setEditedQuantities(s.editedQuantities || {});
+      setCashPercentage(s.cashPercentage ?? 100);
+      setShowSummary(s.showSummary || false);
+      setDraftId(full.id);
+      setShowDraftsPanel(false);
+      showNotification('Borrador cargado');
+    } catch (error) {
+      console.error('Error al cargar borrador:', error);
+      showNotification('Error al cargar el borrador', 'error');
+    }
+  };
+
+  const handleDeleteDraft = async (id) => {
+    if (typeof window !== 'undefined' && !window.confirm('¿Eliminar este borrador?')) return;
+    try {
+      await valuationService.deleteDraft(id);
+      if (draftId === id) setDraftId(null);
+      loadDrafts();
+      showNotification('Borrador eliminado');
+    } catch (error) {
+      console.error('Error al eliminar borrador:', error);
+      showNotification('Error al eliminar el borrador', 'error');
+    }
   };
 
   // Funciones para manejo de selección de productos
@@ -193,7 +297,7 @@ function NuevaValuacionContent() {
         ? Number(editedPrice.purchase)
         : (item.suggested_purchase_price ? Number(item.suggested_purchase_price) : 0);
 
-      const quantity = Number(item.quantity) || 1;
+      const quantity = getFinalQuantity(item);
       return sum + (isNaN(price) ? 0 : price * quantity);
     }, 0);
 
@@ -207,7 +311,7 @@ function NuevaValuacionContent() {
       const price = editedPrice?.sale !== undefined
         ? Number(editedPrice.sale)
         : (item.suggested_sale_price ? Number(item.suggested_sale_price) : 0);
-      const quantity = Number(item.quantity) || 1;
+      const quantity = getFinalQuantity(item);
       return sum + (isNaN(price) ? 0 : price * quantity);
     }, 0);
 
@@ -215,7 +319,7 @@ function NuevaValuacionContent() {
       const finalModality = editedModalities[item.id] || item.modality;
       if (finalModality !== 'consignación') return sum;
       const price = item.consignment_price ? Number(item.consignment_price) : 0;
-      const quantity = Number(item.quantity) || 1;
+      const quantity = getFinalQuantity(item);
       return sum + (isNaN(price) ? 0 : price * quantity);
     }, 0);
 
@@ -311,6 +415,13 @@ function NuevaValuacionContent() {
     const finalPrice = isNaN(numericPrice) ? 0 : numericPrice;
 
     return finalPrice;
+  };
+
+  // Obtener cantidad final (editada o la del producto)
+  const getFinalQuantity = (product) => {
+    const edited = editedQuantities[product.id];
+    const q = edited !== undefined ? Number(edited) : (Number(product.quantity) || 1);
+    return q > 0 ? q : 1;
   };
 
   // Cache para las definiciones de características de oferta por subcategoría
@@ -675,13 +786,13 @@ function NuevaValuacionContent() {
       // Calcular totales (multiplicar por cantidad)
       const totalPurchase = calculatedProducts.reduce((sum, item) => {
         const price = item.suggested_purchase_price ? Number(item.suggested_purchase_price) : 0;
-        const quantity = Number(item.quantity) || 1;
+        const quantity = getFinalQuantity(item);
         return sum + (isNaN(price) ? 0 : price * quantity);
       }, 0);
 
       const totalSale = calculatedProducts.reduce((sum, item) => {
         const price = item.suggested_sale_price ? Number(item.suggested_sale_price) : 0;
-        const quantity = Number(item.quantity) || 1;
+        const quantity = getFinalQuantity(item);
         return sum + (isNaN(price) ? 0 : price * quantity);
       }, 0);
 
@@ -690,7 +801,7 @@ function NuevaValuacionContent() {
         const finalModality = editedModalities[item.id] || item.modality;
         if (finalModality !== 'consignación') return sum;
         const price = item.consignment_price ? Number(item.consignment_price) : 0;
-        const quantity = Number(item.quantity) || 1;
+        const quantity = getFinalQuantity(item);
         return sum + (isNaN(price) ? 0 : price * quantity);
       }, 0);
 
@@ -718,6 +829,7 @@ function NuevaValuacionContent() {
       setEditedPrices({});
       setEditingProduct(null);
       setEditedModalities({});
+      setEditedQuantities({});
 
       setShowSummary(true);
       showNotification(`Resumen generado con ${calculatedProducts.length} productos`);
@@ -889,7 +1001,7 @@ function NuevaValuacionContent() {
               demand: product.demand,
               cleanliness: product.cleanliness,
               new_price: product.new_price,
-              quantity: product.quantity || 1,
+              quantity: getFinalQuantity(product),
               features: product.features || {},
               notes: product.notes || '',
               images: product.images || [],
@@ -913,7 +1025,7 @@ function NuevaValuacionContent() {
             demand: product.demand,
             cleanliness: product.cleanliness,
             new_price: product.new_price,
-            quantity: product.quantity || 1,
+            quantity: getFinalQuantity(product),
             features: product.features || {},
             notes: product.notes || '',
             images: product.images || [],
@@ -937,6 +1049,17 @@ function NuevaValuacionContent() {
       const finalizedValuation = await valuationService.finalizeComplete(clientId, selectedProductsData, notes, cashPercentage);
 
       console.log('Valuación finalizada con éxito:', finalizedValuation);
+
+      // Si veníamos de un borrador, eliminarlo tras finalizar
+      if (draftId) {
+        try {
+          await valuationService.deleteDraft(draftId);
+          setDraftId(null);
+        } catch (e) {
+          console.warn('No se pudo eliminar el borrador:', e);
+        }
+      }
+
       showNotification(`Valuación finalizada con éxito. ${selectedProducts.size} productos incluidos.`);
 
       // Redirigir al historial
@@ -1117,7 +1240,20 @@ function NuevaValuacionContent() {
                     
                     {/* Cantidad */}
                     <td className="p-2 text-center border-b border-border font-medium">
-                      {product.quantity || 1}
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="1"
+                          min="1"
+                          defaultValue={getFinalQuantity(product)}
+                          className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center focus:ring-azul-claro focus:border-azul-claro"
+                          id={`cantidad-${product.id}`}
+                        />
+                      ) : (
+                        <span className={editedQuantities[product.id] !== undefined ? 'text-verde-oscuro font-bold' : ''}>
+                          {getFinalQuantity(product)}
+                        </span>
+                      )}
                     </td>
                     
                     {/* Precio Unitario de Compra */}
@@ -1158,7 +1294,7 @@ function NuevaValuacionContent() {
                     
                     {/* Total Compra */}
                     <td className="p-2 text-right border-b border-border font-medium text-verde-oscuro font-bold">
-                      ${(finalPurchasePrice * (product.quantity || 1)).toFixed(0)}
+                      ${(finalPurchasePrice * getFinalQuantity(product)).toFixed(0)}
                     </td>
                     
                     {/* Consignación */}
@@ -1167,7 +1303,7 @@ function NuevaValuacionContent() {
                         ? (
                           <div>
                             <div className="text-xs text-gray-500">Precio sugerido:</div>
-                            <div>${(product.suggested_sale_price * (product.quantity || 1)).toFixed(0)}</div>
+                            <div>${(product.suggested_sale_price * getFinalQuantity(product)).toFixed(0)}</div>
                             <div className="text-xs text-verde-oscuro font-bold">Recibirá 50% al venderse</div>
                           </div>
                         )
@@ -1183,6 +1319,11 @@ function NuevaValuacionContent() {
                             onClick={() => {
                               const purchaseInput = document.getElementById(`purchase-${product.id}`);
                               const saleInput = document.getElementById(`sale-${product.id}`);
+                              const qtyInput = document.getElementById(`cantidad-${product.id}`);
+                              if (qtyInput) {
+                                const q = Math.max(1, parseInt(qtyInput.value) || 1);
+                                setEditedQuantities(prev => ({ ...prev, [product.id]: q }));
+                              }
                               saveEditedPrice(product.id, purchaseInput.value, saleInput.value);
                             }}
                             className="px-2 py-1 text-xs bg-verde-lima text-white rounded hover:bg-verde-oscuro transition-colors"
@@ -1370,6 +1511,15 @@ function NuevaValuacionContent() {
 
             <button
               type="button"
+              className="px-4 py-2 bg-white border border-azul-claro text-azul-claro rounded-md hover:bg-azul-claro/10 transition-colors disabled:opacity-50"
+              onClick={handleSaveDraft}
+              disabled={savingDraft}
+            >
+              {savingDraft ? 'Guardando...' : '💾 Guardar borrador'}
+            </button>
+
+            <button
+              type="button"
               className={`px-4 py-2 rounded-md transition-colors flex items-center gap-2 ${
                 selectedProducts.size === 0 || !client.name || !client.phone
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1533,8 +1683,44 @@ AuthContext loading: ${authLoading}
           {valuation && (
             <span className="bg-orange-500 text-white text-sm py-1 px-3 rounded-full">ID: VP-{valuation.id}</span>
           )}
+          <button
+            type="button"
+            onClick={() => setShowDraftsPanel(v => !v)}
+            className="bg-white border border-azul-claro text-azul-claro text-sm py-1 px-3 rounded-full hover:bg-azul-claro/10 transition-colors"
+          >
+            📋 Borradores{drafts.length > 0 ? ` (${drafts.length})` : ''}
+          </button>
         </div>
       </div>
+
+      {/* Panel de borradores guardados */}
+      {showDraftsPanel && (
+        <div className="bg-background-alt border border-border rounded-lg p-4 shadow-sm">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-heading font-bold text-azul-profundo">Borradores guardados</h3>
+            <button type="button" onClick={() => setShowDraftsPanel(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+          </div>
+          {drafts.length === 0 ? (
+            <p className="text-sm text-gray-500">No hay borradores guardados.</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {drafts.map(d => (
+                <li key={d.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2">
+                  <div className="text-sm">
+                    <span className="font-medium">{d.client_name || 'Sin cliente'}</span>
+                    <span className="text-gray-500"> · {d.product_count} producto(s) · {new Date(d.updated_at).toLocaleString('es-MX')}</span>
+                    {draftId === d.id && <span className="ml-2 text-xs text-verde-oscuro">(actual)</span>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => restoreDraft(d)} className="px-3 py-1 text-xs bg-azul-claro text-white rounded hover:bg-azul-profundo transition-colors">Cargar</button>
+                    <button type="button" onClick={() => handleDeleteDraft(d.id)} className="px-3 py-1 text-xs bg-rosa text-white rounded hover:bg-rosa/80 transition-colors">Eliminar</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Notificaciones */}
       {notification && (
@@ -1602,6 +1788,15 @@ AuthContext loading: ${authLoading}
                 onClick={() => setShowClothingBulkForm(true)}
               >
                 + Agregar Ropa (Masivo)
+              </button>
+
+              <button
+                type="button"
+                className="px-5 py-2 bg-white border border-azul-claro text-azul-claro rounded-md hover:bg-azul-claro/10 transition-colors disabled:opacity-50"
+                onClick={handleSaveDraft}
+                disabled={savingDraft}
+              >
+                {savingDraft ? 'Guardando...' : (draftId ? '💾 Actualizar borrador' : '💾 Guardar borrador')}
               </button>
             </div>
 
