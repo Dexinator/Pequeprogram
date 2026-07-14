@@ -1246,6 +1246,10 @@ function NuevaValuacionContent() {
                           step="1"
                           min="1"
                           defaultValue={getFinalQuantity(product)}
+                          onChange={(e) => {
+                            const q = Math.max(1, parseInt(e.target.value) || 1);
+                            setEditedQuantities(prev => ({ ...prev, [product.id]: q }));
+                          }}
                           className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center focus:ring-azul-claro focus:border-azul-claro"
                           id={`cantidad-${product.id}`}
                         />
@@ -1317,13 +1321,10 @@ function NuevaValuacionContent() {
                         <div className="flex gap-1 justify-center">
                           <button
                             onClick={() => {
+                              // La cantidad ya se actualiza en vivo (onChange); aquí solo
+                              // se confirman los precios editados.
                               const purchaseInput = document.getElementById(`purchase-${product.id}`);
                               const saleInput = document.getElementById(`sale-${product.id}`);
-                              const qtyInput = document.getElementById(`cantidad-${product.id}`);
-                              if (qtyInput) {
-                                const q = Math.max(1, parseInt(qtyInput.value) || 1);
-                                setEditedQuantities(prev => ({ ...prev, [product.id]: q }));
-                              }
                               saveEditedPrice(product.id, purchaseInput.value, saleInput.value);
                             }}
                             className="px-2 py-1 text-xs bg-verde-lima text-white rounded hover:bg-verde-oscuro transition-colors"
