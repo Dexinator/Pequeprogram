@@ -10,6 +10,9 @@ interface CartItem {
   price: number;
   quantity: number;
   max_quantity: number;
+  // Peso real del producto en gramos. Sin esto el checkout caía siempre al
+  // default de 500 g y el envío se cobraba muy por debajo del costo real.
+  weight_grams: number;
 }
 
 interface CartContextType {
@@ -135,7 +138,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         image: product.images?.[0] || 'https://via.placeholder.com/100x100/f3f4f6/9ca3af?text=Sin+imagen',
         price: product.online_price,
         quantity: Math.min(quantity, product.quantity),
-        max_quantity: product.quantity
+        max_quantity: product.quantity,
+        weight_grams: Number(product.weight_grams) || 500
       };
       newItems = [...currentItems, newItem];
     }
