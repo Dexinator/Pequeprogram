@@ -1906,10 +1906,14 @@ AuthContext loading: ${authLoading}
               <div className="p-4">
                 <OfertaDocument
                   client={client}
-                  selectedProducts={summary.productDetails.filter(product => 
-                    selectedProducts.has(product.id) && 
-                    (getFinalModality(product) === 'compra directa' || getFinalModality(product) === 'crédito en tienda')
-                  )}
+                  selectedProducts={summary.productDetails
+                    .filter(product =>
+                      selectedProducts.has(product.id) &&
+                      (getFinalModality(product) === 'compra directa' || getFinalModality(product) === 'crédito en tienda')
+                    )
+                    // Aplicar la cantidad editada en el resumen para que la oferta
+                    // impresa refleje las unidades reales (no la cantidad original).
+                    .map(product => ({ ...product, quantity: getFinalQuantity(product) }))}
                   editedPrices={editedPrices}
                   editedModalities={editedModalities}
                   getProductDescription={getProductDescription}
@@ -1941,10 +1945,13 @@ AuthContext loading: ${authLoading}
               <div className="p-4">
                 <ContratoConsignacion
                   client={client}
-                  consignmentProducts={summary.productDetails.filter(product => 
-                    selectedProducts.has(product.id) && 
-                    getFinalModality(product) === 'consignación'
-                  )}
+                  consignmentProducts={summary.productDetails
+                    .filter(product =>
+                      selectedProducts.has(product.id) &&
+                      getFinalModality(product) === 'consignación'
+                    )
+                    // Misma corrección que en la oferta: usar la cantidad editada.
+                    .map(product => ({ ...product, quantity: getFinalQuantity(product) }))}
                   valuationDate={new Date()}
                   getProductDescription={getProductDescription}
                   editedPrices={editedPrices}
