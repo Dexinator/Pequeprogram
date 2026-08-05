@@ -10,8 +10,8 @@ const VisitUsSection = ({ optimizedImages }) => {
     { src: '/placeholder-product.svg', alt: "Espacio familiar" }
   ];
   const schedule = [
-    { day: "Lunes - Viernes", hours: "11:00 am - 7:30 pm" },
-    { day: "Sábados", hours: "11:00 am - 6:30 pm" },
+    { day: "Lunes - Viernes", hours: "10:00 am - 6:30 pm" },
+    { day: "Sábados", hours: "10:00 am - 6:00 pm" },
     { day: "Domingos", hours: "Cerrado" }
   ];
 
@@ -22,7 +22,7 @@ const VisitUsSection = ({ optimizedImages }) => {
   ];
 
   return (
-    <section id="tienda" className="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-azul/10 to-brand-verde-lima/10 dark:from-brand-azul/5 dark:to-brand-verde-lima/5">
+    <section id="tienda" className="scroll-mt-24 md:scroll-mt-28 py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-azul/10 to-brand-verde-lima/10 dark:from-brand-azul/5 dark:to-brand-verde-lima/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">

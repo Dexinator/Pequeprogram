@@ -17,7 +17,9 @@ export const categoryGroupsComplete = {
       {
         name: 'Cargando al peque',
         type: 'single',
-        icon: 'baby-carrier',
+        // Toma el icono que antes usaba "Otros de paseo" (petición de Pablo).
+        // Antes apuntaba a 'baby-carrier', cuyo SVG no existe y salía roto.
+        icon: 'other-travel',
         slug: 'cargando-al-peque',
         subcategoryId: 2 // ID de Cargando al peque
       },
@@ -31,7 +33,8 @@ export const categoryGroupsComplete = {
       {
         name: 'Accesorios Carriola y Auto',
         type: 'single',
-        icon: 'accessories',
+        // Sombrilla (petición de Pablo). Antes 'accessories', cuyo SVG no existe.
+        icon: 'parasol',
         slug: 'accesorios-carriola',
         subcategoryId: 4 // ID de Accesorios Carriola y Auto
       },
@@ -51,7 +54,8 @@ export const categoryGroupsComplete = {
       {
         name: 'Otros de paseo',
         type: 'single',
-        icon: 'other-travel',
+        // Mochila (petición de Pablo); su icono anterior pasó a "Cargando al peque".
+        icon: 'backpack',
         slug: 'otros-paseo',
         subcategoryId: 9 // ID de Otros de Paseo
       }
@@ -186,7 +190,9 @@ export const categoryGroupsComplete = {
       {
         name: 'Accesorios de alimentación',
         type: 'single',
-        icon: 'feeding-accessories',
+        // 'feeding-accessories' no existe como SVG y salía roto; se usa el
+        // icono genérico de alimentación ('food-processor' ya lo usa Procesador).
+        icon: 'food-main',
         slug: 'accesorios-alimentacion',
         subcategoryId: 35 // ID de Accesorios de alimentación
       }

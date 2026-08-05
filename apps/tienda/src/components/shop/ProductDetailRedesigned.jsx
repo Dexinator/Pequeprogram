@@ -191,6 +191,13 @@ const ProductDetailContent = ({ productId, initialProduct, initialRelatedProduct
                 {product.brand_name}
               </h1>
               <div className="flex flex-wrap items-center gap-3">
+                {/* La talla es dato clave de compra en ropa/calzado: se muestra
+                    destacada aquí y no solo dentro de la pestaña de características. */}
+                {(product.features?.talla || product.features?.size) && (
+                  <span className="inline-block px-4 py-2 text-sm font-semibold rounded-full bg-brand-azul text-white shadow-md">
+                    📏 Talla: {product.features.talla || product.features.size}
+                  </span>
+                )}
                 <span className={`inline-block px-4 py-2 text-sm font-semibold rounded-full ${getStatusBadge(product.status).class} shadow-md`}>
                   Estado: {getStatusBadge(product.status).text}
                 </span>

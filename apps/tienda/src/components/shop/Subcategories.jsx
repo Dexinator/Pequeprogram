@@ -345,8 +345,10 @@ const Subcategories = ({ categoryId, categoryName, categoryIcon, categoryGroups 
               Nuestro inventario se actualiza constantemente. Visítanos en tienda o contáctanos para más información.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="tel:5565883245"
+              <a
+                href="https://wa.me/525523632389?text=Hola,%20no%20encontr%C3%A9%20lo%20que%20buscaba%20en%20la%20tienda%20en%20l%C3%ADnea.%20%C2%BFMe%20pueden%20ayudar?"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="px-8 py-3 bg-white text-brand-verde-oscuro hover:bg-gray-100 font-semibold rounded-lg transition-colors shadow-lg"
               >
                 Contáctanos

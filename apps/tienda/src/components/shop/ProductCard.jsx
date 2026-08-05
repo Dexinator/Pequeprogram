@@ -142,6 +142,12 @@ const ProductCard = ({ product }) => {
           
           {/* Estado con mejor diseño */}
           <div className="flex items-center gap-2 mb-4">
+            {/* Talla visible desde el listado (dato clave en ropa y calzado) */}
+            {(product.features?.talla || product.features?.size) && (
+              <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-brand-azul text-white shadow-sm">
+                Talla {product.features.talla || product.features.size}
+              </span>
+            )}
             <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${getStatusBadge(product.status).class}`}>
               {getStatusBadge(product.status).text}
             </span>
