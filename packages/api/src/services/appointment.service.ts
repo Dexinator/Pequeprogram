@@ -70,14 +70,17 @@ export interface SubcategoryForBooking {
 }
 
 // Time slot configuration
+// Nota: se eliminó el slot 17:30-18:15 a petición de Pablo ("quitaríamos la
+// última cita de las 5:30 pero seguimos recibiendo a partir de las 11"), por el
+// nuevo horario de tienda. La recepción sigue terminando a las 17:30, así que el
+// texto del sitio ("martes y jueves de 11:00 am a 5:30 pm") sigue siendo correcto.
 const TIME_SLOTS = [
   { start: '11:00', end: '11:45' },
   { start: '11:45', end: '12:30' },
   { start: '12:30', end: '13:15' },
   { start: '13:15', end: '14:00' },
   { start: '16:00', end: '16:45' },
-  { start: '16:45', end: '17:30' },
-  { start: '17:30', end: '18:15' }
+  { start: '16:45', end: '17:30' }
 ];
 
 // Valid days: Tuesday (2) and Thursday (4)
