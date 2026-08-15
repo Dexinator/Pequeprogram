@@ -58,6 +58,8 @@ export class StoreService {
     location?: string;
     category_id?: number;
     subcategory_id?: number;
+    // 'pending' (default) | 'discarded' | 'all'
+    discarded_filter?: string;
   }): Promise<{
     products: PendingProduct[];
     pagination: {
@@ -297,6 +299,23 @@ export class StoreService {
   }
 
   // Actualización masiva de productos
+  /**
+   * Marca (o revierte) productos como "no publicar" en la tienda en línea.
+   * Solo aplica a productos aún no publicados; no afecta el inventario físico.
+   */
+  async bulkSetDiscarded(productIds: string[], discarded: boolean): Promise<any> {
+    try {
+      this.initializeAuth();
+      return await this.http.put('/store/products/bulk-discard', {
+        product_ids: productIds,
+        discarded
+      });
+    } catch (error) {
+      console.error('Error al descartar productos:', error);
+      throw error;
+    }
+  }
+
   async bulkUpdateProducts(productIds: string[], action: string, data?: any): Promise<any> {
     try {
       console.log('Actualización masiva:', action, productIds.length, 'productos');

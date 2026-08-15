@@ -11,6 +11,7 @@ const ProductEditModal = ({ product, onClose, onSave }) => {
   const [errors, setErrors] = useState({});
   const [showUnpublishConfirm, setShowUnpublishConfirm] = useState(false);
   const [unpublishReason, setUnpublishReason] = useState('');
+  const [notes, setNotes] = useState('');
 
   useEffect(() => {
     if (product) {
@@ -19,6 +20,7 @@ const ProductEditModal = ({ product, onClose, onSave }) => {
       setPrice(product.online_price ? product.online_price.toString() : '');
       setImages(product.images || []);
       setFeatured(product.online_featured || false);
+      setNotes(product.online_notes || '');
     }
   }, [product]);
 
@@ -85,6 +87,12 @@ const ProductEditModal = ({ product, onClose, onSave }) => {
       };
 
       await storeService.updatePublishedProduct(product.inventory_id, data);
+
+      // La nota pública se guarda por su propio endpoint; solo se llama si cambió.
+      if ((notes || '') !== (product.online_notes || '')) {
+        await storeService.updateProductNotes(product.inventory_id, notes);
+      }
+
       onSave();
     } catch (error) {
       setErrors({ general: error.message || 'Error al guardar' });
@@ -246,6 +254,31 @@ const ProductEditModal = ({ product, onClose, onSave }) => {
                 </div>
                 {errors.images && (
                   <p className="text-red-500 text-sm mt-1">{errors.images}</p>
+                )}
+              </div>
+
+              {/* Nota pública del producto (se puede editar aunque ya esté publicado) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Nota del producto
+                </label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                  placeholder="Ej. medidas, detalles de uso, accesorios incluidos…"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-brand-rosa bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Esta nota se muestra a los clientes en la tienda en línea.
+                </p>
+                {product?.notes && (
+                  <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded">
+                    <p className="text-xs font-medium text-blue-800 dark:text-blue-200 mb-1">
+                      📋 Nota del valuador <span className="font-normal opacity-75">(referencia, no se publica)</span>
+                    </p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300">{product.notes}</p>
+                  </div>
                 )}
               </div>
 

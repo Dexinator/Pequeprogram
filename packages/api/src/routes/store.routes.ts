@@ -15,6 +15,7 @@ import {
   updatePublishedProduct,
   unpublishProduct,
   bulkUpdateProducts,
+  bulkDiscardProducts,
   getPublishedProductsForManagement,
   getAllProductsForManagement,
   getProductForEditing,
@@ -101,5 +102,10 @@ router
 router
   .route('/products/bulk-update')
   .put(authorize(['superadmin', 'admin']), bulkUpdateProducts);
+
+// Descartar / recuperar productos de la cola de preparación (no publicar)
+router
+  .route('/products/bulk-discard')
+  .put(authorize(['superadmin', 'admin', 'manager']), bulkDiscardProducts);
 
 export default router;

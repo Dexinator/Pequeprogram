@@ -14,13 +14,18 @@ export const getPendingProducts = asyncHandler(async (req: Request, res: Respons
   const location = req.query.location as string;
   const category_id = req.query.category_id ? parseInt(req.query.category_id as string) : undefined;
   const subcategory_id = req.query.subcategory_id ? parseInt(req.query.subcategory_id as string) : undefined;
+  const rawFilter = req.query.discarded_filter as string;
+  const discarded_filter = (['pending', 'discarded', 'all'].includes(rawFilter)
+    ? rawFilter
+    : 'pending') as 'pending' | 'discarded' | 'all';
 
   const result = await storeService.getPendingProducts({
     page,
     limit,
     location,
     category_id,
-    subcategory_id
+    subcategory_id,
+    discarded_filter
   });
 
   res.json({
@@ -400,6 +405,39 @@ export const bulkUpdateProducts = asyncHandler(async (req: Request, res: Respons
     success: true,
     data: result,
     message: `${result.affectedCount} producto(s) actualizados exitosamente`
+  });
+});
+
+// @desc    Marcar/desmarcar productos como "no publicar" en la tienda en línea (en lote)
+// @route   PUT /api/store/products/bulk-discard
+// @access  Private (admin, manager)
+export const bulkDiscardProducts = asyncHandler(async (req: Request, res: Response) => {
+  const { product_ids, discarded } = req.body;
+
+  if (!product_ids || !Array.isArray(product_ids) || product_ids.length === 0) {
+    res.status(400);
+    throw new Error('Debe especificar al menos un producto');
+  }
+
+  if (typeof discarded !== 'boolean') {
+    res.status(400);
+    throw new Error('El campo "discarded" debe ser true o false');
+  }
+
+  // Mismo límite que el resto de operaciones en lote
+  if (product_ids.length > 50) {
+    res.status(400);
+    throw new Error('No se pueden procesar más de 50 productos a la vez');
+  }
+
+  const result = await storeService.bulkSetDiscarded(product_ids, discarded);
+
+  res.json({
+    success: true,
+    data: result,
+    message: discarded
+      ? `${result.updated} producto(s) marcados como "no publicar"`
+      : `${result.updated} producto(s) devueltos a pendientes`
   });
 });
 

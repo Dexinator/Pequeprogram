@@ -7,6 +7,10 @@ export interface PendingProductsParams {
   location?: string;
   category_id?: number;
   subcategory_id?: number;
+  // 'pending' (default): solo lo que falta por publicar
+  // 'discarded': solo lo marcado como "no publicar"
+  // 'all': ambos
+  discarded_filter?: 'pending' | 'discarded' | 'all';
 }
 
 export interface OnlineProductsParams {
@@ -52,6 +56,8 @@ export class StoreService {
           vi.final_sale_price,
           vi.images,
           vi.online_notes,
+          vi.notes,
+          vi.online_discarded,
           c.name as category_name,
           s.name as subcategory_name,
           s.sku as subcategory_sku,
@@ -67,6 +73,14 @@ export class StoreService {
         WHERE vi.online_store_ready = false
         AND i.quantity > 0
       `;
+
+      // Filtro por estado de descarte: por defecto la cola muestra solo lo pendiente.
+      // 'discarded' lista lo descartado (para poder revertirlo) y 'all' muestra ambos.
+      if (params.discarded_filter === 'discarded') {
+        query += ` AND vi.online_discarded = true`;
+      } else if (params.discarded_filter !== 'all') {
+        query += ` AND COALESCE(vi.online_discarded, false) = false`;
+      }
       
       const queryParams: any[] = [];
       let paramIndex = 1;
@@ -773,7 +787,8 @@ export class StoreService {
 
       const query = `
         SELECT
-          COUNT(CASE WHEN vi.online_store_ready = false AND i.quantity > 0 THEN 1 END) as pending_products,
+          COUNT(CASE WHEN vi.online_store_ready = false AND COALESCE(vi.online_discarded, false) = false AND i.quantity > 0 THEN 1 END) as pending_products,
+          COUNT(CASE WHEN vi.online_store_ready = false AND vi.online_discarded = true AND i.quantity > 0 THEN 1 END) as discarded_products,
           COUNT(CASE WHEN vi.online_store_ready = true AND i.quantity > 0 THEN 1 END) as online_products,
           COUNT(CASE WHEN vi.online_prepared_at >= CURRENT_DATE THEN 1 END) as prepared_today,
           COUNT(CASE WHEN vi.online_prepared_at >= CURRENT_DATE - INTERVAL '7 days' THEN 1 END) as prepared_week,
@@ -786,6 +801,7 @@ export class StoreService {
 
       return {
         pending_products: parseInt(result.rows[0].pending_products),
+        discarded_products: parseInt(result.rows[0].discarded_products),
         online_products: parseInt(result.rows[0].online_products),
         prepared_today: parseInt(result.rows[0].prepared_today),
         prepared_week: parseInt(result.rows[0].prepared_week),
@@ -1254,6 +1270,47 @@ export class StoreService {
   }
 
   // Update product online notes (public notes for online store)
+  /**
+   * Marca o desmarca productos como "no publicar" en la tienda en línea (en lote).
+   *
+   * A diferencia de bulkUpdateProducts, opera sobre productos NO publicados
+   * (online_store_ready = false), que son los que están en la cola de preparación.
+   * Descartar no toca el inventario: el producto se sigue pudiendo vender en tienda física.
+   */
+  async bulkSetDiscarded(productIds: string[], discarded: boolean) {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+      await dbClient.query('BEGIN');
+
+      // Solo productos que aún no están publicados: no tiene sentido "descartar"
+      // algo que ya está en la tienda (para eso existe despublicar).
+      const result = await dbClient.query(
+        `UPDATE valuation_items vi
+         SET online_discarded = $1, updated_at = NOW()
+         FROM inventario i
+         WHERE i.valuation_item_id = vi.id
+           AND i.id = ANY($2)
+           AND vi.online_store_ready = false
+         RETURNING vi.id`,
+        [discarded, productIds]
+      );
+
+      await dbClient.query('COMMIT');
+
+      return {
+        updated: result.rowCount ?? 0,
+        requested: productIds.length,
+        discarded
+      };
+    } catch (error) {
+      if (dbClient) await dbClient.query('ROLLBACK');
+      throw error;
+    } finally {
+      if (dbClient) dbClient.release();
+    }
+  }
+
   async updateProductNotes(inventoryId: string, onlineNotes: string) {
     let dbClient: PoolClient | undefined;
     try {
@@ -1359,6 +1416,8 @@ export class StoreService {
           vi.weight_grams,
           vi.images,
           vi.online_featured,
+          vi.online_notes,
+          vi.notes,
           vi.online_prepared_at,
           vi.online_prepared_by,
           vi.unpublished_at,

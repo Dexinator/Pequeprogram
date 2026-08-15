@@ -7,14 +7,25 @@ import OptionalAuthGuard from './auth/OptionalAuthGuard';
 import { EMPLOYEE_ROLES } from '../config/routes.config';
 
 // Componente de tarjeta de producto pendiente
-const ProductCard = ({ product, onPrepare, onEditNotes }) => {
+const ProductCard = ({ product, onPrepare, onEditNotes, selected, onToggleSelect }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-4">
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-4 ${
+      selected ? 'ring-2 ring-pink-500' : ''
+    }`}>
       <div className="flex justify-between items-start mb-2">
-        <div>
-          <p className="text-sm text-gray-500">{product.inventory_id}</p>
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{product.subcategory_name}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{product.brand_name}</p>
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={() => onToggleSelect(product.inventory_id)}
+            className="mt-1 w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500 cursor-pointer"
+            title="Seleccionar para descartar en lote"
+          />
+          <div>
+            <p className="text-sm text-gray-500">{product.inventory_id}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{product.subcategory_name}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{product.brand_name}</p>
+          </div>
         </div>
         <span className={`px-2 py-1 text-xs rounded ${
           product.condition_state === 'excelente' ? 'bg-green-100 text-green-800' :
@@ -39,7 +50,19 @@ const ProductCard = ({ product, onPrepare, onEditNotes }) => {
         </div>
       )}
 
-      {/* Notas del producto */}
+      {/* Nota capturada al valuar: solo referencia, NO se publica.
+          Se muestra para que quien prepara el producto vea las observaciones
+          que tomó el valuador (medidas, detalles) y decida qué poner en la nota pública. */}
+      {product.notes && (
+        <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded text-sm">
+          <p className="text-blue-800 dark:text-blue-200 font-medium text-xs mb-1">
+            📋 Nota del valuador <span className="font-normal opacity-75">(referencia, no se publica)</span>
+          </p>
+          <p className="text-blue-700 dark:text-blue-300 text-xs">{product.notes}</p>
+        </div>
+      )}
+
+      {/* Nota pública que sí va a la tienda en línea */}
       {product.online_notes && (
         <div className="mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-sm">
           <p className="text-yellow-800 dark:text-yellow-200 font-medium text-xs mb-1">Notas:</p>
@@ -409,6 +432,8 @@ const ProductPreparationContent = () => {
     location: '',
     category_id: '',
     subcategory_id: '',
+    // 'pending' = por publicar (default) | 'discarded' = marcados como no publicar
+    discarded_filter: 'pending',
     page: 1,
     limit: 12
   });
@@ -416,6 +441,9 @@ const ProductPreparationContent = () => {
     total: 0,
     totalPages: 0
   });
+  // Selección múltiple para descartar/recuperar en lote
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkWorking, setBulkWorking] = useState(false);
 
   // Cargar categorías al montar el componente
   useEffect(() => {
@@ -462,10 +490,50 @@ const ProductPreparationContent = () => {
       const response = await storeService.getPendingProducts(filters);
       setProducts(response.products);
       setPagination(response.pagination);
+      // La selección no sobrevive a un cambio de página/filtro
+      setSelectedIds([]);
     } catch (error) {
       console.error('Error al cargar productos:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleSelected = (inventoryId) => {
+    setSelectedIds(prev =>
+      prev.includes(inventoryId)
+        ? prev.filter(id => id !== inventoryId)
+        : [...prev, inventoryId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(prev =>
+      prev.length === products.length ? [] : products.map(p => p.inventory_id)
+    );
+  };
+
+  // discarded = true -> "no publicar"; false -> devolver a pendientes
+  const handleBulkDiscard = async (discarded) => {
+    if (selectedIds.length === 0) return;
+    const verbo = discarded ? 'marcar como "no publicar"' : 'devolver a pendientes';
+    if (typeof window !== 'undefined' &&
+        !window.confirm(`¿${discarded ? 'Descartar' : 'Recuperar'} ${selectedIds.length} producto(s)?\n\nSe van a ${verbo}. Esto no afecta el inventario ni la venta en tienda física.`)) {
+      return;
+    }
+    setBulkWorking(true);
+    try {
+      await storeService.bulkSetDiscarded(selectedIds, discarded);
+      setSelectedIds([]);
+      await loadProducts();
+      await loadStats();
+    } catch (error) {
+      console.error('Error al actualizar productos:', error);
+      if (typeof window !== 'undefined') {
+        window.alert('No se pudieron actualizar los productos. Intenta de nuevo.');
+      }
+    } finally {
+      setBulkWorking(false);
     }
   };
 
@@ -540,6 +608,17 @@ const ProductPreparationContent = () => {
       {/* Filtros */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
         <div className="flex flex-wrap gap-4">
+          {/* Filtro por estado: pendientes de publicar vs marcados como "no publicar" */}
+          <select
+            value={filters.discarded_filter}
+            onChange={(e) => setFilters({...filters, discarded_filter: e.target.value, page: 1})}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium"
+          >
+            <option value="pending">Pendientes de publicar</option>
+            <option value="discarded">No publicar (descartados)</option>
+            <option value="all">Todos</option>
+          </select>
+
           {/* Filtro de ubicación */}
           <select
             value={filters.location}
@@ -579,7 +658,7 @@ const ProductPreparationContent = () => {
           {/* Botón para limpiar filtros */}
           {(filters.location || filters.category_id || filters.subcategory_id) && (
             <button
-              onClick={() => setFilters({ location: '', category_id: '', subcategory_id: '', page: 1, limit: 12 })}
+              onClick={() => setFilters({ location: '', category_id: '', subcategory_id: '', discarded_filter: filters.discarded_filter, page: 1, limit: 12 })}
               className="px-3 py-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors text-sm font-medium"
             >
               Limpiar filtros
@@ -599,6 +678,50 @@ const ProductPreparationContent = () => {
         </div>
       ) : (
         <>
+          {/* Barra de acciones en lote */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 mb-4 flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+              <input
+                type="checkbox"
+                checked={selectedIds.length === products.length && products.length > 0}
+                onChange={toggleSelectAll}
+                className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+              />
+              Seleccionar todos ({products.length})
+            </label>
+
+            {selectedIds.length > 0 && (
+              <>
+                <span className="text-sm font-medium text-pink-600">
+                  {selectedIds.length} seleccionado(s)
+                </span>
+                {filters.discarded_filter === 'discarded' ? (
+                  <button
+                    onClick={() => handleBulkDiscard(false)}
+                    disabled={bulkWorking}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm disabled:opacity-50"
+                  >
+                    {bulkWorking ? 'Procesando...' : '↩️ Devolver a pendientes'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBulkDiscard(true)}
+                    disabled={bulkWorking}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
+                  >
+                    {bulkWorking ? 'Procesando...' : '🚫 No publicar'}
+                  </button>
+                )}
+                <button
+                  onClick={() => setSelectedIds([])}
+                  className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  Limpiar selección
+                </button>
+              </>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map(product => (
               <ProductCard
@@ -606,6 +729,8 @@ const ProductPreparationContent = () => {
                 product={product}
                 onPrepare={setSelectedProduct}
                 onEditNotes={setNotesProduct}
+                selected={selectedIds.includes(product.inventory_id)}
+                onToggleSelect={toggleSelected}
               />
             ))}
           </div>
