@@ -480,25 +480,28 @@ export default function InventoryList() {
                         <div className="flex items-center space-x-2">
                           <span>{inventoryService.formatCurrency(product.final_sale_price)}</span>
                           {canEditStock && (
-                            product.online_store_ready ? (
-                              <span
-                                className="px-2 py-1 bg-gray-100 text-gray-400 rounded text-xs"
-                                title="Publicado en línea: edita el precio desde la preparación de la tienda en línea"
-                              >
-                                Publicado
-                              </span>
-                            ) : (
+                            <>
+                              {/* El precio de tienda física se puede editar siempre, incluso si
+                                  el producto está publicado en línea: son precios independientes. */}
                               <button
                                 onClick={() => openPriceModal(product)}
                                 className="px-2 py-1 bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors rounded flex items-center space-x-1"
-                                title="Editar precio"
+                                title="Editar precio de tienda física"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                                 <span className="text-xs">Editar</span>
                               </button>
-                            )
+                              {product.online_store_ready && (
+                                <span
+                                  className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs"
+                                  title="También está publicado en la tienda en línea. Su precio en línea se edita aparte, desde Gestión de Productos."
+                                >
+                                  También en línea
+                                </span>
+                              )}
+                            </>
                           )}
                         </div>
                       </td>

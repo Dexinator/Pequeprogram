@@ -733,11 +733,16 @@ export class SalesService extends BaseService<Sale> {
   }
 
   /**
-   * Update the sale price of an inventory item that has NOT been published online yet.
+   * Update the PHYSICAL-STORE sale price of an inventory item.
    * - Products from valuations -> updates valuation_items.final_sale_price
    * - Other products (OTRP...) -> updates otherprods_items.sale_unit_price
-   * Items already prepared for the online store (online_store_ready = TRUE) are rejected,
-   * because their price is managed from the online-store preparation flow.
+   *
+   * El precio de tienda física y el de tienda en línea (valuation_items.online_price)
+   * son INDEPENDIENTES: editar uno no toca el otro (decisión de Pablo).
+   * Antes esto rechazaba los productos ya publicados con el mensaje "actualiza el precio
+   * desde la preparación de la tienda en línea", pero ese flujo edita online_price, no
+   * final_sale_price — así que el precio físico de un producto publicado se quedaba sin
+   * forma de editarse. Ese bloqueo se eliminó.
    */
   async updateInventoryPrice(
     inventoryId: string,
@@ -770,11 +775,8 @@ export class SalesService extends BaseService<Sale> {
       const isOtr = typeof inventoryId === 'string' && inventoryId.startsWith('OTRP');
 
       if (!isOtr && row.valuation_item_id) {
-        if (row.online_store_ready === true) {
-          throw new Error(
-            'El producto ya está publicado en la tienda en línea. Actualiza el precio desde la preparación de la tienda en línea.'
-          );
-        }
+        // Se actualiza el precio de tienda física aunque el producto esté publicado
+        // en línea; su online_price no se modifica (precios independientes).
         await dbClient.query(
           `UPDATE valuation_items SET final_sale_price = $1, updated_at = NOW() WHERE id = $2`,
           [newPrice, row.valuation_item_id]

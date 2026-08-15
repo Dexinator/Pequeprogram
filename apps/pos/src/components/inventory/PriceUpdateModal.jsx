@@ -46,12 +46,21 @@ export default function PriceUpdateModal({ product, currentPrice, onConfirm, onC
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <h2 className="text-xl font-semibold mb-4">Editar Precio de Venta</h2>
+        <h2 className="text-xl font-semibold mb-1">Editar Precio de Venta</h2>
+        <p className="text-sm text-gray-500 mb-4">Precio de la tienda física (POS)</p>
 
         <div className="mb-4 p-3 bg-gray-50 rounded">
           <p className="text-sm text-gray-600 mb-1">Producto:</p>
           <p className="font-medium">{product.id} - {product.description}</p>
         </div>
+
+        {product.online_store_ready && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            Este producto también está publicado en la tienda en línea. Aquí solo cambias el
+            precio de la <strong>tienda física</strong>; el precio en línea se edita aparte,
+            desde Gestión de Productos.
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
