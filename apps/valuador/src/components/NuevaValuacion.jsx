@@ -1306,9 +1306,15 @@ function NuevaValuacionContent() {
                       {getFinalModality(product) === 'consignación'
                         ? (
                           <div>
-                            <div className="text-xs text-gray-500">Precio sugerido:</div>
-                            <div>${(product.suggested_sale_price * getFinalQuantity(product)).toFixed(0)}</div>
-                            <div className="text-xs text-verde-oscuro font-bold">Recibirá 50% al venderse</div>
+                            {/* Se muestra lo que RECIBIRÁ el proveedor (50% del precio de
+                                venta), no el precio de venta completo. */}
+                            <div className="font-bold text-verde-oscuro">
+                              ${((product.consignment_price ?? (product.suggested_sale_price * 0.5)) * getFinalQuantity(product)).toFixed(0)}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              50% de ${(product.suggested_sale_price * getFinalQuantity(product)).toFixed(0)} (precio de venta)
+                            </div>
+                            <div className="text-xs text-gray-500">Se paga al venderse</div>
                           </div>
                         )
                         : '-'

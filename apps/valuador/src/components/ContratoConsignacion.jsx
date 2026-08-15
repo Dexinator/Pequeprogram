@@ -19,15 +19,15 @@ const ContratoConsignacion = ({ client, consignmentProducts, valuationDate, getP
     return formatDate(d);
   };
 
-  // Obtener el precio de venta final (considerando ediciones)
+  // Precio de VENTA al público del artículo (el contrato reparte 50% de este monto).
+  // OJO: no usar consignment_price aquí — ese campo guarda lo que recibe el proveedor
+  // (50% de la venta), así que tomarlo como precio de venta partiría los montos a la mitad.
   const getFinalSalePrice = (product) => {
     // Si hay precio editado de venta, usarlo para el contrato
     if (editedPrices && editedPrices[product.id]?.sale !== undefined) {
       return parseFloat(editedPrices[product.id].sale) || 0;
     }
-    // Si no hay precio editado, usar el precio de consignación calculado
-    // El consignment_price ya incluye el 20% adicional sobre el precio de compra
-    return parseFloat(product.consignment_price || product.suggested_sale_price || product.final_sale_price) || 0;
+    return parseFloat(product.final_sale_price || product.suggested_sale_price) || 0;
   };
 
   // Calcular descuentos progresivos (10% cada 8 semanas)

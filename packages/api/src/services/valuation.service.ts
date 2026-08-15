@@ -13,6 +13,11 @@ import {
 import { BaseService } from './base.service';
 import { pool } from '../db';
 
+// Porcentaje del precio de venta que recibe el proveedor en consignación.
+// Debe coincidir con el default de valuation_items.consignment_percentage (50%)
+// que usa consignment.service.markAsPaid al liquidar sobre el precio de venta real.
+const CONSIGNMENT_SUPPLIER_SHARE = 0.5;
+
 export class ValuationService extends BaseService<Valuation> {
   constructor() {
     super('valuations');
@@ -253,9 +258,12 @@ export class ValuationService extends BaseService<Valuation> {
       const purchasePrice = salePrice * purchasePriceMultiplier;
       
       // 5. Calcular precios para diferentes modalidades
-      // NOTA: consignment_price ahora es solo el precio de venta sugerido
-      // El pago real al proveedor será 50% del precio de venta real
-      const consignmentPrice = salePrice; // Precio de venta sugerido para consignación
+      // consignment_price = lo que RECIBIRÁ el proveedor: 50% del precio de venta.
+      // Antes guardaba el precio de venta completo, lo que confundía en la pantalla de
+      // cálculo y en el contrato (petición de Pablo: mostrar la mitad).
+      // El pago real al liquidar sigue calculándose sobre el precio de venta REAL
+      // (consignment.service.markAsPaid), así que este valor es la referencia previa.
+      const consignmentPrice = salePrice * CONSIGNMENT_SUPPLIER_SHARE;
       const storeCreditPrice = purchasePrice * 1.2; // 20% más que compra directa
       
       return {
