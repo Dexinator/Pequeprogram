@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { consignmentService } from '../../services/consignment.service';
+import ContratoConsignacion from './ContratoConsignacion';
 
 export default function ConsignmentsList() {
   const [consignments, setConsignments] = useState([]);
@@ -17,6 +18,8 @@ export default function ConsignmentsList() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showReturnModal, setShowReturnModal] = useState(false);
+  // Contrato a reimprimir (moldeado a lo que espera ContratoConsignacion)
+  const [contractData, setContractData] = useState(null);
   const [paymentFormData, setPaymentFormData] = useState({
     paid_amount: '',
     notes: ''
@@ -104,6 +107,53 @@ export default function ConsignmentsList() {
   };
 
   // Marcar como pagado
+  // Descripción del producto para el contrato (misma lógica que el valuador)
+  const getProductDescription = (product) => {
+    const parts = [];
+    if (product.subcategory_name) parts.push(product.subcategory_name);
+    else if (product.category_name) parts.push(product.category_name);
+    else parts.push('Artículo');
+
+    if (product.features && typeof product.features === 'object') {
+      const importantFeatures = [];
+      ['modelo', 'talla', 'edad', 'tipo', 'tamano', 'color', 'size'].forEach(key => {
+        if (product.features[key]) {
+          const value = (key === 'talla' || key === 'size')
+            ? `Talla ${product.features[key]}`
+            : product.features[key];
+          importantFeatures.push(value);
+        }
+      });
+      if (importantFeatures.length > 0) parts.push(importantFeatures.slice(0, 2).join(', '));
+    }
+
+    const brand = product.brand_name;
+    if (brand && !['sin marca', 'genérica'].includes(String(brand).toLowerCase())) {
+      parts.push(brand);
+    }
+    return parts.join(' - ');
+  };
+
+  // Reimprimir el contrato de una consignación ya ingresada.
+  // Cada fila es un valuation_item y ContratoConsignacion espera un arreglo de
+  // productos + los datos del cliente, así que se moldea aquí.
+  const reprintContract = (consignment) => {
+    setContractData({
+      client: {
+        name: consignment.client_name || 'Cliente',
+        phone: consignment.client_phone || '',
+        email: consignment.client_email || '',
+        identification: consignment.client_identification || ''
+      },
+      products: [{
+        ...consignment,
+        quantity: consignment.inventory_quantity || 1
+      }],
+      date: consignment.contract_date || consignment.created_at || new Date(),
+      folio: consignment.folio
+    });
+  };
+
   const markAsPaid = (consignment) => {
     setSelectedConsignment(consignment);
     // Calcular el 50% del precio de venta real
@@ -480,6 +530,13 @@ export default function ConsignmentsList() {
                             Pagar
                           </button>
                         )}
+                        <button
+                          onClick={() => reprintContract(consignment)}
+                          className="text-purple-600 hover:text-purple-900"
+                          title="Reimprimir el contrato de consignación"
+                        >
+                          Contrato
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -828,6 +885,39 @@ export default function ConsignmentsList() {
               >
                 Confirmar Devolución
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para reimprimir el contrato de consignación */}
+      {contractData && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-900">
+                  Contrato de Consignación{contractData.folio ? ` — ${contractData.folio}` : ''}
+                </h2>
+                <button
+                  onClick={() => setContractData(null)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  data-modal-close
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-4">
+                <ContratoConsignacion
+                  client={contractData.client}
+                  consignmentProducts={contractData.products}
+                  valuationDate={contractData.date}
+                  getProductDescription={getProductDescription}
+                  editedPrices={{}}
+                />
+              </div>
             </div>
           </div>
         </div>

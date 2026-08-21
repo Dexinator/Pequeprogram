@@ -109,10 +109,28 @@ export class AuthService {
     }
   }
 
-  // Verificar si el usuario está autenticado
+  // Verificar si el usuario está autenticado (token presente y NO expirado)
   isAuthenticated(): boolean {
     const token = this.getToken();
-    return !!token;
+    return !!token && !this.isTokenExpired(token);
+  }
+
+  /**
+   * Revisa la fecha de expiración dentro del JWT.
+   * Sin esto, un token vencido seguía "iniciando sesión": el POS mostraba el
+   * dashboard y todas las llamadas al API fallaban con 401, dando la impresión
+   * de estar logueado cuando en realidad la sesión ya había caducado.
+   * Ante cualquier token ilegible se asume expirado (mejor pedir login de más).
+   */
+  isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload?.exp) return false; // sin exp: lo dejamos pasar, el API decidirá
+      // exp viene en segundos; se descuentan 10s de margen por desfase de reloj
+      return payload.exp * 1000 <= Date.now() + 10000;
+    } catch {
+      return true;
+    }
   }
 
   // Obtener el token del localStorage

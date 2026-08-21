@@ -47,7 +47,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Token encontrado:', !!token);
       console.log('Usuario encontrado:', !!storedUser);
 
-      if (token && storedUser) {
+      // Una sesión vencida debe tratarse como "sin sesión": si no, el POS mostraba
+      // el dashboard con un token caducado y todo fallaba con 401.
+      if (token && authService.isTokenExpired(token)) {
+        console.log('⌛ Token expirado: se cierra la sesión y se pide login');
+        authService.logout();
+        setUser(null);
+      } else if (token && storedUser) {
         console.log('✅ Usuario autenticado:', storedUser.username);
         console.log('ID del usuario:', storedUser.id);
         console.log('🔧 Llamando a setUser()...');
