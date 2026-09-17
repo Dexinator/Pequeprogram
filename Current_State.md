@@ -3537,3 +3537,29 @@ const suggestedSalePrice = clothingPrice.sale_price;
 - **valuations.folio** VARCHAR(30) — folio rastreable del contrato (formato `C-YYMMDD-{id}`), autogenerado por trigger. Migración 034.
 
 **Resultado:** Sistema de valuación de ropa transformado de proceso tedioso item por item a entrada masiva eficiente, manteniendo la flexibilidad de precios por calidad y reduciendo drásticamente el tiempo de captura.
+## Sesión: 17 de Septiembre, 2026
+
+### Roadmap Septiembre26 (sesión máster) + Etapa 0 implementada
+
+**Origen:** documento "Mejoras sistema septiembre26.docx" de Pablo, junta de aclaraciones y tres bugs reportados por Slack el mismo día.
+
+#### Roadmap y fichas
+- `ROADMAP_SEPTIEMBRE26.md` + `roadmap-septiembre26/etapa-{0..5}-*.md`, mismo método que Junio26 (fichas cerradas con puntos de integración exactos; cada etapa se implementa en sesión aparte y va primero a staging).
+- Etapas: **0** fixes (hecha) · **1** POS cobro (faltante en pago mixto, cambio en efectivo **con ticket**, calculadora) · **2** POS inventario (filtros categoría/subcategoría, "No disponibles", catálogo de claves SKU) · **3** POS clientes (ficha con histórico completo, edición, notas, crédito) · **4** POS devoluciones (garantía → efectivo / sin defecto → crédito, parcial por artículo, actualiza inventario) · **5** POS apartados.
+- Decisiones de Pablo registradas en el roadmap: solo clientes (sin entidad proveedor); el cambio sí se imprime en el ticket; nada de caja en esta ronda; devoluciones en cualquier momento posterior a la compra; apartados entra en esta ronda.
+- Migraciones reservadas: 044 (Etapa 0), 045 (E1), 046 (E3), 047 (E4), 048 (E5).
+
+#### Etapa 0 — implementada y probada en local contra copia de staging
+1. **Paginación de "Preparar productos"** (`apps/tienda/src/components/ProductPreparation.jsx`): se pintaba un botón por cada página en un flex centrado sin wrap; con 13+ páginas la 1 quedaba fuera de pantalla. Ahora ventana de 5 páginas + Anterior/Siguiente + "Página X de Y" (patrón de `ProductManagement.jsx`).
+2. **Citas → "API error 401"**: el `AuthContext` de la tienda no validaba la expiración del JWT (mismo bug que el POS, `c2e3feb`). Portado `isTokenExpired()` a `apps/tienda/src/services/auth.service.ts`; `checkAuth` limpia sesión vencida; `fetchApi` (`api.js`) ante 401 autenticado limpia sesión y redirige a `/login?expired=1`; el login muestra "Tu sesión expiró".
+3. **Alta de cliente en POS → "error de API"**:
+   - **Causa raíz general:** el middleware de errores (`packages/api/src/index.ts`) respondía siempre 500 "Error interno del servidor" ignorando `res.status(4xx)` de los controllers. Ahora respeta el 4xx y devuelve `err.message`. Afecta positivamente a todos los endpoints.
+   - `createClient`: teléfono obligatorio (`clients.phone` es NOT NULL); duplicado → 409 `PHONE_EXISTS` con datos del cliente existente; comparación de teléfonos **por dígitos**; mensajes en español. `searchClients` también busca por dígitos.
+   - POS `http.service.ts`: `toError()` centralizado (lee `message`/`code`/`data`; PUT/DELETE no leían el cuerpo); 401 a media jornada → limpia sesión y recarga.
+   - POS `ClientSelection.jsx`: teléfono obligatorio; duplicado muestra botón "Usar a {nombre}".
+4. **Clientes de citas no aparecían al buscarlos**: `createAppointment` guardaba nombre/teléfono solo en `appointments` (`client_id NULL`) sin crear el `clients`. Nuevo `findOrCreateClient()` en `appointment.service.ts` (busca por dígitos, vincula o crea, dentro de la transacción). **Migración 044** hace el backfill histórico.
+
+**Verificación:** `tsc --noEmit` limpio en API; esbuild OK en los 7 archivos de frontend tocados. Copia de staging restaurada en Docker local (`pg_dump` con imagen postgres:17 + `pg_restore`); migración 044 aplicada (5 citas sin cliente → 4 vinculadas + 1 creado, 0 pendientes); probado vía HTTP: 400 sin teléfono, 409 duplicado con espacios, búsqueda por dígitos, cita nueva crea cliente y segunda cita con otro formato de teléfono reutiliza el mismo cliente.
+
+### Cambio al Esquema de Base de Datos
+- **Migración 044** (`044-link-appointments-to-clients.sql`): sin columnas nuevas. Backfill de datos: crea en `clients` los clientes de citas que no existían y llena `appointments.client_id` en las citas históricas.

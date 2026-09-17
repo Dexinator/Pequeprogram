@@ -67,12 +67,25 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Middleware para manejo centralizado de errores
+// Middleware para manejo centralizado de errores.
+// Los controllers usan el patrón `res.status(400); throw new Error('...')`
+// (express-async-handler). Antes este handler ignoraba ese status y respondía
+// SIEMPRE 500 "Error interno del servidor", así que un teléfono duplicado o un
+// campo faltante se veían en el POS como error interno sin explicación.
+// Ahora: si el controller ya fijó un 4xx, se respeta y se devuelve su mensaje.
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error no controlado:', err);
-  res.status(500).json({
+  const isClientError = res.statusCode >= 400 && res.statusCode < 500;
+  const status = isClientError ? res.statusCode : 500;
+
+  if (isClientError) {
+    console.warn(`Error ${status} en ${req.method} ${req.originalUrl}:`, err.message);
+  } else {
+    console.error('Error no controlado:', err);
+  }
+
+  res.status(status).json({
     success: false,
-    message: 'Error interno del servidor',
+    message: isClientError ? err.message : 'Error interno del servidor',
     error: config.nodeEnv === 'development' ? err.message : undefined
   });
 });

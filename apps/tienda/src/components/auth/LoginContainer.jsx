@@ -67,6 +67,12 @@ const LoginContainer = ({ onSuccess, onClose }) => {
   const errorMessage = localError || authError;
   const isLoading = authLoading || isSubmitting;
 
+  // Si llegamos aquí porque el API respondió 401 (sesión vencida), decirlo
+  // claramente en vez de mostrar un login "de la nada".
+  const sessionExpired =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('expired') === '1';
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div>
@@ -75,7 +81,9 @@ const LoginContainer = ({ onSuccess, onClose }) => {
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
             Entrepeques
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">Inicia sesión para continuar</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            {sessionExpired ? 'Tu sesión expiró. Vuelve a iniciar sesión para continuar.' : 'Inicia sesión para continuar'}
+          </p>
         </div>
 
         {/* Formulario */}

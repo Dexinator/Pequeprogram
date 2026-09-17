@@ -208,6 +208,37 @@ export class AppointmentService {
     }
   }
 
+  /**
+   * Busca un cliente por teléfono (comparando solo dígitos, para que
+   * "55 1234 5678" y "5512345678" sean el mismo) y si no existe lo crea.
+   * Corre dentro de la transacción de la cita. Devuelve el id del cliente.
+   */
+  private async findOrCreateClient(
+    tx: { query: (q: string, p?: any[]) => Promise<any> },
+    data: { name: string; phone: string; email?: string }
+  ): Promise<number> {
+    const digits = data.phone.replace(/\D/g, '');
+
+    const existing = await tx.query(
+      `SELECT id FROM clients
+       WHERE regexp_replace(phone, '\\D', '', 'g') = $1
+       ORDER BY id
+       LIMIT 1`,
+      [digits]
+    );
+    if (existing.rows.length > 0) {
+      return existing.rows[0].id;
+    }
+
+    const inserted = await tx.query(
+      `INSERT INTO clients (name, phone, email)
+       VALUES ($1, $2, $3)
+       RETURNING id`,
+      [data.name.trim() || 'Cliente de cita', data.phone.trim(), data.email?.trim() || null]
+    );
+    return inserted.rows[0].id;
+  }
+
   // Search clients by phone (returns minimal data for privacy)
   async searchClientsByPhone(phone: string): Promise<{ id: number; name: string }[]> {
     const query = `
@@ -358,6 +389,19 @@ export class AppointmentService {
       // Get end time
       const endTime = this.getEndTime(data.start_time);
 
+      // Un cliente nuevo que agenda cita debe existir en `clients`: antes solo
+      // se guardaba nombre/teléfono en la cita y el cliente no aparecía después
+      // al buscarlo por teléfono en el POS o el valuador. Si el teléfono ya
+      // existe se reutiliza ese registro (evita duplicados y respeta el UNIQUE).
+      let clientId: number | null = data.client_id || null;
+      if (!clientId && data.client_phone) {
+        clientId = await this.findOrCreateClient(client, {
+          name: data.client_name || '',
+          phone: data.client_phone,
+          email: data.client_email
+        });
+      }
+
       // Insert appointment
       const insertAppointment = `
         INSERT INTO appointments (
@@ -369,7 +413,7 @@ export class AppointmentService {
       `;
 
       const appointmentResult = await client.query(insertAppointment, [
-        data.client_id || null,
+        clientId,
         data.client_name || null,
         data.client_phone || null,
         data.client_email || null,

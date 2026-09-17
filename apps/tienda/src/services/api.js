@@ -3,6 +3,25 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001/api';
 
 console.log('API URL configured:', API_URL);
 
+// Limpia la sesión guardada y redirige al login conservando la ruta actual.
+// Se usa una sola vez por página: si varias peticiones fallan a la vez, la
+// primera redirige y las demás ya no hacen nada.
+let sessionExpiredHandled = false;
+function handleSessionExpired() {
+  if (typeof window === 'undefined' || sessionExpiredHandled) return;
+  sessionExpiredHandled = true;
+  try {
+    localStorage.removeItem('entrepeques_auth_token');
+    localStorage.removeItem('entrepeques_user');
+  } catch {
+    // localStorage no disponible
+  }
+  if (!window.location.pathname.includes('/login')) {
+    const returnTo = encodeURIComponent(window.location.pathname);
+    window.location.href = `/login?return=${returnTo}&expired=1`;
+  }
+}
+
 // Helper function for fetch requests
 export async function fetchApi(endpoint, options = {}) {
   const url = `${API_URL}${endpoint}`;
@@ -28,7 +47,26 @@ export async function fetchApi(endpoint, options = {}) {
     const response = await fetch(url, finalOptions);
     
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      // Sesión vencida o inválida en una ruta protegida: limpiar y mandar al
+      // login con retorno, en vez de dejar un "API Error: 401" sin salida.
+      if (response.status === 401 && options.headers?.Authorization) {
+        handleSessionExpired();
+        throw new Error('Tu sesión expiró. Vuelve a iniciar sesión.');
+      }
+
+      // Intentar recuperar el mensaje que manda el API (ej. validaciones 400)
+      let message = `API Error: ${response.status} ${response.statusText}`;
+      try {
+        const body = await response.json();
+        if (body && (body.message || body.error)) {
+          message = body.message || body.error;
+        }
+      } catch {
+        // sin cuerpo JSON: se queda el mensaje genérico
+      }
+      const error = new Error(message);
+      error.status = response.status;
+      throw error;
     }
 
     return await response.json();

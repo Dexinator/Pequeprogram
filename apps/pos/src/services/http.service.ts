@@ -42,6 +42,12 @@ export class HttpService {
     console.log('✅ Token configurado en headers HTTP');
   }
 
+  // Quitar el token de los headers (sesión cerrada o vencida)
+  clearAuthToken() {
+    const { Authorization, ...rest } = this.headers as Record<string, string>;
+    this.headers = rest;
+  }
+
   // Obtener la URL base
   getBaseUrl(): string {
     return this.baseUrl;
@@ -50,6 +56,70 @@ export class HttpService {
   // Verificar si estamos en un entorno de navegador
   isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof fetch !== 'undefined';
+  }
+
+  /**
+   * Convierte una respuesta no-OK en un Error con `status`, `code` y `data`
+   * (el cuerpo que mandó el API). Centraliza lo que antes hacía cada método a
+   * su manera: PUT/DELETE ni siquiera leían el cuerpo, así que un 400 con
+   * mensaje claro llegaba como "Error en la petición: 400 Bad Request".
+   *
+   * Un 401 en una petición autenticada significa sesión vencida a media
+   * jornada (el JWT dura 24h): se limpia la sesión y se recarga para que el
+   * AuthGuard muestre el login, en vez de dejar al usuario con "error de API".
+   */
+  private async toError(response: Response, method: string, endpoint: string): Promise<Error> {
+    let errorMessage = `Error en la petición: ${response.status} ${response.statusText}`;
+    let errorBody: any = null;
+
+    try {
+      errorBody = await response.json();
+      if (errorBody && (errorBody.message || errorBody.error)) {
+        errorMessage = errorBody.message || errorBody.error;
+      }
+    } catch {
+      try {
+        errorBody = await response.text();
+      } catch {
+        // Usar mensaje genérico si todo falla
+      }
+    }
+
+    console.error(`❌ Error en petición ${method} ${endpoint}:`, {
+      status: response.status,
+      statusText: response.statusText,
+      body: errorBody
+    });
+
+    const hasAuth = 'Authorization' in (this.headers as Record<string, string>);
+    if (response.status === 401 && hasAuth) {
+      this.handleSessionExpired();
+      errorMessage = 'Tu sesión expiró. Vuelve a iniciar sesión.';
+    }
+
+    const error = new Error(errorMessage) as Error & { status?: number; statusText?: string; code?: string; data?: any };
+    error.status = response.status;
+    error.statusText = response.statusText;
+    if (errorBody && typeof errorBody === 'object') {
+      error.code = errorBody.code;
+      error.data = errorBody.data;
+    }
+    return error;
+  }
+
+  private sessionExpiredHandled = false;
+  private handleSessionExpired() {
+    if (typeof window === 'undefined' || this.sessionExpiredHandled) return;
+    this.sessionExpiredHandled = true;
+    try {
+      localStorage.removeItem('entrepeques_auth_token');
+      localStorage.removeItem('entrepeques_user');
+    } catch {
+      // localStorage no disponible
+    }
+    this.clearAuthToken();
+    // Pequeña espera para que el error alcance a mostrarse antes de recargar
+    setTimeout(() => window.location.reload(), 1500);
   }
 
   // Método GET genérico
@@ -87,35 +157,7 @@ export class HttpService {
     });
 
     if (!response.ok) {
-      let errorMessage = `Error en la petición: ${response.status} ${response.statusText}`;
-      let errorBody = null;
-      
-      try {
-        errorBody = await response.json();
-        if (errorBody && errorBody.error) {
-          errorMessage = errorBody.error;
-        }
-      } catch (parseError) {
-        // Si no se puede parsear como JSON, intentar como texto
-        try {
-          errorBody = await response.text();
-        } catch (textError) {
-          // Usar mensaje genérico si todo falla
-        }
-      }
-      
-      console.error(`❌ Error en petición GET:`, {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorBody
-      });
-      
-      // Crear error con información adicional
-      const error = new Error(errorMessage);
-      // @ts-ignore - Agregar propiedades personalizadas
-      error.status = response.status;
-      error.statusText = response.statusText;
-      throw error;
+      throw await this.toError(response, 'GET', endpoint);
     }
 
     const data = await response.json();
@@ -150,32 +192,7 @@ export class HttpService {
       });
 
       if (!response.ok) {
-        // Intentar obtener el mensaje de error del cuerpo de la respuesta
-        let errorMessage = `Error en la petición: ${response.status} ${response.statusText}`;
-        let errorData = null;
-        
-        try {
-          errorData = await response.json();
-          if (errorData && (errorData.error || errorData.message)) {
-            errorMessage = errorData.error || errorData.message;
-          }
-        } catch (parseError) {
-          // Si no se puede parsear el cuerpo como JSON, intentar como texto
-          try {
-            errorData = await response.text();
-          } catch (textError) {
-            // Usar mensaje genérico si todo falla
-          }
-        }
-        
-        console.error('Error en la respuesta:', errorData);
-        
-        // Crear error con información adicional
-        const error = new Error(errorMessage);
-        // @ts-ignore - Agregar propiedades personalizadas
-        error.status = response.status;
-        error.statusText = response.statusText;
-        throw error;
+        throw await this.toError(response, 'POST', endpoint);
       }
 
       const responseData = await response.json();
@@ -202,7 +219,7 @@ export class HttpService {
     });
 
     if (!response.ok) {
-      throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
+      throw await this.toError(response, 'PUT', endpoint);
     }
 
     return response.json();
@@ -222,7 +239,7 @@ export class HttpService {
     });
 
     if (!response.ok) {
-      throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
+      throw await this.toError(response, 'DELETE', endpoint);
     }
 
     return response.json();
