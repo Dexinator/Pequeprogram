@@ -25,6 +25,9 @@ export default function ClientSelection({ client, setClient }) {
   });
   const [creatingClient, setCreatingClient] = useState(false);
   const [error, setError] = useState('');
+  // Cliente que ya existe con el mismo teléfono (respuesta 409 del API):
+  // se ofrece usarlo en vez de dejar al usuario atorado con el error.
+  const [duplicateClient, setDuplicateClient] = useState(null);
 
   // Búsqueda de clientes con debounce
   useEffect(() => {
@@ -63,15 +66,20 @@ export default function ClientSelection({ client, setClient }) {
     setError('');
     setCreatingClient(true);
 
+    setDuplicateClient(null);
+
     try {
-      // Validaciones
+      // Validaciones (el teléfono es obligatorio en la base de datos)
       if (!newClientData.name.trim()) {
         throw new Error('El nombre es requerido');
+      }
+      if (!newClientData.phone.trim()) {
+        throw new Error('El teléfono es requerido');
       }
 
       const createdClient = await clientService.createClient({
         name: newClientData.name.trim(),
-        phone: newClientData.phone.trim() || undefined,
+        phone: newClientData.phone.trim(),
         email: newClientData.email.trim() || undefined,
         identification: newClientData.identification.trim() || undefined
       });
@@ -85,6 +93,9 @@ export default function ClientSelection({ client, setClient }) {
       }
     } catch (error) {
       console.error('Error al crear cliente:', error);
+      if (error.code === 'PHONE_EXISTS' && error.data) {
+        setDuplicateClient(error.data);
+      }
       setError(error.message || 'Error al crear el cliente');
     } finally {
       setCreatingClient(false);
@@ -119,6 +130,22 @@ export default function ClientSelection({ client, setClient }) {
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
           {error}
+          {duplicateClient && (
+            <button
+              type="button"
+              onClick={() => {
+                handleSelectClient(duplicateClient);
+                setClientType('registrado');
+                setShowNewClientForm(false);
+                setNewClientData({ name: '', phone: '', email: '', identification: '' });
+                setError('');
+                setDuplicateClient(null);
+              }}
+              className="ml-3 px-3 py-1 bg-pink-500 text-white rounded hover:bg-pink-600 text-xs font-medium"
+            >
+              Usar a {duplicateClient.name}
+            </button>
+          )}
         </div>
       )}
 
@@ -313,7 +340,7 @@ export default function ClientSelection({ client, setClient }) {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Teléfono
+                      Teléfono *
                     </label>
                     <input
                       type="tel"
@@ -321,6 +348,7 @@ export default function ClientSelection({ client, setClient }) {
                       onChange={(e) => setNewClientData({ ...newClientData, phone: e.target.value })}
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       placeholder="10 dígitos"
+                      required
                     />
                   </div>
 

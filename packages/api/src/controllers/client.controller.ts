@@ -14,15 +14,21 @@ export const searchClients = asyncHandler(async (req: Request, res: Response) =>
     throw new Error('Query parameter is required');
   }
   
+  // El teléfono se compara también por dígitos: un cliente guardado como
+  // "55 1234 5678" (desde citas) debe encontrarse tecleando "5512345678".
+  const term = String(q).trim();
+  const digits = term.replace(/\D/g, '');
+
   const searchQuery = `
     SELECT id, name, phone, email, identification, store_credit, created_at
     FROM clients
     WHERE name ILIKE $1 OR phone ILIKE $1 OR email ILIKE $1
+       OR ($2 <> '' AND regexp_replace(phone, '\\D', '', 'g') LIKE $3)
     ORDER BY name
     LIMIT 20
   `;
   
-  const result = await pool.query(searchQuery, [`%${q}%`]);
+  const result = await pool.query(searchQuery, [`%${term}%`, digits, `%${digits}%`]);
   
   res.json({
     success: true,
@@ -38,7 +44,7 @@ export const getClient = asyncHandler(async (req: Request, res: Response) => {
   
   if (isNaN(id)) {
     res.status(400);
-    throw new Error('Invalid client ID');
+    throw new Error('ID de cliente inválido');
   }
   
   const query = `
@@ -51,7 +57,7 @@ export const getClient = asyncHandler(async (req: Request, res: Response) => {
   
   if (result.rows.length === 0) {
     res.status(404);
-    throw new Error('Client not found');
+    throw new Error('Cliente no encontrado');
   }
   
   res.json({
@@ -66,22 +72,39 @@ export const getClient = asyncHandler(async (req: Request, res: Response) => {
 export const createClient = asyncHandler(async (req: Request, res: Response) => {
   const { name, phone, email, identification } = req.body;
   
-  if (!name) {
+  if (!name || !String(name).trim()) {
     res.status(400);
-    throw new Error('Name is required');
+    throw new Error('El nombre es obligatorio');
   }
+
+  // clients.phone es NOT NULL en la base de datos: sin esta validación el
+  // INSERT fallaba y el POS mostraba "Error interno del servidor".
+  const phoneClean = phone ? String(phone).trim() : '';
+  if (!phoneClean) {
+    res.status(400);
+    throw new Error('El teléfono es obligatorio');
+  }
+
+  // Duplicado por dígitos (mismo criterio que la búsqueda). Se devuelve el
+  // cliente existente para que el POS pueda ofrecer usarlo directamente.
+  const duplicate = await pool.query(
+    `SELECT id, name, phone, email, identification, store_credit, created_at
+     FROM clients
+     WHERE regexp_replace(phone, '\\D', '', 'g') = $1
+     ORDER BY id
+     LIMIT 1`,
+    [phoneClean.replace(/\D/g, '')]
+  );
   
-  // Check if phone already exists (if provided)
-  if (phone) {
-    const existingPhone = await pool.query(
-      'SELECT id FROM clients WHERE phone = $1',
-      [phone]
-    );
-    
-    if (existingPhone.rows.length > 0) {
-      res.status(400);
-      throw new Error('A client with this phone number already exists');
-    }
+  if (duplicate.rows.length > 0) {
+    const existing = duplicate.rows[0];
+    res.status(409).json({
+      success: false,
+      code: 'PHONE_EXISTS',
+      message: `Ya existe un cliente con ese teléfono: ${existing.name}`,
+      data: existing
+    });
+    return;
   }
   
   const insertQuery = `
@@ -91,10 +114,10 @@ export const createClient = asyncHandler(async (req: Request, res: Response) => 
   `;
   
   const result = await pool.query(insertQuery, [
-    name,
-    phone || null,
-    email || null,
-    identification || null
+    String(name).trim(),
+    phoneClean,
+    email ? String(email).trim() || null : null,
+    identification ? String(identification).trim() || null : null
   ]);
   
   res.status(201).json({
@@ -112,7 +135,7 @@ export const updateClient = asyncHandler(async (req: Request, res: Response) => 
   
   if (isNaN(id)) {
     res.status(400);
-    throw new Error('Invalid client ID');
+    throw new Error('ID de cliente inválido');
   }
   
   // Check if client exists
@@ -123,19 +146,20 @@ export const updateClient = asyncHandler(async (req: Request, res: Response) => 
   
   if (existing.rows.length === 0) {
     res.status(404);
-    throw new Error('Client not found');
+    throw new Error('Cliente no encontrado');
   }
   
   // Check if phone already exists for another client (if provided)
   if (phone) {
     const existingPhone = await pool.query(
-      'SELECT id FROM clients WHERE phone = $1 AND id != $2',
-      [phone, id]
+      `SELECT id, name FROM clients
+       WHERE regexp_replace(phone, '\\D', '', 'g') = $1 AND id != $2`,
+      [String(phone).replace(/\D/g, ''), id]
     );
     
     if (existingPhone.rows.length > 0) {
-      res.status(400);
-      throw new Error('Another client with this phone number already exists');
+      res.status(409);
+      throw new Error(`Ya existe otro cliente con ese teléfono: ${existingPhone.rows[0].name}`);
     }
   }
   
@@ -173,7 +197,7 @@ export const adjustStoreCredit = asyncHandler(async (req: Request, res: Response
 
   if (isNaN(id)) {
     res.status(400);
-    throw new Error('Invalid client ID');
+    throw new Error('ID de cliente inválido');
   }
 
   const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
@@ -259,7 +283,7 @@ export const getStoreCreditMovements = asyncHandler(async (req: Request, res: Re
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.status(400);
-    throw new Error('Invalid client ID');
+    throw new Error('ID de cliente inválido');
   }
   const limit = Math.min(parseInt(req.query.limit as string) || 50, 200);
 

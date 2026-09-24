@@ -735,22 +735,57 @@ const ProductPreparationContent = () => {
             ))}
           </div>
 
-          {/* Paginación */}
+          {/* Paginación: ventana de 5 páginas + Anterior/Siguiente.
+              Antes se pintaba un botón por cada página; con 13+ páginas la fila
+              centrada se salía de la pantalla y la página 1 quedaba oculta. */}
           {pagination.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-6">
-              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(page => (
-                <button
-                  key={page}
-                  onClick={() => setFilters({...filters, page})}
-                  className={`px-3 py-1 rounded ${
-                    page === filters.page
-                      ? 'bg-pink-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-6">
+              <button
+                onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
+                disabled={filters.page === 1}
+                className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ← Anterior
+              </button>
+
+              {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
+                let page;
+                if (pagination.totalPages <= 5) {
+                  page = i + 1;
+                } else if (filters.page <= 3) {
+                  page = i + 1;
+                } else if (filters.page >= pagination.totalPages - 2) {
+                  page = pagination.totalPages - 4 + i;
+                } else {
+                  page = filters.page - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setFilters({ ...filters, page })}
+                    className={`px-3 py-1 rounded ${
+                      page === filters.page
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
+                disabled={filters.page === pagination.totalPages}
+                className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Siguiente →
+              </button>
+
+              <span className="text-sm text-gray-500 ml-2">
+                Página {filters.page} de {pagination.totalPages}
+              </span>
             </div>
           )}
         </>
