@@ -3563,3 +3563,33 @@ const suggestedSalePrice = clothingPrice.sale_price;
 
 ### Cambio al Esquema de Base de Datos
 - **Migración 044** (`044-link-appointments-to-clients.sql`): sin columnas nuevas. Backfill de datos: crea en `clients` los clientes de citas que no existían y llena `appointments.client_id` en las citas históricas.
+
+## Sesión: 24 de Septiembre, 2026
+
+### Etapa 0 a producción + Etapa 1 (POS — cobro) implementada
+
+#### Etapa 0 en producción
+Pablo dio luz verde en Slack ("todo está funcionando bien, puedes subirlo a producción"). Merge `development` → `main` (`e72f3f1`), Vercel desplegó los 4 frontends, API a Heroku **v65** y **migración 044** aplicada en la BD de producción: **126 citas** sin cliente vinculado → 58 vinculadas a clientes existentes + 62 clientes nuevos creados + 68 vinculadas después; quedaron **135/135 citas con cliente, 0 pendientes** (314 clientes totales). Verificado en los bundles de producción: `isTokenExpired`, el aviso "Tu sesión expiró" y la paginación nueva.
+
+#### Etapa 1 — POS: cobro (ficha `roadmap-septiembre26/etapa-1-pos-cobro.md`)
+
+**Item 1 — Faltante en pago mixto** (`apps/pos/src/components/sales/PaymentMethod.jsx`):
+- El faltante/sobrante ahora es **estado derivado** del render (antes el mensaje se calculaba dentro del handler y podía quedar desfasado). Panel permanente: "Falta por cubrir $X" (ámbar) / "Los pagos exceden el total por $X" (rojo) / "Pago completo" (verde).
+- Botón **"Completar"** por renglón: rellena ahí lo que falta para cubrir el total.
+- **Bug corregido de paso:** `updatePaymentMethod` mutaba los objetos del array de pagos (copia superficial) y, cuando la validación de crédito cortaba con `return`, el importe mostrado quedaba desincronizado del estado. Ahora la actualización es inmutable.
+
+**Item 2 — Efectivo recibido y cambio (con ticket)**:
+- **Migración 045** (`045-add-sale-cash-received.sql`): `sales.cash_received` y `sales.change_given`, ambas NULL cuando la cajera no captura el importe.
+- `sales.model.ts`: `cash_received` en `CreateSaleDto`, ambos campos en `Sale`, y nueva función `resolveChangeGiven()` (el cambio **se calcula en el backend**, nunca se confía en el front).
+- `sales.service.ts`: el cambio se calcula contra **lo cobrado en efectivo**, no contra el total (mixto $200 tarjeta + $300 efectivo con $500 → cambio $200). Si la venta no tuvo pago en efectivo, el dato se descarta (NULL). Nunca negativo y **nunca bloquea la venta**. `getSale` y `getSales` exponen ambos campos (y `getSales` ahora también expone los de descuento, que faltaban).
+- Cadena del ticket: `ticket.model.ts` (`TicketTotals`) → `ticket.service.ts` (SELECT + builder) → **espejo manual** en `apps/print-bridge/src/types/ticket.types.ts` → `schemas.ts` (zod con `.nullable().default(null)`, igual que el descuento, para tolerar un API viejo) → `ticket.renderer.ts` (líneas "Efectivo recibido" y "CAMBIO" en negritas, solo si hay captura).
+- POS: input opcional "Efectivo recibido" con el cambio en grande (en método simple y en los renglones de efectivo del mixto), resumen del paso 4, `SaleConfirmation` (recuadro con el cambio a devolver) e `HistorialVentas` (detalle).
+
+**Item 3 — Calculadora** (`apps/pos/src/components/common/CalculatorModal.jsx` + botón 🧮 en `POSApp.jsx`):
+- Modal montado **por encima** del módulo activo, así abrirla no desmonta `NuevaVenta` y la venta en curso no se pierde. Soporte completo de teclado numérico (la caja no es táctil), Esc para cerrar, división entre cero controlada. Sin librerías externas.
+
+**Verificación:** `tsc --noEmit` limpio en API y print-bridge; esbuild OK en los 7 archivos del POS. Migración 045 aplicada en local y probado vía HTTP contra copia de staging: efectivo simple $350/$500 → cambio $150; mixto $200+$300 con $500 → cambio $200; sin captura → NULL y venta normal; solo tarjeta con `cash_received` espurio → se descarta. Ticket renderizado con el print-bridge real: imprime "Efectivo recibido / CAMBIO" con captura y sale idéntico al anterior sin captura.
+
+### Cambio al Esquema de Base de Datos
+- **sales.cash_received** NUMERIC(10,2) — efectivo entregado por el cliente; NULL si no se capturó. Migración 045.
+- **sales.change_given** NUMERIC(10,2) — cambio devuelto, calculado en el backend como `cash_received - efectivo cobrado`, acotado a >= 0; NULL si no aplica. Migración 045.

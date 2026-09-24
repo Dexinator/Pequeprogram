@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
 
-export default function PaymentMethod({ total, subtotal, discountType, setDiscountType, discountValue, setDiscountValue, discountAmount, client, paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails }) {
+const METHOD_LABELS = {
+  efectivo: 'Efectivo',
+  tarjeta: 'Tarjeta',
+  transferencia: 'Transferencia',
+  credito_tienda: 'Crédito en Tienda'
+};
+
+const money = (n) => `$${(Number(n) || 0).toFixed(2)}`;
+
+export default function PaymentMethod({ total, subtotal, discountType, setDiscountType, discountValue, setDiscountValue, discountAmount, client, paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails, cashReceived, setCashReceived }) {
   const [mixedPayments, setMixedPayments] = useState([
     { payment_method: 'efectivo', amount: 0 }
   ]);
-  const [paymentError, setPaymentError] = useState('');
+  const [creditError, setCreditError] = useState('');
+
+  const clientStoreCredit = client?.store_credit ? parseFloat(client.store_credit) : 0;
+  const hasStoreCredit = clientStoreCredit > 0;
 
   // Actualizar payment details cuando cambian los pagos mixtos
   useEffect(() => {
@@ -15,18 +27,22 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-    setPaymentError('');
+    setCreditError('');
+
+    // Al cambiar de método, el efectivo capturado deja de tener sentido
+    setCashReceived('');
+
     if (method !== 'mixto') {
       setMixedPayments([{ payment_method: 'efectivo', amount: 0 }]);
     }
-    
-    // Validar si se selecciona crédito en tienda
+
+    // Si el crédito no alcanza, saltar a mixto con el resto prellenado en efectivo
     if (method === 'credito_tienda' && total > clientStoreCredit) {
-      setPaymentError(`El total ($${total.toFixed(2)}) excede el crédito disponible ($${clientStoreCredit.toFixed(2)}). Use pago mixto para combinar con otro método.`);
+      setCreditError(`El total (${money(total)}) excede el crédito disponible (${money(clientStoreCredit)}). Se cambió a pago mixto para combinar con otro método.`);
       setPaymentMethod('mixto');
       setMixedPayments([
         { payment_method: 'credito_tienda', amount: clientStoreCredit },
-        { payment_method: 'efectivo', amount: total - clientStoreCredit }
+        { payment_method: 'efectivo', amount: Math.round((total - clientStoreCredit) * 100) / 100 }
       ]);
     }
   };
@@ -39,36 +55,38 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
     setMixedPayments(mixedPayments.filter((_, i) => i !== index));
   };
 
+  // Copia inmutable: antes se mutaba el objeto dentro del array, lo que dejaba
+  // el estado y el importe mostrado desincronizados cuando la validación
+  // de crédito cortaba con return.
   const updatePaymentMethod = (index, field, value) => {
-    const updated = [...mixedPayments];
-    if (field === 'amount') {
-      updated[index][field] = parseFloat(value) || 0;
-    } else {
-      updated[index][field] = value;
-    }
-    
-    // Validar crédito en tienda
-    const creditPayments = updated.filter(p => p.payment_method === 'credito_tienda');
-    const totalCreditUsed = creditPayments.reduce((sum, p) => sum + p.amount, 0);
-    
+    const updated = mixedPayments.map((p, i) => {
+      if (i !== index) return p;
+      return { ...p, [field]: field === 'amount' ? (parseFloat(value) || 0) : value };
+    });
+
+    const totalCreditUsed = updated
+      .filter(p => p.payment_method === 'credito_tienda')
+      .reduce((sum, p) => sum + p.amount, 0);
+
     if (totalCreditUsed > clientStoreCredit) {
-      setPaymentError(`El crédito usado ($${totalCreditUsed.toFixed(2)}) excede el disponible ($${clientStoreCredit.toFixed(2)})`);
+      setCreditError(`El crédito usado (${money(totalCreditUsed)}) excede el disponible (${money(clientStoreCredit)})`);
       return;
     }
-    
+
+    setCreditError('');
     setMixedPayments(updated);
-    
-    // Validar que la suma sea correcta
-    const sum = updated.reduce((acc, p) => acc + p.amount, 0);
-    if (Math.abs(sum - total) > 0.01) {
-      setPaymentError(`La suma de pagos ($${sum.toFixed(2)}) no coincide con el total ($${total.toFixed(2)})`);
-    } else {
-      setPaymentError('');
-    }
   };
 
-  const clientStoreCredit = client?.store_credit ? parseFloat(client.store_credit) : 0;
-  const hasStoreCredit = clientStoreCredit > 0;
+  // Rellena en este renglón lo que falta para cubrir el total: es la operación
+  // que la cajera hace a mano en cada venta con pago mixto.
+  const fillRemaining = (index) => {
+    const others = mixedPayments.reduce(
+      (sum, p, i) => (i === index ? sum : sum + p.amount),
+      0
+    );
+    const missing = Math.round((total - others) * 100) / 100;
+    updatePaymentMethod(index, 'amount', Math.max(0, missing));
+  };
 
   const paymentMethods = [
     { value: 'efectivo', label: 'Efectivo', icon: '💵' },
@@ -77,6 +95,64 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
     ...(hasStoreCredit ? [{ value: 'credito_tienda', label: 'Crédito en Tienda', icon: '🎫' }] : []),
     { value: 'mixto', label: 'Pago Mixto', icon: '🔄' }
   ];
+
+  // --- Faltante / sobrante del pago mixto (derivado, siempre consistente) ---
+  const paidSum = mixedPayments.reduce((sum, p) => sum + p.amount, 0);
+  const difference = Math.round((total - paidSum) * 100) / 100; // > 0 falta, < 0 sobra
+  const isBalanced = Math.abs(difference) <= 0.01;
+
+  // --- Efectivo recibido y cambio ---
+  // En pago mixto el cambio se calcula contra el renglón de efectivo, no contra
+  // el total: si pagó $200 con tarjeta y $300 en efectivo con un billete de
+  // $500, el cambio es $200.
+  const cashCharged = paymentMethod === 'mixto'
+    ? mixedPayments.filter(p => p.payment_method === 'efectivo').reduce((sum, p) => sum + p.amount, 0)
+    : (paymentMethod === 'efectivo' ? total : 0);
+  const acceptsCash = cashCharged > 0;
+  const receivedNum = parseFloat(cashReceived);
+  const hasReceived = cashReceived !== '' && cashReceived !== null && cashReceived !== undefined && !isNaN(receivedNum) && receivedNum > 0;
+  const change = hasReceived ? Math.round((receivedNum - cashCharged) * 100) / 100 : null;
+
+  // El campo es opcional: si se deja vacío la venta procede igual que siempre.
+  const cashBox = acceptsCash && (
+    <div className="bg-white border border-gray-200 p-4 rounded-lg space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium text-gray-700" htmlFor="cash-received">
+          Efectivo recibido <span className="text-gray-400 font-normal">(opcional)</span>
+        </label>
+        <span className="text-sm text-gray-500">A cobrar en efectivo: {money(cashCharged)}</span>
+      </div>
+      <div className="relative w-48">
+        <span className="absolute left-3 top-2 text-gray-500">$</span>
+        <input
+          id="cash-received"
+          type="number"
+          value={cashReceived}
+          onChange={(e) => setCashReceived(e.target.value)}
+          placeholder="0.00"
+          className="w-full p-2 pl-8 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+          step="0.01"
+          min="0"
+        />
+      </div>
+      {hasReceived && change >= 0 && (
+        <div className="bg-green-50 border border-green-200 rounded p-3">
+          <p className="text-sm text-gray-600">Cambio</p>
+          <p className="text-3xl font-bold text-green-700">{money(change)}</p>
+        </div>
+      )}
+      {hasReceived && change < 0 && (
+        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+          El efectivo recibido es {money(Math.abs(change))} menor a lo que se cobra en efectivo. Puedes continuar, pero no habrá cambio.
+        </p>
+      )}
+      {!hasReceived && (
+        <p className="text-xs text-gray-500">
+          Captura el billete con el que paga para ver el cambio. Si lo dejas vacío, la venta se cobra normal.
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -120,11 +196,11 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
           <div className="text-sm space-y-1 border-t pt-2">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>{money(subtotal)}</span>
             </div>
             <div className="flex justify-between text-red-600">
               <span>Descuento{discountType === 'percentage' ? ` (${parseFloat(discountValue) || 0}%)` : ''}</span>
-              <span>-${discountAmount.toFixed(2)}</span>
+              <span>-{money(discountAmount)}</span>
             </div>
           </div>
         )}
@@ -133,17 +209,17 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
       {/* Total a pagar */}
       <div className="bg-pink-50 p-4 rounded-lg">
         <p className="text-sm text-gray-600">Total a pagar</p>
-        <p className="text-2xl font-bold text-pink-600">${total.toFixed(2)}</p>
+        <p className="text-2xl font-bold text-pink-600">{money(total)}</p>
       </div>
 
       {/* Crédito disponible */}
       {hasStoreCredit && (
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
           <p className="text-sm text-gray-600">Crédito disponible</p>
-          <p className="text-xl font-bold text-green-600">${clientStoreCredit.toFixed(2)}</p>
+          <p className="text-xl font-bold text-green-600">{money(clientStoreCredit)}</p>
         </div>
       )}
-      
+
       {/* Advertencia si no hay cliente registrado */}
       {!client && (
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
@@ -174,14 +250,17 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
         ))}
       </div>
 
+      {/* Efectivo recibido para el método simple */}
+      {paymentMethod === 'efectivo' && cashBox}
+
       {/* Configuración de pago mixto */}
       {paymentMethod === 'mixto' && (
         <div className="space-y-4">
           <h4 className="font-medium text-gray-700">Detalles del Pago Mixto</h4>
-          
-          {paymentError && (
+
+          {creditError && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
-              {paymentError}
+              {creditError}
             </div>
           )}
 
@@ -197,7 +276,7 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
                 <option value="transferencia">Transferencia</option>
                 {hasStoreCredit && <option value="credito_tienda">Crédito en Tienda</option>}
               </select>
-              
+
               <div className="relative">
                 <span className="absolute left-3 top-2 text-gray-500">$</span>
                 <input
@@ -209,7 +288,18 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
                   min="0"
                 />
               </div>
-              
+
+              {difference > 0.01 && (
+                <button
+                  type="button"
+                  onClick={() => fillRemaining(index)}
+                  title={`Poner aquí los ${money(difference)} que faltan`}
+                  className="px-2 py-1 text-xs border border-pink-300 text-pink-600 rounded hover:bg-pink-50 whitespace-nowrap"
+                >
+                  Completar
+                </button>
+              )}
+
               {mixedPayments.length > 1 && (
                 <button
                   onClick={() => removePaymentMethod(index)}
@@ -235,20 +325,41 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
             <div className="text-sm space-y-1">
               {mixedPayments.filter(p => p.amount > 0).map((payment, index) => (
                 <div key={index} className="flex justify-between">
-                  <span className="capitalize">
-                    {payment.payment_method === 'credito_tienda' ? 'Crédito en Tienda' : payment.payment_method}:
+                  <span>
+                    {METHOD_LABELS[payment.payment_method] || payment.payment_method}:
                   </span>
-                  <span>${payment.amount.toFixed(2)}</span>
+                  <span>{money(payment.amount)}</span>
                 </div>
               ))}
               <div className="border-t pt-1 font-medium flex justify-between">
                 <span>Total pagos:</span>
-                <span className={paymentError ? 'text-red-600' : 'text-green-600'}>
-                  ${mixedPayments.reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
+                <span className={isBalanced ? 'text-green-600' : 'text-gray-700'}>
+                  {money(paidSum)}
                 </span>
               </div>
             </div>
           </div>
+
+          {/* Faltante / sobrante: el dato que la cajera necesita leer de un vistazo */}
+          {difference > 0.01 ? (
+            <div className="bg-amber-50 border border-amber-300 rounded p-3 flex items-center justify-between">
+              <span className="font-medium text-amber-900">Falta por cubrir</span>
+              <span className="text-2xl font-bold text-amber-700">{money(difference)}</span>
+            </div>
+          ) : difference < -0.01 ? (
+            <div className="bg-red-50 border border-red-300 rounded p-3 flex items-center justify-between">
+              <span className="font-medium text-red-900">Los pagos exceden el total por</span>
+              <span className="text-2xl font-bold text-red-700">{money(Math.abs(difference))}</span>
+            </div>
+          ) : (
+            <div className="bg-green-50 border border-green-300 rounded p-3 flex items-center justify-between">
+              <span className="font-medium text-green-900">Pago completo</span>
+              <span className="text-xl font-bold text-green-700">{money(total)}</span>
+            </div>
+          )}
+
+          {/* Efectivo recibido cuando alguno de los renglones es en efectivo */}
+          {cashBox}
         </div>
       )}
     </div>

@@ -5,10 +5,14 @@ import InventarioModule from './modules/InventarioModule';
 import ComprasModule from './modules/ComprasModule';
 import ConsignacionesModule from './modules/ConsignacionesModule';
 import OnlineSalesModule from './modules/OnlineSalesModule';
+import CalculatorModal from './common/CalculatorModal';
 
 export default function POSApp() {
   const { user, logout } = useAuth();
   const [activeModule, setActiveModule] = useState('ventas');
+  // La calculadora se monta por encima del módulo activo: abrirla y cerrarla
+  // no desmonta NuevaVenta, así la venta en curso no se pierde.
+  const [showCalculator, setShowCalculator] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -97,6 +101,14 @@ export default function POSApp() {
             
             {/* User info and logout */}
             <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowCalculator(true)}
+                title="Calculadora"
+                aria-label="Abrir calculadora"
+                className="text-xl px-3 py-2 rounded hover:bg-gray-100 transition-colors"
+              >
+                🧮
+              </button>
               <div className="text-sm text-gray-700">
                 <span className="font-medium">{user?.first_name} {user?.last_name}</span>
                 <span className="text-gray-500 ml-2">({user?.role?.name || user?.role || 'Sin rol'})</span>
@@ -142,6 +154,9 @@ export default function POSApp() {
       <main className="py-6">
         {renderModule()}
       </main>
+
+      {/* Calculadora: disponible desde cualquier módulo */}
+      <CalculatorModal open={showCalculator} onClose={() => setShowCalculator(false)} />
     </div>
   );
 }

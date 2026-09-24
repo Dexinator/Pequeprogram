@@ -11,6 +11,10 @@ export interface Sale extends BaseModel {
   discount_type?: DiscountType | null;
   discount_value?: number;
   discount_amount?: number;
+  /** Efectivo recibido del cliente. null = la cajera no lo capturó. */
+  cash_received?: number | null;
+  /** Cambio entregado, calculado en el backend. null = no aplica. */
+  change_given?: number | null;
   payment_method?: string; // Deprecated - mantener para compatibilidad
   status: 'completed' | 'cancelled' | 'refunded';
   location: string;
@@ -60,6 +64,33 @@ export interface CreateSaleDto {
   items: CreateSaleItemDto[];
   discount_type?: DiscountType | null;
   discount_value?: number;
+  /**
+   * Efectivo que entregó el cliente. Opcional: si no viene, la venta se procesa
+   * igual que siempre y no se guarda nada. El cambio NO se recibe del front,
+   * se calcula aquí (ver resolveChangeGiven).
+   */
+  cash_received?: number | null;
+}
+
+/**
+ * Cambio a devolver dado el efectivo recibido y lo que se cobró en efectivo.
+ * Devuelve null cuando no aplica (no se capturó importe, o la venta no tuvo
+ * pago en efectivo). Nunca negativo: si el cliente dio menos de lo que debía
+ * en efectivo no hay cambio, y la venta NO se bloquea por eso (es un dato
+ * auxiliar de mostrador, no una validación de cobro).
+ */
+export function resolveChangeGiven(
+  cashReceived?: number | null,
+  cashCharged?: number | null
+): number | null {
+  const received = Number(cashReceived);
+  if (!cashReceived || !Number.isFinite(received) || received <= 0) return null;
+
+  const charged = Number(cashCharged) || 0;
+  if (charged <= 0) return null;
+
+  const change = Math.max(0, received - charged);
+  return Math.round(change * 100) / 100;
 }
 
 /**

@@ -67,6 +67,12 @@ export class TicketService {
           discount_value: parseFloat(saleRow.discount_value) || 0,
           discount_amount: parseFloat(saleRow.discount_amount) || 0,
           total: parseFloat(saleRow.total_amount),
+          cash_received: saleRow.cash_received !== null && saleRow.cash_received !== undefined
+            ? parseFloat(saleRow.cash_received)
+            : null,
+          change_given: saleRow.change_given !== null && saleRow.change_given !== undefined
+            ? parseFloat(saleRow.change_given)
+            : null,
         },
         payments,
         store_credit_remaining: storeCredit,
@@ -88,6 +94,8 @@ export class TicketService {
         s.discount_type,
         s.discount_value,
         s.discount_amount,
+        s.cash_received,
+        s.change_given,
         s.location,
         s.notes,
         u.first_name AS cashier_first_name,

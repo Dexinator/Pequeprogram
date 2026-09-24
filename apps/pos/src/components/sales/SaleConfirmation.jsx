@@ -41,6 +41,20 @@ export default function SaleConfirmation({ sale, onNewSale }) {
           </div>
         </div>
 
+        {/* Cambio a devolver: solo si se capturó el efectivo recibido */}
+        {sale.change_given !== null && sale.change_given !== undefined && (
+          <div className="bg-green-50 border-2 border-green-300 p-4 rounded-lg flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Efectivo recibido</p>
+              <p className="font-medium">{formatCurrency(sale.cash_received)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-600">Cambio a devolver</p>
+              <p className="text-3xl font-bold text-green-700">{formatCurrency(sale.change_given)}</p>
+            </div>
+          </div>
+        )}
+
         {/* Productos */}
         {sale.items && sale.items.length > 0 && (
           <div>
