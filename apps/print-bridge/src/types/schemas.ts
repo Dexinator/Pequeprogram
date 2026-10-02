@@ -46,6 +46,10 @@ export const ticketPayloadSchema = z.object({
     discount_value: z.number().default(0),
     discount_amount: z.number().default(0),
     total: z.number(),
+    // Efectivo recibido / cambio: igual que el descuento, con default para
+    // retrocompatibilidad con un API que aún no los mande.
+    cash_received: z.number().nullable().default(null),
+    change_given: z.number().nullable().default(null),
   }),
   payments: z.array(
     z.object({

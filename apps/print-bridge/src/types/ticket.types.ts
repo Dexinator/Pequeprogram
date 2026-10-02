@@ -65,4 +65,8 @@ export interface TicketTotals {
   discount_value: number;
   discount_amount: number;
   total: number;
+  /** Efectivo recibido del cliente. null = no se capturó, no se imprime. */
+  cash_received: number | null;
+  /** Cambio entregado. null = no aplica, no se imprime. */
+  change_given: number | null;
 }

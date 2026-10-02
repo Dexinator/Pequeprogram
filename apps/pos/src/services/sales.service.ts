@@ -60,6 +60,8 @@ export interface CreateSaleData {
   notes?: string;
   discount_type?: DiscountType | null;
   discount_value?: number;
+  /** Efectivo entregado por el cliente. null/omitido = no se capturó. */
+  cash_received?: number | null;
 }
 
 export interface Sale {
@@ -72,6 +74,8 @@ export interface Sale {
   discount_type?: DiscountType | null;
   discount_value?: number;
   discount_amount?: number;
+  cash_received?: number | null;
+  change_given?: number | null;
   payment_method: string;
   status: string;
   location: string;

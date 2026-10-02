@@ -332,6 +332,14 @@ export default function HistorialVentas() {
                   <p className="font-medium text-lg text-green-600">
                     {formatCurrency(selectedSale.total_amount)}
                   </p>
+                  {selectedSale.change_given !== null && selectedSale.change_given !== undefined && (
+                    <div className="text-xs mt-1 text-gray-600">
+                      <div>Efectivo recibido: {formatCurrency(selectedSale.cash_received)}</div>
+                      <div className="text-green-700 font-medium">
+                        Cambio: {formatCurrency(selectedSale.change_given)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

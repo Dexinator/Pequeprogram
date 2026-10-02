@@ -368,6 +368,7 @@ const HistorialVentas = () => {
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="text-sm text-gray-700">
                   Mostrando {((pagination.page - 1) * pagination.limit) + 1} a {Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total} resultados
+                  <span className="ml-2 font-medium text-gray-900">· Página {pagination.page} de {pagination.pages}</span>
                 </div>
                 
                 <div className="flex space-x-2">
@@ -380,7 +381,15 @@ const HistorialVentas = () => {
                   </button>
                   
                   {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                    const page = i + 1;
+                    // Ventana deslizante de 5 páginas. Antes era fija en 1..5, así que
+                    // al pasar de la página 5 ningún botón coincidía con la página
+                    // actual: no se resaltaba en cuál estabas y los números no se
+                    // recorrían (reportado por Pablo en inventario, 2026-09-26).
+                    let page;
+                    if (pagination.pages <= 5) page = i + 1;
+                    else if (pagination.page <= 3) page = i + 1;
+                    else if (pagination.page >= pagination.pages - 2) page = pagination.pages - 4 + i;
+                    else page = pagination.page - 2 + i;
                     return (
                       <button
                         key={page}

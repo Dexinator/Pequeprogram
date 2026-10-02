@@ -86,6 +86,14 @@ export async function renderTicketToEscpos(
   for (const payment of payload.payments) {
     printer.println(twoCol(payment.label, formatMoney(payment.amount), COLUMNS));
   }
+  // Efectivo recibido y cambio: solo si la cajera capturó el importe recibido.
+  // Sin captura ambos llegan en null y el ticket sale igual que antes.
+  if (payload.totals.cash_received !== null && payload.totals.change_given !== null) {
+    printer.println(twoCol('Efectivo recibido', formatMoney(payload.totals.cash_received), COLUMNS));
+    printer.bold(true);
+    printer.println(twoCol('CAMBIO', formatMoney(payload.totals.change_given), COLUMNS));
+    printer.bold(false);
+  }
   printer.alignLeft();
 
   if (options.showStoreCredit && payload.store_credit_remaining !== null) {

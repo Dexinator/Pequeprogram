@@ -915,7 +915,13 @@ Service: ${valuationService ? 'OK' : 'Error'}
                     
                     {/* Números de página */}
                     {Array.from({ length: Math.min(5, Math.ceil(pagination.total / pagination.limit)) }, (_, i) => {
-                      const pageNum = i + 1;
+                      // Ventana deslizante de 5 páginas (ver nota en InventoryList).
+                      const totalPages = Math.ceil(pagination.total / pagination.limit);
+                      let pageNum;
+                      if (totalPages <= 5) pageNum = i + 1;
+                      else if (pagination.page <= 3) pageNum = i + 1;
+                      else if (pagination.page >= totalPages - 2) pageNum = totalPages - 4 + i;
+                      else pageNum = pagination.page - 2 + i;
                       return (
                         <button
                           key={pageNum}

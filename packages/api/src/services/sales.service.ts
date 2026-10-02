@@ -8,6 +8,7 @@ import {
   InventorySearchParams,
   InventoryItem,
   resolveDiscountAmount,
+  resolveChangeGiven,
 } from '../models/sales.model';
 import { BaseService } from './base.service';
 import { pool } from '../db';
@@ -99,10 +100,23 @@ export class SalesService extends BaseService<Sale> {
       const primaryPaymentMethod = data.payment_details.length === 1 
         ? data.payment_details[0].payment_method 
         : 'mixto';
-        
+
+      // Efectivo recibido y cambio: el cambio se calcula contra lo cobrado EN
+      // EFECTIVO, no contra el total de la venta (en un pago mixto de $200
+      // tarjeta + $300 efectivo con un billete de $500, el cambio es $200).
+      const cashCharged = data.payment_details
+        .filter(p => p.payment_method === 'efectivo')
+        .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const changeGiven = resolveChangeGiven(data.cash_received, cashCharged);
+      // Solo se persiste el recibido cuando realmente hubo cobro en efectivo:
+      // si no, el dato no significa nada y el ticket no debe imprimirlo.
+      const cashReceived = changeGiven === null
+        ? null
+        : Math.round((Number(data.cash_received) || 0) * 100) / 100;
+
       const saleQuery = `
-        INSERT INTO sales (client_id, client_name, user_id, total_amount, discount_type, discount_value, discount_amount, payment_method, notes, location)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        INSERT INTO sales (client_id, client_name, user_id, total_amount, discount_type, discount_value, discount_amount, cash_received, change_given, payment_method, notes, location)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *
       `;
 
@@ -114,6 +128,8 @@ export class SalesService extends BaseService<Sale> {
         discountAmount > 0 ? data.discount_type : null,
         discountAmount > 0 ? (Number(data.discount_value) || 0) : 0,
         discountAmount,
+        cashReceived,
+        changeGiven,
         primaryPaymentMethod,
         data.notes || null,
         'Polanco' // location por defecto
@@ -281,6 +297,12 @@ export class SalesService extends BaseService<Sale> {
         discount_type: saleRow.discount_type || null,
         discount_value: parseFloat(saleRow.discount_value) || 0,
         discount_amount: parseFloat(saleRow.discount_amount) || 0,
+        cash_received: saleRow.cash_received !== null && saleRow.cash_received !== undefined
+          ? parseFloat(saleRow.cash_received)
+          : null,
+        change_given: saleRow.change_given !== null && saleRow.change_given !== undefined
+          ? parseFloat(saleRow.change_given)
+          : null,
         payment_method: saleRow.payment_method,
         status: saleRow.status,
         location: saleRow.location,
@@ -418,6 +440,15 @@ export class SalesService extends BaseService<Sale> {
         user_id: row.user_id,
         sale_date: row.sale_date,
         total_amount: parseFloat(row.total_amount),
+        discount_type: row.discount_type || null,
+        discount_value: parseFloat(row.discount_value) || 0,
+        discount_amount: parseFloat(row.discount_amount) || 0,
+        cash_received: row.cash_received !== null && row.cash_received !== undefined
+          ? parseFloat(row.cash_received)
+          : null,
+        change_given: row.change_given !== null && row.change_given !== undefined
+          ? parseFloat(row.change_given)
+          : null,
         payment_method: row.payment_method,
         status: row.status,
         location: row.location,

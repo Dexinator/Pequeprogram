@@ -17,6 +17,9 @@ export default function NuevaVenta() {
   const [paymentDetails, setPaymentDetails] = useState([]);
   const [discountType, setDiscountType] = useState('none'); // 'none' | 'percentage' | 'fixed_amount'
   const [discountValue, setDiscountValue] = useState(0);
+  // Efectivo que entregó el cliente. Opcional: vacío = no se capturó y la venta
+  // se cobra igual que siempre. Se manda al backend, que calcula el cambio.
+  const [cashReceived, setCashReceived] = useState('');
   const [saleComplete, setSaleComplete] = useState(false);
   const [completedSale, setCompletedSale] = useState(null);
   const [error, setError] = useState('');
@@ -39,6 +42,12 @@ export default function NuevaVenta() {
   const discountAmount = computeDiscountAmount(subtotal, discountType, discountValue);
   // Total neto a pagar (lo que valida los pagos)
   const cartTotal = Math.round((subtotal - discountAmount) * 100) / 100;
+
+  // Cuánto se cobra en efectivo (para el cambio): en mixto es el renglón de
+  // efectivo, no el total de la venta.
+  const cashToCharge = paymentMethod === 'mixto'
+    ? paymentDetails.filter(p => p.payment_method === 'efectivo').reduce((sum, p) => sum + (p.amount || 0), 0)
+    : (paymentMethod === 'efectivo' ? cartTotal : 0);
 
   // Validar que los pagos mixtos coincidan con el total neto
   const isPaymentValid = () => {
@@ -83,7 +92,8 @@ export default function NuevaVenta() {
         location: 'Polanco',
         notes: '',
         discount_type: discountType === 'none' ? null : discountType,
-        discount_value: discountType === 'none' ? 0 : (parseFloat(discountValue) || 0)
+        discount_value: discountType === 'none' ? 0 : (parseFloat(discountValue) || 0),
+        cash_received: parseFloat(cashReceived) > 0 ? parseFloat(cashReceived) : null
       };
 
       const result = await salesService.createSale(saleData);
@@ -109,6 +119,7 @@ export default function NuevaVenta() {
     setPaymentDetails([]);
     setDiscountType('none');
     setDiscountValue(0);
+    setCashReceived('');
     setSaleComplete(false);
     setCompletedSale(null);
     setError('');
@@ -191,6 +202,8 @@ export default function NuevaVenta() {
             setPaymentMethod={setPaymentMethod}
             paymentDetails={paymentDetails}
             setPaymentDetails={setPaymentDetails}
+            cashReceived={cashReceived}
+            setCashReceived={setCashReceived}
           />
         )}
         
@@ -261,6 +274,18 @@ export default function NuevaVenta() {
                         {detail.payment_method === 'credito_tienda' ? 'Crédito en Tienda' : detail.payment_method}: ${detail.amount.toFixed(2)}
                       </div>
                     ))}
+                  </div>
+                )}
+                {parseFloat(cashReceived) > 0 && (
+                  <div className="mt-2 pt-2 border-t text-sm space-y-1">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Efectivo recibido</span>
+                      <span>${parseFloat(cashReceived).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between font-medium text-green-700">
+                      <span>Cambio</span>
+                      <span>${Math.max(0, parseFloat(cashReceived) - cashToCharge).toFixed(2)}</span>
+                    </div>
                   </div>
                 )}
               </div>
