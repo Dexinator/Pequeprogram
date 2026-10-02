@@ -142,9 +142,14 @@ export default function PaymentMethod({ total, subtotal, discountType, setDiscou
         </div>
       )}
       {hasReceived && change < 0 && (
-        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
-          El efectivo recibido es {money(Math.abs(change))} menor a lo que se cobra en efectivo. Puedes continuar, pero no habrá cambio.
-        </p>
+        <div className="bg-amber-50 border border-amber-300 rounded p-3">
+          <p className="font-medium text-amber-900">
+            Faltan {money(Math.abs(change))}
+          </p>
+          <p className="text-sm text-amber-800">
+            Pide al cliente que complete el pago.
+          </p>
+        </div>
       )}
       {!hasReceived && (
         <p className="text-xs text-gray-500">
