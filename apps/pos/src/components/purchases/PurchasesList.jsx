@@ -317,6 +317,7 @@ export default function PurchasesList({ refreshTrigger }) {
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="text-sm text-gray-700">
                   Mostrando {((filters.page - 1) * filters.limit) + 1} a {Math.min(filters.page * filters.limit, pagination.total)} de {pagination.total} resultados
+                  <span className="ml-2 font-medium text-gray-900">· Página {filters.page} de {pagination.pages}</span>
                 </div>
                 
                 <div className="flex space-x-2">
@@ -329,7 +330,15 @@ export default function PurchasesList({ refreshTrigger }) {
                   </button>
                   
                   {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                    const page = i + 1;
+                    // Ventana deslizante de 5 páginas. Antes era fija en 1..5, así que
+                    // al pasar de la página 5 ningún botón coincidía con la página
+                    // actual: no se resaltaba en cuál estabas y los números no se
+                    // recorrían (reportado por Pablo en inventario, 2026-09-26).
+                    let page;
+                    if (pagination.pages <= 5) page = i + 1;
+                    else if (filters.page <= 3) page = i + 1;
+                    else if (filters.page >= pagination.pages - 2) page = pagination.pages - 4 + i;
+                    else page = filters.page - 2 + i;
                     return (
                       <button
                         key={page}

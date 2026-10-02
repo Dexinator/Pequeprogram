@@ -3593,3 +3593,30 @@ Pablo dio luz verde en Slack ("todo está funcionando bien, puedes subirlo a pro
 ### Cambio al Esquema de Base de Datos
 - **sales.cash_received** NUMERIC(10,2) — efectivo entregado por el cliente; NULL si no se capturó. Migración 045.
 - **sales.change_given** NUMERIC(10,2) — cambio devuelto, calculado en el backend como `cash_received - efectivo cobrado`, acotado a >= 0; NULL si no aplica. Migración 045.
+
+## Sesión: 1 de Octubre, 2026
+
+### Fix reportado por Pablo — la paginación no se recorría (6 pantallas)
+
+**Reporte (Slack, 26/09):** *"en la pantalla de inventario al pasar a la siguiente página dando Siguiente no se muestra el número de pestaña que se está viendo, no se recorren"*, con captura mostrando `Anterior 1 2 3 4 5 Siguiente` y la nota "Así se queda".
+
+**Causa:** la ventana de números de página estaba **fija en 1..5**:
+```js
+{Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+  const page = i + 1;   // nunca se recorre
+```
+Al pasar de la página 5 ningún botón coincidía con la página actual, así que (a) no se resaltaba en cuál estabas y (b) los números nunca avanzaban. Las dos quejas de Pablo son el mismo defecto.
+
+**Alcance real:** el mismo patrón estaba copiado en **6 pantallas**, no solo en la que reportó:
+- `apps/pos/.../inventory/InventoryList.jsx` (la reportada)
+- `apps/pos/.../consignments/ConsignmentsList.jsx`
+- `apps/pos/.../purchases/PurchasesList.jsx`
+- `apps/valuador/.../HistorialVentas.jsx`
+- `apps/valuador/.../ConsignmentsList.jsx`
+- `apps/valuador/.../HistorialValuaciones.jsx` (variante con `pageNum` y total calculado de `total/limit`)
+
+Las dos de `apps/tienda` (`ProductManagement`, `ProductPreparation`) ya tenían la ventana deslizante correcta.
+
+**Solución:** ventana deslizante de 5 páginas alrededor de la actual, aplicada en línea en cada archivo respetando los nombres de variable de cada uno (las apps no comparten componentes). Además se agregó **"· Página X de N"** junto al resumen "Mostrando … resultados", que es literalmente lo que Pablo pidió ver.
+
+**Verificación:** esbuild OK en los 6 archivos; simulación de la lógica en los bordes (3, 5, 6 y 23 páginas, en primera/media/última) confirmando que la página actual **siempre** cae dentro de la ventana.
