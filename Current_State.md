@@ -3620,3 +3620,19 @@ Las dos de `apps/tienda` (`ProductManagement`, `ProductPreparation`) ya tenían 
 **Solución:** ventana deslizante de 5 páginas alrededor de la actual, aplicada en línea en cada archivo respetando los nombres de variable de cada uno (las apps no comparten componentes). Además se agregó **"· Página X de N"** junto al resumen "Mostrando … resultados", que es literalmente lo que Pablo pidió ver.
 
 **Verificación:** esbuild OK en los 6 archivos; simulación de la lógica en los bordes (3, 5, 6 y 23 páginas, en primera/media/última) confirmando que la página actual **siempre** cae dentro de la ventana.
+
+### Promoción a producción (1 de octubre, 2026)
+
+Pablo aprobó en Slack las dos cosas: *"El mensaje nuevo ya aparece"* y *"Cheque la paginación y funciona bien"*.
+
+**Orden de despliegue (migración ANTES del merge).** Se aplicó primero la migración y después el frontend, a propósito: al revés habría una ventana de minutos en la que el POS de producción ya manda `cash_received` pero la columna aún no existe, y las ventas con efectivo capturado fallarían. La columna nueva es inofensiva para el código viejo, así que ese orden no tiene contraindicación.
+
+1. **Migración 045** aplicada en la BD de producción (`cash_received`, `change_given`, ambas nullable; verificadas en `information_schema`).
+2. **Merge `development` → `main`** (`0c5be8f`, 23 archivos) → Vercel reconstruyó los 4 frontends.
+3. **`git subtree push` → Heroku producción: v66.**
+
+**Verificación en producción:** API viva y exponiendo ambos campos (null en ventas anteriores); bundle del POS con "Efectivo recibido" (4), "complete el pago" (1), "Calculadora" (3), "· Página" (3 = inventario/consignaciones/compras) y "Falta por cubrir" (1); valuador con el fix de paginación en /consignaciones y /ventas. El print-bridge de la caja ya se había actualizado, así que esta promoción no requirió tocar esa máquina.
+
+**Ajuste pedido por Pablo durante la revisión:** cuando el efectivo recibido es menor al cobrado, el aviso decía "puedes continuar, pero no habrá cambio"; ahora muestra **"Faltan $X"** y **"Pide al cliente que complete el pago"** (`d7074d2`). Se mantiene sin bloquear la venta, como se definió en la ficha.
+
+**Petición nueva de Pablo (crédito de tienda a la baja):** NO requiere desarrollo nuevo. `AdjustStoreCreditModal` ya tiene "Agregar saldo" / "Restar saldo" con motivo obligatorio, bloqueo de saldo negativo y auditoría en `client_credit_movements` (`manual_subtract`), y la API lo soporta desde la migración 033. Lo que falta es el **acceso**: hoy solo se llega desde Nueva venta → paso Cliente. Eso es exactamente el alcance de la **Etapa 3 — Clientes**, ya planeada. Se le explicó y se le preguntó si prefiere adelantar la Etapa 3 antes que la 2.
