@@ -79,8 +79,12 @@ export class HttpService {
     console.log('✅ Token limpiado de headers HTTP');
   }
   
-  // Manejar errores de autenticación
-  private handleUnauthorized() {
+  /**
+   * Sesión inválida o vencida: limpia lo guardado y manda al login conservando
+   * la ruta de retorno. Es público porque la subida de imágenes usa `fetch`
+   * directo (multipart) y necesita el mismo tratamiento.
+   */
+  handleUnauthorized() {
     console.log('🚫 Error 401: No autorizado - manejando...');
     
     // Limpiar token inválido
@@ -96,7 +100,8 @@ export class HttpService {
         // Guardar la URL actual para volver después del login
         const currentUrl = window.location.pathname + window.location.search;
         console.log('🔄 Redirigiendo a login, URL de retorno:', currentUrl);
-        window.location.href = `/login?return=${encodeURIComponent(currentUrl)}`;
+        // expired=1 hace que el login explique por qué lo mandamos ahí
+        window.location.href = `/login?return=${encodeURIComponent(currentUrl)}&expired=1`;
       }
     }
   }
@@ -305,6 +310,9 @@ export class HttpService {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        this.handleUnauthorized();
+      }
       throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
     }
 

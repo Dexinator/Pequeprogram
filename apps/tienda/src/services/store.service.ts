@@ -41,6 +41,52 @@ export class StoreService {
     this.initializeAuth();
   }
   
+  /**
+   * La subida de imágenes usa `fetch` directo (multipart), así que se salta el
+   * manejo de errores de HttpService. Sin esto, con la sesión vencida Pablo
+   * veía el mensaje crudo del API ("Token inválido o expirado") y se quedaba
+   * atorado, sin que nada lo mandara a iniciar sesión otra vez.
+   *
+   * Se revisa ANTES de subir: así no pierde la selección de fotos esperando a
+   * que falle la petición.
+   */
+  private assertSessionIsValid() {
+    if (typeof window === 'undefined') return;
+
+    const token = localStorage.getItem('entrepeques_auth_token');
+    if (!token || this.isTokenExpired(token)) {
+      this.http.handleUnauthorized();
+      throw new Error('Tu sesión expiró. Vuelve a iniciar sesión para subir las fotos.');
+    }
+  }
+
+  /** Lee el `exp` del JWT. Un token ilegible se asume vencido. */
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload?.exp) return false;
+      return payload.exp * 1000 <= Date.now() + 10000;
+    } catch {
+      return true;
+    }
+  }
+
+  /** Traduce una respuesta fallida de la subida a un error legible. */
+  private async uploadError(response: Response, fallback: string): Promise<Error> {
+    if (response.status === 401) {
+      this.http.handleUnauthorized();
+      return new Error('Tu sesión expiró. Vuelve a iniciar sesión para subir las fotos.');
+    }
+    let message = fallback;
+    try {
+      const body = await response.json();
+      message = body?.message || body?.error || fallback;
+    } catch {
+      // sin cuerpo JSON: se queda el mensaje genérico
+    }
+    return new Error(message);
+  }
+
   private initializeAuth() {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('entrepeques_auth_token');
@@ -146,6 +192,7 @@ export class StoreService {
       
       // Verificar token antes de la petición
       this.initializeAuth();
+      this.assertSessionIsValid();
       
       // Crear FormData para enviar el archivo
       const formData = new FormData();
@@ -162,8 +209,7 @@ export class StoreService {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al subir imagen');
+        throw await this.uploadError(response, 'Error al subir imagen');
       }
 
       const result = await response.json();
@@ -188,6 +234,7 @@ export class StoreService {
 
       // Verificar token antes de la petición
       this.initializeAuth();
+      this.assertSessionIsValid();
 
       // Crear FormData para enviar los archivos
       const formData = new FormData();
@@ -206,8 +253,7 @@ export class StoreService {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al subir imágenes');
+        throw await this.uploadError(response, 'Error al subir imágenes');
       }
 
       const result = await response.json();
