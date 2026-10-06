@@ -131,6 +131,19 @@ export const getSale = asyncHandler(async (req: Request, res: Response) => {
 // @desc    Search inventory items
 // @route   GET /api/inventory/search
 // @access  Private
+// @desc    Estadísticas de inventario (valor a costo y a venta, con desglose
+//          por categoría). Se calcula en la BD sobre todo el inventario.
+// @route   GET /api/inventory/stats
+// @access  Private (admin/manager — expone márgenes)
+export const getInventoryStats = asyncHandler(async (_req: Request, res: Response) => {
+  const stats = await salesService.getInventoryStats();
+
+  res.json({
+    success: true,
+    data: stats
+  });
+});
+
 export const searchInventory = asyncHandler(async (req: Request, res: Response) => {
   const params: InventorySearchParams = {
     q: req.query.q as string,
@@ -138,6 +151,9 @@ export const searchInventory = asyncHandler(async (req: Request, res: Response) 
     subcategory_id: req.query.subcategory_id ? parseInt(req.query.subcategory_id as string) : undefined,
     location: req.query.location as string,
     available_only: req.query.available_only === 'true',
+    availability: ['available', 'unavailable', 'all'].includes(req.query.availability as string)
+      ? (req.query.availability as 'available' | 'unavailable' | 'all')
+      : undefined,
     page: req.query.page ? parseInt(req.query.page as string) : 1,
     limit: req.query.limit ? parseInt(req.query.limit as string) : 20
   };

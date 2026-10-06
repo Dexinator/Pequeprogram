@@ -2,6 +2,7 @@ import express from 'express';
 import { protect, authorize } from '../utils/auth.middleware';
 import {
   searchInventory,
+  getInventoryStats,
   getAvailableInventory,
   updateInventoryQuantity,
   updateInventoryPrice,
@@ -17,6 +18,12 @@ router.use(protect);
 router
   .route('/search')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), searchInventory);
+
+// Inventory statistics. Restringido a admin/gerencia porque expone el costo
+// de compra y por tanto los márgenes del negocio.
+router
+  .route('/stats')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente']), getInventoryStats);
 
 router
   .route('/available')

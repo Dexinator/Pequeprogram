@@ -51,24 +51,28 @@ export interface InventoryFilters {
   subcategory_id?: number;
   location?: string;
   available_only?: boolean;
+  availability?: 'available' | 'unavailable' | 'all';
   page?: number;
   limit?: number;
+}
+
+export interface InventoryCategoryStats {
+  category_id: number | null;
+  category_name: string;
+  items: number;
+  quantity: number;
+  sale_value: number;
+  cost_value: number;
 }
 
 export interface InventoryStats {
   total_items: number;
   total_quantity: number;
-  total_value: number;
-  by_location: {
-    location: string;
-    quantity: number;
-    value: number;
-  }[];
-  by_category: {
-    category_name: string;
-    quantity: number;
-    value: number;
-  }[];
+  /** Valor a precio de venta: lo que se cobraría si se vendiera todo. */
+  total_sale_value: number;
+  /** Valor a costo de compra: el dato contable. */
+  total_cost_value: number;
+  by_category: InventoryCategoryStats[];
 }
 
 export class InventoryService {
@@ -100,7 +104,8 @@ export class InventoryService {
       if (filters.category_id) params.category_id = filters.category_id;
       if (filters.subcategory_id) params.subcategory_id = filters.subcategory_id;
       if (filters.location) params.location = filters.location;
-      if (filters.available_only !== undefined) params.available_only = filters.available_only;
+      if (filters.availability) params.availability = filters.availability;
+      else if (filters.available_only !== undefined) params.available_only = filters.available_only;
       if (filters.page) params.page = filters.page;
       if (filters.limit) params.limit = filters.limit;
 
@@ -152,76 +157,34 @@ export class InventoryService {
     }
   }
 
-  // Obtener estadísticas del inventario
+  /**
+   * Estadísticas de inventario.
+   *
+   * Antes se calculaban aquí, en el navegador, pidiendo `searchInventory({
+   * limit: 1000 })` y sumando. Con 2,621 artículos en producción eso dejaba
+   * fuera más de la mitad del inventario y el "Valor Total" salía
+   * subestimado. Ahora las calcula la base de datos sobre todo el inventario.
+   */
   async getStats(): Promise<InventoryStats> {
+    const empty: InventoryStats = {
+      total_items: 0,
+      total_quantity: 0,
+      total_sale_value: 0,
+      total_cost_value: 0,
+      by_category: []
+    };
+
     try {
       const token = localStorage.getItem('entrepeques_auth_token');
       if (token) {
         this.http.setAuthToken(token);
       }
 
-      // Por ahora calcularemos las estadísticas del lado del cliente
-      // En el futuro se puede crear un endpoint específico
-      const allItems = await this.searchInventory({ limit: 1000 });
-      
-      const stats: InventoryStats = {
-        total_items: allItems.total,
-        total_quantity: 0,
-        total_value: 0,
-        by_location: [],
-        by_category: []
-      };
-
-      const locationMap = new Map<string, { quantity: number, value: number }>();
-      const categoryMap = new Map<string, { quantity: number, value: number }>();
-
-      allItems.items.forEach(item => {
-        const quantity = item.quantity || 0;
-        const value = (item.final_sale_price || 0) * quantity;
-
-        stats.total_quantity += quantity;
-        stats.total_value += value;
-
-        // Por ubicación
-        const location = item.location || 'Sin ubicación';
-        if (!locationMap.has(location)) {
-          locationMap.set(location, { quantity: 0, value: 0 });
-        }
-        const locData = locationMap.get(location)!;
-        locData.quantity += quantity;
-        locData.value += value;
-
-        // Por categoría
-        const category = item.category_name || 'Sin categoría';
-        if (!categoryMap.has(category)) {
-          categoryMap.set(category, { quantity: 0, value: 0 });
-        }
-        const catData = categoryMap.get(category)!;
-        catData.quantity += quantity;
-        catData.value += value;
-      });
-
-      // Convertir mapas a arrays
-      stats.by_location = Array.from(locationMap.entries()).map(([location, data]) => ({
-        location,
-        ...data
-      }));
-
-      stats.by_category = Array.from(categoryMap.entries()).map(([category_name, data]) => ({
-        category_name,
-        ...data
-      }));
-
-      return stats;
+      const response = await this.http.get<any>('/inventory/stats');
+      return response?.data || empty;
     } catch (error) {
       console.error('Error al obtener estadísticas de inventario:', error);
-      return {
-        total_items: 0,
-        total_quantity: 0,
-        total_value: 0,
-        by_location: [],
-        by_category: []
-      };
+      return empty;
     }
   }
 

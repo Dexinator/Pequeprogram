@@ -7,6 +7,7 @@ import {
   SaleQueryParams,
   InventorySearchParams,
   InventoryItem,
+  InventoryStats,
   resolveDiscountAmount,
   resolveChangeGiven,
 } from '../models/sales.model';
@@ -478,6 +479,74 @@ export class SalesService extends BaseService<Sale> {
     }
   }
 
+  /**
+   * Estadísticas de inventario, calculadas en la base de datos sobre TODO el
+   * inventario.
+   *
+   * Antes esto se hacía en el navegador pidiendo `searchInventory({limit:1000})`
+   * y sumando: con 2,621 artículos en producción el total salía calculado sobre
+   * menos de la mitad, así que el "Valor Total" que se mostraba estaba
+   * subestimado. (Reportado indirectamente por Pablo al preguntar si el valor
+   * era a costo, 2026-10-04.)
+   *
+   * Se devuelven ambos valores porque responden preguntas distintas: el de
+   * venta es lo que se cobraría si se vendiera todo, el de costo es lo que
+   * costó comprarlo (el dato contable). Un renglón de inventario viene de una
+   * valuación o de "otros productos" (OTRP), de ahí los COALESCE.
+   */
+  async getInventoryStats(): Promise<InventoryStats> {
+    let dbClient: PoolClient | undefined;
+    try {
+      dbClient = await pool.connect();
+
+      const query = `
+        SELECT
+          vi.category_id,
+          COALESCE(
+            c.name,
+            CASE WHEN oi.id IS NOT NULL THEN 'Otros productos' ELSE 'Sin categoría' END
+          ) AS category_name,
+          COUNT(*)::int                                                          AS items,
+          COALESCE(SUM(i.quantity), 0)::int                                      AS quantity,
+          COALESCE(SUM(COALESCE(vi.final_sale_price, oi.sale_unit_price, 0) * i.quantity), 0)         AS sale_value,
+          COALESCE(SUM(COALESCE(vi.final_purchase_price, oi.purchase_unit_price, 0) * i.quantity), 0) AS cost_value
+        FROM inventario i
+        LEFT JOIN valuation_items vi  ON i.valuation_item_id = vi.id
+        LEFT JOIN categories c        ON vi.category_id = c.id
+        LEFT JOIN otherprods_items oi ON i.id = oi.sku
+        WHERE i.quantity > 0
+        GROUP BY vi.category_id, category_name
+        ORDER BY sale_value DESC
+      `;
+
+      const result = await dbClient.query(query);
+
+      const byCategory = result.rows.map(row => ({
+        category_id: row.category_id !== null ? parseInt(row.category_id) : null,
+        category_name: row.category_name,
+        items: parseInt(row.items) || 0,
+        quantity: parseInt(row.quantity) || 0,
+        sale_value: Math.round((parseFloat(row.sale_value) || 0) * 100) / 100,
+        cost_value: Math.round((parseFloat(row.cost_value) || 0) * 100) / 100,
+      }));
+
+      const sum = (field: 'items' | 'quantity' | 'sale_value' | 'cost_value') =>
+        byCategory.reduce((acc, row) => acc + row[field], 0);
+
+      return {
+        total_items: sum('items'),
+        total_quantity: sum('quantity'),
+        total_sale_value: Math.round(sum('sale_value') * 100) / 100,
+        total_cost_value: Math.round(sum('cost_value') * 100) / 100,
+        by_category: byCategory,
+      };
+    } finally {
+      if (dbClient) {
+        dbClient.release();
+      }
+    }
+  }
+
   async searchInventory(params: InventorySearchParams): Promise<{ items: InventoryItem[]; total: number }> {
     let dbClient: PoolClient | undefined;
     try {
@@ -514,7 +583,14 @@ export class SalesService extends BaseService<Sale> {
       const queryParams: any[] = [];
       let paramIndex = 1;
       
-      if (params.available_only) {
+      // Disponibilidad. `availability` manda; si no viene, se respeta el
+      // comportamiento anterior de `available_only` para no romper a quien
+      // todavía lo mande.
+      if (params.availability === 'available') {
+        query += ` AND i.quantity > 0`;
+      } else if (params.availability === 'unavailable') {
+        query += ` AND i.quantity <= 0`;
+      } else if (!params.availability && params.available_only) {
         query += ` AND i.quantity > 0`;
       }
       
