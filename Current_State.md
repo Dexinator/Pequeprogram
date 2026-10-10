@@ -3636,3 +3636,21 @@ Pablo aprobó en Slack las dos cosas: *"El mensaje nuevo ya aparece"* y *"Cheque
 **Ajuste pedido por Pablo durante la revisión:** cuando el efectivo recibido es menor al cobrado, el aviso decía "puedes continuar, pero no habrá cambio"; ahora muestra **"Faltan $X"** y **"Pide al cliente que complete el pago"** (`d7074d2`). Se mantiene sin bloquear la venta, como se definió en la ficha.
 
 **Petición nueva de Pablo (crédito de tienda a la baja):** NO requiere desarrollo nuevo. `AdjustStoreCreditModal` ya tiene "Agregar saldo" / "Restar saldo" con motivo obligatorio, bloqueo de saldo negativo y auditoría en `client_credit_movements` (`manual_subtract`), y la API lo soporta desde la migración 033. Lo que falta es el **acceso**: hoy solo se llega desde Nueva venta → paso Cliente. Eso es exactamente el alcance de la **Etapa 3 — Clientes**, ya planeada. Se le explicó y se le preguntó si prefiere adelantar la Etapa 3 antes que la 2.
+
+## Sesión: 9 de Octubre, 2026
+
+### Etapa 2 completa + respuestas a reportes de Pablo
+
+**Orden confirmado por Pablo:** *"me alcanza con ajustar el crédito desde la venta, no es necesario cambiar el calendario"* → se mantiene Etapa 2 antes que Etapa 3.
+
+#### Etapa 2 — POS: Inventario (terminada)
+- **Item 1** — filtros de categoría y subcategoría en cascada en `InventoryList.jsx`. La API ya los soportaba; al cambiar categoría se limpia la subcategoría para no dejar combinaciones imposibles.
+- **Item 2** — disponibilidad en tri-estado (`availability`: available / unavailable / all) en modelo, servicio, controller y UI. Se conserva `available_only` como deprecado. Verificado: 675 + 135 = 810.
+- **Item 3** — `SkuCatalog.jsx`: catálogo de claves (AUTP → Autoasientos) como pestaña dentro del módulo de Inventario, agrupado por categoría y con buscador que encuentra por clave *y* por nombre. Solo lectura: cambiar un SKU rompería los IDs de inventario ya generados. El endpoint de subcategorías ya devolvía `sku`, así que no hubo cambio de API.
+- **Item 4** — nuevo `GET /api/inventory/stats`: el "Valor Total" se calculaba en el navegador con `limit:1000` sobre 2,621 artículos, así que salía subestimado. Ahora lo calcula la BD sobre todo el inventario y la pantalla muestra **valor a costo y a precio de venta** más el desglose por categoría. Restringido a admin/gerencia porque expone márgenes.
+
+#### Reportes de Pablo atendidos
+
+**1. "No puedo subir fotos: token inválido o expirado".** La subida usa `fetch` directo (multipart) y se saltaba el manejo de 401 de `HttpService`. Corregido (`32bd469`, ya en producción). **Después reportó que relogueándose seguía igual**, así que se revisó de nuevo: el endpoint de producción autentica bien con token fresco (400 "No se recibieron archivos"), y se detectó un **riesgo introducido por el propio arreglo**: el chequeo previo comparaba la expiración contra `Date.now()`, de modo que con el reloj de la PC adelantado un token recién emitido se vería como vencido y la subida quedaría bloqueada para siempre. Ahora el pre-chequeo solo bloquea si **no hay token**; la expiración la decide el servidor y el 401 se traduce igual de claro.
+
+**2. "JGGP061 y JGGP063 ya se vendieron pero no aparecen en inventario como 0".** Investigado en la BD de producción: **ninguno tiene venta registrada** (0 filas en `sale_items`, 0 en `online_sale_items`) y ambos siguen con stock 1. Sus vecinos de la serie sí son consistentes (JGGP060/062/064/066/067 tienen venta y stock 0), o sea que el descuento de stock funciona. No hay fallo del sistema: esas dos ventas nunca se capturaron, o se capturaron contra otro SKU. Como están sin vender y sin preparar (`online_store_ready = false`), es correcto que aparezcan en "preparar productos".
