@@ -3654,3 +3654,23 @@ Pablo aprobó en Slack las dos cosas: *"El mensaje nuevo ya aparece"* y *"Cheque
 **1. "No puedo subir fotos: token inválido o expirado".** La subida usa `fetch` directo (multipart) y se saltaba el manejo de 401 de `HttpService`. Corregido (`32bd469`, ya en producción). **Después reportó que relogueándose seguía igual**, así que se revisó de nuevo: el endpoint de producción autentica bien con token fresco (400 "No se recibieron archivos"), y se detectó un **riesgo introducido por el propio arreglo**: el chequeo previo comparaba la expiración contra `Date.now()`, de modo que con el reloj de la PC adelantado un token recién emitido se vería como vencido y la subida quedaría bloqueada para siempre. Ahora el pre-chequeo solo bloquea si **no hay token**; la expiración la decide el servidor y el 401 se traduce igual de claro.
 
 **2. "JGGP061 y JGGP063 ya se vendieron pero no aparecen en inventario como 0".** Investigado en la BD de producción: **ninguno tiene venta registrada** (0 filas en `sale_items`, 0 en `online_sale_items`) y ambos siguen con stock 1. Sus vecinos de la serie sí son consistentes (JGGP060/062/064/066/067 tienen venta y stock 0), o sea que el descuento de stock funciona. No hay fallo del sistema: esas dos ventas nunca se capturaron, o se capturaron contra otro SKU. Como están sin vender y sin preparar (`online_store_ready = false`), es correcto que aparezcan en "preparar productos".
+
+### Etapa 3 — POS: Clientes (implementada)
+
+Pablo confirmó que no hacía falta adelantarla, así que entró después de la Etapa 2, en su orden.
+
+**Backend:**
+- **Migración 046** (`046-add-client-notes.sql`): `clients.notes TEXT`. La tabla no tenía dónde guardar las notas que pidió en el documento de septiembre.
+- `GET /api/clients` — listado paginado con búsqueda (nombre/email/teléfono, el teléfono **también por dígitos**), filtro "solo con crédito" y orden por nombre / crédito / fecha de alta. Es distinto de `/search`, que sirve al autocompletado durante una venta y no pagina.
+- `GET /api/clients/:id/summary` — contadores y totales para el encabezado de la ficha (compras, lo que nos vendió, consignaciones y cuántas están por pagar, crédito). Una llamada en vez de cinco al abrir la ficha.
+- `notes` incluido en create / update / get / search. En el UPDATE, `notes` **no** lleva COALESCE: un string vacío debe poder borrar la nota, mientras que omitir el campo la conserva. Probados los tres casos.
+
+**Frontend (POS):** módulo `clientes` nuevo registrado en los cuatro puntos de `POSApp.jsx`.
+- `ClientsList.jsx` — tabla con nombre, teléfono, email, crédito y notas; buscador con debounce, filtro de crédito, orden por columna y la misma paginación de ventana deslizante del resto del POS.
+- `ClientDetailModal.jsx` — la ficha: encabezado con resumen y notas destacadas, y pestañas **Crédito** (movimientos + botón Ajustar, reusando `AdjustStoreCreditModal`), **Compras**, **Nos vendió** (valuaciones), **Consignaciones** y **Apartados** (marcada como próxima, Etapa 5). Cada pestaña carga su detalle al abrirse.
+- `ClientFormModal.jsx` — alta y edición con el mismo formulario, teléfono obligatorio y manejo del 409 por teléfono duplicado.
+
+Con esto queda resuelto lo que Pablo pedía: ajustar crédito (incluso a la baja) y editar datos **sin tener que iniciar una venta**.
+
+### Cambio al Esquema de Base de Datos
+- **clients.notes** TEXT — notas libres del personal sobre el cliente. Migración 046.

@@ -2,6 +2,8 @@ import express from 'express';
 import { protect, authorize } from '../utils/auth.middleware';
 import {
   searchClients,
+  listClients,
+  getClientSummary,
   getClient,
   createClient,
   updateClient,
@@ -19,8 +21,11 @@ router
   .route('/search')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), searchClients);
 
+// Listado paginado para la pantalla de Clientes (distinto de /search, que
+// sirve al autocompletado durante una venta).
 router
   .route('/')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), listClients)
   .post(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), createClient);
 
 router
@@ -31,6 +36,10 @@ router
 // Store credit management — adjustments restricted to admin/manager to keep an
 // authority chain on balance changes; movements list available to everyone who
 // can see the client.
+router
+  .route('/:id/summary')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), getClientSummary);
+
 router
   .route('/:id/store-credit/adjust')
   .post(authorize(['superadmin', 'admin', 'manager', 'gerente']), adjustStoreCredit);

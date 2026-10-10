@@ -1,5 +1,7 @@
 # Etapa 3 — POS: Clientes (ficha con histórico, edición, notas, crédito)
 
+> **Estado: implementada el 2026-10-09.** Migración `046-add-client-notes.sql`.
+
 **Apps:** `apps/pos`, `packages/api`.
 **Dev:** ~2.5 días.
 
@@ -70,7 +72,7 @@ Es el corazón de la petición. Un solo componente `ClientDetailModal.jsx` (o p�
 
 | Capa | Archivo | Qué hacer |
 |------|---------|-----------|
-| DB | **migración `046-add-client-notes.sql`** | `ALTER TABLE clients ADD COLUMN IF NOT EXISTS notes TEXT;` |
+| DB | ✅ **migración `046-add-client-notes.sql`** | `ALTER TABLE clients ADD COLUMN IF NOT EXISTS notes TEXT;` |
 | API | `client.controller.ts` (`createClient`, `updateClient`, `getClient`, `searchClients`) | Incluir `notes` en INSERT / UPDATE / SELECT. |
 | Front | `apps/pos/src/services/client.service.ts` (`Client`, `CreateClientData`) | Añadir `notes?: string`. |
 | UI | `ClientFormModal.jsx` / `ClientDetailModal.jsx` | Textarea de notas. |
