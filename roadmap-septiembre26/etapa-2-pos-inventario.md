@@ -1,7 +1,7 @@
 # Etapa 2 — POS: Inventario (filtros) y catálogo de claves
 
 **Apps:** `apps/pos`, `packages/api` (cambio menor).
-**Dev:** ~1.5 días.
+**Dev:** ~2 días.
 
 ---
 
@@ -71,13 +71,39 @@
 
 ---
 
+## Item 4 — Valor de inventario: está mal calculado y es a precio de venta
+
+> **Pablo (Slack, 2026-10-04):** *"¿el valor total de inventario que muestra el sistema está a valor de costo? ¿Se puede tener por categoría?"*
+
+**Lo que se encontró al revisar su pregunta (verificado contra la BD de producción el 2026-10-05):**
+
+1. **El número que muestra está incompleto.** `inventory.service.getStats()` (`apps/pos/src/services/inventory.service.ts:155-200`) calcula las estadísticas **en el navegador**, pidiendo `searchInventory({ limit: 1000 })`. En producción hay **2,621 artículos** en inventario, así que el total se calcula sobre menos de la mitad y sale subestimado. Pablo puede estar tomando decisiones con ese dato.
+2. **Es a precio de venta, no a costo.** Usa `final_sale_price`; el costo es `final_purchase_price`. Valores reales en producción: **$1,569,553.28** a precio de venta y **$725,011.41** a costo (1,980 artículos con stock > 0).
+3. **El desglose por categoría ya se calcula** (`by_category` en ese mismo método) pero **no se muestra**: la UI solo pinta "Valor Total" y el número de ubicaciones (`InventoryList.jsx:293-306`).
+
+### Puntos de integración
+
+| Capa | Archivo | Qué hacer |
+|------|---------|-----------|
+| Servicio API | `packages/api/src/services/sales.service.ts` (junto a `searchInventory`) | Nuevo `getInventoryStats()`: un solo SQL con `SUM`/`GROUP BY` sobre **todo** el inventario (no paginado). Devolver, por categoría y en total: cantidad de artículos, `SUM(final_sale_price * quantity)` y `SUM(final_purchase_price * quantity)`. Incluir la rama OTRP del UNION (`otherprods_items`: `sale_unit_price` / `purchase_unit_price`). |
+| Controller / rutas | `sales.controller.ts` + `inventory.routes.ts` | `GET /api/inventory/stats`. Permisos: `superadmin, admin, manager, gerente` (es información de márgenes). |
+| Servicio front | `apps/pos/src/services/inventory.service.ts:155-200` | Reemplazar el cálculo en el cliente por la llamada al endpoint. **Borrar** el `limit: 1000`. |
+| UI | `apps/pos/src/components/inventory/InventoryList.jsx:290-310` | Mostrar **dos** tarjetas: "Valor a precio de venta" y "Valor a costo", y una tabla desplegable con el desglose por categoría (cantidad, costo, venta). |
+
+### Qué NO construir
+- **No** dejar el cálculo en el navegador: es la causa del número incorrecto.
+- **No** inventar un módulo de reportes: los reportes completos están parkeados. Esto es solo arreglar un número que ya se muestra y que está mal.
+
+---
+
 ## Migración
-No. El único cambio de backend es de lógica de consulta (`availability`), sin cambio de esquema.
+No. Los cambios de backend son de lógica de consulta (`availability` y el nuevo `getInventoryStats`), sin cambio de esquema.
 
 ## Criterio de aceptación (staging)
 - Filtrar inventario por categoría "A pasear" y subcategoría "Andaderas" devuelve solo esos artículos; cambiar la categoría limpia la subcategoría.
 - El filtro **"No disponibles"** lista artículos con stock 0 (incluidos los OTRP), y **"Todos"** sigue mostrando ambos.
 - El catálogo de claves muestra `ANDP → Andaderas`, `AUTP → Autoasientos`, y el buscador encuentra tanto por "ANDP" como por "andadera".
+- El valor de inventario coincide con el total real (hoy en producción: ~$1,569,553 a venta / ~$725,011 a costo), **no** con el truncado a 1000 artículos, y se puede ver el desglose por categoría.
 
 ## Deploy
 - Backend: `git subtree push` `packages/api` → Heroku staging. **Sin migración.**

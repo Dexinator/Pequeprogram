@@ -146,12 +146,34 @@ export interface SaleQueryParams {
   limit?: number;
 }
 
+export interface InventoryCategoryStats {
+  category_id: number | null;
+  category_name: string;
+  items: number;        // renglones de inventario
+  quantity: number;     // piezas
+  sale_value: number;   // a precio de venta
+  cost_value: number;   // a costo de compra
+}
+
+export interface InventoryStats {
+  total_items: number;
+  total_quantity: number;
+  /** Valor a precio de venta (lo que se cobraría si se vendiera todo). */
+  total_sale_value: number;
+  /** Valor a costo (lo que costó comprarlo). Es el dato contable. */
+  total_cost_value: number;
+  by_category: InventoryCategoryStats[];
+}
+
 export interface InventorySearchParams {
   q?: string; // término de búsqueda
   category_id?: number;
   subcategory_id?: number;
   location?: string;
+  /** @deprecated usar `availability`. Se conserva para no romper llamadas existentes. */
   available_only?: boolean; // solo productos con stock > 0
+  /** 'available' = stock > 0 | 'unavailable' = stock agotado | 'all' = ambos */
+  availability?: 'available' | 'unavailable' | 'all';
   page?: number;
   limit?: number;
 }

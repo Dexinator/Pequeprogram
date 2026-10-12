@@ -53,21 +53,15 @@ export class StoreService {
   private assertSessionIsValid() {
     if (typeof window === 'undefined') return;
 
+    // Solo se bloquea si NO hay token. La expiración la decide el servidor:
+    // compararla aquí contra Date.now() haría depender la subida del reloj de
+    // la PC de la tienda, y con la hora adelantada un token recién emitido se
+    // vería como vencido y la subida quedaría bloqueada para siempre. El 401
+    // del API se traduce igual de claro en uploadError().
     const token = localStorage.getItem('entrepeques_auth_token');
-    if (!token || this.isTokenExpired(token)) {
+    if (!token) {
       this.http.handleUnauthorized();
       throw new Error('Tu sesión expiró. Vuelve a iniciar sesión para subir las fotos.');
-    }
-  }
-
-  /** Lee el `exp` del JWT. Un token ilegible se asume vencido. */
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (!payload?.exp) return false;
-      return payload.exp * 1000 <= Date.now() + 10000;
-    } catch {
-      return true;
     }
   }
 

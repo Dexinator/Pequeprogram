@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { inventoryService } from '../../services/inventory.service';
+import { productsService } from '../../services/products.service';
 import { printBridgeService } from '../../services/printBridge.service';
 import ProductDetailModal from './ProductDetailModal';
 import StockUpdateModal from './StockUpdateModal';
@@ -64,10 +65,14 @@ export default function InventoryList() {
   const [filters, setFilters] = useState({
     q: '',
     location: '',
-    available_only: true,
+    category_id: '',
+    subcategory_id: '',
+    availability: 'available',
     page: 1,
     limit: 20
   });
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, pages: 0 });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -78,10 +83,11 @@ export default function InventoryList() {
   const [stats, setStats] = useState({
     total_items: 0,
     total_quantity: 0,
-    total_value: 0,
-    by_location: [],
+    total_sale_value: 0,
+    total_cost_value: 0,
     by_category: []
   });
+  const [showCategoryBreakdown, setShowCategoryBreakdown] = useState(false);
 
   // Check if user can edit stock (admin or manager)
   // El rol puede venir como string o como objeto con propiedad 'name'
@@ -141,8 +147,28 @@ export default function InventoryList() {
   }, []);
 
   // Manejar cambio de filtros
+  // Catálogo de categorías para el filtro (se carga una sola vez)
+  useEffect(() => {
+    productsService.getCategories().then(setCategories).catch(() => setCategories([]));
+  }, []);
+
   const handleFilterChange = (field, value) => {
     setFilters({ ...filters, [field]: value, page: 1 });
+  };
+
+  // Al cambiar de categoría hay que limpiar la subcategoría: si no, quedan
+  // combinaciones imposibles (subcategoría de otra categoría) que no devuelven
+  // nada y parecen un error.
+  const handleCategoryChange = (categoryId) => {
+    setFilters({ ...filters, category_id: categoryId, subcategory_id: '', page: 1 });
+    if (!categoryId) {
+      setSubcategories([]);
+      return;
+    }
+    productsService
+      .getSubcategories(parseInt(categoryId))
+      .then(setSubcategories)
+      .catch(() => setSubcategories([]));
   };
 
   // Manejar cambio de página
@@ -253,10 +279,13 @@ export default function InventoryList() {
     setFilters({
       q: '',
       location: '',
-      available_only: true,
+      category_id: '',
+      subcategory_id: '',
+      availability: 'available',
       page: 1,
       limit: 20
     });
+    setSubcategories([]);
   };
 
   return (
@@ -290,23 +319,84 @@ export default function InventoryList() {
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Valor Total</h3>
+          <h3 className="text-sm font-medium text-gray-500">Valor a precio de venta</h3>
           <div className="mt-2">
             <div className="text-2xl font-bold text-green-600">
-              {inventoryService.formatCurrency(stats.total_value)}
+              {inventoryService.formatCurrency(stats.total_sale_value)}
             </div>
-            <div className="text-sm text-gray-600">Valor de inventario</div>
+            <div className="text-sm text-gray-600">Si se vendiera todo</div>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">Ubicaciones</h3>
+          <h3 className="text-sm font-medium text-gray-500">Valor a costo</h3>
           <div className="mt-2">
-            <div className="text-2xl font-bold text-purple-600">{stats.by_location.length}</div>
-            <div className="text-sm text-gray-600">Tiendas activas</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {inventoryService.formatCurrency(stats.total_cost_value)}
+            </div>
+            <div className="text-sm text-gray-600">Lo que costó comprarlo</div>
           </div>
         </div>
       </div>
+
+      {/* Desglose por categoría */}
+      {stats.by_category.length > 0 && (
+        <div className="bg-white rounded-lg shadow">
+          <button
+            onClick={() => setShowCategoryBreakdown(!showCategoryBreakdown)}
+            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50"
+          >
+            <span className="font-medium text-gray-700">Valor por categoría</span>
+            <span className="text-sm text-gray-500">
+              {showCategoryBreakdown ? 'Ocultar ▲' : 'Ver desglose ▼'}
+            </span>
+          </button>
+
+          {showCategoryBreakdown && (
+            <div className="px-6 pb-4 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Categoría</th>
+                    <th className="px-3 py-2 text-right">Artículos</th>
+                    <th className="px-3 py-2 text-right">Piezas</th>
+                    <th className="px-3 py-2 text-right">A costo</th>
+                    <th className="px-3 py-2 text-right">A precio de venta</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {stats.by_category.map((cat) => (
+                    <tr key={cat.category_id ?? cat.category_name}>
+                      <td className="px-3 py-2">{cat.category_name}</td>
+                      <td className="px-3 py-2 text-right">{cat.items}</td>
+                      <td className="px-3 py-2 text-right">{cat.quantity}</td>
+                      <td className="px-3 py-2 text-right text-purple-700">
+                        {inventoryService.formatCurrency(cat.cost_value)}
+                      </td>
+                      <td className="px-3 py-2 text-right text-green-700">
+                        {inventoryService.formatCurrency(cat.sale_value)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot className="border-t-2 font-medium">
+                  <tr>
+                    <td className="px-3 py-2">Total</td>
+                    <td className="px-3 py-2 text-right">{stats.total_items}</td>
+                    <td className="px-3 py-2 text-right">{stats.total_quantity}</td>
+                    <td className="px-3 py-2 text-right text-purple-700">
+                      {inventoryService.formatCurrency(stats.total_cost_value)}
+                    </td>
+                    <td className="px-3 py-2 text-right text-green-700">
+                      {inventoryService.formatCurrency(stats.total_sale_value)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Filtros */}
       <div className="bg-white p-6 rounded-lg shadow">
@@ -344,14 +434,50 @@ export default function InventoryList() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
+              Categoría
+            </label>
+            <select
+              value={filters.category_id}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            >
+              <option value="">Todas las categorías</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Subcategoría
+            </label>
+            <select
+              value={filters.subcategory_id}
+              onChange={(e) => handleFilterChange('subcategory_id', e.target.value)}
+              disabled={!filters.category_id}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 disabled:bg-gray-100 disabled:text-gray-400"
+            >
+              <option value="">
+                {filters.category_id ? 'Todas las subcategorías' : 'Elige una categoría primero'}
+              </option>
+              {subcategories.map(sub => (
+                <option key={sub.id} value={sub.id}>{sub.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Mostrar
             </label>
             <select
-              value={filters.available_only ? 'available' : 'all'}
-              onChange={(e) => handleFilterChange('available_only', e.target.value === 'available')}
+              value={filters.availability}
+              onChange={(e) => handleFilterChange('availability', e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
             >
               <option value="available">Solo disponibles</option>
+              <option value="unavailable">No disponibles</option>
               <option value="all">Todos los productos</option>
             </select>
           </div>

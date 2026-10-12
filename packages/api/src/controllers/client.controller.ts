@@ -20,7 +20,7 @@ export const searchClients = asyncHandler(async (req: Request, res: Response) =>
   const digits = term.replace(/\D/g, '');
 
   const searchQuery = `
-    SELECT id, name, phone, email, identification, store_credit, created_at
+    SELECT id, name, phone, email, identification, notes, store_credit, created_at
     FROM clients
     WHERE name ILIKE $1 OR phone ILIKE $1 OR email ILIKE $1
        OR ($2 <> '' AND regexp_replace(phone, '\\D', '', 'g') LIKE $3)
@@ -36,6 +36,135 @@ export const searchClients = asyncHandler(async (req: Request, res: Response) =>
   });
 });
 
+// @desc    Listado paginado de clientes
+// @route   GET /api/clients
+// @access  Private
+// @note    /search existe aparte y sirve al autocompletado de una venta (20
+//          resultados, sin paginar). Este es para la pantalla de Clientes.
+export const listClients = asyncHandler(async (req: Request, res: Response) => {
+  const page = Math.max(1, parseInt(req.query.page as string) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+  const offset = (page - 1) * limit;
+  const search = (req.query.search as string || '').trim();
+  const withCredit = req.query.with_credit === 'true';
+
+  const sortable: Record<string, string> = {
+    name: 'c.name',
+    credit: 'c.store_credit',
+    created: 'c.created_at'
+  };
+  const sortBy = sortable[req.query.sort_by as string] || 'c.name';
+  const sortDir = (req.query.sort_dir as string) === 'desc' ? 'DESC' : 'ASC';
+
+  const where: string[] = ['1=1'];
+  const params: any[] = [];
+
+  if (search) {
+    // Igual que en /search: el teléfono también se compara por dígitos, para
+    // que "55 1234 5678" se encuentre tecleando "5512345678".
+    const digits = search.replace(/\D/g, '');
+    params.push(`%${search}%`, digits, `%${digits}%`);
+    where.push(`(
+      c.name ILIKE $${params.length - 2}
+      OR c.phone ILIKE $${params.length - 2}
+      OR c.email ILIKE $${params.length - 2}
+      OR ($${params.length - 1} <> '' AND regexp_replace(c.phone, '\\D', '', 'g') LIKE $${params.length})
+    )`);
+  }
+
+  if (withCredit) {
+    where.push('c.store_credit > 0');
+  }
+
+  const whereSql = where.join(' AND ');
+
+  const countResult = await pool.query(
+    `SELECT COUNT(*)::int AS total FROM clients c WHERE ${whereSql}`,
+    params
+  );
+  const total = countResult.rows[0]?.total || 0;
+
+  const listResult = await pool.query(
+    `SELECT c.id, c.name, c.phone, c.email, c.identification, c.notes,
+            c.store_credit, c.created_at
+     FROM clients c
+     WHERE ${whereSql}
+     ORDER BY ${sortBy} ${sortDir} NULLS LAST, c.id
+     LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+    [...params, limit, offset]
+  );
+
+  res.json({
+    success: true,
+    data: listResult.rows,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit)
+    }
+  });
+});
+
+// @desc    Resumen del cliente para el encabezado de su ficha
+// @route   GET /api/clients/:id/summary
+// @access  Private
+// @note    Un solo viaje en vez de cinco: la ficha pinta los contadores de
+//          inmediato y cada pestaña carga su detalle cuando se abre.
+export const getClientSummary = asyncHandler(async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    res.status(400);
+    throw new Error('ID de cliente inválido');
+  }
+
+  const clientResult = await pool.query(
+    'SELECT id, name, store_credit FROM clients WHERE id = $1',
+    [id]
+  );
+  if (clientResult.rows.length === 0) {
+    res.status(404);
+    throw new Error('Cliente no encontrado');
+  }
+
+  const summaryResult = await pool.query(
+    `SELECT
+       (SELECT COUNT(*)::int FROM sales WHERE client_id = $1)                        AS purchases_count,
+       (SELECT COALESCE(SUM(total_amount), 0) FROM sales WHERE client_id = $1)       AS purchases_total,
+       (SELECT MAX(sale_date) FROM sales WHERE client_id = $1)                       AS last_purchase_date,
+       (SELECT COUNT(*)::int FROM valuations WHERE client_id = $1)                   AS valuations_count,
+       (SELECT COALESCE(SUM(total_purchase_amount), 0) FROM valuations WHERE client_id = $1) AS valuations_total,
+       (SELECT COUNT(*)::int
+          FROM valuation_items vi
+          JOIN valuations v ON v.id = vi.valuation_id
+         WHERE v.client_id = $1 AND vi.modality = 'consignación')                    AS consignments_count,
+       (SELECT COUNT(*)::int
+          FROM valuation_items vi
+          JOIN valuations v ON v.id = vi.valuation_id
+         WHERE v.client_id = $1 AND vi.modality = 'consignación'
+           AND COALESCE(vi.consignment_paid, FALSE) = FALSE)                         AS consignments_unpaid`,
+    [id]
+  );
+
+  const row = summaryResult.rows[0] || {};
+
+  res.json({
+    success: true,
+    data: {
+      client_id: id,
+      store_credit: parseFloat(clientResult.rows[0].store_credit) || 0,
+      purchases_count: row.purchases_count || 0,
+      purchases_total: parseFloat(row.purchases_total) || 0,
+      last_purchase_date: row.last_purchase_date || null,
+      valuations_count: row.valuations_count || 0,
+      valuations_total: parseFloat(row.valuations_total) || 0,
+      consignments_count: row.consignments_count || 0,
+      consignments_unpaid: row.consignments_unpaid || 0
+    }
+  });
+});
+
 // @desc    Get client by ID
 // @route   GET /api/clients/:id
 // @access  Private
@@ -48,7 +177,7 @@ export const getClient = asyncHandler(async (req: Request, res: Response) => {
   }
   
   const query = `
-    SELECT id, name, phone, email, identification, store_credit, created_at
+    SELECT id, name, phone, email, identification, notes, store_credit, created_at
     FROM clients
     WHERE id = $1
   `;
@@ -70,7 +199,7 @@ export const getClient = asyncHandler(async (req: Request, res: Response) => {
 // @route   POST /api/clients
 // @access  Private
 export const createClient = asyncHandler(async (req: Request, res: Response) => {
-  const { name, phone, email, identification } = req.body;
+  const { name, phone, email, identification, notes } = req.body;
   
   if (!name || !String(name).trim()) {
     res.status(400);
@@ -88,7 +217,7 @@ export const createClient = asyncHandler(async (req: Request, res: Response) => 
   // Duplicado por dígitos (mismo criterio que la búsqueda). Se devuelve el
   // cliente existente para que el POS pueda ofrecer usarlo directamente.
   const duplicate = await pool.query(
-    `SELECT id, name, phone, email, identification, store_credit, created_at
+    `SELECT id, name, phone, email, identification, notes, store_credit, created_at
      FROM clients
      WHERE regexp_replace(phone, '\\D', '', 'g') = $1
      ORDER BY id
@@ -108,16 +237,17 @@ export const createClient = asyncHandler(async (req: Request, res: Response) => 
   }
   
   const insertQuery = `
-    INSERT INTO clients (name, phone, email, identification)
-    VALUES ($1, $2, $3, $4)
-    RETURNING id, name, phone, email, identification, store_credit, created_at
+    INSERT INTO clients (name, phone, email, identification, notes)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id, name, phone, email, identification, notes, store_credit, created_at
   `;
   
   const result = await pool.query(insertQuery, [
     String(name).trim(),
     phoneClean,
     email ? String(email).trim() || null : null,
-    identification ? String(identification).trim() || null : null
+    identification ? String(identification).trim() || null : null,
+    notes ? String(notes).trim() || null : null
   ]);
   
   res.status(201).json({
@@ -131,7 +261,7 @@ export const createClient = asyncHandler(async (req: Request, res: Response) => 
 // @access  Private
 export const updateClient = asyncHandler(async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const { name, phone, email, identification } = req.body;
+  const { name, phone, email, identification, notes } = req.body;
   
   if (isNaN(id)) {
     res.status(400);
@@ -168,9 +298,12 @@ export const updateClient = asyncHandler(async (req: Request, res: Response) => 
     SET name = COALESCE($1, name),
         phone = COALESCE($2, phone),
         email = COALESCE($3, email),
-        identification = COALESCE($4, identification)
-    WHERE id = $5
-    RETURNING id, name, phone, email, identification, store_credit, created_at
+        identification = COALESCE($4, identification),
+        -- notes se manda siempre desde la ficha: un string vacío debe poder
+        -- borrar la nota, por eso no lleva COALESCE.
+        notes = CASE WHEN $5::text IS NULL THEN notes ELSE NULLIF(TRIM($5::text), '') END
+    WHERE id = $6
+    RETURNING id, name, phone, email, identification, notes, store_credit, created_at
   `;
   
   const result = await pool.query(updateQuery, [
@@ -178,6 +311,7 @@ export const updateClient = asyncHandler(async (req: Request, res: Response) => 
     phone,
     email,
     identification,
+    notes !== undefined ? String(notes) : null,
     id
   ]);
 
