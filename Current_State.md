@@ -3690,3 +3690,28 @@ Pablo aprobó ambas en Slack: *"Funciona bien todo lo probado"* (Etapa 2) y *"ya
 **Pendientes que dejó Pablo:**
 - El arreglo de la subida de fotos **sigue sin probarse en la PC de la tienda**, que es donde fallaba. Confirmó que el reloj de esa máquina está bien, así que el desfase de hora no era la causa y la raíz sigue sin explicarse.
 - Sospecha que varios reportes sueltos (incluido el de los artículos que no cuadraban en inventario) venían de que **la sesión se le expiraba constantemente**. El JWT dura 24 h, así que eso no debería pasar; una hipótesis a revisar es que alguna llamada devuelva 401 de forma espuria y, como tanto el POS como la tienda limpian la sesión ante **cualquier** 401, se le caiga la sesión completa.
+
+### Etapa 4 — POS: Devoluciones de mercancía (implementada)
+
+**Migración 047** (`returns`, `return_items`). La venta original **nunca se modifica**: es histórico, y la devolución es un registro aparte que la referencia, para que el historial de ventas siga cuadrando.
+
+**Reglas implementadas** (las acordadas con Pablo):
+- Parcial por artículo; el ticket completo es solo el caso de seleccionar todo.
+- `garantia` (defecto) **propone** devolver efectivo y no reingresar; `sin_defecto` **propone** crédito de tienda y sí reingresar. Son valores por defecto, no restricciones: la cajera cambia ambos y el sistema no bloquea combinaciones.
+- Sin límite de tiempo desde la compra.
+- No se bloquea por cómo se pagó la venta original: se **muestra** como dato informativo.
+- **Sí** se bloquea devolver más de lo vendido o dos veces lo mismo: se valida contra lo ya devuelto, con `FOR UPDATE` sobre el renglón de venta para que dos devoluciones simultáneas del mismo ticket no puedan pasarse.
+- **Sí** se bloquea devolver en crédito una venta a cliente ocasional: no hay a quién abonarle el saldo. El mensaje sugiere la alternativa.
+
+**Backend:** `returns.model.ts`, `returns.service.ts`, `returns.controller.ts`, `returns.routes.ts`.
+- `GET /api/returns/sale/:saleId` — arma la pantalla: renglones con vendido / ya devuelto / devolvible, los pagos de la venta y las devoluciones previas.
+- `POST /api/returns` — todo en una transacción: inserta, regresa stock solo de lo marcado como reingresable, y si es crédito abona al cliente registrando el movimiento `sale_refund` en `client_credit_movements`.
+- `GET /api/returns`, `/:id`, `/stats`.
+
+**Frontend:** módulo `devoluciones` nuevo con pestañas Nueva devolución / Historial. El flujo es buscar ticket → elegir motivo (que reacomoda los valores propuestos) → marcar artículos y cantidades → confirmar, con pantalla de resultado que dice si hay que entregar efectivo o si se abonó el crédito.
+
+**Verificado contra el API local:** garantía en efectivo sin reingreso (stock no cambia); sin defecto en crédito con reingreso (stock 1→0→1 y crédito +$200 con su movimiento `sale_refund` auditado); rechazo al devolver dos veces el mismo artículo; rechazo de crédito a cliente ocasional; venta inexistente → 404; estadísticas y listado correctos.
+
+### Cambio al Esquema de Base de Datos
+- **returns** — devoluciones: venta, cliente, usuario, total, `return_type` (garantia/sin_defecto), `refund_method` (efectivo/credito_tienda), motivo y notas. Migración 047.
+- **return_items** — renglones devueltos: `sale_item_id`, `inventario_id`, cantidad, precios, `restocked` (si vuelve al inventario) y notas de condición. Migración 047.
