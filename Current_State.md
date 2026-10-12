@@ -3674,3 +3674,19 @@ Con esto queda resuelto lo que Pablo pedía: ajustar crédito (incluso a la baja
 
 ### Cambio al Esquema de Base de Datos
 - **clients.notes** TEXT — notas libres del personal sobre el cliente. Migración 046.
+
+### Promoción a producción de Etapas 2 y 3 (12 de octubre, 2026)
+
+Pablo aprobó ambas en Slack: *"Funciona bien todo lo probado"* (Etapa 2) y *"ya estuve viendo el apartado de clientes en el POS y funciona bien… podría comenzar a ocuparlo"* (Etapa 3).
+
+**Orden de despliegue: migración → API → frontends.** Distinto al de la Etapa 1, donde bastaba migración antes del merge. Aquí la Etapa 3 agrega **endpoints nuevos** (`GET /api/clients`, `/:id/summary`), así que si Vercel publicara primero, el POS llamaría a rutas que todavía no existen. La columna nueva es inofensiva para el código viejo, y los endpoints nuevos no estorban al frontend viejo, así que este orden no tiene ventana de inconsistencia.
+
+1. **Migración 046** aplicada en producción (`clients.notes`).
+2. **Heroku producción: v67** (`git subtree push`).
+3. **Merge `development` → `main`** (`25f4a71`) → Vercel.
+
+**Verificación en producción:** listado de clientes (28 con crédito), resumen de ficha, stats de inventario (1,999 artículos · $1,567,960 venta / $728,985 costo · 8 categorías) y tri-estado de disponibilidad cuadrando exacto (1,999 + 669 = 2,668).
+
+**Pendientes que dejó Pablo:**
+- El arreglo de la subida de fotos **sigue sin probarse en la PC de la tienda**, que es donde fallaba. Confirmó que el reloj de esa máquina está bien, así que el desfase de hora no era la causa y la raíz sigue sin explicarse.
+- Sospecha que varios reportes sueltos (incluido el de los artículos que no cuadraban en inventario) venían de que **la sesión se le expiraba constantemente**. El JWT dura 24 h, así que eso no debería pasar; una hipótesis a revisar es que alguna llamada devuelva 401 de forma espuria y, como tanto el POS como la tienda limpian la sesión ante **cualquier** 401, se le caiga la sesión completa.
