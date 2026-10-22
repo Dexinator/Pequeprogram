@@ -367,6 +367,7 @@ export class ReturnsService {
            COUNT(*)::int                                                              AS total_returns,
            COALESCE(SUM(total_amount), 0)                                             AS total_amount,
            COALESCE(SUM(total_amount) FILTER (WHERE refund_method = 'efectivo'), 0)   AS total_cash,
+           COALESCE(SUM(total_amount) FILTER (WHERE refund_method = 'tarjeta'), 0)    AS total_card,
            COALESCE(SUM(total_amount) FILTER (WHERE refund_method = 'credito_tienda'), 0) AS total_credit,
            COUNT(*) FILTER (WHERE return_type = 'garantia')::int                      AS garantias,
            COUNT(*) FILTER (WHERE return_date >= date_trunc('month', NOW()))::int     AS este_mes
@@ -377,6 +378,7 @@ export class ReturnsService {
         total_returns: r.total_returns,
         total_amount: parseFloat(r.total_amount),
         total_cash: parseFloat(r.total_cash),
+        total_card: parseFloat(r.total_card),
         total_credit: parseFloat(r.total_credit),
         garantias: r.garantias,
         este_mes: r.este_mes,

@@ -13,7 +13,13 @@ import { BaseModel } from './index';
  */
 
 export type ReturnType = 'garantia' | 'sin_defecto';
-export type RefundMethod = 'efectivo' | 'credito_tienda';
+/**
+ * `tarjeta` es la reversa en la terminal, que normalmente solo procede el
+ * mismo día de la venta. Pablo la pidió para que la conciliación diaria de
+ * movimientos cuadre: una devolución con tarjeta no debe contarse como
+ * salida de efectivo.
+ */
+export type RefundMethod = 'efectivo' | 'credito_tienda' | 'tarjeta';
 
 export interface Return extends BaseModel {
   sale_id: number;

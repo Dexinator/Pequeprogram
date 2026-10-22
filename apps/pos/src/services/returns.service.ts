@@ -1,7 +1,7 @@
 import { HttpService } from './http.service';
 
 export type ReturnType = 'garantia' | 'sin_defecto';
-export type RefundMethod = 'efectivo' | 'credito_tienda';
+export type RefundMethod = 'efectivo' | 'credito_tienda' | 'tarjeta';
 
 export interface ReturnableSaleItem {
   sale_item_id: number;
@@ -87,7 +87,7 @@ export class ReturnsService {
       const response = await this.http.get<any>('/returns/stats');
       return response.data;
     } catch {
-      return { total_returns: 0, total_amount: 0, total_cash: 0, total_credit: 0, garantias: 0, este_mes: 0 };
+      return { total_returns: 0, total_amount: 0, total_cash: 0, total_card: 0, total_credit: 0, garantias: 0, este_mes: 0 };
     }
   }
 }

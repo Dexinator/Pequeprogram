@@ -40,9 +40,9 @@ export const createReturn = asyncHandler(async (req: Request, res: Response) => 
     res.status(400);
     throw new Error("El tipo de devolución debe ser 'garantia' o 'sin_defecto'");
   }
-  if (!['efectivo', 'credito_tienda'].includes(refund_method)) {
+  if (!['efectivo', 'credito_tienda', 'tarjeta'].includes(refund_method)) {
     res.status(400);
-    throw new Error("El método de devolución debe ser 'efectivo' o 'credito_tienda'");
+    throw new Error("El método de devolución debe ser 'efectivo', 'tarjeta' o 'credito_tienda'");
   }
   if (!Array.isArray(items) || items.length === 0) {
     res.status(400);

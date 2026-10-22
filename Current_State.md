@@ -3715,3 +3715,16 @@ Pablo aprobó ambas en Slack: *"Funciona bien todo lo probado"* (Etapa 2) y *"ya
 ### Cambio al Esquema de Base de Datos
 - **returns** — devoluciones: venta, cliente, usuario, total, `return_type` (garantia/sin_defecto), `refund_method` (efectivo/credito_tienda), motivo y notas. Migración 047.
 - **return_items** — renglones devueltos: `sale_item_id`, `inventario_id`, cantidad, precios, `restocked` (si vuelve al inventario) y notas de condición. Migración 047.
+
+### Etapa 4 — ajuste pedido por Pablo: devolución con tarjeta
+
+Pablo aprobó el módulo (*"funciona bien el módulo de devoluciones"*) y pidió dos cosas, de las cuales **retiró una** al día siguiente:
+
+- ❌ **Retirada por él:** añadir cliente desde la pantalla de devolución. *"Viendo el ticket ya se ve desde antes si hay que darlo de alta, creo que eso en realidad no es tan necesario."* No se implementó.
+- ✅ **Implementada:** tercera opción **"Tarjeta (mismo día)"** en cómo se devuelve. Su motivo: que la conciliación diaria de movimientos cuadre, porque una devolución con tarjeta no debe contarse como salida de efectivo.
+
+Cambios: `RefundMethod` admite `tarjeta` (sin migración: `refund_method` es VARCHAR sin CHECK), validación del controller, y `getReturnsStats` separa `total_card` de `total_cash`. En el POS: la opción nueva, la etiqueta en el historial, el filtro y una quinta tarjeta de estadística.
+
+**Detalle de UX:** la reversa en terminal normalmente solo procede el mismo día, así que si la venta **no** es de hoy se muestra un aviso con la fecha real de la venta — pero **no se bloquea**, coherente con el resto del módulo, que propone en vez de imponer.
+
+**Verificado:** devolución con tarjeta registrada correctamente, método inválido rechazado con mensaje que lista los tres válidos, y las estadísticas separando los $150 en `total_card` sin tocar `total_cash`.

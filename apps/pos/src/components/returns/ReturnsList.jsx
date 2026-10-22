@@ -11,7 +11,7 @@ const fecha = (iso) =>
     : '—';
 
 const TIPO = { garantia: 'Garantía', sin_defecto: 'Sin defecto' };
-const METODO = { efectivo: 'Efectivo', credito_tienda: 'Crédito en tienda' };
+const METODO = { efectivo: 'Efectivo', tarjeta: 'Tarjeta', credito_tienda: 'Crédito en tienda' };
 
 export default function ReturnsList() {
   const [returns, setReturns] = useState([]);
@@ -77,7 +77,7 @@ export default function ReturnsList() {
     <div className="space-y-6">
       {/* Estadísticas */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">Devoluciones</h3>
             <div className="text-2xl font-bold text-gray-800">{stats.total_returns}</div>
@@ -90,6 +90,10 @@ export default function ReturnsList() {
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">En efectivo</h3>
             <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.total_cash)}</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">En tarjeta</h3>
+            <div className="text-2xl font-bold text-purple-600">{formatCurrency(stats.total_card)}</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">En crédito</h3>
@@ -123,6 +127,7 @@ export default function ReturnsList() {
             >
               <option value="">Todos</option>
               <option value="efectivo">Efectivo</option>
+              <option value="tarjeta">Tarjeta</option>
               <option value="credito_tienda">Crédito en tienda</option>
             </select>
           </div>

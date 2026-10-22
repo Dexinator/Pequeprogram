@@ -101,6 +101,10 @@ export default function NewReturn({ onDone }) {
   const setItemField = (id, field, value) =>
     setSelection((prev) => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
 
+  // Para avisar si la reversa con tarjeta aplica (suele ser solo el mismo día)
+  const esDeHoy =
+    sale && new Date(sale.sale_date).toDateString() === new Date().toDateString();
+
   const seleccionados = sale
     ? sale.items.filter((i) => selection[i.sale_item_id])
     : [];
@@ -161,7 +165,11 @@ export default function NewReturn({ onDone }) {
         </p>
         <div className="bg-gray-50 rounded-lg p-4 inline-block text-left">
           <p className="text-sm text-gray-600">
-            {done.refund_method === 'efectivo' ? 'Entregar en efectivo' : 'Abonado a su crédito de tienda'}
+            {done.refund_method === 'efectivo'
+              ? 'Entregar en efectivo'
+              : done.refund_method === 'tarjeta'
+              ? 'Reversar en la terminal'
+              : 'Abonado a su crédito de tienda'}
           </p>
           <p className="text-3xl font-bold text-green-700">{formatCurrency(done.total_amount)}</p>
         </div>
@@ -272,6 +280,7 @@ export default function NewReturn({ onDone }) {
                 className="w-full md:w-72 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
               >
                 <option value="efectivo">Efectivo</option>
+                <option value="tarjeta">Tarjeta (mismo día)</option>
                 <option value="credito_tienda" disabled={!sale.client_id}>
                   Crédito en tienda{!sale.client_id ? ' (requiere cliente registrado)' : ''}
                 </option>
@@ -279,6 +288,14 @@ export default function NewReturn({ onDone }) {
               {!sale.client_id && (
                 <p className="text-xs text-gray-500 mt-1">
                   Esta venta fue a cliente ocasional, así que no hay a quién abonarle crédito.
+                </p>
+              )}
+              {/* La reversa en terminal normalmente solo procede el mismo día.
+                  Se avisa, pero no se bloquea: el módulo propone, no impone. */}
+              {refundMethod === 'tarjeta' && !esDeHoy && (
+                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mt-2">
+                  Ojo: esta venta no es de hoy, es del {fecha(sale.sale_date)}. La reversa en la terminal
+                  normalmente solo procede el mismo día; confírmalo antes de registrarla así.
                 </p>
               )}
             </div>
@@ -380,7 +397,11 @@ export default function NewReturn({ onDone }) {
               <p className="text-sm text-gray-600">Total a devolver</p>
               <p className="text-3xl font-bold text-pink-600">{formatCurrency(totalDevolver)}</p>
               <p className="text-sm text-gray-500">
-                {refundMethod === 'efectivo' ? 'Se entrega en efectivo' : 'Se abona a su crédito de tienda'}
+                {refundMethod === 'efectivo'
+                  ? 'Se entrega en efectivo'
+                  : refundMethod === 'tarjeta'
+                  ? 'Se reversa en la terminal'
+                  : 'Se abona a su crédito de tienda'}
               </p>
             </div>
             <button
