@@ -1,5 +1,7 @@
 # Etapa 4 — POS: Devoluciones de mercancía
 
+> **Estado: implementada el 2026-10-12.** Migración `047-create-returns-tables.sql`.
+
 **Apps:** `apps/pos`, `packages/api`, posiblemente `apps/print-bridge`.
 **Dev:** ~3 días.
 **Por qué al final:** es el único item del documento que abre **módulo nuevo con tablas nuevas** y toca dinero, inventario y crédito de tienda a la vez. Conviene hacerlo con las otras etapas ya estables.

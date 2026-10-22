@@ -6,6 +6,7 @@ import ComprasModule from './modules/ComprasModule';
 import ConsignacionesModule from './modules/ConsignacionesModule';
 import OnlineSalesModule from './modules/OnlineSalesModule';
 import ClientesModule from './modules/ClientesModule';
+import DevolucionesModule from './modules/DevolucionesModule';
 import CalculatorModal from './common/CalculatorModal';
 
 export default function POSApp() {
@@ -32,6 +33,8 @@ export default function POSApp() {
         return <ConsignacionesModule />;
       case 'clientes':
         return <ClientesModule />;
+      case 'devoluciones':
+        return <DevolucionesModule />;
       case 'ventas-online':
         return <OnlineSalesModule />;
       default:
@@ -58,6 +61,11 @@ export default function POSApp() {
     consignaciones: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+      </svg>
+    ),
+    devoluciones: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
       </svg>
     ),
     clientes: (
@@ -90,7 +98,8 @@ export default function POSApp() {
                   inventario: 'Inventario',
                   compras: 'Compras',
                   consignaciones: 'Consignaciones',
-                  clientes: 'Clientes'
+                  clientes: 'Clientes',
+                  devoluciones: 'Devoluciones'
                 }).map(([key, label]) => (
                   <button
                     key={key}
@@ -141,7 +150,8 @@ export default function POSApp() {
               inventario: 'Inventario',
               compras: 'Compras',
               consignaciones: 'Consig.',
-              clientes: 'Clientes'
+              clientes: 'Clientes',
+              devoluciones: 'Devol.'
             }).map(([key, label]) => (
               <button
                 key={key}

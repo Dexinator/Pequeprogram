@@ -3674,3 +3674,57 @@ Con esto queda resuelto lo que Pablo pedía: ajustar crédito (incluso a la baja
 
 ### Cambio al Esquema de Base de Datos
 - **clients.notes** TEXT — notas libres del personal sobre el cliente. Migración 046.
+
+### Promoción a producción de Etapas 2 y 3 (12 de octubre, 2026)
+
+Pablo aprobó ambas en Slack: *"Funciona bien todo lo probado"* (Etapa 2) y *"ya estuve viendo el apartado de clientes en el POS y funciona bien… podría comenzar a ocuparlo"* (Etapa 3).
+
+**Orden de despliegue: migración → API → frontends.** Distinto al de la Etapa 1, donde bastaba migración antes del merge. Aquí la Etapa 3 agrega **endpoints nuevos** (`GET /api/clients`, `/:id/summary`), así que si Vercel publicara primero, el POS llamaría a rutas que todavía no existen. La columna nueva es inofensiva para el código viejo, y los endpoints nuevos no estorban al frontend viejo, así que este orden no tiene ventana de inconsistencia.
+
+1. **Migración 046** aplicada en producción (`clients.notes`).
+2. **Heroku producción: v67** (`git subtree push`).
+3. **Merge `development` → `main`** (`25f4a71`) → Vercel.
+
+**Verificación en producción:** listado de clientes (28 con crédito), resumen de ficha, stats de inventario (1,999 artículos · $1,567,960 venta / $728,985 costo · 8 categorías) y tri-estado de disponibilidad cuadrando exacto (1,999 + 669 = 2,668).
+
+**Pendientes que dejó Pablo:**
+- El arreglo de la subida de fotos **sigue sin probarse en la PC de la tienda**, que es donde fallaba. Confirmó que el reloj de esa máquina está bien, así que el desfase de hora no era la causa y la raíz sigue sin explicarse.
+- Sospecha que varios reportes sueltos (incluido el de los artículos que no cuadraban en inventario) venían de que **la sesión se le expiraba constantemente**. El JWT dura 24 h, así que eso no debería pasar; una hipótesis a revisar es que alguna llamada devuelva 401 de forma espuria y, como tanto el POS como la tienda limpian la sesión ante **cualquier** 401, se le caiga la sesión completa.
+
+### Etapa 4 — POS: Devoluciones de mercancía (implementada)
+
+**Migración 047** (`returns`, `return_items`). La venta original **nunca se modifica**: es histórico, y la devolución es un registro aparte que la referencia, para que el historial de ventas siga cuadrando.
+
+**Reglas implementadas** (las acordadas con Pablo):
+- Parcial por artículo; el ticket completo es solo el caso de seleccionar todo.
+- `garantia` (defecto) **propone** devolver efectivo y no reingresar; `sin_defecto` **propone** crédito de tienda y sí reingresar. Son valores por defecto, no restricciones: la cajera cambia ambos y el sistema no bloquea combinaciones.
+- Sin límite de tiempo desde la compra.
+- No se bloquea por cómo se pagó la venta original: se **muestra** como dato informativo.
+- **Sí** se bloquea devolver más de lo vendido o dos veces lo mismo: se valida contra lo ya devuelto, con `FOR UPDATE` sobre el renglón de venta para que dos devoluciones simultáneas del mismo ticket no puedan pasarse.
+- **Sí** se bloquea devolver en crédito una venta a cliente ocasional: no hay a quién abonarle el saldo. El mensaje sugiere la alternativa.
+
+**Backend:** `returns.model.ts`, `returns.service.ts`, `returns.controller.ts`, `returns.routes.ts`.
+- `GET /api/returns/sale/:saleId` — arma la pantalla: renglones con vendido / ya devuelto / devolvible, los pagos de la venta y las devoluciones previas.
+- `POST /api/returns` — todo en una transacción: inserta, regresa stock solo de lo marcado como reingresable, y si es crédito abona al cliente registrando el movimiento `sale_refund` en `client_credit_movements`.
+- `GET /api/returns`, `/:id`, `/stats`.
+
+**Frontend:** módulo `devoluciones` nuevo con pestañas Nueva devolución / Historial. El flujo es buscar ticket → elegir motivo (que reacomoda los valores propuestos) → marcar artículos y cantidades → confirmar, con pantalla de resultado que dice si hay que entregar efectivo o si se abonó el crédito.
+
+**Verificado contra el API local:** garantía en efectivo sin reingreso (stock no cambia); sin defecto en crédito con reingreso (stock 1→0→1 y crédito +$200 con su movimiento `sale_refund` auditado); rechazo al devolver dos veces el mismo artículo; rechazo de crédito a cliente ocasional; venta inexistente → 404; estadísticas y listado correctos.
+
+### Cambio al Esquema de Base de Datos
+- **returns** — devoluciones: venta, cliente, usuario, total, `return_type` (garantia/sin_defecto), `refund_method` (efectivo/credito_tienda), motivo y notas. Migración 047.
+- **return_items** — renglones devueltos: `sale_item_id`, `inventario_id`, cantidad, precios, `restocked` (si vuelve al inventario) y notas de condición. Migración 047.
+
+### Etapa 4 — ajuste pedido por Pablo: devolución con tarjeta
+
+Pablo aprobó el módulo (*"funciona bien el módulo de devoluciones"*) y pidió dos cosas, de las cuales **retiró una** al día siguiente:
+
+- ❌ **Retirada por él:** añadir cliente desde la pantalla de devolución. *"Viendo el ticket ya se ve desde antes si hay que darlo de alta, creo que eso en realidad no es tan necesario."* No se implementó.
+- ✅ **Implementada:** tercera opción **"Tarjeta (mismo día)"** en cómo se devuelve. Su motivo: que la conciliación diaria de movimientos cuadre, porque una devolución con tarjeta no debe contarse como salida de efectivo.
+
+Cambios: `RefundMethod` admite `tarjeta` (sin migración: `refund_method` es VARCHAR sin CHECK), validación del controller, y `getReturnsStats` separa `total_card` de `total_cash`. En el POS: la opción nueva, la etiqueta en el historial, el filtro y una quinta tarjeta de estadística.
+
+**Detalle de UX:** la reversa en terminal normalmente solo procede el mismo día, así que si la venta **no** es de hoy se muestra un aviso con la fecha real de la venta — pero **no se bloquea**, coherente con el resto del módulo, que propone en vez de imponer.
+
+**Verificado:** devolución con tarjeta registrada correctamente, método inválido rechazado con mensaje que lista los tres válidos, y las estadísticas separando los $150 en `total_card` sin tocar `total_cash`.
