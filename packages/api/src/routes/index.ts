@@ -9,6 +9,7 @@ import roleRoutes from './role.routes';
 import salesRoutes from './sales.routes';
 import inventoryRoutes from './inventory.routes';
 import returnsRoutes from './returns.routes';
+import layawayRoutes from './layaway.routes';
 import consignmentRoutes from './consignment.routes';
 import clientRoutes from './client.routes';
 import otherprodsRoutes from './otherprods.routes';
@@ -47,6 +48,7 @@ router.use('/sales', salesRoutes);
 // Rutas de inventario
 router.use('/inventory', inventoryRoutes);
 router.use('/returns', returnsRoutes);
+router.use('/layaways', layawayRoutes);
 
 // Rutas de consignaciones
 router.use('/consignments', consignmentRoutes);
