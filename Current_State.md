@@ -3728,3 +3728,15 @@ Cambios: `RefundMethod` admite `tarjeta` (sin migración: `refund_method` es VAR
 **Detalle de UX:** la reversa en terminal normalmente solo procede el mismo día, así que si la venta **no** es de hoy se muestra un aviso con la fecha real de la venta — pero **no se bloquea**, coherente con el resto del módulo, que propone en vez de imponer.
 
 **Verificado:** devolución con tarjeta registrada correctamente, método inválido rechazado con mensaje que lista los tres válidos, y las estadísticas separando los $150 en `total_card` sin tocar `total_cash`.
+
+### Errores de negocio devolvían 500 (encontrado al probar el refactor de ventas)
+
+**Síntoma:** al intentar una venta sin stock, el POS mostraba *"Error interno del servidor"* en vez de *"Stock insuficiente para el producto X"*. La cajera no sabía qué corregir.
+
+**Causa:** `createSale` lanzaba `Error` plano para sus nueve validaciones (stock, cliente inexistente, pagos que no cuadran, crédito insuficiente…) sin fijar un código, así que el middleware las trataba como falla del servidor. El cliente HTTP del POS lee `message` primero, y ese `message` era el genérico.
+
+**Solución:** nueva clase `BusinessError` (`packages/api/src/utils/errors.ts`) que lleva su propio `status`. El middleware ahora respeta tanto `err.status` como el `res.status(4xx)` que puedan fijar los controllers; lo demás sigue siendo 500 de verdad.
+
+Aplicada a las 9 validaciones de `createSale` y a las 6 de `returns.service`. De paso se quitó el `try/catch` de `returns.controller` que convertía **todo** en 400 — el error espejo: una caída real de base de datos se reportaba como error del usuario.
+
+**Verificado:** stock insuficiente, producto inexistente, pagos que no cuadran y falta de método de pago devuelven 400 con su mensaje real; el 404 de devoluciones se conserva; y una venta válida sigue creándose con 201.

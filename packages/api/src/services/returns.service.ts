@@ -6,6 +6,7 @@ import {
   ReturnableSale,
 } from '../models/returns.model';
 import { pool } from '../db';
+import { BusinessError } from '../utils/errors';
 
 export class ReturnsService {
   /**
@@ -101,7 +102,7 @@ export class ReturnsService {
    */
   async createReturn(userId: number, data: CreateReturnDto): Promise<Return> {
     if (!data.items || data.items.length === 0) {
-      throw new Error('Debe indicar al menos un artículo a devolver');
+      throw new BusinessError('Debe indicar al menos un artículo a devolver');
     }
 
     const dbClient = await pool.connect();
@@ -113,7 +114,7 @@ export class ReturnsService {
         [data.sale_id]
       );
       if (saleResult.rows.length === 0) {
-        throw new Error('La venta indicada no existe');
+        throw new BusinessError('La venta indicada no existe');
       }
       const sale = saleResult.rows[0];
 
@@ -143,18 +144,18 @@ export class ReturnsService {
         );
 
         if (rowResult.rows.length === 0) {
-          throw new Error(`El artículo ${item.sale_item_id} no pertenece a esta venta`);
+          throw new BusinessError(`El artículo ${item.sale_item_id} no pertenece a esta venta`);
         }
 
         const row = rowResult.rows[0];
         const cantidad = parseInt(String(item.quantity_returned));
         if (!Number.isInteger(cantidad) || cantidad <= 0) {
-          throw new Error('La cantidad a devolver debe ser mayor a cero');
+          throw new BusinessError('La cantidad a devolver debe ser mayor a cero');
         }
 
         const disponible = parseInt(row.quantity_sold) - row.ya_devuelto;
         if (cantidad > disponible) {
-          throw new Error(
+          throw new BusinessError(
             `No se puede devolver ${cantidad} de ${row.inventario_id}: se vendieron ${row.quantity_sold} y ya se devolvieron ${row.ya_devuelto}`
           );
         }
@@ -180,7 +181,7 @@ export class ReturnsService {
       // Devolver en crédito exige cliente registrado: si no, no hay a quién
       // abonarle el saldo.
       if (data.refund_method === 'credito_tienda' && !sale.client_id) {
-        throw new Error(
+        throw new BusinessError(
           'Esta venta fue a cliente ocasional: no hay a quién abonarle el crédito. Devuelve en efectivo o registra al cliente.'
         );
       }
