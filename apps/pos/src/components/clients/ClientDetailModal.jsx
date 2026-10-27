@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { clientService } from '../../services/client.service';
 import { SalesService } from '../../services/sales.service';
 import { consignmentService } from '../../services/consignment.service';
+import { layawayService } from '../../services/layaway.service';
 import AdjustStoreCreditModal from '../modules/AdjustStoreCreditModal';
 import ClientFormModal from './ClientFormModal';
 import { useAuth } from '../../context/AuthContext';
@@ -93,6 +94,9 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
         } else if (tab === 'consignaciones') {
           const res = await consignmentService.getConsignments({ client_id: client.id, limit: 50 });
           rows = res?.consignments || res?.data || [];
+        } else if (tab === 'apartados') {
+          const res = await layawayService.getLayaways({ client_id: client.id, limit: 50 });
+          rows = res.layaways || [];
         }
         if (!cancelled) setData((prev) => ({ ...prev, [tab]: rows }));
       } catch {
@@ -102,7 +106,7 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
       }
     };
 
-    if (tab !== 'apartados') load();
+    load();
     return () => { cancelled = true; };
   }, [tab, client.id, data]);
 
@@ -198,11 +202,7 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
             </button>
           )}
 
-          {tab === 'apartados' ? (
-            <p className="text-center text-gray-500 py-6">
-              Los apartados se habilitan en una etapa próxima.
-            </p>
-          ) : loadingTab ? (
+          {loadingTab ? (
             <p className="text-center text-gray-500 py-6">Cargando…</p>
           ) : rows.length === 0 ? (
             <p className="text-center text-gray-500 py-6">Sin movimientos en esta sección.</p>
@@ -243,6 +243,16 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
                       <th className="px-3 py-2 text-right">Precio</th>
                     </tr>
                   )}
+                  {tab === 'apartados' && (
+                    <tr>
+                      <th className="px-3 py-2 text-left">Apartado</th>
+                      <th className="px-3 py-2 text-left">Vence</th>
+                      <th className="px-3 py-2 text-right">Total</th>
+                      <th className="px-3 py-2 text-right">Abonado</th>
+                      <th className="px-3 py-2 text-right">Le falta</th>
+                      <th className="px-3 py-2 text-left">Estado</th>
+                    </tr>
+                  )}
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {rows.map((r, i) => (
@@ -280,6 +290,21 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
                           <td className="px-3 py-2">{r.subcategory_name || r.description || '—'}</td>
                           <td className="px-3 py-2">{r.consignment_status || r.status || '—'}</td>
                           <td className="px-3 py-2 text-right">{money(r.consignment_price ?? r.final_sale_price)}</td>
+                        </>
+                      )}
+                      {tab === 'apartados' && (
+                        <>
+                          <td className="px-3 py-2 font-medium">#{r.id}</td>
+                          <td className={`px-3 py-2 ${r.is_overdue ? 'text-red-700 font-medium' : ''}`}>
+                            {fecha(r.due_date)}
+                            {r.is_overdue && <span className="block text-xs">vencido</span>}
+                          </td>
+                          <td className="px-3 py-2 text-right">{money(r.total_amount)}</td>
+                          <td className="px-3 py-2 text-right text-green-700">{money(r.paid_amount)}</td>
+                          <td className="px-3 py-2 text-right font-medium text-pink-600">{money(r.balance_due)}</td>
+                          <td className="px-3 py-2">
+                            {r.status === 'active' ? 'Activo' : r.status === 'completed' ? 'Liquidado' : 'Cancelado'}
+                          </td>
                         </>
                       )}
                     </tr>

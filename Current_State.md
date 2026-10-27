@@ -3740,3 +3740,24 @@ Cambios: `RefundMethod` admite `tarjeta` (sin migración: `refund_method` es VAR
 Aplicada a las 9 validaciones de `createSale` y a las 6 de `returns.service`. De paso se quitó el `try/catch` de `returns.controller` que convertía **todo** en 400 — el error espejo: una caída real de base de datos se reportaba como error del usuario.
 
 **Verificado:** stock insuficiente, producto inexistente, pagos que no cuadran y falta de método de pago devuelven 400 con su mensaje real; el 404 de devoluciones se conserva; y una venta válida sigue creándose con 201.
+
+## Sesión: 27 de Octubre, 2026
+
+### Etapa 5 — POS: Apartados (implementada; cierra el roadmap de septiembre)
+
+**Regla del anticipo, contestada por Pablo:** 25% del total con mínimo $100, pero **como sugerencia, no como requisito** — pidió explícitamente conservar la flexibilidad de aceptar menos. En `layaway.service.ts` (POS) viven `DEPOSITO_PORCENTAJE`, `DEPOSITO_MINIMO` y `depositoSugerido()`, que además acota la sugerencia al total (en artículos baratos el mínimo de $100 se pasaría del precio). La pantalla muestra el sugerido con botón "Usar sugerido" y, si se captura menos, avisa sin bloquear. Plazo: libre, con 30 días por defecto y editable.
+
+**Backend** (`migración 048`, `layaway.model.ts`, `layaway.service.ts`, controller y rutas):
+- `POST /api/layaways` — valida stock con `FOR UPDATE` (dos cajeras no pueden apartar lo mismo), **descuenta el stock**, registra el anticipo y, si se pagó con crédito, lo descuenta del saldo con su movimiento auditado.
+- `POST /:id/payments` — abona; si cubre el total, **liquida solo**: llama a `insertSaleRecord` con `updateStock:false` para crear la venta real sin volver a descontar.
+- `POST /:id/cancel` — regresa el stock y aplica lo que decida la cajera con lo abonado (efectivo / crédito / se queda la tienda). Restringido a gerencia porque mueve dinero.
+- `GET /api/layaways`, `/:id`, `/stats`.
+
+**Frontend:** módulo `apartados` con pestañas Nuevo / Listado. El alta reusa `SearchProducts` y `ClientSelection` de ventas. El listado marca los vencidos en rojo y filtra por estado, vencidos y cliente. La ficha del apartado permite abonar, liquidar de un golpe y cancelar. Además se **conectó la pestaña "Apartados" de la ficha del cliente**, que hasta ahora decía "próximamente".
+
+**Verificado contra el API local:** apartar baja el stock y el artículo desaparece de disponibles; **intentar venderlo se rechaza por stock insuficiente** (el punto de todo el diseño); abonar de más se rechaza con el faltante exacto; liquidar crea la venta y el stock **no** se vuelve a descontar; cancelar con crédito regresa el stock y sube el saldo con su movimiento; y un anticipo por debajo del sugerido se permite.
+
+### Cambio al Esquema de Base de Datos
+- **layaways** — apartados: cliente (obligatorio), totales, `paid_amount` desnormalizado, estado, fecha límite, `sale_id` al liquidar y `cancel_refund_method`. Migración 048.
+- **layaway_items** — artículos apartados. Migración 048.
+- **layaway_payments** — abonos con su método y quién lo registró. Migración 048.
