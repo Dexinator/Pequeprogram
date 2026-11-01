@@ -12,6 +12,20 @@ const fecha = (iso) =>
       })
     : '—';
 
+/**
+ * `due_date` es un DATE sin hora: llega a medianoche UTC y leerlo en horario
+ * de México lo corre un día hacia atrás. Estas fechas se leen en UTC.
+ */
+const fechaDia = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString('es-MX', {
+        timeZone: 'UTC',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    : '—';
+
 const ESTADO = {
   active: { label: 'Activo', clase: 'bg-blue-100 text-blue-800' },
   completed: { label: 'Liquidado', clase: 'bg-green-100 text-green-800' },
@@ -171,7 +185,7 @@ export default function LayawaysList() {
                         )}
                       </td>
                       <td className={`px-6 py-3 ${l.is_overdue ? 'text-red-700 font-medium' : ''}`}>
-                        {fecha(l.due_date)}
+                        {fechaDia(l.due_date)}
                         {l.is_overdue && <span className="block text-xs">vencido</span>}
                       </td>
                       <td className="px-6 py-3 text-right">{formatCurrency(l.total_amount)}</td>

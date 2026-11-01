@@ -6,6 +6,10 @@ import {
   TicketItem,
   TicketPayment,
 } from '../models/ticket.model';
+import {
+  LayawayReceiptPayloadV1,
+  LayawayReceiptPayment,
+} from '../models/layaway-receipt.model';
 import { buildProductDescription, OfferFeatureDef } from '../utils/product-description';
 
 const PAYMENT_LABELS: Record<string, string> = {
@@ -198,6 +202,145 @@ export class TicketService {
       offerFeatureDefs: offerFeatureKeysBySubcategory.get(row.subcategory_id) || [],
       otrProductName: row.otr_product_name,
     });
+  }
+
+  /**
+   * Comprobante del apartado para el cliente.
+   *
+   * Mismos bloques que el ticket de venta (negocio, artículos con su
+   * descripción completa) más lo propio del apartado: lo que dejó, lo que le
+   * falta, hasta cuándo, y el historial de abonos.
+   */
+  async buildLayawayReceiptPayload(layawayId: number): Promise<LayawayReceiptPayloadV1 | null> {
+    const dbClient = await pool.connect();
+    try {
+      const headerResult = await dbClient.query(
+        `SELECT l.id, l.created_at, l.due_date, l.status, l.location,
+                l.total_amount, l.paid_amount,
+                u.first_name AS cashier_first_name,
+                u.last_name  AS cashier_last_name,
+                c.id         AS client_id,
+                c.name       AS client_name,
+                c.phone      AS client_phone
+           FROM layaways l
+           LEFT JOIN users   u ON u.id = l.user_id
+           LEFT JOIN clients c ON c.id = l.client_id
+          WHERE l.id = $1`,
+        [layawayId]
+      );
+      const row = headerResult.rows[0];
+      if (!row) return null;
+
+      const items = await this.fetchLayawayItems(dbClient, layawayId);
+      const payments = await this.fetchLayawayPayments(dbClient, layawayId);
+
+      const total = parseFloat(row.total_amount) || 0;
+      const paid = parseFloat(row.paid_amount) || 0;
+
+      return {
+        version: 1,
+        business: {
+          name: config.business.name,
+          address: config.business.address,
+          phone: config.business.phone,
+          rfc: config.business.rfc,
+          website: config.business.website,
+          logo_url: config.business.logoUrl,
+          footer_lines: config.business.footerLines,
+        },
+        layaway: {
+          id: row.id,
+          date: new Date(row.created_at).toISOString(),
+          due_date: row.due_date ? new Date(row.due_date).toISOString() : null,
+          status: row.status,
+          is_overdue:
+            row.status === 'active' && row.due_date
+              ? new Date(row.due_date) < new Date(new Date().toDateString())
+              : false,
+          location: row.location,
+          cashier: this.formatCashier(row.cashier_first_name, row.cashier_last_name),
+        },
+        client: row.client_id
+          ? { id: row.client_id, name: row.client_name, phone: row.client_phone || null }
+          : null,
+        items,
+        totals: {
+          items_count: items.reduce((sum, it) => sum + it.quantity, 0),
+          total,
+          paid,
+          balance_due: Math.round((total - paid) * 100) / 100,
+        },
+        payments,
+      };
+    } finally {
+      dbClient.release();
+    }
+  }
+
+  private async fetchLayawayItems(dbClient: PoolClient, layawayId: number): Promise<TicketItem[]> {
+    const query = `
+      SELECT
+        li.inventario_id          AS sku,
+        li.quantity,
+        li.unit_price,
+        li.total_price,
+        sub.id                    AS subcategory_id,
+        sub.name                  AS subcategory_name,
+        cat.name                  AS category_name,
+        b.name                    AS brand_name,
+        vi.features               AS features,
+        oi.product_name           AS otr_product_name
+      FROM layaway_items li
+      LEFT JOIN inventario       i   ON li.inventario_id = i.id
+      LEFT JOIN valuation_items  vi  ON i.valuation_item_id = vi.id
+      LEFT JOIN subcategories    sub ON vi.subcategory_id = sub.id
+      LEFT JOIN categories       cat ON vi.category_id    = cat.id
+      LEFT JOIN brands           b   ON vi.brand_id       = b.id
+      LEFT JOIN otherprods_items oi  ON i.id = oi.sku
+      WHERE li.layaway_id = $1
+      ORDER BY li.id ASC
+    `;
+    const result = await dbClient.query(query, [layawayId]);
+
+    const subcategoryIds = Array.from(
+      new Set(
+        result.rows
+          .map(r => r.subcategory_id)
+          .filter((id): id is number => typeof id === 'number')
+      )
+    );
+    const offerFeatureKeysBySubcategory = await this.fetchOfferFeatureKeys(
+      dbClient,
+      subcategoryIds
+    );
+
+    return result.rows.map(row => ({
+      sku: row.sku,
+      description: this.buildItemDescription(row, offerFeatureKeysBySubcategory),
+      quantity: parseInt(row.quantity, 10),
+      unit_price: parseFloat(row.unit_price),
+      total: parseFloat(row.total_price),
+    }));
+  }
+
+  private async fetchLayawayPayments(
+    dbClient: PoolClient,
+    layawayId: number
+  ): Promise<LayawayReceiptPayment[]> {
+    const result = await dbClient.query(
+      `SELECT payment_method, amount, notes, created_at
+         FROM layaway_payments
+        WHERE layaway_id = $1
+        ORDER BY id ASC`,
+      [layawayId]
+    );
+    return result.rows.map(row => ({
+      date: new Date(row.created_at).toISOString(),
+      method: row.payment_method,
+      label: PAYMENT_LABELS[row.payment_method] || row.payment_method,
+      amount: parseFloat(row.amount),
+      notes: row.notes || null,
+    }));
   }
 
   private async fetchPayments(dbClient: PoolClient, saleId: number): Promise<TicketPayment[]> {

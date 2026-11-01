@@ -315,19 +315,50 @@ export class LayawayService {
       }
 
       const pagado = parseFloat(layaway.paid_amount) || 0;
-      if (pagado > 0 && data.refund_method === 'credito_tienda') {
-        await this.moverCredito(dbClient, layaway.client_id, userId, pagado,
+
+      // Cuánto se le devuelve. Por omisión todo lo abonado; 'forfeited'
+      // siempre es 0. La diferencia se la queda la tienda y se anota, para que
+      // el corte cuadre y quede claro qué se le cobró al cliente.
+      let devolver =
+        data.refund_amount === undefined || data.refund_amount === null
+          ? pagado
+          : round2(Number(data.refund_amount));
+
+      if (data.refund_method === 'forfeited') {
+        devolver = 0;
+      } else {
+        if (isNaN(devolver) || devolver < 0) {
+          throw new BusinessError('El monto a devolver no puede ser negativo');
+        }
+        if (devolver > pagado) {
+          throw new BusinessError(
+            `No se puede devolver más de lo abonado. Abonado: $${pagado.toFixed(2)}, a devolver: $${devolver.toFixed(2)}`
+          );
+        }
+      }
+
+      const retenido = round2(pagado - devolver);
+
+      if (devolver > 0 && data.refund_method === 'credito_tienda') {
+        await this.moverCredito(dbClient, layaway.client_id, userId, devolver,
           `Cancelación del apartado #${layawayId}`, data.reason);
       }
       // 'efectivo' queda registrado en el apartado; 'forfeited' no mueve nada
+
+      const nota =
+        `Cancelado: ${data.reason || 'sin motivo indicado'}` +
+        (retenido > 0 && pagado > 0
+          ? ` · La tienda retuvo $${retenido.toFixed(2)} de los $${pagado.toFixed(2)} abonados`
+          : '');
 
       await dbClient.query(
         `UPDATE layaways
             SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW(),
                 cancel_refund_method = $1,
-                notes = COALESCE(notes || E'\\n', '') || $2
-          WHERE id = $3`,
-        [data.refund_method, `Cancelado: ${data.reason || 'sin motivo indicado'}`, layawayId]
+                cancel_refund_amount = $2,
+                notes = COALESCE(notes || E'\\n', '') || $3
+          WHERE id = $4`,
+        [data.refund_method, devolver, nota, layawayId]
       );
 
       await dbClient.query('COMMIT');
@@ -379,6 +410,10 @@ export class LayawayService {
       total_amount: total,
       paid_amount: paid,
       balance_due: round2(total - paid),
+      cancel_refund_amount:
+        row.cancel_refund_amount === null || row.cancel_refund_amount === undefined
+          ? null
+          : parseFloat(row.cancel_refund_amount),
       is_overdue:
         row.status === 'active' && row.due_date
           ? new Date(row.due_date) < new Date(new Date().toDateString())
@@ -453,12 +488,21 @@ export class LayawayService {
       if (result.rows.length === 0) return null;
 
       const itemsResult = await dbClient.query(
+        // La descripción lleva marca porque este dato llega al recibo que se
+        // entrega al cliente: "Carriola Graco" identifica el artículo,
+        // "Carriola" no.
         `SELECT li.*,
-                COALESCE(sc.name, oi.product_name, li.inventario_id) AS description
+                COALESCE(
+                  NULLIF(TRIM(CONCAT_WS(' ', sc.name, b.name)), ''),
+                  oi.product_name,
+                  li.inventario_id
+                ) AS description,
+                i.quantity AS stock_restante
            FROM layaway_items li
            LEFT JOIN inventario i        ON i.id = li.inventario_id
            LEFT JOIN valuation_items vi  ON vi.id = i.valuation_item_id
            LEFT JOIN subcategories sc    ON sc.id = vi.subcategory_id
+           LEFT JOIN brands b            ON b.id = vi.brand_id
            LEFT JOIN otherprods_items oi ON oi.sku = li.inventario_id
           WHERE li.layaway_id = $1
           ORDER BY li.id`,

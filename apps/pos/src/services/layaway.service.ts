@@ -42,6 +42,7 @@ export interface Layaway {
   completed_at?: string | null;
   cancelled_at?: string | null;
   cancel_refund_method?: CancelRefundMethod | null;
+  cancel_refund_amount?: number | null;
 }
 
 export class LayawayService {
@@ -70,7 +71,10 @@ export class LayawayService {
     return response.data;
   }
 
-  async cancelLayaway(id: number, data: { refund_method: CancelRefundMethod; reason?: string }): Promise<Layaway> {
+  async cancelLayaway(
+    id: number,
+    data: { refund_method: CancelRefundMethod; refund_amount?: number; reason?: string }
+  ): Promise<Layaway> {
     this.refreshToken();
     const response = await this.http.post<any>(`/layaways/${id}/cancel`, data);
     return response.data;
@@ -89,6 +93,13 @@ export class LayawayService {
   async getLayawayById(id: number): Promise<Layaway> {
     this.refreshToken();
     const response = await this.http.get<any>(`/layaways/${id}`);
+    return response.data;
+  }
+
+  /** Comprobante para entregar al cliente o mandárselo por WhatsApp. */
+  async getReceiptPayload(id: number): Promise<any> {
+    this.refreshToken();
+    const response = await this.http.get<any>(`/layaways/${id}/receipt-payload`);
     return response.data;
   }
 

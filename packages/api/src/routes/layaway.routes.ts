@@ -6,7 +6,8 @@ import {
   cancelLayaway,
   getLayaways,
   getLayaway,
-  getLayawayStats
+  getLayawayStats,
+  getLayawayReceiptPayload
 } from '../controllers/layaway.controller';
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router
   .post(authorize(staffRoles), createLayaway);
 
 router.route('/:id').get(authorize(staffRoles), getLayaway);
+router.route('/:id/receipt-payload').get(authorize(staffRoles), getLayawayReceiptPayload);
 router.route('/:id/payments').post(authorize(staffRoles), addPayment);
 // Cancelar devuelve dinero o crédito: se restringe a gerencia
 router.route('/:id/cancel').post(authorize(['superadmin', 'admin', 'manager', 'gerente']), cancelLayaway);

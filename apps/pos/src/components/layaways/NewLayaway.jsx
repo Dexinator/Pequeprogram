@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SearchProducts from '../sales/SearchProducts';
 import ClientSelection from '../sales/ClientSelection';
+import LayawayReceiptModal from './LayawayReceiptModal';
 import {
   layawayService,
   formatCurrency,
@@ -33,6 +34,7 @@ export default function NewLayaway({ onDone }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(null);
+  const [mostrarRecibo, setMostrarRecibo] = useState(false);
 
   const total = cart.reduce((sum, i) => sum + i.unit_price * i.quantity_sold, 0);
   const sugerido = depositoSugerido(total);
@@ -74,6 +76,7 @@ export default function NewLayaway({ onDone }) {
     setDueDate(hoyMas(30));
     setNotes('');
     setDone(null);
+    setMostrarRecibo(false);
     setError('');
   };
 
@@ -107,8 +110,14 @@ export default function NewLayaway({ onDone }) {
           Los artículos ya salieron del inventario disponible.
         </p>
 
-        <div className="flex justify-center space-x-3 pt-2">
-          <button onClick={reiniciar} className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600">
+        <div className="flex justify-center flex-wrap gap-3 pt-2">
+          <button
+            onClick={() => setMostrarRecibo(true)}
+            className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 font-medium"
+          >
+            Imprimir comprobante
+          </button>
+          <button onClick={reiniciar} className="px-4 py-2 border border-pink-300 text-pink-600 rounded hover:bg-pink-50">
             Nuevo apartado
           </button>
           {onDone && (
@@ -117,13 +126,19 @@ export default function NewLayaway({ onDone }) {
             </button>
           )}
         </div>
+
+        {mostrarRecibo && (
+          <LayawayReceiptModal layawayId={done.id} onClose={() => setMostrarRecibo(false)} />
+        )}
       </div>
     );
   }
 
+  // El cliente ocasional llega como objeto sin `id`: hay que exigir el id, o
+  // se avanza hasta el final para que el API rechace el apartado.
   const puedeAvanzar =
     (paso === 1 && cart.length > 0) ||
-    (paso === 2 && Boolean(client)) ||
+    (paso === 2 && Boolean(client?.id)) ||
     paso === 3;
 
   return (
@@ -158,11 +173,19 @@ export default function NewLayaway({ onDone }) {
 
         {paso === 2 && (
           <>
-            <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-900">
-              Un apartado necesita cliente registrado: es a quien se le cobrará el resto
-              y a quien se le devolvería el anticipo si se cancela.
-            </div>
-            <ClientSelection client={client} setClient={setClient} />
+            {client?.id ? (
+              <div className="mb-4 bg-green-50 border border-green-200 rounded p-3 text-sm text-green-900">
+                Cliente registrado: <strong>{client.name}</strong>
+                {client.phone && <span className="text-green-700"> · {client.phone}</span>}
+              </div>
+            ) : (
+              <div className="mb-4 bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-900">
+                Un apartado necesita cliente registrado: es a quien se le cobrará el resto
+                y a quien se le devolvería el anticipo si se cancela. Búscalo o regístralo
+                para continuar.
+              </div>
+            )}
+            <ClientSelection client={client} setClient={setClient} requireRegistered />
           </>
         )}
 
@@ -273,11 +296,24 @@ export default function NewLayaway({ onDone }) {
           <div className="space-y-5">
             <h3 className="text-lg font-semibold">Resumen del apartado</h3>
 
-            <div className="border rounded-lg p-4 space-y-2">
+            <div className="border rounded-lg p-4 space-y-3">
               {cart.map((item, i) => (
-                <div key={i} className="flex justify-between text-sm">
-                  <span>{item.description} x{item.quantity_sold}</span>
-                  <span>{formatCurrency(item.unit_price * item.quantity_sold)}</span>
+                <div key={i} className="flex justify-between text-sm gap-4">
+                  <div>
+                    {/* El SKU va primero: es con lo que la cajera identifica el
+                        artículo en el anaquel y lo que lleva el recibo. */}
+                    <span className="font-medium">{item.id}</span>
+                    <span className="text-gray-600"> · {item.description}</span>
+                    <span className="text-gray-500"> x{item.quantity_sold}</span>
+                    {item.quantity > item.quantity_sold && (
+                      <p className="text-xs text-amber-700 mt-0.5">
+                        De esta clave hay {item.quantity} piezas: se aparta{item.quantity_sold > 1 ? 'n' : ''}{' '}
+                        {item.quantity_sold} y queda{item.quantity - item.quantity_sold > 1 ? 'n' : ''}{' '}
+                        {item.quantity - item.quantity_sold} a la venta.
+                      </p>
+                    )}
+                  </div>
+                  <span className="whitespace-nowrap">{formatCurrency(item.unit_price * item.quantity_sold)}</span>
                 </div>
               ))}
               <div className="border-t pt-2 flex justify-between font-semibold">
@@ -308,8 +344,9 @@ export default function NewLayaway({ onDone }) {
             </div>
 
             <div className="bg-amber-50 border border-amber-200 rounded p-3 text-sm text-amber-900">
-              Al confirmar, estos artículos <strong>salen del inventario disponible</strong> y ya no
-              podrán venderse en mostrador ni en la tienda en línea hasta que se liquide o se cancele.
+              Al confirmar, las piezas apartadas <strong>salen del inventario disponible</strong> y
+              quedan reservadas hasta que se liquide o se cancele. Si de alguna clave quedan más
+              piezas, ésas sí siguen a la venta.
             </div>
           </div>
         )}

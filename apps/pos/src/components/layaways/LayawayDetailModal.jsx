@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
 import { layawayService, formatCurrency } from '../../services/layaway.service';
 import { useAuth } from '../../context/AuthContext';
+import LayawayReceiptModal from './LayawayReceiptModal';
 
 const fecha = (iso) =>
   iso
     ? new Date(iso).toLocaleDateString('es-MX', {
         timeZone: 'America/Mexico_City',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    : '—';
+
+/**
+ * `due_date` es un DATE sin hora: llega a medianoche UTC y leerlo en horario
+ * de México lo corre un día hacia atrás. Estas fechas se leen en UTC.
+ */
+const fechaDia = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString('es-MX', {
+        timeZone: 'UTC',
         day: '2-digit',
         month: 'short',
         year: 'numeric'
@@ -37,8 +52,12 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
   const [abono, setAbono] = useState('');
   const [metodo, setMetodo] = useState('efectivo');
   const [mostrarCancelar, setMostrarCancelar] = useState(false);
+  const [mostrarRecibo, setMostrarRecibo] = useState(false);
   const [destinoAnticipo, setDestinoAnticipo] = useState('credito_tienda');
   const [motivo, setMotivo] = useState('');
+  // Cuánto se le devuelve al cancelar. Arranca con todo lo abonado: retener
+  // algo es la excepción, no la norma.
+  const [devolver, setDevolver] = useState('');
 
   const activo = layaway.status === 'active';
   const resta = layaway.balance_due ?? layaway.total_amount - layaway.paid_amount;
@@ -70,12 +89,22 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
     }
   };
 
+  const abonado = Number(layaway.paid_amount) || 0;
+  const aDevolver = devolver === '' ? abonado : parseFloat(devolver) || 0;
+  const retenido = Math.round((abonado - aDevolver) * 100) / 100;
+  const devolucionInvalida = aDevolver < 0 || aDevolver > abonado;
+
   const cancelar = async () => {
+    if (destinoAnticipo !== 'forfeited' && devolucionInvalida) {
+      return setError(`El monto a devolver debe estar entre $0 y ${formatCurrency(abonado)}`);
+    }
+
     setSaving(true);
     setError('');
     try {
       const actualizado = await layawayService.cancelLayaway(layaway.id, {
         refund_method: destinoAnticipo,
+        refund_amount: destinoAnticipo === 'forfeited' ? 0 : aDevolver,
         reason: motivo.trim() || undefined
       });
       setLayaway(actualizado);
@@ -102,14 +131,22 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
               </p>
               <p className="text-xs text-gray-400 mt-1">
                 Creado el {fecha(layaway.created_at)}
-                {layaway.due_date && ` · Vence el ${fecha(layaway.due_date)}`}
+                {layaway.due_date && ` · Vence el ${fechaDia(layaway.due_date)}`}
               </p>
             </div>
+            <div className="flex items-start gap-3">
+              <button
+                onClick={() => setMostrarRecibo(true)}
+                className="px-3 py-1.5 text-sm border border-pink-300 text-pink-600 rounded hover:bg-pink-50 whitespace-nowrap"
+              >
+                Comprobante
+              </button>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600" aria-label="Cerrar">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+            </div>
           </div>
 
           {/* Estado */}
@@ -122,11 +159,15 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
             {layaway.status === 'cancelled' && (
               <span className="inline-block px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">
                 Cancelado · {DESTINO_ANTICIPO[layaway.cancel_refund_method] || 'anticipo sin registrar'}
+                {layaway.cancel_refund_amount !== null &&
+                  layaway.cancel_refund_amount !== undefined &&
+                  layaway.cancel_refund_method !== 'forfeited' &&
+                  ` (${formatCurrency(layaway.cancel_refund_amount)})`}
               </span>
             )}
             {activo && layaway.is_overdue && (
               <span className="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                Vencido desde el {fecha(layaway.due_date)}
+                Vencido desde el {fechaDia(layaway.due_date)}
               </span>
             )}
             {activo && !layaway.is_overdue && (
@@ -231,8 +272,13 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
                   {(layaway.items || []).map((it) => (
                     <tr key={it.id}>
                       <td className="px-3 py-2">
-                        {it.description}
-                        <span className="block font-mono text-xs text-gray-500">{it.inventario_id}</span>
+                        <span className="font-mono font-medium">{it.inventario_id}</span>
+                        <span className="block text-gray-600">{it.description}</span>
+                        {Number(it.stock_restante) > 0 && (
+                          <span className="block text-xs text-amber-700">
+                            Quedan {it.stock_restante} piezas más de esta clave a la venta
+                          </span>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-center">{it.quantity}</td>
                       <td className="px-3 py-2 text-right">{formatCurrency(it.unit_price)}</td>
@@ -303,17 +349,54 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
                   </p>
 
                   {layaway.paid_amount > 0 && (
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">¿Qué pasa con lo abonado?</label>
-                      <select
-                        value={destinoAnticipo}
-                        onChange={(e) => setDestinoAnticipo(e.target.value)}
-                        className="w-full md:w-80 p-2 border border-gray-300 rounded"
-                      >
-                        <option value="credito_tienda">Pasarlo a su crédito de tienda</option>
-                        <option value="efectivo">Devolverlo en efectivo</option>
-                        <option value="forfeited">Se queda la tienda</option>
-                      </select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">¿Qué pasa con lo abonado?</label>
+                        <select
+                          value={destinoAnticipo}
+                          onChange={(e) => setDestinoAnticipo(e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded"
+                        >
+                          <option value="credito_tienda">Pasarlo a su crédito de tienda</option>
+                          <option value="efectivo">Devolverlo en efectivo</option>
+                          <option value="forfeited">Se queda la tienda (no se devuelve nada)</option>
+                        </select>
+                      </div>
+
+                      {destinoAnticipo !== 'forfeited' && (
+                        <div>
+                          <label className="block text-sm text-gray-700 mb-1">¿Cuánto se le devuelve?</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input
+                              type="number"
+                              value={devolver}
+                              onChange={(e) => setDevolver(e.target.value)}
+                              placeholder={String(abonado)}
+                              step="0.01"
+                              min="0"
+                              max={abonado}
+                              className="w-full p-2 pl-8 border border-gray-300 rounded"
+                            />
+                          </div>
+                          {retenido > 0 && !devolucionInvalida && (
+                            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2 mt-2">
+                              Se le devuelven {formatCurrency(aDevolver)} y la tienda retiene{' '}
+                              <strong>{formatCurrency(retenido)}</strong>.
+                            </p>
+                          )}
+                          {devolucionInvalida && (
+                            <p className="text-xs text-red-700 mt-1">
+                              Debe estar entre $0 y {formatCurrency(abonado)}.
+                            </p>
+                          )}
+                          {retenido === 0 && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Si lo dejas vacío se le devuelve todo lo abonado.
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -346,6 +429,10 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
           )}
         </div>
       </div>
+
+      {mostrarRecibo && (
+        <LayawayReceiptModal layawayId={layaway.id} onClose={() => setMostrarRecibo(false)} />
+      )}
     </div>
   );
 }

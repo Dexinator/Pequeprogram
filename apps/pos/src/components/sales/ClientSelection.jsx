@@ -5,12 +5,17 @@ import { useAuth } from '../../context/AuthContext';
 
 const clientService = new ClientService();
 
-export default function ClientSelection({ client, setClient }) {
+/**
+ * `requireRegistered` lo usan los apartados: ahí el cliente ocasional no
+ * sirve, porque hay que cobrarle el resto después y devolverle el anticipo si
+ * se cancela. En vez de dejar elegirlo y fallar al final, se bloquea la opción.
+ */
+export default function ClientSelection({ client, setClient, requireRegistered = false }) {
   const { user } = useAuth() || {};
   const userRole = typeof user?.role === 'string' ? user.role : user?.role?.name || '';
   const canAdjustCredit = ['superadmin', 'admin', 'manager', 'gerente'].includes(userRole);
 
-  const [clientType, setClientType] = useState('ocasional');
+  const [clientType, setClientType] = useState(requireRegistered ? 'registrado' : 'ocasional');
   const [occasionalClientName, setOccasionalClientName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -103,6 +108,7 @@ export default function ClientSelection({ client, setClient }) {
   };
 
   const handleClientTypeChange = (type) => {
+    if (type === 'ocasional' && requireRegistered) return;
     setClientType(type);
     if (type === 'ocasional') {
       setClient(null);
@@ -157,14 +163,19 @@ export default function ClientSelection({ client, setClient }) {
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => handleClientTypeChange('ocasional')}
+            disabled={requireRegistered}
             className={`p-4 border rounded-lg text-center transition-colors ${
-              clientType === 'ocasional'
+              requireRegistered
+                ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                : clientType === 'ocasional'
                 ? 'border-pink-500 bg-pink-50 text-pink-700'
                 : 'border-gray-300 hover:border-gray-400'
             }`}
           >
             <div className="font-medium">Cliente Ocasional</div>
-            <div className="text-sm text-gray-600 mt-1">Sin registro</div>
+            <div className="text-sm mt-1">
+              {requireRegistered ? 'No disponible en apartados' : 'Sin registro'}
+            </div>
           </button>
           <button
             onClick={() => handleClientTypeChange('registrado')}

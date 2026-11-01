@@ -30,6 +30,8 @@ export interface Layaway extends BaseModel {
   completed_at?: Date | null;
   cancelled_at?: Date | null;
   cancel_refund_method?: CancelRefundMethod | null;
+  /** Monto devuelto al cancelar. null en cancelaciones anteriores a la 049. */
+  cancel_refund_amount?: number | null;
   items?: LayawayItem[];
   payments?: LayawayPayment[];
   // Datos unidos
@@ -48,6 +50,12 @@ export interface LayawayItem {
   unit_price: number;
   total_price: number;
   description?: string | null;
+  /**
+   * Existencia que queda de ese SKU después de apartar. Importa cuando el
+   * artículo tiene varias unidades: apartar una no impide vender las otras,
+   * y sin este dato parece que el apartado no reservó nada.
+   */
+  stock_restante?: number | null;
 }
 
 export interface LayawayPayment {
@@ -88,6 +96,12 @@ export interface AddLayawayPaymentDto {
 export interface CancelLayawayDto {
   /** Qué se hace con lo ya abonado. */
   refund_method: CancelRefundMethod;
+  /**
+   * Cuánto se le devuelve. Si se omite se devuelve todo lo abonado, que es lo
+   * que el sistema hacía antes. La diferencia contra lo abonado se la queda la
+   * tienda; con `forfeited` siempre es 0.
+   */
+  refund_amount?: number;
   reason?: string;
 }
 

@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { layawayService } from '../services/layaway.service';
 import { LayawayQueryParams } from '../models/layaway.model';
+import { TicketService } from '../services/ticket.service';
+
+const ticketService = new TicketService();
 
 // @desc    Crear un apartado
 // @route   POST /api/layaways
@@ -93,4 +96,22 @@ export const getLayaway = asyncHandler(async (req: Request, res: Response) => {
   }
 
   res.json({ success: true, data: found });
+});
+
+// @desc    Comprobante del apartado para entregar o mandar al cliente
+// @route   GET /api/layaways/:id/receipt-payload
+export const getLayawayReceiptPayload = asyncHandler(async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.status(400);
+    throw new Error('ID de apartado inválido');
+  }
+
+  const payload = await ticketService.buildLayawayReceiptPayload(id);
+  if (!payload) {
+    res.status(404);
+    throw new Error('Apartado no encontrado');
+  }
+
+  res.json({ success: true, data: payload });
 });

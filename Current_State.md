@@ -3761,3 +3761,33 @@ Aplicada a las 9 validaciones de `createSale` y a las 6 de `returns.service`. De
 - **layaways** — apartados: cliente (obligatorio), totales, `paid_amount` desnormalizado, estado, fecha límite, `sale_id` al liquidar y `cancel_refund_method`. Migración 048.
 - **layaway_items** — artículos apartados. Migración 048.
 - **layaway_payments** — abonos con su método y quién lo registró. Migración 048.
+
+---
+
+## Sesión: 31 de Octubre, 2026
+
+### Etapa 5 — ajustes pedidos por Pablo tras probar apartados en staging
+
+Pablo probó los apartados en staging y pidió cuatro cosas. Tres quedaron implementadas; la cuarta está esperando que aclare la regla.
+
+**1. "Aparté este producto pero sí me dejó venderlo y se quedó en el inventario"** — *no era una falla.* Revisado contra la BD de staging: el artículo era `AYDP013`, cuyo `valuation_items.quantity` es **2**. Apartó una pieza (stock 2 → 1) y vendió la otra (1 → 0), las dos operaciones correctas; el stock nunca quedó negativo y la pieza apartada sigue protegida (con existencia 0 la venta se rechaza). Lo que falló fue la información en pantalla: nada decía que esa clave tenía más de una pieza. Ahora el resumen del alta avisa *"De esta clave hay N piezas: se aparta 1 y quedan N-1 a la venta"*, la ficha del apartado muestra *"Quedan N piezas más de esta clave a la venta"* (campo `stock_restante`, añadido a `getLayawayById`), y el aviso de confirmación dejó de prometer que el artículo ya no se puede vender.
+
+**2. Cliente ocasional bloqueado en apartados.** El hueco estaba en `NewLayaway`: `puedeAvanzar` solo comprobaba `Boolean(client)`, y el cliente ocasional llega como objeto **sin `id`**, así que se avanzaba hasta el último paso para que el API lo rechazara. Ahora exige `client?.id`, y `ClientSelection` recibe una prop nueva `requireRegistered` que arranca en "Cliente Registrado" y deja la opción de ocasional deshabilitada con la leyenda "No disponible en apartados". El aviso azul que explica por qué hace falta cliente **desaparece en cuanto hay uno registrado** y lo reemplaza la confirmación con su nombre y teléfono, tal como pidió.
+
+**3. SKU de los artículos apartados.** El SKU va primero en el resumen del alta, en la ficha del apartado y en el comprobante.
+
+**4. Comprobante de apartado para el cliente** (lo que pidió para imprimir, entregar o mandar por WhatsApp):
+- `GET /api/layaways/:id/receipt-payload` — nuevo, en `ticket.service.ts` (`buildLayawayReceiptPayload`) y modelo `layaway-receipt.model.ts`. Reusa los bloques de `TicketPayloadV1` y `buildProductDescription`, así que las descripciones son las mismas que en el ticket de venta y queda listo para imprimirse por la térmica si algún día se quiere.
+- `apps/pos/src/components/layaways/receipt.js` — una sola función arma el HTML, que sirve para la previsualización en pantalla y para la ventana de impresión (`window.print`), más `receiptText()` y `whatsappUrl()` (wa.me con el teléfono del cliente, anteponiendo lada 52 a los números de 10 dígitos). Guardar en PDF sale gratis del diálogo de impresión.
+- `LayawayReceiptModal.jsx` — se abre desde la ficha del apartado ("Comprobante") y desde la pantalla de éxito al registrarlo ("Imprimir comprobante"). Botones: Imprimir · WhatsApp · Copiar texto.
+- Lleva lo que pidió: descripción del producto, importe total, lo que dejó, lo que resta, fecha del apartado, fecha de vencimiento e historial de abonos.
+- Las líneas de pie del negocio ("no se aceptan devoluciones…") solo se imprimen cuando el apartado ya está liquidado: antes de eso todavía no hay venta.
+
+**Bug de un día en las fechas límite (encontrado al armar el comprobante).** `due_date` es un `DATE` sin hora: llega como medianoche UTC y formatearlo con `timeZone: 'America/Mexico_City'` lo corría **un día hacia atrás** (un apartado al 30 de noviembre se leía "29 de noviembre"). Se añadió `fechaDia()` —misma función pero en UTC— en `receipt.js`, `LayawaysList.jsx` y `LayawayDetailModal.jsx`, y todos los usos de `due_date` pasaron a ella. Los timestamps reales (`created_at`, abonos) siguen en horario de México, que ahí sí es lo correcto.
+
+**5. Devolución parcial al cancelar** (`migración 049`). Pablo escribió *"al cancelar un apartado se regresa en crédito la mitad del cálculo del mínimo de apartado"*, que admite dos lecturas con resultados muy distintos: devolverle solo la mitad del anticipo mínimo, o devolverle todo menos esa mitad. En vez de adivinar se implementó la pieza que ambas necesitan: `cancelLayaway` acepta `refund_amount` (si se omite, devuelve todo lo abonado, el comportamiento anterior), valida `0 ≤ refund_amount ≤ paid_amount`, fuerza 0 con `forfeited`, abona al crédito solo lo devuelto y anota en las notas cuánto retuvo la tienda. La columna `cancel_refund_amount` lo guarda; NULL en cancelaciones anteriores significa "se devolvió todo". En pantalla, el campo "¿Cuánto se le devuelve?" arranca con todo lo abonado y avisa cuánto retiene la tienda. **Falta que Pablo diga qué monto debe proponer el sistema por omisión.**
+
+**Verificado contra el API local:** comprobante con dos artículos, dos abonos y fecha límite correcta; liquidación (crea venta, el stock no se vuelve a descontar); recibo de un apartado liquidado y de uno cancelado; 404 en apartado inexistente; apartado sin cliente rechazado con 400; devolución parcial de $250 sobre $300 abonados (saldo del cliente +250 y nota "la tienda retuvo $50.00"); y rechazo de devolución mayor a lo abonado, de monto negativo y de `forfeited` con monto (se fuerza a 0).
+
+### Cambio al Esquema de Base de Datos
+- **layaways.cancel_refund_amount** `NUMERIC(10,2)` — monto devuelto al cancelar; la diferencia contra `paid_amount` se la queda la tienda. NULL = cancelación previa a la migración 049, donde se devolvía todo. Migración 049.
