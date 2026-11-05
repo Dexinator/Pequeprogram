@@ -9,6 +9,12 @@ export type CancelRefundMethod = 'efectivo' | 'credito_tienda' | 'forfeited';
  * Es una **sugerencia, no un requisito**: él a veces acepta menos y pidió
  * conservar esa flexibilidad, pero quiere ver siempre el 25% como referencia
  * de lo que deberían dejar.
+ *
+ * Esta misma regla vive en el API (`utils/layaway-rules.ts`, `depositoMinimo`),
+ * donde se usa para calcular la devolución al cancelar. Aquí hace falta una
+ * copia porque el alta sugiere el anticipo sobre el carrito, antes de que
+ * exista el apartado que se le pudiera preguntar al API: **si cambia una, hay
+ * que cambiar la otra.**
  */
 export const DEPOSITO_PORCENTAJE = 0.25;
 export const DEPOSITO_MINIMO = 100;
