@@ -42,6 +42,10 @@ export default function NewLayaway({ onDone }) {
   // Es una referencia, no un requisito: Pablo pidió conservar la flexibilidad
   // de aceptar menos cuando él lo decide.
   const debajoDelSugerido = depositoNum > 0 && depositoNum < sugerido;
+  // Lo que recuperaría en crédito si no liquidara: la mitad del mínimo de
+  // apartado, nunca más de lo que está dejando. La misma regla que aplica el
+  // API al cancelar (utils/layaway-rules.ts).
+  const reembolsoSiCancela = Math.min(Math.round(sugerido * 50) / 100, depositoNum);
 
   const crear = async () => {
     setSaving(true);
@@ -347,6 +351,18 @@ export default function NewLayaway({ onDone }) {
               Al confirmar, las piezas apartadas <strong>salen del inventario disponible</strong> y
               quedan reservadas hasta que se liquide o se cancele. Si de alguna clave quedan más
               piezas, ésas sí siguen a la venta.
+            </div>
+
+            {/* Lo que hay que decirle al cliente antes de cobrarle, y que
+                además va impreso en su comprobante. */}
+            <div className="bg-gray-50 border border-gray-200 rounded p-3 text-sm text-gray-700">
+              <p className="font-medium text-gray-800 mb-1">Dile al cliente:</p>
+              <p>
+                Vencido el plazo sin liquidar se recupera{' '}
+                <strong>{formatCurrency(reembolsoSiCancela)}</strong> en crédito de tienda (la mitad
+                del mínimo de apartado). No hay cambios de mercancía apartada. Las dos condiciones
+                van impresas en su comprobante.
+              </p>
             </div>
           </div>
         )}
