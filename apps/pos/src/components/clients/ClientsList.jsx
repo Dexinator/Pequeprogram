@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { clientService } from '../../services/client.service';
 import ClientDetailModal from './ClientDetailModal';
 import ClientFormModal from './ClientFormModal';
+import CreditStatementModal from './CreditStatementModal';
 
 const money = (n) =>
   new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(n) || 0);
@@ -11,6 +12,9 @@ export default function ClientsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pagination, setPagination] = useState({ total: 0, pages: 0 });
+  // Cuánto crédito trae la tienda a cuestas (de todos los clientes que
+  // cumplen el filtro, no solo de la página que se ve).
+  const [creditTotal, setCreditTotal] = useState(0);
 
   const [filters, setFilters] = useState({
     search: '',
@@ -23,6 +27,9 @@ export default function ClientsList() {
 
   const [selected, setSelected] = useState(null);
   const [showNew, setShowNew] = useState(false);
+  // Cliente al que se le va a imprimir o mandar su saldo. Es lo que más piden
+  // en mostrador, así que se llega desde el listado sin abrir la ficha.
+  const [statementFor, setStatementFor] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -31,6 +38,7 @@ export default function ClientsList() {
       const res = await clientService.listClients(filters);
       setClients(res.clients);
       setPagination({ total: res.total, pages: res.pages });
+      setCreditTotal(res.storeCreditTotal || 0);
     } catch (err) {
       setError(err?.message || 'No se pudieron cargar los clientes');
       setClients([]);
@@ -112,6 +120,18 @@ export default function ClientsList() {
             <span className="text-sm text-gray-700">Solo con crédito a favor</span>
           </label>
         </div>
+
+        <div className="mt-4 pt-4 border-t flex flex-wrap items-baseline gap-x-6 gap-y-1">
+          <p className="text-sm text-gray-600">
+            {pagination.total} {pagination.total === 1 ? 'cliente' : 'clientes'}
+            {filters.with_credit ? ' con crédito a favor' : ''}
+            {filters.search ? ' en la búsqueda' : ''}
+          </p>
+          <p className="text-sm text-gray-600">
+            Crédito a favor en total:{' '}
+            <span className="font-bold text-green-700">{money(creditTotal)}</span>
+          </p>
+        </div>
       </div>
 
       {error && (
@@ -156,7 +176,16 @@ export default function ClientsList() {
                       <td className="px-6 py-3 text-gray-600 max-w-xs truncate" title={c.notes || ''}>
                         {c.notes || '—'}
                       </td>
-                      <td className="px-6 py-3 text-right">
+                      <td className="px-6 py-3 text-right whitespace-nowrap">
+                        {Number(c.store_credit) > 0 && (
+                          <button
+                            onClick={() => setStatementFor(c)}
+                            className="text-green-700 hover:text-green-900 font-medium mr-4"
+                            title="Imprimir o mandarle su saldo de crédito"
+                          >
+                            Crédito
+                          </button>
+                        )}
                         <button
                           onClick={() => setSelected(c)}
                           className="text-pink-600 hover:text-pink-800 font-medium"
@@ -220,6 +249,10 @@ export default function ClientsList() {
           onClose={() => setSelected(null)}
           onChanged={load}
         />
+      )}
+
+      {statementFor && (
+        <CreditStatementModal clientId={statementFor.id} onClose={() => setStatementFor(null)} />
       )}
 
       {showNew && (

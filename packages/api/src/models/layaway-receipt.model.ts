@@ -20,6 +20,12 @@ export interface LayawayReceiptPayloadV1 {
   items: TicketItem[];
   totals: LayawayReceiptTotals;
   payments: LayawayReceiptPayment[];
+  /**
+   * Condiciones del apartado, tal como Pablo las dicta. Van en el payload y no
+   * escritas en el POS para que impriman igual desde cualquier pantalla y para
+   * que cambiarlas sea cambiar la regla, no el diseño del papel.
+   */
+  terms: string[];
 }
 
 export interface LayawayReceiptHeader {

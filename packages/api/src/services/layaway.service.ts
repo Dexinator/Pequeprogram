@@ -8,6 +8,7 @@ import {
 } from '../models/layaway.model';
 import { pool } from '../db';
 import { BusinessError } from '../utils/errors';
+import { reembolsoCancelacionSugerido } from '../utils/layaway-rules';
 import { SalesService } from './sales.service';
 
 const salesService = new SalesService();
@@ -316,12 +317,14 @@ export class LayawayService {
 
       const pagado = parseFloat(layaway.paid_amount) || 0;
 
-      // Cuánto se le devuelve. Por omisión todo lo abonado; 'forfeited'
-      // siempre es 0. La diferencia se la queda la tienda y se anota, para que
-      // el corte cuadre y quede claro qué se le cobró al cliente.
+      // Cuánto se le devuelve. Por omisión la regla de la tienda (la mitad del
+      // mínimo de apartado); la cajera puede capturar otro monto si lo acuerda
+      // con el cliente, y 'forfeited' siempre es 0. La diferencia se la queda
+      // la tienda y se anota, para que el corte cuadre y quede claro qué se le
+      // cobró al cliente.
       let devolver =
         data.refund_amount === undefined || data.refund_amount === null
-          ? pagado
+          ? reembolsoCancelacionSugerido(parseFloat(layaway.total_amount) || 0, pagado)
           : round2(Number(data.refund_amount));
 
       if (data.refund_method === 'forfeited') {
@@ -410,6 +413,9 @@ export class LayawayService {
       total_amount: total,
       paid_amount: paid,
       balance_due: round2(total - paid),
+      // Lo que la tienda devolvería si se cancelara ahora. Se calcula aquí y
+      // no en el POS para que la regla viva en un solo lado.
+      suggested_refund_amount: reembolsoCancelacionSugerido(total, paid),
       cancel_refund_amount:
         row.cancel_refund_amount === null || row.cancel_refund_amount === undefined
           ? null

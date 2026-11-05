@@ -147,6 +147,17 @@ function cuerpo(payload) {
 
     ${aviso}
 
+    ${
+      // Condiciones del apartado. Las manda el API (`terms`) porque son regla
+      // de negocio, no texto de pantalla.
+      (payload.terms || []).length
+        ? `<div class="condiciones">
+      <p class="titulo">Condiciones del apartado</p>
+      ${(payload.terms || []).map((t) => `<p>${esc(t)}</p>`).join('')}
+    </div>`
+        : ''
+    }
+
     <footer>
       <p>Conserva este comprobante para abonar, recoger o liquidar tu apartado.</p>
       ${
@@ -183,6 +194,9 @@ const ESTILOS = `
   .recibo .aviso.vencido { background: #fff1f0; border-color: #ffb8b3; font-weight: 600; }
   .recibo .aviso.pagado { background: #f0fbf6; border-color: #a8e6cf; }
   .recibo .aviso.cancelado { background: #f5f6f7; border-color: #dfe6e9; }
+  .recibo .condiciones { margin: 14px 0 0; padding: 8px 10px; border: 1px solid #dfe6e9; border-radius: 6px; background: #fafbfc; }
+  .recibo .condiciones .titulo { margin: 0 0 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #636e72; font-weight: 700; }
+  .recibo .condiciones p { margin: 0; font-size: 11px; }
   .recibo footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed #b2bec3; text-align: center; font-size: 10px; color: #636e72; }
   .recibo footer p { margin: 2px 0; }
 `;
@@ -257,6 +271,11 @@ export function receiptText(payload) {
     lineas.push('', '¡Apartado liquidado, gracias por tu compra!');
   } else if (layaway.is_overdue) {
     lineas.push('', 'La fecha límite ya pasó. Pasa a la tienda para ponerlo al día.');
+  }
+
+  if ((payload.terms || []).length) {
+    lineas.push('', 'Condiciones del apartado:');
+    payload.terms.forEach((t) => lineas.push(`• ${t}`));
   }
 
   if (business.address) lineas.push('', business.address);

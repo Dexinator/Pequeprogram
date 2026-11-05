@@ -10,7 +10,22 @@ import {
   LayawayReceiptPayloadV1,
   LayawayReceiptPayment,
 } from '../models/layaway-receipt.model';
+import {
+  CreditStatementPayloadV1,
+  CreditStatementMovement,
+} from '../models/credit-statement.model';
 import { buildProductDescription, OfferFeatureDef } from '../utils/product-description';
+import { condicionesApartado } from '../utils/layaway-rules';
+
+/** Cómo se le explica al cliente cada movimiento de su saldo. */
+const CREDIT_MOVEMENT_LABELS: Record<string, string> = {
+  manual_add: 'Carga de crédito',
+  manual_subtract: 'Ajuste a la baja',
+  sale_charge: 'Pago de compra con su saldo',
+  sale_refund: 'Devolución de mercancía',
+  valuation_credit: 'Crédito por lo que nos vendió',
+  initial_load: 'Saldo inicial',
+};
 
 const PAYMENT_LABELS: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -271,6 +286,70 @@ export class TicketService {
           balance_due: Math.round((total - paid) * 100) / 100,
         },
         payments,
+        terms: condicionesApartado(row.status),
+      };
+    } finally {
+      dbClient.release();
+    }
+  }
+
+  /**
+   * Estado de cuenta del crédito de tienda, para entregárselo al cliente.
+   *
+   * El saldo sale de `clients.store_credit`, que es el que manda; los
+   * movimientos son el detalle auditado de cómo llegó ahí.
+   */
+  async buildCreditStatementPayload(
+    clientId: number,
+    limit = 20
+  ): Promise<CreditStatementPayloadV1 | null> {
+    const dbClient = await pool.connect();
+    try {
+      const clientResult = await dbClient.query(
+        'SELECT id, name, phone, store_credit FROM clients WHERE id = $1',
+        [clientId]
+      );
+      const row = clientResult.rows[0];
+      if (!row) return null;
+
+      // Se pide uno más del límite solo para saber si quedaron movimientos
+      // fuera y decírselo al cliente en el papel.
+      const movementsResult = await dbClient.query(
+        `SELECT m.created_at, m.movement_type, m.amount, m.balance_after, m.reason
+           FROM client_credit_movements m
+          WHERE m.client_id = $1
+          ORDER BY m.created_at DESC, m.id DESC
+          LIMIT $2`,
+        [clientId, limit + 1]
+      );
+
+      const truncated = movementsResult.rows.length > limit;
+      const movements: CreditStatementMovement[] = movementsResult.rows
+        .slice(0, limit)
+        .map(m => ({
+          date: new Date(m.created_at).toISOString(),
+          amount: parseFloat(m.amount),
+          label: CREDIT_MOVEMENT_LABELS[m.movement_type] || m.movement_type,
+          balance_after: parseFloat(m.balance_after),
+          reason: m.reason || null,
+        }));
+
+      return {
+        version: 1,
+        business: {
+          name: config.business.name,
+          address: config.business.address,
+          phone: config.business.phone,
+          rfc: config.business.rfc,
+          website: config.business.website,
+          logo_url: config.business.logoUrl,
+          footer_lines: config.business.footerLines,
+        },
+        client: { id: row.id, name: row.name, phone: row.phone || null },
+        balance: parseFloat(row.store_credit) || 0,
+        generated_at: new Date().toISOString(),
+        movements,
+        movements_truncated: truncated,
       };
     } finally {
       dbClient.release();

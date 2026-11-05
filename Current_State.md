@@ -3791,3 +3791,27 @@ Pablo probó los apartados en staging y pidió cuatro cosas. Tres quedaron imple
 
 ### Cambio al Esquema de Base de Datos
 - **layaways.cancel_refund_amount** `NUMERIC(10,2)` — monto devuelto al cancelar; la diferencia contra `paid_amount` se la queda la tienda. NULL = cancelación previa a la migración 049, donde se devolvía todo. Migración 049.
+
+---
+
+## Sesión: 5 de Noviembre, 2026
+
+### Etapa 5 — segunda ronda de ajustes de apartados y reporte de crédito de clientes
+
+Pablo probó los cambios del 31 de octubre (*"las impresiones de comprobantes y todo lo revisado funciona bien"*) y dejó cuatro cosas.
+
+**1. Bug: "al seleccionar ver detalle no se muestran los productos ni cantidad precio o importe".** Real, y era de frontend. `LayawaysList` abría el modal con `setSelected(l)`, pasándole **la fila del listado**, y `GET /api/layaways` no trae `items` ni `payments` — solo `items_count`. El modal usaba ese objeto tal cual y nunca pedía el detalle, así que la tabla de artículos salía vacía y los abonos decían "sin abonos registrados"; solo aparecían después de abonar o cancelar, porque esas acciones sí refrescan con `getLayawayById`. Ahora `LayawayDetailModal` carga el apartado completo al montarse (la fila de la lista sigue sirviendo para pintar el encabezado de inmediato) y las dos tablas muestran "Cargando…" mientras llega.
+
+**2. Regla de cancelación, resuelta.** Pablo contestó *"la Opción 2, en ese ejemplo se regresan 250 en crédito de tienda"* — el nombre y el número no coinciden (los $250 eran la opción 1), pero el monto concuerda con la nota que pidió imprimir, *"se recupera 50% del anticipo"*, así que manda el número: **se le devuelve la mitad del mínimo de apartado, nunca más de lo que abonó**. Sobre un apartado de $2,000 (mínimo $500) son $250 aunque haya abonado $1,200.
+- `packages/api/src/utils/layaway-rules.ts` (nuevo) concentra la regla: `depositoMinimo()` (25% con piso de $100, acotado al total) y `reembolsoCancelacionSugerido()`. Está en utils porque la necesitan la cancelación, el comprobante y el POS.
+- `cancelLayaway` ya no devuelve todo lo abonado cuando se omite `refund_amount`: aplica la regla. El monto explícito sigue respetándose (la cajera puede acordar otra cosa) y `forfeited` sigue forzando 0.
+- `hydrate` agrega el campo calculado `suggested_refund_amount`, así que el POS **no recalcula la regla**: la lee del API y la propone en el campo "¿Cuánto se le devuelve?", con botón "Usar sugerido" y la leyenda "Por regla le toca $X (la mitad del mínimo de apartado)".
+
+**3. Condiciones impresas en el comprobante**, literales como las dictó: *"Vencido el plazo sin liquidar se recupera 50% del anticipo en crédito de tienda. No hay cambios de mercancía apartada."* Van en el payload (`terms: string[]`, de `condicionesApartado()`) y no escritas en el POS, para que impriman igual desde cualquier pantalla y para que cambiarlas sea cambiar la regla. En un apartado liquidado solo se imprime la segunda frase —ya no hay plazo— y en uno cancelado ninguna. Salen en el HTML y en el texto de WhatsApp.
+
+**4. Reporte de crédito de tienda** (*"para que sepan cuánto crédito tienen, ya que lo piden regularmente"*):
+- `GET /api/clients/:id/credit-statement` — estado de cuenta imprimible: saldo, fecha y hora a la que corresponde, y los movimientos con el saldo que dejó cada uno. Lo arma `TicketService.buildCreditStatementPayload` (modelo `credit-statement.model.ts`), con el mismo bloque de negocio que el ticket y el comprobante de apartado. `limit` configurable (20 por omisión) y `movements_truncated` para avisar en el papel que se recortó.
+- `creditStatement.js` + `CreditStatementModal.jsx` en el POS, mismo patrón que el comprobante de apartado: Imprimir · WhatsApp · Copiar texto. Se llega desde la ficha del cliente ("Comprobante de crédito") y desde el listado, donde los clientes con saldo tienen un enlace "Crédito" directo — es lo que más se pide en mostrador.
+- `GET /api/clients` ahora devuelve `summary.store_credit_total`, calculado **con el mismo WHERE que el listado**, así que respeta la búsqueda y el filtro "solo con crédito". El POS lo muestra junto al conteo de clientes: cuánto crédito trae la tienda a cuestas.
+
+**Verificado contra el API local:** apartado nuevo de $2,000 con $600 de anticipo → `suggested_refund_amount` = 250; cancelarlo **sin** mandar monto devolvió exactamente $250 al crédito (saldo 350 → 600), retuvo $350 con su nota y regresó el stock; un apartado con anticipo de $80 propone $80 (la regla se topa en lo abonado); `refund_amount: 0` explícito se respeta; el comprobante imprime las dos condiciones y la fecha límite correcta (30 de noviembre, no 29); el detalle trae artículos con descripción, cantidad, precio e importe, más `stock_restante`; el estado de cuenta responde con saldo y movimientos, y 404 en cliente inexistente; `store_credit_total` cuadra. Sin migraciones nuevas.

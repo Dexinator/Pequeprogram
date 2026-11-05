@@ -32,6 +32,12 @@ export interface Layaway extends BaseModel {
   cancel_refund_method?: CancelRefundMethod | null;
   /** Monto devuelto al cancelar. null en cancelaciones anteriores a la 049. */
   cancel_refund_amount?: number | null;
+  /**
+   * Lo que la tienda devolvería si se cancelara ahora, según la regla del 50%
+   * del mínimo de apartado. Calculado, no almacenado: el POS lo propone en la
+   * pantalla de cancelación.
+   */
+  suggested_refund_amount?: number;
   items?: LayawayItem[];
   payments?: LayawayPayment[];
   // Datos unidos
@@ -97,9 +103,9 @@ export interface CancelLayawayDto {
   /** Qué se hace con lo ya abonado. */
   refund_method: CancelRefundMethod;
   /**
-   * Cuánto se le devuelve. Si se omite se devuelve todo lo abonado, que es lo
-   * que el sistema hacía antes. La diferencia contra lo abonado se la queda la
-   * tienda; con `forfeited` siempre es 0.
+   * Cuánto se le devuelve. Si se omite se aplica la regla de la tienda (la
+   * mitad del mínimo de apartado, sin pasar de lo abonado). La diferencia
+   * contra lo abonado se la queda la tienda; con `forfeited` siempre es 0.
    */
   refund_amount?: number;
   reason?: string;

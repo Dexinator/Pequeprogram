@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { layawayService, formatCurrency } from '../../services/layaway.service';
 import { useAuth } from '../../context/AuthContext';
 import LayawayReceiptModal from './LayawayReceiptModal';
@@ -45,7 +45,11 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
   const userRole = typeof user?.role === 'string' ? user.role : user?.role?.name || '';
   const puedeCancelar = ['superadmin', 'admin', 'manager', 'gerente'].includes(userRole);
 
+  // La fila que llega de la lista sirve para pintar el encabezado de
+  // inmediato, pero NO trae artículos ni abonos: el listado solo cuenta
+  // cuántos hay. Sin esta carga el detalle se veía vacío.
   const [layaway, setLayaway] = useState(inicial);
+  const [cargando, setCargando] = useState(!inicial?.items);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -55,9 +59,28 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
   const [mostrarRecibo, setMostrarRecibo] = useState(false);
   const [destinoAnticipo, setDestinoAnticipo] = useState('credito_tienda');
   const [motivo, setMotivo] = useState('');
-  // Cuánto se le devuelve al cancelar. Arranca con todo lo abonado: retener
-  // algo es la excepción, no la norma.
+  // Cuánto se le devuelve al cancelar. Arranca en el monto que manda la regla
+  // de la tienda (la mitad del mínimo de apartado) y se puede editar.
   const [devolver, setDevolver] = useState('');
+
+  useEffect(() => {
+    let vivo = true;
+    setCargando(true);
+    layawayService
+      .getLayawayById(inicial.id)
+      .then((fresh) => {
+        if (vivo) setLayaway(fresh);
+      })
+      .catch((err) => {
+        if (vivo) setError(err?.message || 'No se pudo cargar el detalle del apartado');
+      })
+      .finally(() => {
+        if (vivo) setCargando(false);
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [inicial.id]);
 
   const activo = layaway.status === 'active';
   const resta = layaway.balance_due ?? layaway.total_amount - layaway.paid_amount;
@@ -90,7 +113,13 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
   };
 
   const abonado = Number(layaway.paid_amount) || 0;
-  const aDevolver = devolver === '' ? abonado : parseFloat(devolver) || 0;
+  // La regla la calcula el API: 50% del mínimo de apartado, sin pasar de lo
+  // abonado. Si el API es viejo y no la manda, se cae a lo abonado.
+  const sugeridoDevolver =
+    layaway.suggested_refund_amount === null || layaway.suggested_refund_amount === undefined
+      ? abonado
+      : Number(layaway.suggested_refund_amount);
+  const aDevolver = devolver === '' ? sugeridoDevolver : parseFloat(devolver) || 0;
   const retenido = Math.round((abonado - aDevolver) * 100) / 100;
   const devolucionInvalida = aDevolver < 0 || aDevolver > abonado;
 
@@ -269,6 +298,20 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
+                  {cargando && !(layaway.items || []).length && (
+                    <tr>
+                      <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
+                        Cargando artículos…
+                      </td>
+                    </tr>
+                  )}
+                  {!cargando && !(layaway.items || []).length && (
+                    <tr>
+                      <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
+                        Sin artículos registrados.
+                      </td>
+                    </tr>
+                  )}
                   {(layaway.items || []).map((it) => (
                     <tr key={it.id}>
                       <td className="px-3 py-2">
@@ -294,7 +337,9 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
           <div>
             <p className="font-medium text-gray-700 mb-2">Abonos</p>
             {(layaway.payments || []).length === 0 ? (
-              <p className="text-sm text-gray-500">Sin abonos registrados.</p>
+              <p className="text-sm text-gray-500">
+                {cargando ? 'Cargando abonos…' : 'Sin abonos registrados.'}
+              </p>
             ) : (
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -333,7 +378,10 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
             <div className="border-t pt-4">
               {!mostrarCancelar ? (
                 <button
-                  onClick={() => setMostrarCancelar(true)}
+                  onClick={() => {
+                    setDevolver(String(sugeridoDevolver));
+                    setMostrarCancelar(true);
+                  }}
                   className="text-sm text-red-600 hover:text-red-800"
                 >
                   Cancelar este apartado
@@ -372,12 +420,27 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
                               type="number"
                               value={devolver}
                               onChange={(e) => setDevolver(e.target.value)}
-                              placeholder={String(abonado)}
+                              placeholder={String(sugeridoDevolver)}
                               step="0.01"
                               min="0"
                               max={abonado}
                               className="w-full p-2 pl-8 border border-gray-300 rounded"
                             />
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-xs text-gray-600">
+                              Por regla le toca <strong>{formatCurrency(sugeridoDevolver)}</strong>{' '}
+                              (la mitad del mínimo de apartado)
+                            </p>
+                            {aDevolver !== sugeridoDevolver && (
+                              <button
+                                type="button"
+                                onClick={() => setDevolver(String(sugeridoDevolver))}
+                                className="text-xs px-2 py-0.5 border border-gray-300 rounded hover:bg-white"
+                              >
+                                Usar sugerido
+                              </button>
+                            )}
                           </div>
                           {retenido > 0 && !devolucionInvalida && (
                             <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2 mt-2">
@@ -390,9 +453,9 @@ export default function LayawayDetailModal({ layaway: inicial, onClose, onChange
                               Debe estar entre $0 y {formatCurrency(abonado)}.
                             </p>
                           )}
-                          {retenido === 0 && (
+                          {retenido === 0 && abonado > 0 && (
                             <p className="text-xs text-gray-500 mt-1">
-                              Si lo dejas vacío se le devuelve todo lo abonado.
+                              Se le devuelve todo lo abonado.
                             </p>
                           )}
                         </div>

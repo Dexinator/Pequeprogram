@@ -43,6 +43,12 @@ export interface Layaway {
   cancelled_at?: string | null;
   cancel_refund_method?: CancelRefundMethod | null;
   cancel_refund_amount?: number | null;
+  /**
+   * Lo que la tienda devolvería si se cancelara ahora: 50% del mínimo de
+   * apartado, sin pasar de lo abonado. Lo calcula el API para que la regla no
+   * se duplique aquí.
+   */
+  suggested_refund_amount?: number;
 }
 
 export class LayawayService {

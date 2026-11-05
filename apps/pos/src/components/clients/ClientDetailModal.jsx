@@ -6,6 +6,7 @@ import { layawayService } from '../../services/layaway.service';
 import AdjustStoreCreditModal from '../modules/AdjustStoreCreditModal';
 import ClientFormModal from './ClientFormModal';
 import { useAuth } from '../../context/AuthContext';
+import CreditStatementModal from './CreditStatementModal';
 
 const salesService = new SalesService();
 
@@ -56,6 +57,7 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
   const [tab, setTab] = useState('credito');
 
   const [showEdit, setShowEdit] = useState(false);
+  const [showStatement, setShowStatement] = useState(false);
   const [showAdjust, setShowAdjust] = useState(false);
 
   // Cada pestaña guarda sus filas y si ya se cargó, para no repedirlas
@@ -128,6 +130,13 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
               <p className="text-xs text-gray-400 mt-1">Cliente desde {fecha(client.created_at)}</p>
             </div>
             <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowStatement(true)}
+                className="px-3 py-1 text-sm border border-green-300 text-green-700 rounded hover:bg-green-50 whitespace-nowrap"
+                title="Imprimir o mandarle su saldo de crédito"
+              >
+                Comprobante de crédito
+              </button>
               <button
                 onClick={() => setShowEdit(true)}
                 className="px-3 py-1 text-sm border border-pink-300 text-pink-600 rounded hover:bg-pink-50"
@@ -322,6 +331,10 @@ export default function ClientDetailModal({ client: initialClient, onClose, onCh
           onClose={() => setShowEdit(false)}
           onSaved={reloadClient}
         />
+      )}
+
+      {showStatement && (
+        <CreditStatementModal clientId={client.id} onClose={() => setShowStatement(false)} />
       )}
 
       {showAdjust && (
