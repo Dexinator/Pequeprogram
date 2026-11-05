@@ -3809,6 +3809,8 @@ Pablo probó los cambios del 31 de octubre (*"las impresiones de comprobantes y 
 
 **3. Condiciones impresas en el comprobante**, literales como las dictó: *"Vencido el plazo sin liquidar se recupera 50% del anticipo en crédito de tienda. No hay cambios de mercancía apartada."* Van en el payload (`terms: string[]`, de `condicionesApartado()`) y no escritas en el POS, para que impriman igual desde cualquier pantalla y para que cambiarlas sea cambiar la regla. En un apartado liquidado solo se imprime la segunda frase —ya no hay plazo— y en uno cancelado ninguna. Salen en el HTML y en el texto de WhatsApp.
 
+También se añadió al **último paso del alta** un recuadro "Dile al cliente" con las dos condiciones y el monto ya calculado para ese apartado (la mitad del mínimo, acotada al anticipo que está dejando): el papel se lo lleva, pero la conversación es en el mostrador, antes de cobrar.
+
 **4. Reporte de crédito de tienda** (*"para que sepan cuánto crédito tienen, ya que lo piden regularmente"*):
 - `GET /api/clients/:id/credit-statement` — estado de cuenta imprimible: saldo, fecha y hora a la que corresponde, y los movimientos con el saldo que dejó cada uno. Lo arma `TicketService.buildCreditStatementPayload` (modelo `credit-statement.model.ts`), con el mismo bloque de negocio que el ticket y el comprobante de apartado. `limit` configurable (20 por omisión) y `movements_truncated` para avisar en el papel que se recortó.
 - `creditStatement.js` + `CreditStatementModal.jsx` en el POS, mismo patrón que el comprobante de apartado: Imprimir · WhatsApp · Copiar texto. Se llega desde la ficha del cliente ("Comprobante de crédito") y desde el listado, donde los clientes con saldo tienen un enlace "Crédito" directo — es lo que más se pide en mostrador.
