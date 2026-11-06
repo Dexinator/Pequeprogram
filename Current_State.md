@@ -3728,3 +3728,94 @@ Cambios: `RefundMethod` admite `tarjeta` (sin migración: `refund_method` es VAR
 **Detalle de UX:** la reversa en terminal normalmente solo procede el mismo día, así que si la venta **no** es de hoy se muestra un aviso con la fecha real de la venta — pero **no se bloquea**, coherente con el resto del módulo, que propone en vez de imponer.
 
 **Verificado:** devolución con tarjeta registrada correctamente, método inválido rechazado con mensaje que lista los tres válidos, y las estadísticas separando los $150 en `total_card` sin tocar `total_cash`.
+
+### Errores de negocio devolvían 500 (encontrado al probar el refactor de ventas)
+
+**Síntoma:** al intentar una venta sin stock, el POS mostraba *"Error interno del servidor"* en vez de *"Stock insuficiente para el producto X"*. La cajera no sabía qué corregir.
+
+**Causa:** `createSale` lanzaba `Error` plano para sus nueve validaciones (stock, cliente inexistente, pagos que no cuadran, crédito insuficiente…) sin fijar un código, así que el middleware las trataba como falla del servidor. El cliente HTTP del POS lee `message` primero, y ese `message` era el genérico.
+
+**Solución:** nueva clase `BusinessError` (`packages/api/src/utils/errors.ts`) que lleva su propio `status`. El middleware ahora respeta tanto `err.status` como el `res.status(4xx)` que puedan fijar los controllers; lo demás sigue siendo 500 de verdad.
+
+Aplicada a las 9 validaciones de `createSale` y a las 6 de `returns.service`. De paso se quitó el `try/catch` de `returns.controller` que convertía **todo** en 400 — el error espejo: una caída real de base de datos se reportaba como error del usuario.
+
+**Verificado:** stock insuficiente, producto inexistente, pagos que no cuadran y falta de método de pago devuelven 400 con su mensaje real; el 404 de devoluciones se conserva; y una venta válida sigue creándose con 201.
+
+## Sesión: 27 de Octubre, 2026
+
+### Etapa 5 — POS: Apartados (implementada; cierra el roadmap de septiembre)
+
+**Regla del anticipo, contestada por Pablo:** 25% del total con mínimo $100, pero **como sugerencia, no como requisito** — pidió explícitamente conservar la flexibilidad de aceptar menos. En `layaway.service.ts` (POS) viven `DEPOSITO_PORCENTAJE`, `DEPOSITO_MINIMO` y `depositoSugerido()`, que además acota la sugerencia al total (en artículos baratos el mínimo de $100 se pasaría del precio). La pantalla muestra el sugerido con botón "Usar sugerido" y, si se captura menos, avisa sin bloquear. Plazo: libre, con 30 días por defecto y editable.
+
+**Backend** (`migración 048`, `layaway.model.ts`, `layaway.service.ts`, controller y rutas):
+- `POST /api/layaways` — valida stock con `FOR UPDATE` (dos cajeras no pueden apartar lo mismo), **descuenta el stock**, registra el anticipo y, si se pagó con crédito, lo descuenta del saldo con su movimiento auditado.
+- `POST /:id/payments` — abona; si cubre el total, **liquida solo**: llama a `insertSaleRecord` con `updateStock:false` para crear la venta real sin volver a descontar.
+- `POST /:id/cancel` — regresa el stock y aplica lo que decida la cajera con lo abonado (efectivo / crédito / se queda la tienda). Restringido a gerencia porque mueve dinero.
+- `GET /api/layaways`, `/:id`, `/stats`.
+
+**Frontend:** módulo `apartados` con pestañas Nuevo / Listado. El alta reusa `SearchProducts` y `ClientSelection` de ventas. El listado marca los vencidos en rojo y filtra por estado, vencidos y cliente. La ficha del apartado permite abonar, liquidar de un golpe y cancelar. Además se **conectó la pestaña "Apartados" de la ficha del cliente**, que hasta ahora decía "próximamente".
+
+**Verificado contra el API local:** apartar baja el stock y el artículo desaparece de disponibles; **intentar venderlo se rechaza por stock insuficiente** (el punto de todo el diseño); abonar de más se rechaza con el faltante exacto; liquidar crea la venta y el stock **no** se vuelve a descontar; cancelar con crédito regresa el stock y sube el saldo con su movimiento; y un anticipo por debajo del sugerido se permite.
+
+### Cambio al Esquema de Base de Datos
+- **layaways** — apartados: cliente (obligatorio), totales, `paid_amount` desnormalizado, estado, fecha límite, `sale_id` al liquidar y `cancel_refund_method`. Migración 048.
+- **layaway_items** — artículos apartados. Migración 048.
+- **layaway_payments** — abonos con su método y quién lo registró. Migración 048.
+
+---
+
+## Sesión: 31 de Octubre, 2026
+
+### Etapa 5 — ajustes pedidos por Pablo tras probar apartados en staging
+
+Pablo probó los apartados en staging y pidió cuatro cosas. Tres quedaron implementadas; la cuarta está esperando que aclare la regla.
+
+**1. "Aparté este producto pero sí me dejó venderlo y se quedó en el inventario"** — *no era una falla.* Revisado contra la BD de staging: el artículo era `AYDP013`, cuyo `valuation_items.quantity` es **2**. Apartó una pieza (stock 2 → 1) y vendió la otra (1 → 0), las dos operaciones correctas; el stock nunca quedó negativo y la pieza apartada sigue protegida (con existencia 0 la venta se rechaza). Lo que falló fue la información en pantalla: nada decía que esa clave tenía más de una pieza. Ahora el resumen del alta avisa *"De esta clave hay N piezas: se aparta 1 y quedan N-1 a la venta"*, la ficha del apartado muestra *"Quedan N piezas más de esta clave a la venta"* (campo `stock_restante`, añadido a `getLayawayById`), y el aviso de confirmación dejó de prometer que el artículo ya no se puede vender.
+
+**2. Cliente ocasional bloqueado en apartados.** El hueco estaba en `NewLayaway`: `puedeAvanzar` solo comprobaba `Boolean(client)`, y el cliente ocasional llega como objeto **sin `id`**, así que se avanzaba hasta el último paso para que el API lo rechazara. Ahora exige `client?.id`, y `ClientSelection` recibe una prop nueva `requireRegistered` que arranca en "Cliente Registrado" y deja la opción de ocasional deshabilitada con la leyenda "No disponible en apartados". El aviso azul que explica por qué hace falta cliente **desaparece en cuanto hay uno registrado** y lo reemplaza la confirmación con su nombre y teléfono, tal como pidió.
+
+**3. SKU de los artículos apartados.** El SKU va primero en el resumen del alta, en la ficha del apartado y en el comprobante.
+
+**4. Comprobante de apartado para el cliente** (lo que pidió para imprimir, entregar o mandar por WhatsApp):
+- `GET /api/layaways/:id/receipt-payload` — nuevo, en `ticket.service.ts` (`buildLayawayReceiptPayload`) y modelo `layaway-receipt.model.ts`. Reusa los bloques de `TicketPayloadV1` y `buildProductDescription`, así que las descripciones son las mismas que en el ticket de venta y queda listo para imprimirse por la térmica si algún día se quiere.
+- `apps/pos/src/components/layaways/receipt.js` — una sola función arma el HTML, que sirve para la previsualización en pantalla y para la ventana de impresión (`window.print`), más `receiptText()` y `whatsappUrl()` (wa.me con el teléfono del cliente, anteponiendo lada 52 a los números de 10 dígitos). Guardar en PDF sale gratis del diálogo de impresión.
+- `LayawayReceiptModal.jsx` — se abre desde la ficha del apartado ("Comprobante") y desde la pantalla de éxito al registrarlo ("Imprimir comprobante"). Botones: Imprimir · WhatsApp · Copiar texto.
+- Lleva lo que pidió: descripción del producto, importe total, lo que dejó, lo que resta, fecha del apartado, fecha de vencimiento e historial de abonos.
+- Las líneas de pie del negocio ("no se aceptan devoluciones…") solo se imprimen cuando el apartado ya está liquidado: antes de eso todavía no hay venta.
+
+**Bug de un día en las fechas límite (encontrado al armar el comprobante).** `due_date` es un `DATE` sin hora: llega como medianoche UTC y formatearlo con `timeZone: 'America/Mexico_City'` lo corría **un día hacia atrás** (un apartado al 30 de noviembre se leía "29 de noviembre"). Se añadió `fechaDia()` —misma función pero en UTC— en `receipt.js`, `LayawaysList.jsx` y `LayawayDetailModal.jsx`, y todos los usos de `due_date` pasaron a ella. Los timestamps reales (`created_at`, abonos) siguen en horario de México, que ahí sí es lo correcto.
+
+**5. Devolución parcial al cancelar** (`migración 049`). Pablo escribió *"al cancelar un apartado se regresa en crédito la mitad del cálculo del mínimo de apartado"*, que admite dos lecturas con resultados muy distintos: devolverle solo la mitad del anticipo mínimo, o devolverle todo menos esa mitad. En vez de adivinar se implementó la pieza que ambas necesitan: `cancelLayaway` acepta `refund_amount` (si se omite, devuelve todo lo abonado, el comportamiento anterior), valida `0 ≤ refund_amount ≤ paid_amount`, fuerza 0 con `forfeited`, abona al crédito solo lo devuelto y anota en las notas cuánto retuvo la tienda. La columna `cancel_refund_amount` lo guarda; NULL en cancelaciones anteriores significa "se devolvió todo". En pantalla, el campo "¿Cuánto se le devuelve?" arranca con todo lo abonado y avisa cuánto retiene la tienda. **Falta que Pablo diga qué monto debe proponer el sistema por omisión.**
+
+**Verificado contra el API local:** comprobante con dos artículos, dos abonos y fecha límite correcta; liquidación (crea venta, el stock no se vuelve a descontar); recibo de un apartado liquidado y de uno cancelado; 404 en apartado inexistente; apartado sin cliente rechazado con 400; devolución parcial de $250 sobre $300 abonados (saldo del cliente +250 y nota "la tienda retuvo $50.00"); y rechazo de devolución mayor a lo abonado, de monto negativo y de `forfeited` con monto (se fuerza a 0).
+
+### Cambio al Esquema de Base de Datos
+- **layaways.cancel_refund_amount** `NUMERIC(10,2)` — monto devuelto al cancelar; la diferencia contra `paid_amount` se la queda la tienda. NULL = cancelación previa a la migración 049, donde se devolvía todo. Migración 049.
+
+---
+
+## Sesión: 5 de Noviembre, 2026
+
+### Etapa 5 — segunda ronda de ajustes de apartados y reporte de crédito de clientes
+
+Pablo probó los cambios del 31 de octubre (*"las impresiones de comprobantes y todo lo revisado funciona bien"*) y dejó cuatro cosas.
+
+**1. Bug: "al seleccionar ver detalle no se muestran los productos ni cantidad precio o importe".** Real, y era de frontend. `LayawaysList` abría el modal con `setSelected(l)`, pasándole **la fila del listado**, y `GET /api/layaways` no trae `items` ni `payments` — solo `items_count`. El modal usaba ese objeto tal cual y nunca pedía el detalle, así que la tabla de artículos salía vacía y los abonos decían "sin abonos registrados"; solo aparecían después de abonar o cancelar, porque esas acciones sí refrescan con `getLayawayById`. Ahora `LayawayDetailModal` carga el apartado completo al montarse (la fila de la lista sigue sirviendo para pintar el encabezado de inmediato) y las dos tablas muestran "Cargando…" mientras llega.
+
+**2. Regla de cancelación, resuelta.** Pablo contestó *"la Opción 2, en ese ejemplo se regresan 250 en crédito de tienda"* — el nombre y el número no coinciden (los $250 eran la opción 1), pero el monto concuerda con la nota que pidió imprimir, *"se recupera 50% del anticipo"*, así que manda el número: **se le devuelve la mitad del mínimo de apartado, nunca más de lo que abonó**. Sobre un apartado de $2,000 (mínimo $500) son $250 aunque haya abonado $1,200.
+- `packages/api/src/utils/layaway-rules.ts` (nuevo) concentra la regla: `depositoMinimo()` (25% con piso de $100, acotado al total) y `reembolsoCancelacionSugerido()`. Está en utils porque la necesitan la cancelación, el comprobante y el POS.
+- `cancelLayaway` ya no devuelve todo lo abonado cuando se omite `refund_amount`: aplica la regla. El monto explícito sigue respetándose (la cajera puede acordar otra cosa) y `forfeited` sigue forzando 0.
+- `hydrate` agrega el campo calculado `suggested_refund_amount`, así que el POS **no recalcula la regla**: la lee del API y la propone en el campo "¿Cuánto se le devuelve?", con botón "Usar sugerido" y la leyenda "Por regla le toca $X (la mitad del mínimo de apartado)".
+
+**3. Condiciones impresas en el comprobante**, literales como las dictó: *"Vencido el plazo sin liquidar se recupera 50% del anticipo en crédito de tienda. No hay cambios de mercancía apartada."* Van en el payload (`terms: string[]`, de `condicionesApartado()`) y no escritas en el POS, para que impriman igual desde cualquier pantalla y para que cambiarlas sea cambiar la regla. En un apartado liquidado solo se imprime la segunda frase —ya no hay plazo— y en uno cancelado ninguna. Salen en el HTML y en el texto de WhatsApp.
+
+También se añadió al **último paso del alta** un recuadro "Dile al cliente" con las dos condiciones y el monto ya calculado para ese apartado (la mitad del mínimo, acotada al anticipo que está dejando): el papel se lo lleva, pero la conversación es en el mostrador, antes de cobrar.
+
+**4. Reporte de crédito de tienda** (*"para que sepan cuánto crédito tienen, ya que lo piden regularmente"*):
+- `GET /api/clients/:id/credit-statement` — estado de cuenta imprimible: saldo, fecha y hora a la que corresponde, y los movimientos con el saldo que dejó cada uno. Lo arma `TicketService.buildCreditStatementPayload` (modelo `credit-statement.model.ts`), con el mismo bloque de negocio que el ticket y el comprobante de apartado. `limit` configurable (20 por omisión) y `movements_truncated` para avisar en el papel que se recortó.
+- `creditStatement.js` + `CreditStatementModal.jsx` en el POS, mismo patrón que el comprobante de apartado: Imprimir · WhatsApp · Copiar texto. Se llega desde la ficha del cliente ("Comprobante de crédito") y desde el listado, donde los clientes con saldo tienen un enlace "Crédito" directo — es lo que más se pide en mostrador.
+- `GET /api/clients` ahora devuelve `summary.store_credit_total`, calculado **con el mismo WHERE que el listado**, así que respeta la búsqueda y el filtro "solo con crédito". El POS lo muestra junto al conteo de clientes: cuánto crédito trae la tienda a cuestas.
+
+**Redondeo a pesos (pedido de Pablo el 5 de noviembre).** La mitad del mínimo salía con centavos —un apartado de $450 proponía devolver $56.25— y entregar centavos en el mostrador es incómodo, así que `reembolsoCancelacionSugerido` redondea a pesos enteros. El tope de lo abonado se aplica **después** del redondeo y se respeta tal cual: si abonó $56.50 se le devuelven $56.50, no se le inventan pesos que no pagó. Verificado: $450 → $56, $410 → $51, $1,000 → $125, y un artículo de $90 (donde el mínimo es el total) → $45. El **anticipo sugerido** se dejó con centavos a propósito: es el 25% exacto que Pablo validó como referencia, y redondearlo desvirtuaría el número que él pidió ver.
+
+**Verificado contra el API local:** apartado nuevo de $2,000 con $600 de anticipo → `suggested_refund_amount` = 250; cancelarlo **sin** mandar monto devolvió exactamente $250 al crédito (saldo 350 → 600), retuvo $350 con su nota y regresó el stock; un apartado con anticipo de $80 propone $80 (la regla se topa en lo abonado); `refund_amount: 0` explícito se respeta; el comprobante imprime las dos condiciones y la fecha límite correcta (30 de noviembre, no 29); el detalle trae artículos con descripción, cantidad, precio e importe, más `stock_restante`; el estado de cuenta responde con saldo y movimientos, y 404 en cliente inexistente; `store_credit_total` cuadra. Sin migraciones nuevas.

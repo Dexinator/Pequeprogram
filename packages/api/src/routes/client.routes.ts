@@ -8,7 +8,8 @@ import {
   createClient,
   updateClient,
   adjustStoreCredit,
-  getStoreCreditMovements
+  getStoreCreditMovements,
+  getCreditStatement
 } from '../controllers/client.controller';
 
 const router = express.Router();
@@ -43,6 +44,12 @@ router
 router
   .route('/:id/store-credit/adjust')
   .post(authorize(['superadmin', 'admin', 'manager', 'gerente']), adjustStoreCredit);
+
+// Estado de cuenta imprimible del crédito: lo puede sacar cualquiera que
+// atienda mostrador, igual que un ticket.
+router
+  .route('/:id/credit-statement')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor', 'valuator', 'valuador']), getCreditStatement);
 
 router
   .route('/:id/store-credit/movements')

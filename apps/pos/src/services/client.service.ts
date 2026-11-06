@@ -67,7 +67,9 @@ export class ClientService {
   }
 
   /** Listado paginado para la pantalla de Clientes. */
-  async listClients(params: ListClientsParams = {}): Promise<{ clients: Client[]; total: number; pages: number }> {
+  async listClients(
+    params: ListClientsParams = {}
+  ): Promise<{ clients: Client[]; total: number; pages: number; storeCreditTotal: number }> {
     try {
       this.ensureTokenIsSet();
       const query: Record<string, any> = {};
@@ -82,12 +84,25 @@ export class ClientService {
       return {
         clients: response?.data || [],
         total: response?.pagination?.total || 0,
-        pages: response?.pagination?.pages || 0
+        pages: response?.pagination?.pages || 0,
+        // Suma de los saldos de los clientes que cumplen el filtro, no solo
+        // los de la página.
+        storeCreditTotal: Number(response?.summary?.store_credit_total) || 0
       };
     } catch (error) {
       console.error('Error al listar clientes:', error);
       throw error;
     }
+  }
+
+  /**
+   * Estado de cuenta del crédito, para imprimirlo o mandárselo al cliente.
+   * Los clientes preguntan su saldo seguido y querían llevárselo por escrito.
+   */
+  async getCreditStatement(id: number, limit = 20): Promise<any> {
+    this.ensureTokenIsSet();
+    const response = await this.http.get<any>(`/clients/${id}/credit-statement`, { limit });
+    return response?.data;
   }
 
   /** Contadores para el encabezado de la ficha (una llamada en vez de cinco). */

@@ -6,7 +6,26 @@ import {
   TicketItem,
   TicketPayment,
 } from '../models/ticket.model';
+import {
+  LayawayReceiptPayloadV1,
+  LayawayReceiptPayment,
+} from '../models/layaway-receipt.model';
+import {
+  CreditStatementPayloadV1,
+  CreditStatementMovement,
+} from '../models/credit-statement.model';
 import { buildProductDescription, OfferFeatureDef } from '../utils/product-description';
+import { condicionesApartado } from '../utils/layaway-rules';
+
+/** Cómo se le explica al cliente cada movimiento de su saldo. */
+const CREDIT_MOVEMENT_LABELS: Record<string, string> = {
+  manual_add: 'Carga de crédito',
+  manual_subtract: 'Ajuste a la baja',
+  sale_charge: 'Pago de compra con su saldo',
+  sale_refund: 'Devolución de mercancía',
+  valuation_credit: 'Crédito por lo que nos vendió',
+  initial_load: 'Saldo inicial',
+};
 
 const PAYMENT_LABELS: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -198,6 +217,209 @@ export class TicketService {
       offerFeatureDefs: offerFeatureKeysBySubcategory.get(row.subcategory_id) || [],
       otrProductName: row.otr_product_name,
     });
+  }
+
+  /**
+   * Comprobante del apartado para el cliente.
+   *
+   * Mismos bloques que el ticket de venta (negocio, artículos con su
+   * descripción completa) más lo propio del apartado: lo que dejó, lo que le
+   * falta, hasta cuándo, y el historial de abonos.
+   */
+  async buildLayawayReceiptPayload(layawayId: number): Promise<LayawayReceiptPayloadV1 | null> {
+    const dbClient = await pool.connect();
+    try {
+      const headerResult = await dbClient.query(
+        `SELECT l.id, l.created_at, l.due_date, l.status, l.location,
+                l.total_amount, l.paid_amount,
+                u.first_name AS cashier_first_name,
+                u.last_name  AS cashier_last_name,
+                c.id         AS client_id,
+                c.name       AS client_name,
+                c.phone      AS client_phone
+           FROM layaways l
+           LEFT JOIN users   u ON u.id = l.user_id
+           LEFT JOIN clients c ON c.id = l.client_id
+          WHERE l.id = $1`,
+        [layawayId]
+      );
+      const row = headerResult.rows[0];
+      if (!row) return null;
+
+      const items = await this.fetchLayawayItems(dbClient, layawayId);
+      const payments = await this.fetchLayawayPayments(dbClient, layawayId);
+
+      const total = parseFloat(row.total_amount) || 0;
+      const paid = parseFloat(row.paid_amount) || 0;
+
+      return {
+        version: 1,
+        business: {
+          name: config.business.name,
+          address: config.business.address,
+          phone: config.business.phone,
+          rfc: config.business.rfc,
+          website: config.business.website,
+          logo_url: config.business.logoUrl,
+          footer_lines: config.business.footerLines,
+        },
+        layaway: {
+          id: row.id,
+          date: new Date(row.created_at).toISOString(),
+          due_date: row.due_date ? new Date(row.due_date).toISOString() : null,
+          status: row.status,
+          is_overdue:
+            row.status === 'active' && row.due_date
+              ? new Date(row.due_date) < new Date(new Date().toDateString())
+              : false,
+          location: row.location,
+          cashier: this.formatCashier(row.cashier_first_name, row.cashier_last_name),
+        },
+        client: row.client_id
+          ? { id: row.client_id, name: row.client_name, phone: row.client_phone || null }
+          : null,
+        items,
+        totals: {
+          items_count: items.reduce((sum, it) => sum + it.quantity, 0),
+          total,
+          paid,
+          balance_due: Math.round((total - paid) * 100) / 100,
+        },
+        payments,
+        terms: condicionesApartado(row.status),
+      };
+    } finally {
+      dbClient.release();
+    }
+  }
+
+  /**
+   * Estado de cuenta del crédito de tienda, para entregárselo al cliente.
+   *
+   * El saldo sale de `clients.store_credit`, que es el que manda; los
+   * movimientos son el detalle auditado de cómo llegó ahí.
+   */
+  async buildCreditStatementPayload(
+    clientId: number,
+    limit = 20
+  ): Promise<CreditStatementPayloadV1 | null> {
+    const dbClient = await pool.connect();
+    try {
+      const clientResult = await dbClient.query(
+        'SELECT id, name, phone, store_credit FROM clients WHERE id = $1',
+        [clientId]
+      );
+      const row = clientResult.rows[0];
+      if (!row) return null;
+
+      // Se pide uno más del límite solo para saber si quedaron movimientos
+      // fuera y decírselo al cliente en el papel.
+      const movementsResult = await dbClient.query(
+        `SELECT m.created_at, m.movement_type, m.amount, m.balance_after, m.reason
+           FROM client_credit_movements m
+          WHERE m.client_id = $1
+          ORDER BY m.created_at DESC, m.id DESC
+          LIMIT $2`,
+        [clientId, limit + 1]
+      );
+
+      const truncated = movementsResult.rows.length > limit;
+      const movements: CreditStatementMovement[] = movementsResult.rows
+        .slice(0, limit)
+        .map(m => ({
+          date: new Date(m.created_at).toISOString(),
+          amount: parseFloat(m.amount),
+          label: CREDIT_MOVEMENT_LABELS[m.movement_type] || m.movement_type,
+          balance_after: parseFloat(m.balance_after),
+          reason: m.reason || null,
+        }));
+
+      return {
+        version: 1,
+        business: {
+          name: config.business.name,
+          address: config.business.address,
+          phone: config.business.phone,
+          rfc: config.business.rfc,
+          website: config.business.website,
+          logo_url: config.business.logoUrl,
+          footer_lines: config.business.footerLines,
+        },
+        client: { id: row.id, name: row.name, phone: row.phone || null },
+        balance: parseFloat(row.store_credit) || 0,
+        generated_at: new Date().toISOString(),
+        movements,
+        movements_truncated: truncated,
+      };
+    } finally {
+      dbClient.release();
+    }
+  }
+
+  private async fetchLayawayItems(dbClient: PoolClient, layawayId: number): Promise<TicketItem[]> {
+    const query = `
+      SELECT
+        li.inventario_id          AS sku,
+        li.quantity,
+        li.unit_price,
+        li.total_price,
+        sub.id                    AS subcategory_id,
+        sub.name                  AS subcategory_name,
+        cat.name                  AS category_name,
+        b.name                    AS brand_name,
+        vi.features               AS features,
+        oi.product_name           AS otr_product_name
+      FROM layaway_items li
+      LEFT JOIN inventario       i   ON li.inventario_id = i.id
+      LEFT JOIN valuation_items  vi  ON i.valuation_item_id = vi.id
+      LEFT JOIN subcategories    sub ON vi.subcategory_id = sub.id
+      LEFT JOIN categories       cat ON vi.category_id    = cat.id
+      LEFT JOIN brands           b   ON vi.brand_id       = b.id
+      LEFT JOIN otherprods_items oi  ON i.id = oi.sku
+      WHERE li.layaway_id = $1
+      ORDER BY li.id ASC
+    `;
+    const result = await dbClient.query(query, [layawayId]);
+
+    const subcategoryIds = Array.from(
+      new Set(
+        result.rows
+          .map(r => r.subcategory_id)
+          .filter((id): id is number => typeof id === 'number')
+      )
+    );
+    const offerFeatureKeysBySubcategory = await this.fetchOfferFeatureKeys(
+      dbClient,
+      subcategoryIds
+    );
+
+    return result.rows.map(row => ({
+      sku: row.sku,
+      description: this.buildItemDescription(row, offerFeatureKeysBySubcategory),
+      quantity: parseInt(row.quantity, 10),
+      unit_price: parseFloat(row.unit_price),
+      total: parseFloat(row.total_price),
+    }));
+  }
+
+  private async fetchLayawayPayments(
+    dbClient: PoolClient,
+    layawayId: number
+  ): Promise<LayawayReceiptPayment[]> {
+    const result = await dbClient.query(
+      `SELECT payment_method, amount, notes, created_at
+         FROM layaway_payments
+        WHERE layaway_id = $1
+        ORDER BY id ASC`,
+      [layawayId]
+    );
+    return result.rows.map(row => ({
+      date: new Date(row.created_at).toISOString(),
+      method: row.payment_method,
+      label: PAYMENT_LABELS[row.payment_method] || row.payment_method,
+      amount: parseFloat(row.amount),
+      notes: row.notes || null,
+    }));
   }
 
   private async fetchPayments(dbClient: PoolClient, saleId: number): Promise<TicketPayment[]> {

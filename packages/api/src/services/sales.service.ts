@@ -13,10 +13,96 @@ import {
 } from '../models/sales.model';
 import { BaseService } from './base.service';
 import { pool } from '../db';
+import { BusinessError } from '../utils/errors';
 
 export class SalesService extends BaseService<Sale> {
   constructor() {
     super('sales');
+  }
+
+  /**
+   * Inserta una venta con sus pagos y renglones.
+   *
+   * Extraído de `createSale` para que liquidar un apartado cree una venta real
+   * (y por tanto aparezca en el historial y las estadísticas) sin duplicar
+   * estos INSERT. `updateStock` es la única diferencia entre los dos casos: en
+   * una venta normal el stock se descuenta aquí, pero en un apartado ya se
+   * descontó al apartar, así que liquidar NO debe volver a descontarlo.
+   *
+   * Corre dentro de la transacción de quien la llama; no hace BEGIN ni COMMIT.
+   */
+  async insertSaleRecord(
+    dbClient: PoolClient,
+    opts: {
+      clientId: number | null;
+      clientName: string | null;
+      userId: number;
+      totalAmount: number;
+      discountType?: string | null;
+      discountValue?: number;
+      discountAmount?: number;
+      cashReceived?: number | null;
+      changeGiven?: number | null;
+      paymentMethod: string;
+      notes?: string | null;
+      location?: string | null;
+      payments: { payment_method: string; amount: number; notes?: string }[];
+      items: { inventario_id: string; quantity_sold: number; unit_price: number; notes?: string }[];
+      updateStock: boolean;
+    }
+  ): Promise<{ sale: any; insertedPayments: any[]; insertedItems: any[] }> {
+    const saleResult = await dbClient.query(
+      `INSERT INTO sales (client_id, client_name, user_id, total_amount, discount_type, discount_value, discount_amount, cash_received, change_given, payment_method, notes, location)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       RETURNING *`,
+      [
+        opts.clientId,
+        opts.clientName,
+        opts.userId,
+        opts.totalAmount,
+        opts.discountType ?? null,
+        opts.discountValue ?? 0,
+        opts.discountAmount ?? 0,
+        opts.cashReceived ?? null,
+        opts.changeGiven ?? null,
+        opts.paymentMethod,
+        opts.notes ?? null,
+        opts.location ?? 'Polanco'
+      ]
+    );
+    const sale = saleResult.rows[0];
+
+    const insertedPayments = [];
+    for (const payment of opts.payments) {
+      const paymentResult = await dbClient.query(
+        `INSERT INTO payment_details (sale_id, payment_method, amount, notes)
+         VALUES ($1, $2, $3, $4)
+         RETURNING *`,
+        [sale.id, payment.payment_method, payment.amount, payment.notes || null]
+      );
+      insertedPayments.push(paymentResult.rows[0]);
+    }
+
+    const insertedItems = [];
+    for (const item of opts.items) {
+      const totalPrice = item.unit_price * item.quantity_sold;
+      const itemResult = await dbClient.query(
+        `INSERT INTO sale_items (sale_id, inventario_id, quantity_sold, unit_price, total_price, notes)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING *`,
+        [sale.id, item.inventario_id, item.quantity_sold, item.unit_price, totalPrice, item.notes || null]
+      );
+      insertedItems.push(itemResult.rows[0]);
+
+      if (opts.updateStock) {
+        await dbClient.query(
+          'UPDATE inventario SET quantity = quantity - $1, updated_at = NOW() WHERE id = $2',
+          [item.quantity_sold, item.inventario_id]
+        );
+      }
+    }
+
+    return { sale, insertedPayments, insertedItems };
   }
 
   async createSale(userId: number, data: CreateSaleDto): Promise<Sale> {
@@ -33,12 +119,12 @@ export class SalesService extends BaseService<Sale> {
         const stockResult = await dbClient.query(stockQuery, [item.inventario_id]);
         
         if (stockResult.rows.length === 0) {
-          throw new Error(`Producto ${item.inventario_id} no encontrado en inventario`);
+          throw new BusinessError(`Producto ${item.inventario_id} no encontrado en inventario`);
         }
         
         const availableQuantity = stockResult.rows[0].quantity;
         if (availableQuantity < item.quantity_sold) {
-          throw new Error(`Stock insuficiente para producto ${item.inventario_id}. Disponible: ${availableQuantity}, Solicitado: ${item.quantity_sold}`);
+          throw new BusinessError(`Stock insuficiente para producto ${item.inventario_id}. Disponible: ${availableQuantity}, Solicitado: ${item.quantity_sold}`);
         }
       }
       
@@ -50,7 +136,7 @@ export class SalesService extends BaseService<Sale> {
         const clientResult = await dbClient.query(clientQuery, [data.client_id]);
         
         if (clientResult.rows.length === 0) {
-          throw new Error('El cliente especificado no existe');
+          throw new BusinessError('El cliente especificado no existe');
         }
         clientStoreCredit = parseFloat(clientResult.rows[0].store_credit) || 0;
       } else if (data.client_id) {
@@ -59,11 +145,11 @@ export class SalesService extends BaseService<Sale> {
         const clientResult = await dbClient.query(clientQuery, [data.client_id]);
         
         if (clientResult.rows.length === 0) {
-          throw new Error('El cliente especificado no existe');
+          throw new BusinessError('El cliente especificado no existe');
         }
         clientStoreCredit = parseFloat(clientResult.rows[0].store_credit) || 0;
       } else if (!data.client_name) {
-        throw new Error('Debe especificar client_id o client_name');
+        throw new BusinessError('Debe especificar client_id o client_name');
       }
       
       // 3. Calcular subtotal, descuento y total neto; validar payment_details
@@ -73,13 +159,13 @@ export class SalesService extends BaseService<Sale> {
 
       // Validar que payment_details esté presente y no esté vacío
       if (!data.payment_details || data.payment_details.length === 0) {
-        throw new Error('Debe especificar al menos un método de pago');
+        throw new BusinessError('Debe especificar al menos un método de pago');
       }
 
       // Validar que la suma de los payment_details sea igual al total (neto de descuento)
       const paymentTotal = data.payment_details.reduce((sum, payment) => sum + payment.amount, 0);
       if (Math.abs(paymentTotal - totalAmount) > 0.01) { // Tolerancia de 1 centavo para errores de redondeo
-        throw new Error(`El total de los pagos (${paymentTotal}) no coincide con el total de la venta (${totalAmount})`);
+        throw new BusinessError(`El total de los pagos (${paymentTotal}) no coincide con el total de la venta (${totalAmount})`);
       }
       
       // Validar crédito en tienda si se está usando
@@ -87,13 +173,13 @@ export class SalesService extends BaseService<Sale> {
       if (creditPayments.length > 0) {
         // Solo clientes registrados pueden usar crédito
         if (!data.client_id) {
-          throw new Error('Solo clientes registrados pueden usar crédito en tienda');
+          throw new BusinessError('Solo clientes registrados pueden usar crédito en tienda');
         }
         
         // Validar que no se use más crédito del disponible
         const totalCreditUsed = creditPayments.reduce((sum, payment) => sum + payment.amount, 0);
         if (totalCreditUsed > clientStoreCredit) {
-          throw new Error(`Crédito insuficiente. Disponible: $${clientStoreCredit.toFixed(2)}, Solicitado: $${totalCreditUsed.toFixed(2)}`);
+          throw new BusinessError(`Crédito insuficiente. Disponible: $${clientStoreCredit.toFixed(2)}, Solicitado: $${totalCreditUsed.toFixed(2)}`);
         }
       }
       
@@ -115,80 +201,23 @@ export class SalesService extends BaseService<Sale> {
         ? null
         : Math.round((Number(data.cash_received) || 0) * 100) / 100;
 
-      const saleQuery = `
-        INSERT INTO sales (client_id, client_name, user_id, total_amount, discount_type, discount_value, discount_amount, cash_received, change_given, payment_method, notes, location)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING *
-      `;
-
-      const saleResult = await dbClient.query(saleQuery, [
-        data.client_id || null,
-        data.client_name || null,
+      const { sale, insertedPayments, insertedItems } = await this.insertSaleRecord(dbClient, {
+        clientId: data.client_id || null,
+        clientName: data.client_name || null,
         userId,
         totalAmount,
-        discountAmount > 0 ? data.discount_type : null,
-        discountAmount > 0 ? (Number(data.discount_value) || 0) : 0,
+        discountType: discountAmount > 0 ? (data.discount_type || null) : null,
+        discountValue: discountAmount > 0 ? (Number(data.discount_value) || 0) : 0,
         discountAmount,
         cashReceived,
         changeGiven,
-        primaryPaymentMethod,
-        data.notes || null,
-        'Polanco' // location por defecto
-      ]);
-      
-      const sale = saleResult.rows[0];
-      
-      // 5. Crear los payment_details
-      const insertedPayments = [];
-      for (const payment of data.payment_details) {
-        const paymentQuery = `
-          INSERT INTO payment_details (sale_id, payment_method, amount, notes)
-          VALUES ($1, $2, $3, $4)
-          RETURNING *
-        `;
-        
-        const paymentResult = await dbClient.query(paymentQuery, [
-          sale.id,
-          payment.payment_method,
-          payment.amount,
-          payment.notes || null
-        ]);
-        
-        insertedPayments.push(paymentResult.rows[0]);
-      }
-      
-      // 6. Crear los items de venta y actualizar inventario
-      const insertedItems = [];
-      
-      for (const item of data.items) {
-        // Insertar sale_item
-        const itemQuery = `
-          INSERT INTO sale_items (sale_id, inventario_id, quantity_sold, unit_price, total_price, notes)
-          VALUES ($1, $2, $3, $4, $5, $6)
-          RETURNING *
-        `;
-        
-        const totalPrice = item.unit_price * item.quantity_sold;
-        const itemResult = await dbClient.query(itemQuery, [
-          sale.id,
-          item.inventario_id,
-          item.quantity_sold,
-          item.unit_price,
-          totalPrice,
-          item.notes || null
-        ]);
-        
-        insertedItems.push(itemResult.rows[0]);
-        
-        // Actualizar inventario (reducir stock)
-        const updateInventoryQuery = `
-          UPDATE inventario 
-          SET quantity = quantity - $1, updated_at = NOW()
-          WHERE id = $2
-        `;
-        
-        await dbClient.query(updateInventoryQuery, [item.quantity_sold, item.inventario_id]);
-      }
+        paymentMethod: primaryPaymentMethod,
+        notes: data.notes || null,
+        location: 'Polanco', // location por defecto
+        payments: data.payment_details,
+        items: data.items,
+        updateStock: true
+      });
       
       // 7. Actualizar crédito del cliente si se usó crédito en tienda
       if (creditPayments.length > 0 && data.client_id) {

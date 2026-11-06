@@ -7,6 +7,7 @@ import ConsignacionesModule from './modules/ConsignacionesModule';
 import OnlineSalesModule from './modules/OnlineSalesModule';
 import ClientesModule from './modules/ClientesModule';
 import DevolucionesModule from './modules/DevolucionesModule';
+import ApartadosModule from './modules/ApartadosModule';
 import CalculatorModal from './common/CalculatorModal';
 
 export default function POSApp() {
@@ -35,6 +36,8 @@ export default function POSApp() {
         return <ClientesModule />;
       case 'devoluciones':
         return <DevolucionesModule />;
+      case 'apartados':
+        return <ApartadosModule />;
       case 'ventas-online':
         return <OnlineSalesModule />;
       default:
@@ -61,6 +64,11 @@ export default function POSApp() {
     consignaciones: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+      </svg>
+    ),
+    apartados: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
       </svg>
     ),
     devoluciones: (
@@ -99,7 +107,8 @@ export default function POSApp() {
                   compras: 'Compras',
                   consignaciones: 'Consignaciones',
                   clientes: 'Clientes',
-                  devoluciones: 'Devoluciones'
+                  devoluciones: 'Devoluciones',
+                  apartados: 'Apartados'
                 }).map(([key, label]) => (
                   <button
                     key={key}
@@ -151,7 +160,8 @@ export default function POSApp() {
               compras: 'Compras',
               consignaciones: 'Consig.',
               clientes: 'Clientes',
-              devoluciones: 'Devol.'
+              devoluciones: 'Devol.',
+              apartados: 'Apartados'
             }).map(([key, label]) => (
               <button
                 key={key}

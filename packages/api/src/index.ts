@@ -74,8 +74,16 @@ app.use((req: Request, res: Response) => {
 // campo faltante se veían en el POS como error interno sin explicación.
 // Ahora: si el controller ya fijó un 4xx, se respeta y se devuelve su mensaje.
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  const isClientError = res.statusCode >= 400 && res.statusCode < 500;
-  const status = isClientError ? res.statusCode : 500;
+  // Un error puede traer su propio código (BusinessError) o el controller pudo
+  // haber fijado uno con res.status(4xx) antes de lanzarlo. Cualquiera de los
+  // dos manda; lo demás es una falla real del servidor.
+  const errStatus = (err as any)?.status;
+  const statusFromError =
+    typeof errStatus === 'number' && errStatus >= 400 && errStatus < 500 ? errStatus : null;
+  const statusFromRes = res.statusCode >= 400 && res.statusCode < 500 ? res.statusCode : null;
+
+  const status = statusFromError ?? statusFromRes ?? 500;
+  const isClientError = status < 500;
 
   if (isClientError) {
     console.warn(`Error ${status} en ${req.method} ${req.originalUrl}:`, err.message);

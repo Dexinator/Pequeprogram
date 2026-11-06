@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { pool } from '../db';
 import { PoolClient } from 'pg';
+import { TicketService } from '../services/ticket.service';
+
+const ticketService = new TicketService();
 
 // @desc    Search clients
 // @route   GET /api/clients/search
@@ -78,11 +81,17 @@ export const listClients = asyncHandler(async (req: Request, res: Response) => {
 
   const whereSql = where.join(' AND ');
 
+  // El total de saldos sale con el mismo WHERE que el listado: Pablo necesita
+  // saber cuánto crédito trae la tienda a cuestas, y filtrado tiene que
+  // corresponder a lo que se está viendo.
   const countResult = await pool.query(
-    `SELECT COUNT(*)::int AS total FROM clients c WHERE ${whereSql}`,
+    `SELECT COUNT(*)::int AS total,
+            COALESCE(SUM(c.store_credit), 0) AS store_credit_total
+       FROM clients c WHERE ${whereSql}`,
     params
   );
   const total = countResult.rows[0]?.total || 0;
+  const storeCreditTotal = parseFloat(countResult.rows[0]?.store_credit_total) || 0;
 
   const listResult = await pool.query(
     `SELECT c.id, c.name, c.phone, c.email, c.identification, c.notes,
@@ -97,6 +106,10 @@ export const listClients = asyncHandler(async (req: Request, res: Response) => {
   res.json({
     success: true,
     data: listResult.rows,
+    summary: {
+      /** Suma del crédito de todos los clientes que cumplen el filtro. */
+      store_credit_total: storeCreditTotal
+    },
     pagination: {
       page,
       limit,
@@ -104,6 +117,30 @@ export const listClients = asyncHandler(async (req: Request, res: Response) => {
       pages: Math.ceil(total / limit)
     }
   });
+});
+
+// @desc    Estado de cuenta del crédito de tienda, para imprimir y entregar
+// @route   GET /api/clients/:id/credit-statement
+// @access  Private
+// @note    Lo pidió Pablo porque los clientes preguntan su saldo seguido. El
+//          documento lo arma TicketService, igual que el ticket y el
+//          comprobante de apartado, para que los tres salgan parejos.
+export const getCreditStatement = asyncHandler(async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.status(400);
+    throw new Error('ID de cliente inválido');
+  }
+
+  const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 100);
+  const payload = await ticketService.buildCreditStatementPayload(id, limit);
+
+  if (!payload) {
+    res.status(404);
+    throw new Error('Cliente no encontrado');
+  }
+
+  res.json({ success: true, data: payload });
 });
 
 // @desc    Resumen del cliente para el encabezado de su ficha

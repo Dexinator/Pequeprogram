@@ -1,5 +1,9 @@
 # Etapa 5 — POS: Sistema de apartados
 
+> **Estado: implementada el 2026-10-27.** Migración `048-create-layaways-tables.sql`.
+>
+> **Respuesta de Pablo al anticipo mínimo (2026-10-22):** *"El anticipo es de una cuarta parte, o sea un 25% y como mínimo $100 pesos. En ocasiones dejo que me aparten con menos de 25%, me gustaría dejar esa flexibilidad pero que se calcule el 25% como referencia."* → Se implementa como **sugerencia con botón "Usar sugerido"**, no como requisito: si la cajera captura menos, se avisa y se deja continuar. Plazo máximo: libre (default de 30 días, editable).
+
 **Apps:** `apps/pos`, `packages/api`, posiblemente `apps/print-bridge`.
 **Dev:** ~3.5 días.
 **Depende de:** Etapa 3 (la ficha del cliente es donde se consultan sus apartados).

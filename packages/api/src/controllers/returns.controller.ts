@@ -51,15 +51,11 @@ export const createReturn = asyncHandler(async (req: Request, res: Response) => 
 
   const dto: CreateReturnDto = { sale_id, return_type, refund_method, items, reason, notes, location };
 
-  try {
-    const created = await returnsService.createReturn(userId, dto);
-    const full = await returnsService.getReturnById(created.id as number);
-    res.status(201).json({ success: true, data: full });
-  } catch (error: any) {
-    // Las validaciones del servicio son errores del usuario, no del servidor
-    res.status(400);
-    throw error;
-  }
+  // Las validaciones del servicio lanzan BusinessError, que el middleware
+  // traduce a 400. Un fallo real de base de datos sigue siendo 500.
+  const created = await returnsService.createReturn(userId, dto);
+  const full = await returnsService.getReturnById(created.id as number);
+  res.status(201).json({ success: true, data: full });
 });
 
 // @desc    Historial de devoluciones
