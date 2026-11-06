@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import healthRoutes from './health.routes';
 import authRoutes from './auth.routes';
 import categoryRoutes from './category.routes';
 import productRoutes from './product.routes';
@@ -20,6 +21,10 @@ import shippingRoutes from './shipping.routes';
 import appointmentRoutes from './appointment.routes';
 
 const router = Router();
+
+// Chequeo de salud: público y sin dependencias, para verificar despliegues y
+// monitoreo. Va primero para que no quede detrás de ningún middleware.
+router.use('/health', healthRoutes);
 
 // Rutas de autenticación
 router.use('/auth', authRoutes);

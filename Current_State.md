@@ -3830,3 +3830,14 @@ Orden seguido, que es el que no deja nada roto a medias:
 3. **POS** por Vercel al mergear `development` → `main` (merge `155e994`).
 
 Nota: el API no tiene endpoint `/health` —ni en producción ni en staging, los dos dan 404—, aunque el CLAUDE.md lo menciona. La verificación se hizo con el 401/404 de las rutas y con la tienda pública.
+
+### `GET /api/health` — el endpoint que el CLAUDE.md prometía y no existía
+
+Al verificar el despliegue a producción salió que `/api/health` respondía **404** en local, en staging y en producción: el CLAUDE.md lo documentaba desde el inicio del proyecto, pero nunca se implementó. Verificar un despliegue se venía haciendo por el 401 de una ruta protegida, que confirma que el código nuevo está arriba pero no dice nada de la base de datos.
+
+`routes/health.routes.ts` (nuevo), montado **primero** en `routes/index.ts` para que no quede detrás de ningún middleware:
+- **200** con `{ status: 'ok', database: 'ok', uptime_seconds, timestamp }` cuando el proceso vive y `SELECT 1` contesta.
+- **503** con `status: 'degraded'` cuando la base no responde — no 500, porque el proceso está sano y lo que falla es la dependencia; es el código que un balanceador o un monitor lee como "no me mandes tráfico todavía".
+- Público a propósito: un chequeo que pide credenciales no sirve para monitoreo. Por eso responde lo mínimo y **nunca** la versión del motor, el nombre de la base ni la cadena de conexión.
+
+**Verificado los tres estados en local:** 200 con la base arriba; 503 con `database: "error"` deteniendo `entrepeques-db-dev`; y vuelta a 200 al arrancarla de nuevo. El CLAUDE.md quedó corregido: documenta el endpoint y lo que significan sus dos códigos.
