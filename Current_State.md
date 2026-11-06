@@ -3819,3 +3819,14 @@ También se añadió al **último paso del alta** un recuadro "Dile al cliente" 
 **Redondeo a pesos (pedido de Pablo el 5 de noviembre).** La mitad del mínimo salía con centavos —un apartado de $450 proponía devolver $56.25— y entregar centavos en el mostrador es incómodo, así que `reembolsoCancelacionSugerido` redondea a pesos enteros. El tope de lo abonado se aplica **después** del redondeo y se respeta tal cual: si abonó $56.50 se le devuelven $56.50, no se le inventan pesos que no pagó. Verificado: $450 → $56, $410 → $51, $1,000 → $125, y un artículo de $90 (donde el mínimo es el total) → $45. El **anticipo sugerido** se dejó con centavos a propósito: es el 25% exacto que Pablo validó como referencia, y redondearlo desvirtuaría el número que él pidió ver.
 
 **Verificado contra el API local:** apartado nuevo de $2,000 con $600 de anticipo → `suggested_refund_amount` = 250; cancelarlo **sin** mandar monto devolvió exactamente $250 al crédito (saldo 350 → 600), retuvo $350 con su nota y regresó el stock; un apartado con anticipo de $80 propone $80 (la regla se topa en lo abonado); `refund_amount: 0` explícito se respeta; el comprobante imprime las dos condiciones y la fecha límite correcta (30 de noviembre, no 29); el detalle trae artículos con descripción, cantidad, precio e importe, más `stock_restante`; el estado de cuenta responde con saldo y movimientos, y 404 en cliente inexistente; `store_credit_total` cuadra. Sin migraciones nuevas.
+
+### Despliegue a producción (6 de noviembre de 2026)
+
+Pablo dio el visto bueno (*"Todo funciona bien se puede subir a producción, y si redondea a pesos por favor"*) y con autorización del dueño se subió **toda la Etapa 5** más el crédito de clientes.
+
+Orden seguido, que es el que no deja nada roto a medias:
+1. **Migraciones 048 y 049** en la base de producción, las dos en una sola transacción (`BEGIN … COMMIT`) con `ON_ERROR_STOP=1`, vía `docker run postgres:17 psql`. Son aditivas: crean `layaways`, `layaway_items`, `layaway_payments` con sus seis índices, y agregan `layaways.cancel_refund_amount`. Antes de aplicarlas se comprobó que `layaways` no existía. Después: las tres tablas presentes (16, 6 y 7 columnas) y las dos columnas de cancelación en su lugar.
+2. **API** por subtree al remote `production` → **v69**. Verificado que las tres rutas nuevas existen y piden autenticación (`/layaways`, `/layaways/:id/receipt-payload`, `/clients/:id/credit-statement` dan 401, no 404 — una ruta inventada sí da 404), y que la tienda pública sigue respondiendo 200 con productos.
+3. **POS** por Vercel al mergear `development` → `main` (merge `155e994`).
+
+Nota: el API no tiene endpoint `/health` —ni en producción ni en staging, los dos dan 404—, aunque el CLAUDE.md lo menciona. La verificación se hizo con el 401/404 de las rutas y con la tienda pública.
