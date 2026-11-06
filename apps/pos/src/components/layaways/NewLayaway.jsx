@@ -43,9 +43,9 @@ export default function NewLayaway({ onDone }) {
   // de aceptar menos cuando él lo decide.
   const debajoDelSugerido = depositoNum > 0 && depositoNum < sugerido;
   // Lo que recuperaría en crédito si no liquidara: la mitad del mínimo de
-  // apartado, nunca más de lo que está dejando. La misma regla que aplica el
-  // API al cancelar (utils/layaway-rules.ts).
-  const reembolsoSiCancela = Math.min(Math.round(sugerido * 50) / 100, depositoNum);
+  // apartado redondeada a pesos, nunca más de lo que está dejando. La misma
+  // regla que aplica el API al cancelar (utils/layaway-rules.ts).
+  const reembolsoSiCancela = Math.min(Math.round(sugerido / 2), depositoNum);
 
   const crear = async () => {
     setSaving(true);

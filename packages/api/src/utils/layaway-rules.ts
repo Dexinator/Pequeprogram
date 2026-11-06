@@ -37,13 +37,19 @@ export function depositoMinimo(total: number): number {
  *
  * Nunca más de lo que realmente abonó, para no regalar crédito cuando el
  * anticipo que dejó fue menor al sugerido.
+ *
+ * Se redondea a pesos enteros a pedido de Pablo (Slack, 5-nov-2026): un
+ * apartado de $450 proponía devolver $56.25, y entregar centavos en el
+ * mostrador es incómodo. El tope de lo abonado se aplica **después** del
+ * redondeo y se respeta tal cual: si abonó $56.50 se le devuelven $56.50, no
+ * se le inventan pesos que no pagó.
  */
 export const REEMBOLSO_CANCELACION_PORCENTAJE = 0.5;
 
 export function reembolsoCancelacionSugerido(total: number, paid: number): number {
   const abonado = round2(Number(paid) || 0);
   if (abonado <= 0) return 0;
-  const sugerido = round2(depositoMinimo(total) * REEMBOLSO_CANCELACION_PORCENTAJE);
+  const sugerido = Math.round(depositoMinimo(total) * REEMBOLSO_CANCELACION_PORCENTAJE);
   return round2(Math.min(sugerido, abonado));
 }
 
