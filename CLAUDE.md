@@ -24,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Start all services (database, API, all frontends)
 docker-compose up -d
 
-# Check API health
+# Check API health (200 + database:"ok", or 503 if the DB is unreachable)
 curl http://localhost:3001/api/health
 
 # Access applications
@@ -147,6 +147,9 @@ This is a modernization project for "Entrepeques" - a second-hand children's ite
 - **Security**: bcrypt hashing (10 rounds), parameterized queries, role-based access
 
 ### API Endpoints
+**Health:**
+- `GET /api/health` - Public, unauthenticated. Returns 200 with `{status:"ok", database:"ok", uptime_seconds}` when the API and PostgreSQL both respond, or **503** with `status:"degraded"` when the database is unreachable (the process is alive, the dependency is not). Use it to verify a deployment; a protected route answering 401 only proves the new code is up, not that the database answers.
+
 **Categories & Features:**
 - `GET /api/categories` - All categories
 - `GET /api/categories/:id/subcategories` - Subcategories by category
