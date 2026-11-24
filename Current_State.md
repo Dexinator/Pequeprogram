@@ -3841,3 +3841,46 @@ Al verificar el despliegue a producción salió que `/api/health` respondía **4
 - Público a propósito: un chequeo que pide credenciales no sirve para monitoreo. Por eso responde lo mínimo y **nunca** la versión del motor, el nombre de la base ni la cadena de conexión.
 
 **Verificado los tres estados en local:** 200 con la base arriba; 503 con `database: "error"` deteniendo `entrepeques-db-dev`; y vuelta a 200 al arrancarla de nuevo. El CLAUDE.md quedó corregido: documenta el endpoint y lo que significan sus dos códigos.
+
+---
+
+## Ajustes al POS pedidos en el documento de Pablo (24 de noviembre de 2026)
+
+Pablo mandó el documento *"Mejoras sistema septiembre26"* con siete ajustes al POS que quiere **antes** de empezar los reportes. Van resueltos los tres primeros que tocan lo que se ve en el mostrador; los demás (conteo de artículos escaneados, filtros por característica, fecha de ingreso en el listado, instalación en la segunda máquina) siguen pendientes.
+
+### 1. El detalle de venta traía renglones ajenos
+
+*"En el historial de ventas, al ver el detalle no muestra bien lo que se vendió."* Eran dos problemas distintos en el mismo renglón.
+
+**El join estaba mal armado.** `SalesService.getSale` unía los artículos valuados comparando el SKU con el prefijo de la subcategoría:
+
+```sql
+LEFT JOIN valuation_items vi ON i.id LIKE CONCAT(
+  (SELECT sku FROM subcategories WHERE id = vi.subcategory_id), '%')
+```
+
+Eso devuelve un renglón por **cada** artículo de la misma subcategoría, con datos de piezas que no se vendieron. Medido contra la base local: la venta 288 (2 piezas reales) salía con **105 renglones**, la 148 (1 pieza) con 92, la 249 (2) con 46. Ya corregido a `i.valuation_item_id = vi.id`, que es la llave real; verificado que **todas** las ventas de la base local devuelven exactamente su número de renglones. El ticket impreso (`ticket.service.ts`) siempre hizo el join correcto, y por eso el papel salía bien y la pantalla no.
+
+**La tabla imprimía solo el SKU.** `HistorialVentas.jsx` mostraba `{item.inventario_id}` y nada más. Ahora el API manda en cada renglón la misma `description` que lleva el ticket y la pantalla la muestra con el SKU debajo en letra chica.
+
+### 4. Las etiquetas y tickets de ropa ya dicen la prenda
+
+*"En ropa, que la etiqueta diga 'Sudadera' y no 'Niña arriba de cintura', ya que a la gente le cuesta identificar lo que compró."*
+
+No hizo falta capturar nada nuevo: el formulario de ropa ya guarda la prenda en `features.tipo` (`"Mameluco"`, `"Pants"`, `"Abrigo"`, `"Playera/Blusa Mcorta"`). Lo que pasaba es que `buildProductDescription()` siempre encabezaba con el nombre de la subcategoría, y en las subcategorías de ropa la única característica marcada como `offer_print` es `modelo`, que el formulario de ropa no llena — así que la descripción quedaba literalmente en "Niña arriba de cintura".
+
+Ahora `buildProductDescription` recibe `isClothing` (de `subcategories.is_clothing`) y, cuando es ropa, encabeza con el tipo de prenda. La **talla** se agrega a la descripción solo donde no se imprime aparte: la etiqueta tiene su propio renglón `size`, así que ahí no se repite (`sizePrintedSeparately: true`), pero en el ticket y en el comprobante de apartado sí entra, porque "Pants" solo no distingue una prenda de otra.
+
+Verificado contra el API local — etiqueta: `MCCP004` → "Mameluco" + "Talla 2a" (antes "Niña cuerpo completo"); ticket y detalle de la venta 285: "Pants · Talla 2a" (antes el ticket decía "Niño abajo de cintura" y la pantalla solo "HBCP003"). Los artículos que no son ropa no cambiaron: `JUGP443` sigue siendo "Juguetes · Amazon".
+
+### 6. Imprimir una sola etiqueta
+
+*"Cuando un artículo tiene varias existencias, poder imprimir una sola etiqueta."* `PrintLabelButton` calculaba `copies = Math.max(1, quantity)`: imprimía siempre una etiqueta por existencia, sin manera de pedir menos. Ahora imprime **una**, y si el SKU tiene más de una pieza aparece al lado "Imprimir las N" para el juego completo.
+
+La otra mitad del punto 6 —*"agregar existencias a un SKU sin reimprimir todas las etiquetas"*— **ya existía** en `StockUpdateModal.jsx`, que ajusta la cantidad sin tocar la impresora. Se le preguntó a Pablo si lo conoce o si no le está funcionando como espera.
+
+### La consulta de características imprimibles, en un solo lugar
+
+`feature_definitions.offer_print` se consultaba con tres copias de la misma consulta (ticket, comprobante de apartado, etiqueta) y ahora hacía falta una cuarta para el detalle de venta. Quedó en `utils/offer-features.ts` (`fetchOfferFeatureDefs` y `fetchOfferFeatureDefsFor`), para que los cuatro lugares que describen un artículo lo describan igual.
+
+Sin migraciones. Desplegado a **staging**: API v56 y POS (`POSDashboard.DCKILLLF.js`). Producción sin tocar, esperando que Pablo pruebe.
