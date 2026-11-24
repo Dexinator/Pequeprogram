@@ -236,6 +236,24 @@ export class InventoryService {
   }
 
   // Formatear fecha
+  /**
+   * Solo el día, para el listado, donde la hora es ruido y no cabe.
+   *
+   * Se lee del texto ISO y no con `new Date()`: `inventario.created_at` es un
+   * timestamp sin zona, y convertirlo corre la fecha un día para atrás en el
+   * horario de México.
+   */
+  formatDateOnly(dateString: string | Date | null | undefined): string {
+    if (!dateString) return '—';
+    if (typeof dateString === 'string') {
+      const m = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+    }
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '—';
+    return date.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  }
+
   formatDate(dateString: string | Date | null | undefined): string {
     if (!dateString) return 'N/A';
     

@@ -548,6 +548,11 @@ export default function InventoryList() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Ubicación
                     </th>
+                    {/* Pablo pidió ver desde cuándo está un artículo en el
+                        inventario sin tener que abrir su detalle. */}
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ingresó
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Acciones
                     </th>
@@ -649,6 +654,9 @@ export default function InventoryList() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {product.location}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {inventoryService.formatDateOnly(product.created_at)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-3">

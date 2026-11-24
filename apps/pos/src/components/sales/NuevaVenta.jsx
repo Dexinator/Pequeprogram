@@ -28,6 +28,9 @@ export default function NuevaVenta() {
   // Subtotal (sin descuento) del carrito
   const subtotal = cart.reduce((sum, item) => sum + (item.unit_price * item.quantity_sold), 0);
 
+  // Piezas, no renglones: es lo que se cuenta a mano en el mostrador.
+  const piezasEnCarrito = cart.reduce((sum, item) => sum + (item.quantity_sold || 0), 0);
+
   // Descuento resuelto en pesos (misma lógica que el backend, acotado a [0, subtotal])
   const computeDiscountAmount = (base, type, value) => {
     const v = parseFloat(value) || 0;
@@ -213,7 +216,14 @@ export default function NuevaVenta() {
             
             {/* Productos */}
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">Productos</h4>
+              {/* El conteo también aquí: es la última pantalla antes de cobrar
+                  y la última oportunidad de notar que falta una pieza. */}
+              <h4 className="font-medium text-gray-700 mb-2">
+                Productos
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({piezasEnCarrito} {piezasEnCarrito === 1 ? 'pieza' : 'piezas'})
+                </span>
+              </h4>
               <div className="border rounded-lg p-4 space-y-2">
                 {cart.map((item, index) => (
                   <div key={index} className="flex justify-between text-sm">
