@@ -3884,3 +3884,26 @@ La otra mitad del punto 6 —*"agregar existencias a un SKU sin reimprimir todas
 `feature_definitions.offer_print` se consultaba con tres copias de la misma consulta (ticket, comprobante de apartado, etiqueta) y ahora hacía falta una cuarta para el detalle de venta. Quedó en `utils/offer-features.ts` (`fetchOfferFeatureDefs` y `fetchOfferFeatureDefsFor`), para que los cuatro lugares que describen un artículo lo describan igual.
 
 Sin migraciones. Desplegado a **staging**: API v56 y POS (`POSDashboard.DCKILLLF.js`). Producción sin tocar, esperando que Pablo pruebe.
+
+### 2 y 5. El escaneo perdía piezas (y el conteo que pidió Pablo)
+
+*"Que se pueda ver un total de artículos que se van escaneando, ya que a veces suena el scanner pero no detecta el artículo y se omite de la cuenta."*
+
+Buscando dónde poner el contador salió **por qué** se perdían las piezas. `handleScanSubmit` espera la consulta al API antes de agregar al carrito, y el carrito se armaba con el valor capturado en el momento de la tecla:
+
+```js
+setCart([...cart, nuevo]);   // `cart` es el de ese render
+```
+
+Dos escaneos seguidos —el lector dispara rapidísimo y cada uno tarda un viaje al API— tomaban los dos el **mismo** carrito viejo, y el segundo sobrescribía al primero. El lector pitaba (el pitido es del aparato, no del POS), el artículo se encontraba, y la pieza desaparecía sin ningún aviso. Ahora `addToCart` usa la forma funcional (`setCart(prev => …)`), así que cada escaneo parte del carrito que de verdad hay en ese instante; el tope de existencias se revisa también **dentro** del actualizador, contra `prev`, para no vender más piezas de las que hay.
+
+Lo que se ve, que es la otra mitad del problema (el pitido no se puede controlar, así que la pantalla tiene que decir qué entró):
+- Contador de **piezas** grande junto al campo de escaneo, para cotejarlo con el montón que está en el mostrador. Piezas y no renglones: dos playeras iguales son un renglón y dos piezas.
+- Aviso verde "✓ Agregado: <artículo> — pieza N", que se **borra** en cuanto un escaneo falla; si se quedara el aviso anterior, el pitido más el letrero viejo harían creer que esta pieza también entró.
+- Los mensajes de error ahora dicen explícitamente "Esta pieza NO está en el carrito".
+- El conteo se repite en el encabezado del carrito, en el renglón del total y en el resumen antes de cobrar, que es la última oportunidad de notar que falta algo.
+- El foco regresa al campo después de cada escaneo: el lector escribe donde esté el cursor, y si se perdió el foco el código se iba a la nada.
+
+**Punto 5** (*"ver la fecha en que ingresó un artículo al inventario"*): el listado de inventario tiene ahora la columna "Ingresó". El dato ya venía en la respuesta del API y ya se mostraba en el detalle del producto, pero no en el listado. Se formatea leyendo el texto ISO y no con `new Date()`, porque `inventario.created_at` es un timestamp sin zona y convertirlo corre la fecha un día para atrás en el horario de México.
+
+**Pendiente del documento:** el punto 3 (filtros de inventario por característica: modelo/tipo, talla, marca) espera la respuesta de Pablo sobre qué cuenta como "modelo" fuera de ropa, porque eso define cuáles características se vuelven filtro. Y el punto 7 (instalar terminal, tickets y lector en la segunda máquina de la tienda) es trabajo físico en el local, no cambio de sistema.
