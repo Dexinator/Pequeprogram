@@ -2,7 +2,8 @@ import { PoolClient } from 'pg';
 import { pool } from '../db';
 import config from '../config';
 import { LabelPayloadV1, LabelModality } from '../models/label.model';
-import { buildProductDescription, OfferFeatureDef } from '../utils/product-description';
+import { buildProductDescription } from '../utils/product-description';
+import { fetchOfferFeatureDefsFor } from '../utils/offer-features';
 
 const SIZE_FEATURE_KEYS = ['talla', 'size'];
 
@@ -13,9 +14,7 @@ export class LabelService {
       const row = await this.fetchInventoryRow(dbClient, inventoryId);
       if (!row) return null;
 
-      const offerDefs = row.subcategory_id
-        ? await this.fetchOfferFeatureKeys(dbClient, row.subcategory_id)
-        : [];
+      const offerDefs = await fetchOfferFeatureDefsFor(dbClient, row.subcategory_id);
 
       const description = buildProductDescription({
         sku: row.id,
@@ -25,6 +24,9 @@ export class LabelService {
         features: row.features,
         offerFeatureDefs: offerDefs,
         otrProductName: row.otr_product_name,
+        isClothing: row.is_clothing === true,
+        // La etiqueta ya tiene su renglón de talla (`size`), más abajo.
+        sizePrintedSeparately: true,
       });
 
       const priceAmount = this.resolvePrice(row);
@@ -68,6 +70,7 @@ export class LabelService {
         vi.features,
         vi.final_sale_price,
         sub.name AS subcategory_name,
+        sub.is_clothing AS is_clothing,
         cat.name AS category_name,
         b.name   AS brand_name,
         oi.product_name    AS otr_product_name,
@@ -83,24 +86,6 @@ export class LabelService {
     `;
     const result = await dbClient.query(query, [inventoryId]);
     return result.rows[0] || null;
-  }
-
-  private async fetchOfferFeatureKeys(
-    dbClient: PoolClient,
-    subcategoryId: number
-  ): Promise<OfferFeatureDef[]> {
-    const result = await dbClient.query(
-      `SELECT name, display_name, order_index
-       FROM feature_definitions
-       WHERE subcategory_id = $1 AND offer_print = TRUE
-       ORDER BY order_index`,
-      [subcategoryId]
-    );
-    return result.rows.map(r => ({
-      key: r.name,
-      displayName: r.display_name,
-      orderIndex: r.order_index,
-    }));
   }
 
   private resolvePrice(row: any): number {

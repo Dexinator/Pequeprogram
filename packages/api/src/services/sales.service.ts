@@ -14,6 +14,8 @@ import {
 import { BaseService } from './base.service';
 import { pool } from '../db';
 import { BusinessError } from '../utils/errors';
+import { buildProductDescription } from '../utils/product-description';
+import { fetchOfferFeatureDefs } from '../utils/offer-features';
 
 export class SalesService extends BaseService<Sale> {
   constructor() {
@@ -291,13 +293,19 @@ export class SalesService extends BaseService<Sale> {
           vi.final_sale_price,
           c.name as category_name,
           s.name as subcategory_name,
+          s.is_clothing as is_clothing,
           b.name as brand_name,
-          i.quantity as available_quantity
+          i.quantity as available_quantity,
+          oi.product_name as otr_product_name
         FROM sale_items si
         LEFT JOIN inventario i ON si.inventario_id = i.id
-        LEFT JOIN valuation_items vi ON i.id LIKE CONCAT(
-          (SELECT sku FROM subcategories WHERE id = vi.subcategory_id), '%'
-        )
+        -- El inventario apunta al artículo valuado por su llave. Antes esto se
+        -- unía comparando el SKU con el prefijo de la subcategoría, y una venta
+        -- de un artículo devolvía un renglón por cada artículo de esa
+        -- subcategoría: el detalle que ve Pablo salía repetido y con datos
+        -- ajenos (una venta de 1 pieza llegó a mostrar 11 renglones).
+        LEFT JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        LEFT JOIN otherprods_items oi ON i.id = oi.sku
         LEFT JOIN categories c ON vi.category_id = c.id
         LEFT JOIN subcategories s ON vi.subcategory_id = s.id
         LEFT JOIN brands b ON vi.brand_id = b.id
@@ -316,7 +324,25 @@ export class SalesService extends BaseService<Sale> {
       `;
       
       const paymentDetailsResult = await dbClient.query(paymentDetailsQuery, [id]);
-      
+
+      // La misma descripción que sale impresa en el ticket, para que la
+      // pantalla de historial diga qué se vendió y no solo el SKU.
+      const offerDefs = await fetchOfferFeatureDefs(
+        dbClient,
+        itemsResult.rows.map(r => r.subcategory_id)
+      );
+      const describir = (row: any): string =>
+        buildProductDescription({
+          sku: row.inventario_id,
+          subcategoryName: row.subcategory_name,
+          categoryName: row.category_name,
+          brandName: row.brand_name,
+          features: row.features,
+          offerFeatureDefs: offerDefs.get(row.subcategory_id) || [],
+          otrProductName: row.otr_product_name,
+          isClothing: row.is_clothing === true,
+        });
+
       const sale: Sale = {
         id: saleRow.id,
         client_id: saleRow.client_id,
@@ -344,6 +370,7 @@ export class SalesService extends BaseService<Sale> {
           quantity_sold: parseInt(item.quantity_sold),
           unit_price: parseFloat(item.unit_price),
           total_price: parseFloat(item.total_price),
+          description: describir(item),
           product_info: {
             category_name: item.category_name,
             subcategory_name: item.subcategory_name,

@@ -15,6 +15,7 @@ import {
   CreditStatementMovement,
 } from '../models/credit-statement.model';
 import { buildProductDescription, OfferFeatureDef } from '../utils/product-description';
+import { fetchOfferFeatureDefs } from '../utils/offer-features';
 import { condicionesApartado } from '../utils/layaway-rules';
 
 /** Cómo se le explica al cliente cada movimiento de su saldo. */
@@ -139,6 +140,7 @@ export class TicketService {
         si.total_price,
         sub.id                    AS subcategory_id,
         sub.name                  AS subcategory_name,
+        sub.is_clothing           AS is_clothing,
         cat.name                  AS category_name,
         b.name                    AS brand_name,
         vi.features               AS features,
@@ -162,7 +164,7 @@ export class TicketService {
           .filter((id): id is number => typeof id === 'number')
       )
     );
-    const offerFeatureKeysBySubcategory = await this.fetchOfferFeatureKeys(
+    const offerFeatureKeysBySubcategory = await fetchOfferFeatureDefs(
       dbClient,
       subcategoryIds
     );
@@ -174,34 +176,6 @@ export class TicketService {
       unit_price: parseFloat(row.unit_price),
       total: parseFloat(row.total_price),
     }));
-  }
-
-  private async fetchOfferFeatureKeys(
-    dbClient: PoolClient,
-    subcategoryIds: number[]
-  ): Promise<Map<number, OfferFeatureDef[]>> {
-    const result = new Map<number, OfferFeatureDef[]>();
-    if (subcategoryIds.length === 0) return result;
-
-    const query = `
-      SELECT subcategory_id, name, display_name, order_index
-      FROM feature_definitions
-      WHERE subcategory_id = ANY($1::int[])
-        AND offer_print = TRUE
-      ORDER BY subcategory_id, order_index
-    `;
-    const queryResult = await dbClient.query(query, [subcategoryIds]);
-
-    for (const row of queryResult.rows) {
-      const list = result.get(row.subcategory_id) || [];
-      list.push({
-        key: row.name,
-        displayName: row.display_name,
-        orderIndex: row.order_index,
-      });
-      result.set(row.subcategory_id, list);
-    }
-    return result;
   }
 
   private buildItemDescription(
@@ -216,6 +190,7 @@ export class TicketService {
       features: row.features,
       offerFeatureDefs: offerFeatureKeysBySubcategory.get(row.subcategory_id) || [],
       otrProductName: row.otr_product_name,
+      isClothing: row.is_clothing === true,
     });
   }
 
@@ -365,6 +340,7 @@ export class TicketService {
         li.total_price,
         sub.id                    AS subcategory_id,
         sub.name                  AS subcategory_name,
+        sub.is_clothing           AS is_clothing,
         cat.name                  AS category_name,
         b.name                    AS brand_name,
         vi.features               AS features,
@@ -388,7 +364,7 @@ export class TicketService {
           .filter((id): id is number => typeof id === 'number')
       )
     );
-    const offerFeatureKeysBySubcategory = await this.fetchOfferFeatureKeys(
+    const offerFeatureKeysBySubcategory = await fetchOfferFeatureDefs(
       dbClient,
       subcategoryIds
     );

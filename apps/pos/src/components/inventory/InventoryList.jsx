@@ -7,13 +7,20 @@ import StockUpdateModal from './StockUpdateModal';
 import PriceUpdateModal from './PriceUpdateModal';
 import { useAuth } from '../../context/AuthContext';
 
+/**
+ * Antes imprimía siempre una etiqueta por existencia (`copies = quantity`), sin
+ * manera de pedir menos. Pablo pidió poder imprimir una sola cuando el SKU
+ * tiene varias piezas —por ejemplo al repetir la etiqueta que se despegó—, así
+ * que el botón imprime UNA y, si hay más de una existencia, aparece al lado la
+ * opción de imprimir el juego completo.
+ */
 function PrintLabelButton({ inventoryId, quantity }) {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const copies = Math.max(1, parseInt(quantity, 10) || 1);
+  const existencias = Math.max(1, parseInt(quantity, 10) || 1);
 
-  const handleClick = async () => {
+  const imprimir = async (copies) => {
     setStatus('loading');
     setError(null);
     const result = await printBridgeService.printLabel(inventoryId, copies);
@@ -44,13 +51,22 @@ function PrintLabelButton({ inventoryId, quantity }) {
   return (
     <span className="flex flex-col">
       <button
-        onClick={handleClick}
+        onClick={() => imprimir(1)}
         disabled={status === 'loading'}
         className={`${colorClass} text-left`}
-        title={status === 'error' ? error : 'Imprimir etiqueta del producto'}
+        title={status === 'error' ? error : 'Imprimir una etiqueta de este producto'}
       >
         {label}
       </button>
+      {existencias > 1 && status !== 'loading' && (
+        <button
+          onClick={() => imprimir(existencias)}
+          className="text-left text-xs text-gray-500 hover:text-blue-700"
+          title={`Imprimir una etiqueta por cada una de las ${existencias} existencias`}
+        >
+          Imprimir las {existencias}
+        </button>
+      )}
     </span>
   );
 }

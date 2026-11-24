@@ -43,6 +43,8 @@ export interface SaleItem extends BaseModel {
   unit_price: number;
   total_price: number;
   notes?: string;
+  /** Descripción legible del artículo, la misma que imprime el ticket. */
+  description?: string;
   // Información del producto (joined)
   product_info?: {
     category_name?: string;

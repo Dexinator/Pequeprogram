@@ -359,7 +359,15 @@ export default function HistorialVentas() {
                     <tbody className="divide-y divide-gray-200">
                       {selectedSale.items.map((item, index) => (
                         <tr key={index}>
-                          <td className="px-3 py-2">{item.inventario_id}</td>
+                          {/* El SKU solo no le dice nada al cliente ni a quien
+                              atiende: el renglón lleva la descripción y el SKU
+                              debajo, como en el ticket impreso. */}
+                          <td className="px-3 py-2">
+                            <div className="font-medium text-gray-900">
+                              {item.description || item.product_info?.subcategory_name || 'Artículo'}
+                            </div>
+                            <div className="text-xs text-gray-500 font-mono">{item.inventario_id}</div>
+                          </td>
                           <td className="px-3 py-2 text-center">{item.quantity_sold}</td>
                           <td className="px-3 py-2 text-right">{formatCurrency(item.unit_price)}</td>
                           <td className="px-3 py-2 text-right">{formatCurrency(item.total_price)}</td>
