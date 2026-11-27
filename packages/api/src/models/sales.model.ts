@@ -176,8 +176,26 @@ export interface InventorySearchParams {
   available_only?: boolean; // solo productos con stock > 0
   /** 'available' = stock > 0 | 'unavailable' = stock agotado | 'all' = ambos */
   availability?: 'available' | 'unavailable' | 'all';
+  /**
+   * Filtros por características, pedidos por Pablo (Slack, 25-nov-2026): *"la
+   * idea es poder localizar un artículo más fácilmente"*. `modelo` y `tipo`
+   * son los mismos campos que captura el valuador y viven en
+   * `valuation_items.features`; `talla` es la de ropa y calzado.
+   */
+  brand_id?: number;
+  modelo?: string;
+  tipo?: string;
+  talla?: string;
   page?: number;
   limit?: number;
+}
+
+/** Valores que de verdad existen en inventario, para armar los desplegables. */
+export interface InventoryFilterOptions {
+  brands: { id: number; name: string }[];
+  modelos: string[];
+  tipos: string[];
+  tallas: string[];
 }
 
 export interface InventoryItem {

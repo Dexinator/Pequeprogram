@@ -154,6 +154,10 @@ export const searchInventory = asyncHandler(async (req: Request, res: Response) 
     availability: ['available', 'unavailable', 'all'].includes(req.query.availability as string)
       ? (req.query.availability as 'available' | 'unavailable' | 'all')
       : undefined,
+    brand_id: req.query.brand_id ? parseInt(req.query.brand_id as string) : undefined,
+    modelo: (req.query.modelo as string) || undefined,
+    tipo: (req.query.tipo as string) || undefined,
+    talla: (req.query.talla as string) || undefined,
     page: req.query.page ? parseInt(req.query.page as string) : 1,
     limit: req.query.limit ? parseInt(req.query.limit as string) : 20
   };
@@ -169,6 +173,27 @@ export const searchInventory = asyncHandler(async (req: Request, res: Response) 
       total: result.total,
       pages: Math.ceil(result.total / (params.limit || 20))
     }
+  });
+});
+
+// @desc    Valores existentes en inventario para los desplegables de filtros
+// @route   GET /api/inventory/filter-options
+// @access  Private
+export const getInventoryFilterOptions = asyncHandler(async (req: Request, res: Response) => {
+  const options = await salesService.getInventoryFilterOptions({
+    category_id: req.query.category_id ? parseInt(req.query.category_id as string) : undefined,
+    subcategory_id: req.query.subcategory_id
+      ? parseInt(req.query.subcategory_id as string)
+      : undefined,
+    location: (req.query.location as string) || undefined,
+    availability: ['available', 'unavailable', 'all'].includes(req.query.availability as string)
+      ? (req.query.availability as 'available' | 'unavailable' | 'all')
+      : undefined
+  });
+
+  res.json({
+    success: true,
+    data: options
   });
 });
 

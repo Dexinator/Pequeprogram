@@ -83,12 +83,25 @@ export default function InventoryList() {
     location: '',
     category_id: '',
     subcategory_id: '',
+    brand_id: '',
+    modelo: '',
+    tipo: '',
+    talla: '',
     availability: 'available',
     page: 1,
     limit: 20
   });
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
+  // Valores que de verdad hay en inventario, para los desplegables de marca,
+  // modelo, tipo y talla. Se piden al API acotados al ámbito elegido, para no
+  // ofrecer un modelo del que no queda ninguna pieza.
+  const [opcionesFiltro, setOpcionesFiltro] = useState({
+    brands: [],
+    modelos: [],
+    tipos: [],
+    tallas: [],
+  });
   const [pagination, setPagination] = useState({ total: 0, pages: 0 });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -158,6 +171,28 @@ export default function InventoryList() {
     loadProducts();
   }, [filters]);
 
+  // Las listas se recalculan cuando cambia el ámbito, no con cada tecla de la
+  // búsqueda ni al cambiar de página.
+  useEffect(() => {
+    let vivo = true;
+    inventoryService
+      .getFilterOptions({
+        category_id: filters.category_id,
+        subcategory_id: filters.subcategory_id,
+        location: filters.location,
+        availability: filters.availability,
+      })
+      .then((opciones) => {
+        if (vivo) setOpcionesFiltro(opciones);
+      })
+      .catch(() => {
+        if (vivo) setOpcionesFiltro({ brands: [], modelos: [], tipos: [], tallas: [] });
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [filters.category_id, filters.subcategory_id, filters.location, filters.availability]);
+
   useEffect(() => {
     loadStats();
   }, []);
@@ -176,7 +211,19 @@ export default function InventoryList() {
   // combinaciones imposibles (subcategoría de otra categoría) que no devuelven
   // nada y parecen un error.
   const handleCategoryChange = (categoryId) => {
-    setFilters({ ...filters, category_id: categoryId, subcategory_id: '', page: 1 });
+    // Los filtros de característica también se limpian: un modelo de carriolas
+    // no existe en juguetes, y dejarlo puesto devuelve cero resultados sin
+    // explicar por qué.
+    setFilters({
+      ...filters,
+      category_id: categoryId,
+      subcategory_id: '',
+      brand_id: '',
+      modelo: '',
+      tipo: '',
+      talla: '',
+      page: 1,
+    });
     if (!categoryId) {
       setSubcategories([]);
       return;
@@ -297,12 +344,47 @@ export default function InventoryList() {
       location: '',
       category_id: '',
       subcategory_id: '',
+      brand_id: '',
+      modelo: '',
+      tipo: '',
+      talla: '',
       availability: 'available',
       page: 1,
       limit: 20
     });
     setSubcategories([]);
   };
+
+  const filtrosDeCaracteristica = [
+    {
+      campo: 'brand_id',
+      etiqueta: 'Marca',
+      opciones: opcionesFiltro.brands,
+      todas: 'Todas las marcas',
+      sin: 'Sin marcas registradas',
+    },
+    {
+      campo: 'modelo',
+      etiqueta: 'Modelo',
+      opciones: opcionesFiltro.modelos,
+      todas: 'Todos los modelos',
+      sin: 'Sin modelos registrados',
+    },
+    {
+      campo: 'tipo',
+      etiqueta: 'Tipo',
+      opciones: opcionesFiltro.tipos,
+      todas: 'Todos los tipos',
+      sin: 'Sin tipos registrados',
+    },
+    {
+      campo: 'talla',
+      etiqueta: 'Talla',
+      opciones: opcionesFiltro.tallas,
+      todas: 'Todas las tallas',
+      sin: 'Sin tallas registradas',
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -497,8 +579,35 @@ export default function InventoryList() {
               <option value="all">Todos los productos</option>
             </select>
           </div>
+
+          {/* Filtros por característica. Cada desplegable solo ofrece valores
+              que existen en lo que se está viendo, y se desactiva cuando no
+              hay ninguno: así se nota de inmediato que esa categoría no usa
+              talla, por ejemplo. */}
+          {filtrosDeCaracteristica.map(({ campo, etiqueta, opciones, todas, sin }) => (
+            <div key={campo}>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {etiqueta}
+              </label>
+              <select
+                value={filters[campo]}
+                onChange={(e) => handleFilterChange(campo, e.target.value)}
+                disabled={opciones.length === 0}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 disabled:bg-gray-100 disabled:text-gray-400"
+              >
+                <option value="">{opciones.length === 0 ? sin : todas}</option>
+                {opciones.map((opcion) =>
+                  typeof opcion === 'string' ? (
+                    <option key={opcion} value={opcion}>{opcion}</option>
+                  ) : (
+                    <option key={opcion.id} value={opcion.id}>{opcion.name}</option>
+                  )
+                )}
+              </select>
+            </div>
+          ))}
         </div>
-        
+
         <div className="mt-4 flex space-x-4">
           <button
             onClick={clearFilters}

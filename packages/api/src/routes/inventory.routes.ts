@@ -4,6 +4,7 @@ import {
   searchInventory,
   getInventoryStats,
   getAvailableInventory,
+  getInventoryFilterOptions,
   updateInventoryQuantity,
   updateInventoryPrice,
   getLabelPayload
@@ -24,6 +25,11 @@ router
 router
   .route('/stats')
   .get(authorize(['superadmin', 'admin', 'manager', 'gerente']), getInventoryStats);
+
+// Valores existentes en inventario para los desplegables de filtros
+router
+  .route('/filter-options')
+  .get(authorize(['superadmin', 'admin', 'manager', 'gerente', 'sales', 'vendedor']), getInventoryFilterOptions);
 
 router
   .route('/available')

@@ -52,8 +52,21 @@ export interface InventoryFilters {
   location?: string;
   available_only?: boolean;
   availability?: 'available' | 'unavailable' | 'all';
+  /** Filtros por característica: marca, y `modelo`/`tipo`/`talla` del valuador. */
+  brand_id?: number | string;
+  modelo?: string;
+  tipo?: string;
+  talla?: string;
   page?: number;
   limit?: number;
+}
+
+/** Valores que existen en inventario, para los desplegables de los filtros. */
+export interface InventoryFilterOptions {
+  brands: { id: number; name: string }[];
+  modelos: string[];
+  tipos: string[];
+  tallas: string[];
 }
 
 export interface InventoryCategoryStats {
@@ -106,6 +119,10 @@ export class InventoryService {
       if (filters.location) params.location = filters.location;
       if (filters.availability) params.availability = filters.availability;
       else if (filters.available_only !== undefined) params.available_only = filters.available_only;
+      if (filters.brand_id) params.brand_id = filters.brand_id;
+      if (filters.modelo) params.modelo = filters.modelo;
+      if (filters.tipo) params.tipo = filters.tipo;
+      if (filters.talla) params.talla = filters.talla;
       if (filters.page) params.page = filters.page;
       if (filters.limit) params.limit = filters.limit;
 
@@ -132,6 +149,43 @@ export class InventoryService {
     } catch (error) {
       console.error('Error al buscar inventario:', error);
       return { items: [], total: 0 };
+    }
+  }
+
+  /**
+   * Valores existentes en inventario para armar los desplegables de filtros.
+   *
+   * Vienen del inventario real y no del catálogo de características: Pablo
+   * advirtió que no todos los modelos se dieron de alta en el valuador, y un
+   * desplegable lleno de modelos sin existencias no ayuda a encontrar nada.
+   */
+  async getFilterOptions(
+    scope: Pick<InventoryFilters, 'category_id' | 'subcategory_id' | 'location' | 'availability'> = {}
+  ): Promise<InventoryFilterOptions> {
+    const vacio: InventoryFilterOptions = { brands: [], modelos: [], tipos: [], tallas: [] };
+    try {
+      const token = localStorage.getItem('entrepeques_auth_token');
+      if (token) {
+        this.http.setAuthToken(token);
+      }
+
+      const params: Record<string, any> = {};
+      if (scope.category_id) params.category_id = scope.category_id;
+      if (scope.subcategory_id) params.subcategory_id = scope.subcategory_id;
+      if (scope.location) params.location = scope.location;
+      if (scope.availability) params.availability = scope.availability;
+
+      const response = await this.http.get<any>('/inventory/filter-options', params);
+      const data = response.data || {};
+      return {
+        brands: data.brands || [],
+        modelos: data.modelos || [],
+        tipos: data.tipos || [],
+        tallas: data.tallas || [],
+      };
+    } catch (error) {
+      console.error('Error al obtener opciones de filtro:', error);
+      return vacio;
     }
   }
 

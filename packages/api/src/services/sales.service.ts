@@ -8,6 +8,7 @@ import {
   InventorySearchParams,
   InventoryItem,
   InventoryStats,
+  InventoryFilterOptions,
   resolveDiscountAmount,
   resolveChangeGiven,
 } from '../models/sales.model';
@@ -665,11 +666,38 @@ export class SalesService extends BaseService<Sale> {
         queryParams.push(params.subcategory_id);
       }
       
+      // Marca y características. Son los filtros que pidió Pablo para
+      // "localizar un artículo más fácilmente"; `modelo` y `tipo` salen del
+      // mismo campo que llena el valuador.
+      if (params.brand_id) {
+        query += ` AND vi.brand_id = $${paramIndex++}`;
+        queryParams.push(params.brand_id);
+      }
+
+      for (const [llave, valor] of [
+        ['modelo', params.modelo],
+        ['tipo', params.tipo],
+        ['talla', params.talla],
+      ] as [string, string | undefined][]) {
+        if (!valor) continue;
+        query += ` AND vi.features->>'${llave}' = $${paramIndex++}`;
+        queryParams.push(valor);
+      }
+
       if (params.q) {
-        query += ` AND (i.id ILIKE $${paramIndex++} OR c.name ILIKE $${paramIndex++} OR s.name ILIKE $${paramIndex++} OR b.name ILIKE $${paramIndex++} OR oi.product_name ILIKE $${paramIndex++})`;
+        // El texto libre también busca en modelo y tipo: escribir "Eléctrico"
+        // o "Sudadera" es la forma natural de buscar en el mostrador.
+        query += ` AND (i.id ILIKE $${paramIndex++} OR c.name ILIKE $${paramIndex++} OR s.name ILIKE $${paramIndex++} OR b.name ILIKE $${paramIndex++} OR oi.product_name ILIKE $${paramIndex++} OR vi.features->>'modelo' ILIKE $${paramIndex++} OR vi.features->>'tipo' ILIKE $${paramIndex++})`;
         const searchTerm = `%${params.q}%`;
-        queryParams.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
-        // No necesitamos incrementar paramIndex aquí porque ya se incrementó 5 veces arriba
+        queryParams.push(
+          searchTerm,
+          searchTerm,
+          searchTerm,
+          searchTerm,
+          searchTerm,
+          searchTerm,
+          searchTerm
+        );
       }
       
       // Obtener el total de resultados
@@ -735,6 +763,89 @@ export class SalesService extends BaseService<Sale> {
       if (dbClient) {
         dbClient.release();
       }
+    }
+  }
+
+  /**
+   * Valores que de verdad existen en inventario, para armar los desplegables
+   * de los filtros.
+   *
+   * Se sacan del inventario y no del catálogo de `feature_definitions` a
+   * propósito: Pablo advirtió que *"no todos los modelos se dieron de alta en
+   * valuador"*, y un desplegable con cincuenta modelos de los que la tienda
+   * tiene tres no ayuda a localizar nada. Así la lista solo ofrece lo que se
+   * puede encontrar.
+   *
+   * Respeta el ámbito que ya eligió el usuario (categoría, subcategoría,
+   * ubicación, disponibilidad) para que las listas se acoten solas.
+   */
+  async getInventoryFilterOptions(
+    params: Pick<
+      InventorySearchParams,
+      'category_id' | 'subcategory_id' | 'location' | 'availability' | 'available_only'
+    >
+  ): Promise<InventoryFilterOptions> {
+    const dbClient = await pool.connect();
+    try {
+      const condiciones: string[] = ['i.valuation_item_id IS NOT NULL'];
+      const valores: any[] = [];
+      let n = 1;
+
+      if (params.availability === 'available') condiciones.push('i.quantity > 0');
+      else if (params.availability === 'unavailable') condiciones.push('i.quantity <= 0');
+      else if (!params.availability && params.available_only) condiciones.push('i.quantity > 0');
+
+      if (params.location) {
+        condiciones.push(`i.location = $${n++}`);
+        valores.push(params.location);
+      }
+      if (params.category_id) {
+        condiciones.push(`vi.category_id = $${n++}`);
+        valores.push(params.category_id);
+      }
+      if (params.subcategory_id) {
+        condiciones.push(`vi.subcategory_id = $${n++}`);
+        valores.push(params.subcategory_id);
+      }
+
+      const where = condiciones.join(' AND ');
+      const desde = `
+        FROM inventario i
+        JOIN valuation_items vi ON i.valuation_item_id = vi.id
+        WHERE ${where}
+      `;
+
+      const marcasResult = await dbClient.query(
+        `SELECT DISTINCT b.id, b.name
+           FROM inventario i
+           JOIN valuation_items vi ON i.valuation_item_id = vi.id
+           JOIN brands b ON b.id = vi.brand_id
+          WHERE ${where}
+          ORDER BY b.name`,
+        valores
+      );
+
+      const valoresDe = async (llave: 'modelo' | 'tipo' | 'talla'): Promise<string[]> => {
+        // La llave es un literal del código, no entra nada del usuario.
+        const result = await dbClient.query(
+          `SELECT DISTINCT trim(vi.features->>'${llave}') AS valor
+             ${desde}
+               AND vi.features->>'${llave}' IS NOT NULL
+               AND trim(vi.features->>'${llave}') <> ''
+             ORDER BY valor`,
+          valores
+        );
+        return result.rows.map(r => r.valor);
+      };
+
+      return {
+        brands: marcasResult.rows.map(r => ({ id: r.id, name: r.name })),
+        modelos: await valoresDe('modelo'),
+        tipos: await valoresDe('tipo'),
+        tallas: await valoresDe('talla'),
+      };
+    } finally {
+      dbClient.release();
     }
   }
 
