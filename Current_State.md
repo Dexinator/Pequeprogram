@@ -3907,3 +3907,32 @@ Lo que se ve, que es la otra mitad del problema (el pitido no se puede controlar
 **Punto 5** (*"ver la fecha en que ingresó un artículo al inventario"*): el listado de inventario tiene ahora la columna "Ingresó". El dato ya venía en la respuesta del API y ya se mostraba en el detalle del producto, pero no en el listado. Se formatea leyendo el texto ISO y no con `new Date()`, porque `inventario.created_at` es un timestamp sin zona y convertirlo corre la fecha un día para atrás en el horario de México.
 
 **Pendiente del documento:** el punto 3 (filtros de inventario por característica: modelo/tipo, talla, marca) espera la respuesta de Pablo sobre qué cuenta como "modelo" fuera de ropa, porque eso define cuáles características se vuelven filtro. Y el punto 7 (instalar terminal, tickets y lector en la segunda máquina de la tienda) es trabajo físico en el local, no cambio de sistema.
+
+### 3. Filtros de inventario por marca, modelo, tipo y talla (26 de noviembre de 2026)
+
+Pablo aclaró qué quería decir con "modelo" (Slack, 25-nov): *"que apareciera lo que dice en modelo en valuador… también filtrar por tipo de acuerdo valuador, la idea es poder localizar un artículo más fácilmente"*. Son los campos que ya captura el valuador y viven en `valuation_items.features`.
+
+- `GET /api/inventory/search` acepta `brand_id`, `modelo`, `tipo` y `talla`. Los tres últimos se filtran con `vi.features->>'llave' = $n`; la llave es un literal del código, no entra nada del usuario.
+- `GET /api/inventory/filter-options` (nuevo) devuelve los valores que **existen en inventario**, acotados a la categoría, subcategoría, ubicación y disponibilidad ya elegidas. Salen del inventario y no del catálogo de `feature_definitions` porque Pablo advirtió que *"no todos los modelos se dieron de alta en valuador"*: un desplegable con cincuenta modelos de los que la tienda tiene tres no ayuda a localizar nada.
+- En el POS, cuatro desplegables más en los filtros de Inventario. Cada uno se desactiva cuando no hay valores —así se nota que esa categoría no usa talla, en vez de ofrecer una lista vacía— y se limpian al cambiar de categoría, porque un modelo de carriolas no existe en juguetes y dejarlo puesto devuelve cero resultados sin explicar por qué.
+- La búsqueda de texto libre ahora también busca en modelo y tipo: escribir "Eléctrico" o "Sudadera" es la forma natural de buscar en el mostrador.
+
+Verificado contra el API local: `talla=2a` devuelve 3 piezas, `tipo=Mameluco` 4, `q=Mameluco` encuentra las mismas 4 (antes ninguna) y las opciones de la subcategoría 37 se acotan a sus 3 tipos y 4 tallas.
+
+### "Montables de exterior" duplicada, solo en producción (migración 050)
+
+Pablo: *"en producción aparece Montables de exterior tanto en a pasear como en juguetes aunque en staging no está"*. Confirmado comparando los dos ambientes por el endpoint público: producción 55 subcategorías, staging 54. La de más es la **id 54** (categoría 6, A jugar), gemela de la **id 5** (categoría 1, A pasear), **con el mismo SKU `MDEP`**.
+
+El duplicado viene de la semilla del propio repo —`data/subcategories.csv`, renglones 6 y 55—, así que producción es la carga fiel del archivo y staging y local son los que están limpios. El CSV quedó marcado inactivo para que no reviva en un reseed.
+
+Que compartan SKU ha sido un riesgo latente: los IDs de inventario se generan del SKU y la secuencia es común, así que `MDEP001`…`MDEP018` están repartidos entre las dos. El lado bueno es que consolidar **no cambia ningún código de inventario**.
+
+Lo que cuelga de la duplicada en producción, revisado uno por uno antes de escribir la migración: 7 artículos valuados (ninguno vendido, solo `MDEP001` con existencia; sus `features` usan las llaves `modelo` y `tipo`, las mismas que define la id 5, donde además están marcadas como imprimibles), 11 artículos de citas —**una futura, del 1 de diciembre**—, 13 marcas (11 propias como Berg, Kettler, Radio Flyer, Peg Perego, Mercedes; 2 repetidas sin uso), 2 definiciones de características, 9 factores de valuación y un descuento que ya estaba inactivo.
+
+La migración 050 **no borra nada**: mueve artículos, citas y las 11 marcas propias a la id 5, desactiva las 2 repetidas y desactiva la subcategoría (`is_active = false`), que es lo que ya respetan los endpoints de subcategorías y de marcas. Los factores, las definiciones y el descuento se dejan como filas muertas a propósito: nada de eso se consulta de una subcategoría desactivada y borrarlo solo perdería el rastro. Todo va condicionado a que la id 54 sea de verdad la gemela, así que en staging y local —donde no existe— la migración no hace nada.
+
+**Probada en local** recreando el duplicado tal como está en producción: movió lo que debía, el artículo quedó coherente (categoría A pasear con subcategoría de A pasear), la marca repetida desactivada y la propia movida, la subcategoría desapareció del endpoint, y correrla dos veces no hizo nada la segunda vez.
+
+**Nota sobre el registro de migraciones:** la tabla `migrations` de producción tiene hasta la 048; la **049 no quedó registrada** cuando se aplicó a mano el 6 de noviembre, aunque sí está aplicada (la columna `cancel_refund_amount` existe). Al aplicar la 050 conviene registrar las dos.
+
+**Nota sobre verificar despliegues:** el truco de "401 significa que la ruta existe" **no aplica** en routers que hacen `router.use(protect)`, como `inventory.routes.ts`: ahí cualquier ruta inventada también responde 401. Para saber qué commit quedó arriba hay que preguntar por el release de Heroku.
